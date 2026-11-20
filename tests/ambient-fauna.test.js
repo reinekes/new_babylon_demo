@@ -236,3 +236,24 @@ test('free herds keep grazing after encounters, without overlapping, pivoting in
   for(const n of herd)assert.deepEqual({x:n.position.x,z:n.position.z,yaw:n.rotation.y},previous.get(n));
  }finally{view.dispose();for(const asset of shared.values())asset.dispose();scene.dispose();engine.dispose();}
 });
+
+test('an arriving herd leaves the adult cow at the milking rail throughout the transfer',async()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),state=createGame({start:'established',seed:73129});
+ const shared=new Map(['pig','goat','bull','cow','ram'].map(kind=>['pasture-'+kind+'.glb',source(scene,kind)]));
+ const view=createTestLivestock(B,scene,[],()=>true,()=>true,shared);
+ try{
+  await new Promise(resolve=>setImmediate(resolve));
+  view.update(state,0,true,1);
+  const leader=scene.transformNodes.find(n=>n.metadata?.herdSpecies==='bull'&&n.isEnabled());
+  const x=Math.round(leader.position.x/6),y=Math.round(leader.position.z/6);
+  const farm={type:'cowshed',x,y,level:1,dairy:{cows:3,calves:1}};
+  state.buildings.push(farm);
+  let incoming=false;
+  for(let i=0;i<120;i++){
+   view.update(state,.1,false,4);
+   assert.equal(view.claims('dairy-'+x+','+y+'-0'),false);
+   if(view.claims('dairy-'+x+','+y+'-1'))incoming=true;
+  }
+  assert.ok(incoming,'another livestock place was claimed by the approaching herd');
+ }finally{view.dispose();for(const asset of shared.values())asset.dispose();scene.dispose();engine.dispose();}
+});

@@ -3,7 +3,7 @@ import {workshopSurfaces} from '../game3d/workshop-surfaces.js';
 import {extractionStockFraction} from '../extraction-stock.js';
 import {occupiesCell} from '../footprints.js';
 import {terrain} from '../world.js';
-import {mineralDepositAngle,mineralDepositGeometry,mineralPitGeometry} from '../game3d/mineral-excavation.js';
+import {mineralDepositAngle,mineralDepositGeometry,mineralPitGeometry,registerMineralWorkGeometry} from '../game3d/mineral-excavation.js';
 
 // The basic city, detailed landscape and district viewer all own this layer
 // through their terrain. Only the root height changes when a yard opens.
@@ -21,8 +21,10 @@ export function mineralSiteView(B,scene,state,materials,pits,tile,height,colorAt
   B.VertexData.ComputeNormals(g.positions,g.indices,v.normals);v.applyToMesh(mesh);
   mesh.material=mat;mesh.useVertexColors=true;mesh.receiveShadows=true;mesh.isPickable=false;meshes.push(mesh);return mesh;
  }
+ const workGeometry=new Map();
  for(const pit of pits){
   const g=mineralPitGeometry(pit),x=pit.x*tile,z=pit.y*tile,base=height(pit.x,pit.y,state);
+  workGeometry.set(pit.x+','+pit.y,{cut:pit,mesh:g});
   // The outer apron uses the same world-space grain and sediment colour as
   // the neighbouring valley triangles, including the shore falloff.
   ladders.push({pit,layout:g.ladder});
@@ -40,6 +42,7 @@ export function mineralSiteView(B,scene,state,materials,pits,tile,height,colorAt
    const mesh=meshFrom(`excavated-${pit.kind}-${role}-${pit.x}-${pit.y}`,part,mat);mesh.metadata={mineralCut:{...pit,role}};mesh.freezeWorldMatrix();
   }
  }
+ registerMineralWorkGeometry(state,workGeometry);
  for(const {pit,layout} of ladders){
   // Heavy rails bear on the undisturbed corner. The bottom two rungs descend
   // onto the clear shoulder beside the seam even when the resource is full.

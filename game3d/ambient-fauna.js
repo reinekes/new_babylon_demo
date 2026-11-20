@@ -467,5 +467,6 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
  function supportsFoldSheep(animal){
   return foldSheepAvailable&&animal.kind==='sheep'&&!animal.young&&Number(animal.id.split('-').at(-1))%2===1;
  }
- return {update,dispose,supportsFoldSheep,updateHerds:(state,dt,paused,speed)=>testLivestock?.update(state,dt,paused,speed,yardAnchors),herdClaims:id=>testLivestock?.claims(id),herdSheepPose:animal=>testLivestock?.sheepPose(animal)??animal,rootForSheep:id=>foldSheep.get(id)?.root,get hasYardPig(){return yardPigs.length>0||!!testLivestock?.hasPigs();},hasPloughTeams:!!ploughs,roots:()=>actors.map(a=>a.root)};
+ const hasMilkingCow=key=>actors.some(a=>a.farm?.id==='dairy-'+key+'-0'&&!a.farm.calf&&a.root.isEnabled());
+ return {update,dispose,supportsFoldSheep,hasMilkingCow,updateHerds:(state,dt,paused,speed)=>testLivestock?.update(state,dt,paused,speed,yardAnchors),herdClaims:id=>testLivestock?.claims(id),herdSheepPose:animal=>testLivestock?.sheepPose(animal)??animal,rootForSheep:id=>foldSheep.get(id)?.root,get hasYardPig(){return yardPigs.length>0||!!testLivestock?.hasPigs();},hasPloughTeams:!!ploughs,roots:()=>actors.map(a=>a.root)};
 }

@@ -25,6 +25,7 @@ export function workplaceActivity(s,c,index){
  if(c.age<16)return null;
  if(c.waterTrip?.phase==='fill')return {kind:'gathering',task:'water-filling',stage:'working',target:c.waterDip||{x:c.x,y:c.y},progress:(c.waterTrip.elapsed||0)/2};
  if(c.carrying)return null;
+ if(c.phase==='copyingLaw')return {kind:'scribing',task:'law-tablet',stage:'working'};
  if(c.phase==='studying'){
   const school=index.get(c.school);
   return c.role==='healer'&&school&&isOperational(school)&&['shrine','ziggurat'].includes(school.type)?

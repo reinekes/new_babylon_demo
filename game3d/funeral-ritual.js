@@ -5,18 +5,32 @@ import {createFestivalCandles} from './festival-candles.js';
 // route coordinates, personal identity and inventories remain in the simulation.
 export function createFuneralRitual(B,scene,meshes){
  const biers=new Map(),torches=new Map(),materials=[],lights=[],candles=createFestivalCandles(B,scene,meshes);let template=null;
- const material=(name,color,emissive=false)=>{const m=new B.StandardMaterial(`rite-${name}`,scene);m.diffuseColor=B.Color3.FromHexString(color);m.specularColor=B.Color3.Black();if(emissive){m.emissiveColor=m.diffuseColor;m.disableLighting=true;}materials.push(m);return m;};
- const wood=material('reed-wood','#705139'),wrap=material('torch-wrapping','#b6a283'),white=material('white-shroud','#f4f0e5'),outer=material('flame-amber','#f57a14',true),inner=material('flame-core','#fff0aa',true);
+ const material=(name,color,emissive=false)=>{const m=new B.StandardMaterial(`rite-${name}`,scene);const tint=B.Color3.FromHexString(color);m.diffuseColor=emissive?tint:tint.toLinearSpace();m.specularColor=B.Color3.Black();if(emissive){m.emissiveColor=m.diffuseColor;m.disableLighting=true;}materials.push(m);return m;};
+ const wood=material('reed-wood','#705139'),wrap=material('torch-wrapping','#b6a283'),white=material('white-shroud','#d8d1bd'),outer=material('flame-amber','#f57a14',true),inner=material('flame-core','#fff0aa',true);
  function track(m,parent,mat){m.parent=parent;m.material=mat;m.isPickable=false;m.receiveShadows=true;meshes.push(m);return m;}
  function box(name,parent,mat,w,h,d,x=0,y=0,z=0){const m=track(B.MeshBuilder.CreateBox(name,{width:w,height:h,depth:d},scene),parent,mat);m.position.set(x,y,z);return m;}
  function flame(name,parent,mat,size,y){const m=track(B.MeshBuilder.CreateCylinder(name,{height:size,diameterTop:0,diameterBottom:size*.40,tessellation:6},scene),parent,mat);m.position.y=y;return m;}
  function disposeRoot(root){for(const m of root.getChildMeshes()){const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);}root.dispose();}
  function bierTemplate(){if(template)return template;const root=new B.TransformNode('funeral-prop-template',scene),bundle=new B.TransformNode('funeral-shroud-template',scene);bundle.parent=root;
-  const cloth=track(B.MeshBuilder.CreateLathe('white-shroud-template',{shape:[[-.85,.06],[-.75,.12],[-.46,.17],[-.08,.22],[.22,.26],[.37,.23],[.45,.14],[.57,.16],[.73,.14],[.84,.025]].map(([y,r])=>new B.Vector3(r,y,0)),tessellation:12,cap:B.Mesh.CAP_ALL},scene),bundle,white);cloth.rotation.x=Math.PI/2;cloth.scaling.z=.65;cloth.position.y=.18;
-  for(const z of [-.53,.53])box('cloth-tie-template',bundle,wrap,.49,.035,.045,0,.21,z);
-  box('cloth-grip-template',bundle,white,.095,.04,.12,0,.18,-.80);
-  box('reed-bed-template',root,wrap,.72,.065,1.78,0,.035);
-  for(const x of [-.378,.378])box('rail-template',root,wood,.045,.045,2.40,x,0);
+  // Linen hangs from the shoulders, chest, knees and toes to a flat underside.
+  const sections=[[-.85,.012,.12],[-.79,.105,.205],[-.68,.13,.23],[-.54,.105,.18],[-.40,.145,.22],[-.25,.17,.235],[-.08,.205,.27],[.08,.209,.29],[.23,.233,.314],[.34,.245,.30],[.43,.205,.235],[.48,.11,.195],[.53,.107,.236],[.61,.144,.302],[.70,.147,.30],[.78,.112,.25],[.835,.04,.195],[.845,.008,.18]];
+  const ring=([z,width,top],extra=0)=>Array.from({length:25},(_,i)=>{
+   const theta=i*Math.PI/12,side=Math.cos(theta),up=Math.sin(theta),wave=.012*Math.cos(3*theta+z*3)*Math.max(0,up);
+   return new B.Vector3((width+extra)*side,.076+(top-.076)*(1+up)*.5+wave+extra*up,z);
+  });
+  track(B.MeshBuilder.CreateRibbon('white-shroud-template',{pathArray:sections.map(section=>ring(section)),sideOrientation:B.Mesh.DOUBLESIDE},scene),bundle,white);
+  for(const index of [3,11])track(B.MeshBuilder.CreateTube('linen-tie-template',{path:ring(sections[index],.002),radius:.012,tessellation:5},scene),bundle,wrap);
+  const lip=track(B.MeshBuilder.CreateSphere('cloth-grip-template',{diameter:1,segments:6},scene),bundle,white);
+  lip.position.set(0,.18,-.80);lip.scaling.set(.10,.045,.095);
+  for(let slat=0;slat<15;slat++)box('woven-bed-template',root,wrap,.72,.043,.103,0,.038,(slat-7)*.116);
+  for(const x of [-.25,-.11,.11,.25])box('reed-lashing-template',root,wood,.019,.019,1.74,x,.064);
+  for(const x of [-.378,.378]){
+   box('rail-template',root,wood,.045,.045,2.40,x,0);
+   for(const z of [-1.08,1.08]){
+    const bow=[[-.085,.018],[-.065,.105],[-.035,.133],[.035,.133],[.065,.105],[.085,.018]].map(([offset,y])=>new B.Vector3(x,y,z+offset));
+    track(B.MeshBuilder.CreateTube('bier-lifting-loop',{path:bow,radius:.012,tessellation:6},scene),root,wrap);
+   }
+  }
   const merge=(parts,name,parent)=>{for(const m of parts){m.computeWorldMatrix(true);const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);}const merged=B.Mesh.MergeMeshes(parts,true,true,undefined,false,true);merged.name=name;merged.parent=parent;merged.isVisible=false;merged.receiveShadows=true;if(merged.material)materials.push(merged.material);return merged;};
   const clothParts=bundle.getChildMeshes(),bedParts=root.getChildMeshes().filter(m=>!clothParts.includes(m));template={root,bundle,cloth:merge(clothParts,'funeral-white-shroud-source',bundle),bed:merge(bedParts,'funeral-bier-source',root)};return template;
  }
@@ -34,9 +48,27 @@ export function createFuneralRitual(B,scene,meshes){
  function update(view,state,time,torchGrips=new Map(),jackalMouth=null){
   const seen=new Set();for(const b of view?.biers||[]){if(b.visible===false)continue;seen.add(b.id);const a=bierFor(b);a.root.position.set(b.x*6,surfaceElevation(b.x,b.y,state)+b.height,b.y*6);a.root.rotation.y=b.yaw;
    // A shroud remains fully opaque and recognizable while the animal tugs it.
-   const animal=view.jackals?.find(j=>j.bundleId===b.id&&j.pulling),mouth=animal&&jackalMouth?.(animal.id);a.bundle.position.set(0,0,0);a.bundle.rotation.y=0;
-   const puller=b.transport==='sledge'&&b.carriers[0];if(puller){const hand=puller.hands.right,inverse=a.root.computeWorldMatrix(true).clone().invert(),grip=B.Vector3.TransformCoordinates(new B.Vector3(hand.x*6,surfaceElevation(hand.x,hand.y,state)+hand.height,hand.y*6),inverse),points=[new B.Vector3(0,.04,1.20),grip];if(a.rope)B.MeshBuilder.CreateLines('sledge-rope',{points,instance:a.rope},scene);else{a.rope=B.MeshBuilder.CreateLines('sledge-rope',{points},scene);a.rope.parent=a.root;a.rope.color=B.Color3.FromHexString('#b6a283');meshes.push(a.rope);}}else if(a.rope){a.rope.setEnabled(false);}
-   if(mouth){const dx=(animal.faceX-animal.x),dz=(animal.faceY-animal.y),length=Math.hypot(dx,dz)||1,forward=new B.Vector3(dx/length,0,dz/length),centre=mouth.add(forward.scale(.80)),local=B.Vector3.TransformCoordinates(centre,a.root.computeWorldMatrix(true).clone().invert());a.bundle.position.copyFrom(local);a.bundle.position.y-=.18;a.bundle.rotation.y=Math.atan2(forward.x,forward.z)-b.yaw;}
+   const animal=view.jackals?.find(j=>j.bundleId===b.id&&j.pulling),mouth=animal&&jackalMouth?.(animal.id);a.bundle.position.set(0,0,0);a.bundle.rotation.set(0,0,0);
+   const puller=b.transport==='sledge'&&b.carriers[0];if(puller){const inverse=a.root.computeWorldMatrix(true).clone().invert();
+    const grip=hand=>B.Vector3.TransformCoordinates(new B.Vector3(hand.x*6,surfaceElevation(hand.x,hand.y,state)+hand.height,hand.y*6),inverse);
+    const hitch=new B.Vector3(0,.04,1.20),right=grip(puller.hands.right);
+    const points=puller.pullingSledge?[hitch,grip(puller.hands.left),right,hitch]:[hitch,hitch,right,right];
+    if(a.rope){a.rope.setEnabled(true);B.MeshBuilder.CreateLines('sledge-rope',{points,instance:a.rope},scene);}else{a.rope=B.MeshBuilder.CreateLines('sledge-rope',{points},scene);a.rope.parent=a.root;a.rope.color=B.Color3.FromHexString('#b6a283');meshes.push(a.rope);}}else if(a.rope){a.rope.setEnabled(false);}
+   if(b.drag){
+    const restingGrip=new B.Vector3(0,.18,-.80),inverse=a.root.computeWorldMatrix(true).clone().invert();
+    const blend=b.drag.contact,headGround=surfaceElevation(b.drag.x,b.drag.y,state)+.16;
+    if(mouth){
+     const local=B.Vector3.TransformCoordinates(mouth,inverse);
+     // Keep the held end at the teeth while the far end slides on the ground.
+     const pitch=Math.max(-.16,Math.min(.19,Math.atan2(mouth.y-headGround,1.53)))*b.drag.pull;
+     a.bundle.rotation.x=pitch;
+     const rotatedGrip=B.Vector3.TransformCoordinates(restingGrip,B.Matrix.RotationX(pitch));
+     a.bundle.position.copyFrom(local.subtract(rotatedGrip).scale(blend));
+    }else{
+     const ground=surfaceElevation(b.drag.x,b.drag.y,state);
+     a.bundle.position.copyFrom(B.Vector3.TransformCoordinates(new B.Vector3(b.drag.x*6,ground+b.height*(1-b.drag.pull),b.drag.y*6),inverse));
+    }
+   }
   }
   for(const [id,a]of biers)if(!seen.has(id)){disposeRoot(a.root);biers.delete(id);}
   candles.update((view?.participants||[]).filter(p=>p.candle),state.festival?.elapsed||0,torchGrips,{shell:isStrictSumer(state)});

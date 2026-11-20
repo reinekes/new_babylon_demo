@@ -222,8 +222,9 @@ export class Renderer{
   const p=this.point(e.x,e.y,onBridge(this.state?.buildings||[],e.x,e.y,this.state)?5:0),q=this.s;
   this.line([[p.x-13*q,p.y+q],[p.x+14*q,p.y+q]],'#8b7957',2*q);
   this.box(p.x,p.y,10*q,4*q,3*q,'#c7b78d','#9e8b62','#b6a477');
-  this.polygon([[p.x-9*q,p.y-4*q],[p.x-3*q,p.y-9*q],[p.x+7*q,p.y-6*q],[p.x+10*q,p.y-2*q],[p.x,p.y+2*q]],'#ece0bd');
-  this.line([[p.x-6*q,p.y-3*q],[p.x+6*q,p.y-3*q]],'#c8b996',.8*q);
+  const cloth=e.drag?this.point(e.drag.x,e.drag.y):p;
+  this.polygon([[cloth.x-9*q,cloth.y-4*q],[cloth.x-3*q,cloth.y-9*q],[cloth.x+7*q,cloth.y-6*q],[cloth.x+10*q,cloth.y-2*q],[cloth.x,cloth.y+2*q]],'#ece0bd');
+  this.line([[cloth.x-6*q,cloth.y-3*q],[cloth.x+6*q,cloth.y-3*q]],'#c8b996',.8*q);
  }
  vegetation(e,t,state){
   const p=this.point(e.x,e.y),q=this.s*(e.growth||1),c=this.ctx,dry=state.drought||e.vigor<.5,color=dry?'#a49c64':state.season===3?'#8c9a69':e.vigor>.9?'#668b56':'#78935f';

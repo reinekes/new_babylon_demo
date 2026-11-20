@@ -299,7 +299,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   aimJoint(upper,lower,joint);lower.computeWorldMatrix(true);aimJoint(lower,hand,shoulder.add(direction.scale(length)));
  }
  function milkingSeat(a,enabled){
-  if(enabled&&!a.milkingSeat){a.milkingSeat=new B.TransformNode(`${a.root.name}-milking-seat`,scene);a.milkingSeat.parent=a.root;box('milking-stool-seat',a.milkingSeat,wood,0,.38,-.025,.30,.045,.26);for(const x of [-.11,.11])for(const z of [-.12,.07])box('milking-stool-leg',a.milkingSeat,wood,x,.18,z,.035,.36,.035);}
+  if(enabled&&!a.milkingSeat){a.milkingSeat=new B.TransformNode(`${a.root.name}-milking-seat`,scene);a.milkingSeat.parent=a.root;box('milking-stool-seat',a.milkingSeat,wood,0,.173,-.025,.30,.045,.26);for(const x of [-.11,.11])for(const z of [-.12,.07])box('milking-stool-leg',a.milkingSeat,wood,x,.078,z,.035,.156,.035);}
   a.milkingSeat?.setEnabled(!!enabled);
  }
  // Sit on a low stool using the native pelvis and bent leg chains. The feet
@@ -530,6 +530,10 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   }
  }
  function animate(a,c,state,dt,paused,speed,viewPosition=c){
+  if(includeFauna&&viewPosition.contact?.kind==='dairy'&&!ambient?.hasMilkingCow(c.work)){
+   // Keep the real approach and cargo intact while the herd meshes load.
+   c={...c,activity:null};viewPosition=c;
+  }
   const plough=viewPosition.plough;
   a.ploughPoseChanged=!!plough!==!!a.wasPloughing;
   a.workContact=viewPosition.contact||null;a.presentationCitizen=c;
@@ -642,19 +646,21 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    if(a.paused&&!a.homePoseChanged&&!a.ploughPoseChanged&&!a.rainChanged&&!a.rainReaction&&a.armNodes.some(arm=>arm.last)){for(const arm of a.armNodes)if(arm.last)arm.node.rotationQuaternion=arm.last.clone();for(const leg of Object.values(a.legs)){if(leg.lastPosition)leg.upper.position.copyFrom(leg.lastPosition);for(const [i,n]of [leg.upper,leg.lower,leg.foot].entries())if(leg.lastRotations?.[i])n.rotationQuaternion=leg.lastRotations[i].clone();}if(a.lastPelvis)a.pelvis.position.copyFrom(a.lastPelvis);if(a.lastPelvisRotation)a.pelvis.rotationQuaternion=a.lastPelvisRotation.clone();for(const side of ['l','r'])if(a.lastHands?.[side])a.hands[side].rotationQuaternion=a.lastHands[side].clone();if(a.lastSpine)a.spine.rotationQuaternion=a.lastSpine.clone();continue;}
    const targets=a.clipTargets.get(a.clip);authoredStance(a,targets);
    const carry=['carry','unload'].includes(a.pose),work=WORK_POSES.has(a.pose),play=['play','dance'].includes(a.pose),taskPose=a.workContact?workstationPose(a.workContact,a.time):workPose(a.pose,a.time,a.c.activity?.task);
-   const swimming=!!a.c.swimming,milking=work&&a.workContact?.kind==='dairy',music=work&&a.workContact?.kind==='lithophone',seatHeight=a.c.homeVisit?.seatHeight??a.workContact?.seatHeight??(a.c.freightHandoff?.target.height<1.02?.95-.25*a.c.freightHandoff.progress:undefined),seated=milking||music||Number.isFinite(seatHeight),resetSeated=swimming||a.wasSwimming&&a.clip==='Idle_Loop'||seated||a.wasSeated&&a.clip==='Idle_Loop'||a.wasDancing&&a.clip==='Idle_Loop';a.wasSwimming=swimming;a.wasDancing=a.pose==='dance';
+   const railHeight=a.c.funeralContact?.hands?.left.height;
+   const kneelingAtBier=railHeight<.98?Math.max(.18,railHeight-.13):undefined;
+   const swimming=!!a.c.swimming,milking=work&&a.workContact?.kind==='dairy',music=work&&a.workContact?.kind==='lithophone',seatHeight=a.c.homeVisit?.seatHeight??a.workContact?.seatHeight??kneelingAtBier??(a.c.freightHandoff?.target.height<1.02?.95-.25*a.c.freightHandoff.progress:undefined),seated=milking||music||Number.isFinite(seatHeight),resetSeated=swimming||a.wasSwimming&&a.clip==='Idle_Loop'||seated||a.wasSeated&&a.clip==='Idle_Loop'||a.wasDancing&&a.clip==='Idle_Loop';a.wasSwimming=swimming;a.wasDancing=a.pose==='dance';
    // Sample the real idle keys before sitting. A constant idle channel can
    // otherwise retain our previous IK transform instead of rewriting its value.
    if(resetSeated&&a.clip==='Idle_Loop'){const idle=a.groups.get('Idle_Loop');idle.goToFrame(idle.from);authoredStance(a,targets);}
    if(a.pelvis&&!targets?.position.has(a.pelvis))a.pelvis.position.copyFrom(a.pelvisBase);
    for(const leg of Object.values(a.legs))for(const [i,n]of [leg.upper,leg.lower,leg.foot].entries())if(n&&!targets?.rotationQuaternion.has(n)&&leg.baseRotations[i])n.rotationQuaternion=leg.baseRotations[i].clone();
-   milkingSeat(a,milking);if(seated)seatedMilking(a,Number.isFinite(seatHeight)?seatHeight/a.root.scaling.y:music?.40:.45);a.wasSeated=seated;
+   milkingSeat(a,milking);if(seated)seatedMilking(a,Number.isFinite(seatHeight)?seatHeight/a.root.scaling.y:music?.40:.223);a.wasSeated=seated;
    if(a.pelvis)a.lastPelvis=a.pelvis.position.clone();for(const leg of Object.values(a.legs))leg.lastRotations=[leg.upper,leg.lower,leg.foot].map(n=>n?.rotationQuaternion?.clone());
    if(swimming){const stroke=residentSwimmingPresentation(a.c,a.time,{reducedMotion}).stroke;for(const [side,leg]of Object.entries(a.legs))if(leg.upper?.rotationQuaternion){leg.upper.rotationQuaternion=leg.upper.rotationQuaternion.multiply(B.Quaternion.FromEulerAngles((side==='l'?1:-1)*stroke*.09,0,0));leg.lastRotations=[leg.upper,leg.lower,leg.foot].map(n=>n?.rotationQuaternion?.clone());}}
    if(a.spine){
     const animated=targets?.rotationQuaternion.has(a.spine);
     const base=animated?a.spine.rotationQuaternion:a.spineBase;
-    if(base){a.spine.rotationQuaternion=base.multiply(B.Quaternion.FromEulerAngles(!swimming&&work?taskPose.bend:a.c.freightHandoff?a.c.freightHandoff.progress*.42:a.c.funeralContact?Math.min(.16,(a.c.funeralContact.bow||0)*.4):a.pose==='play'&&!a.c.walking?.12:0,!swimming&&work?taskPose.twist:0,0));a.lastSpine=a.spine.rotationQuaternion.clone();}
+    if(base){a.spine.rotationQuaternion=base.multiply(B.Quaternion.FromEulerAngles(!swimming&&work?taskPose.bend:a.c.freightHandoff?a.c.freightHandoff.progress*.42:Number.isFinite(kneelingAtBier)?Math.min(.52,(1-railHeight)*.65):a.c.funeralContact?Math.min(.16,(a.c.funeralContact.bow||0)*.4):a.pose==='play'&&!a.c.walking?.12:0,!swimming&&work?taskPose.twist:0,0));a.lastSpine=a.spine.rotationQuaternion.clone();}
    }
    for(const arm of a.armNodes){const n=arm.node;
     // Restore authored/clip transforms before the two-bone task solve.
@@ -751,7 +757,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
     const hands=workstationHands(a.workContact,a.time),inverse=a.root.computeWorldMatrix(true).clone().invert();
     const local=p=>B.Vector3.TransformCoordinates(vec(p.x*6,surfaceElevation(p.x,p.y,a.state)+p.height,p.y*6),inverse);
     const right=local(hands.right),left=local(hands.left);
-    for(let solve=0;solve<(music||a.workContact.kind==='artisan'?3:1);solve++){poseArm(a,'r',right);poseArm(a,'l',left);}
+    for(let solve=0;solve<(milking||music||a.workContact.kind==='artisan'?3:1);solve++){poseArm(a,'r',right);poseArm(a,'l',left);}
    }else if(work){
     poseArm(a,'r',vec(...taskPose.right));poseArm(a,'l',vec(...taskPose.left));
    }else if(a.pose==='dance'){

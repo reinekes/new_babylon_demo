@@ -1,0 +1,6685 @@
+{
+  "release": "streets-rites-professions-20261120",
+  "funeral": {
+    "fixture": "tests/fixtures/funeral-rite.html?bodies=2&adults=12",
+    "mainGame": "index.html?view=3d",
+    "mainGameAction": "killTestCitizens, ordinary established 40-person strict scenario",
+    "summary": {
+      "before": {
+        "templeParty": 12,
+        "maxFootDisplacementOver50msMetres": 1.3090532051620618,
+        "reappearedOnReturn": true
+      },
+      "after": {
+        "templeParty": 4,
+        "maxFootDisplacementOver50msMetres": 0.0763040544792163,
+        "reappearedOnReturn": false
+      }
+    },
+    "chrome": {
+      "before": {
+        "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+        "webgl": 2,
+        "delegation": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ],
+        "stages": [
+          "gathering",
+          "procession",
+          "farewell",
+          "receding",
+          "jackals",
+          "returning"
+        ],
+        "samples": [
+          {
+            "stage": "jackals",
+            "time": 0,
+            "visibleShroud": true,
+            "foot": [
+              59.86848081350327,
+              0.3526897656917572,
+              12.789115142822265
+            ],
+            "head": [
+              60.12001125767827,
+              0.3526897656917572,
+              11.279932432174682
+            ],
+            "jackal": [
+              69.72,
+              0,
+              12
+            ],
+            "clip": "Idle"
+          },
+          {
+            "stage": "jackals",
+            "time": 3.899999999999994,
+            "visibleShroud": true,
+            "foot": [
+              59.86848081350327,
+              0.3526897656917572,
+              12.789115142822265
+            ],
+            "head": [
+              60.12001125767827,
+              0.3526897656917572,
+              11.279932432174682
+            ],
+            "jackal": [
+              61.530000000000015,
+              0.01570060626307897,
+              12
+            ],
+            "clip": "Idle"
+          },
+          {
+            "stage": "jackals",
+            "time": 3.949999999999994,
+            "visibleShroud": true,
+            "foot": [
+              59.86848081350327,
+              0.3526897656917572,
+              12.789115142822265
+            ],
+            "head": [
+              60.12001125767827,
+              0.3526897656917572,
+              11.279932432174682
+            ],
+            "jackal": [
+              61.42500000000001,
+              0.015363963730327865,
+              12
+            ],
+            "clip": "Walk"
+          },
+          {
+            "stage": "jackals",
+            "time": 3.999999999999994,
+            "visibleShroud": true,
+            "foot": [
+              59.86848081350327,
+              0.3526897656917572,
+              12.789115142822265
+            ],
+            "head": [
+              60.12001125767827,
+              0.3526897656917572,
+              11.279932432174682
+            ],
+            "jackal": [
+              61.320000000000014,
+              0.01510988882568088,
+              12
+            ],
+            "clip": "Walk"
+          },
+          {
+            "stage": "jackals",
+            "time": 4.049999999999994,
+            "visibleShroud": true,
+            "foot": [
+              60.90108184814453,
+              0.26969710022211074,
+              11.988822937011719
+            ],
+            "head": [
+              59.371081848144534,
+              0.26969710022211074,
+              11.988822937011719
+            ],
+            "jackal": [
+              61.337999999999994,
+              0.015147089262868361,
+              12
+            ],
+            "clip": "Pull"
+          },
+          {
+            "stage": "jackals",
+            "time": 4.099999999999993,
+            "visibleShroud": true,
+            "foot": [
+              60.916161346435544,
+              0.26512238413095474,
+              11.985255241394043
+            ],
+            "head": [
+              59.38616134643555,
+              0.26512238413095474,
+              11.985255241394043
+            ],
+            "jackal": [
+              61.355999999999995,
+              0.015186993914153082,
+              12
+            ],
+            "clip": "Pull"
+          },
+          {
+            "stage": "jackals",
+            "time": 4.149999999999993,
+            "visibleShroud": true,
+            "foot": [
+              60.9315803527832,
+              0.26107800036668777,
+              11.982248306274414
+            ],
+            "head": [
+              59.401580352783206,
+              0.26107800036668777,
+              11.982248306274414
+            ],
+            "jackal": [
+              61.373999999999995,
+              0.015229544192933289,
+              12
+            ],
+            "clip": "Pull"
+          },
+          {
+            "stage": "jackals",
+            "time": 6.949999999999983,
+            "visibleShroud": true,
+            "foot": [
+              61.927738952636716,
+              0.2837951186299324,
+              12.02548885345459
+            ],
+            "head": [
+              60.39773895263672,
+              0.2837951186299324,
+              12.02548885345459
+            ],
+            "jackal": [
+              62.38199999999999,
+              0.02023021133862285,
+              12
+            ],
+            "clip": "Pull"
+          },
+          {
+            "stage": "returning",
+            "time": 0,
+            "visibleShroud": true,
+            "foot": [
+              59.86848081350327,
+              0.3526897656917572,
+              12.789115142822265
+            ],
+            "head": [
+              60.12001125767827,
+              0.3526897656917572,
+              11.279932432174682
+            ],
+            "jackal": null,
+            "clip": null
+          }
+        ]
+      },
+      "after": {
+        "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+        "webgl": 2,
+        "delegation": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "stages": [
+          "gathering",
+          "procession",
+          "farewell",
+          "collecting",
+          "receding",
+          "jackals",
+          "returning"
+        ],
+        "samples": [
+          {
+            "stage": "jackals",
+            "time": 0,
+            "visibleShroud": true,
+            "foot": [
+              60,
+              0.3526897656917572,
+              12.8
+            ],
+            "head": [
+              60,
+              0.3526897656917572,
+              11.27
+            ],
+            "jackal": [
+              60,
+              0.013029883403870193,
+              21.69
+            ],
+            "clip": "Idle"
+          },
+          {
+            "stage": "jackals",
+            "time": 3.899999999999994,
+            "visibleShroud": true,
+            "foot": [
+              60.000003814697266,
+              0.3000738772749901,
+              12.835066604614259
+            ],
+            "head": [
+              60.000003814697266,
+              0.3000738772749901,
+              11.305066604614257
+            ],
+            "jackal": [
+              60,
+              0.009361960212524261,
+              13.29
+            ],
+            "clip": "Pull"
+          },
+          {
+            "stage": "jackals",
+            "time": 3.949999999999994,
+            "visibleShroud": true,
+            "foot": [
+              60.000003814697266,
+              0.28955069959163665,
+              12.84207992553711
+            ],
+            "head": [
+              60.000003814697266,
+              0.28955069959163665,
+              11.312079925537109
+            ],
+            "jackal": [
+              60,
+              0.009361960212524261,
+              13.29
+            ],
+            "clip": "Pull"
+          },
+          {
+            "stage": "jackals",
+            "time": 3.999999999999994,
+            "visibleShroud": true,
+            "foot": [
+              60.000003814697266,
+              0.2790275219082832,
+              12.849093246459962
+            ],
+            "head": [
+              60.000003814697266,
+              0.2790275219082832,
+              11.31909324645996
+            ],
+            "jackal": [
+              60,
+              0.009361960212524261,
+              13.29
+            ],
+            "clip": "Pull"
+          },
+          {
+            "stage": "jackals",
+            "time": 4.049999999999994,
+            "visibleShroud": true,
+            "foot": [
+              59.98577880859375,
+              0.27199479632079604,
+              12.923729020068421
+            ],
+            "head": [
+              59.98577880859375,
+              0.27033934936393056,
+              11.393729932019488
+            ],
+            "jackal": [
+              60,
+              0.009205860847040835,
+              13.351999999999993
+            ],
+            "clip": "Pull"
+          },
+          {
+            "stage": "jackals",
+            "time": 4.099999999999993,
+            "visibleShroud": true,
+            "foot": [
+              59.97492980957031,
+              0.2594207200407982,
+              12.976016725376248
+            ],
+            "head": [
+              59.97492980957031,
+              0.25652204368263487,
+              11.446019461229444
+            ],
+            "jackal": [
+              60,
+              0.009050319303257101,
+              13.41399999999999
+            ],
+            "clip": "Pull"
+          },
+          {
+            "stage": "jackals",
+            "time": 4.149999999999993,
+            "visibleShroud": true,
+            "foot": [
+              59.97079849243164,
+              0.25627752780914304,
+              13.027353863455355
+            ],
+            "head": [
+              59.97079849243164,
+              0.2520781327970326,
+              11.497359608747065
+            ],
+            "jackal": [
+              60,
+              0.008895362376240995,
+              13.475999999999992
+            ],
+            "clip": "Pull"
+          },
+          {
+            "stage": "jackals",
+            "time": 6.949999999999983,
+            "visibleShroud": true,
+            "foot": [
+              59.97079849243164,
+              0.24980393350124358,
+              16.499351859912277
+            ],
+            "head": [
+              59.97079849243164,
+              0.16557715337723494,
+              14.971671954616903
+            ],
+            "jackal": [
+              60,
+              0.0024217607817743165,
+              16.94799999999998
+            ],
+            "clip": "Pull"
+          },
+          {
+            "stage": "returning",
+            "time": 0,
+            "visibleShroud": false,
+            "foot": null,
+            "head": null,
+            "jackal": null,
+            "clip": null
+          }
+        ]
+      },
+      "index": {
+        "results": [
+          {
+            "stage": "gathering",
+            "t": 1.0000000000000002,
+            "participants": 39,
+            "carrierCount": 0,
+            "mesh": true,
+            "hardware": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+            "shroudGripErrorMetres": null,
+            "saveRoundtrip": true
+          },
+          {
+            "stage": "procession",
+            "t": 6.999999999999983,
+            "participants": 39,
+            "carrierCount": 4,
+            "mesh": true,
+            "hardware": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+            "shroudGripErrorMetres": null,
+            "saveRoundtrip": true
+          },
+          {
+            "stage": "farewell",
+            "t": 2.000000000000001,
+            "participants": 39,
+            "carrierCount": 0,
+            "mesh": true,
+            "hardware": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+            "shroudGripErrorMetres": null,
+            "saveRoundtrip": true
+          },
+          {
+            "stage": "jackals",
+            "t": 4.99999999999999,
+            "participants": 39,
+            "carrierCount": 0,
+            "mesh": true,
+            "hardware": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+            "shroudGripErrorMetres": 7.71397933467084e-07,
+            "clip": "Pull",
+            "saveRoundtrip": true
+          },
+          {
+            "stage": "returning",
+            "t": 0,
+            "participants": 39,
+            "carrierCount": 0,
+            "mesh": false,
+            "hardware": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+            "shroudGripErrorMetres": null,
+            "saveRoundtrip": true
+          }
+        ],
+        "errors": [],
+        "failures": []
+      }
+    },
+    "nodeTests": 81,
+    "nodeFailures": 0,
+    "canonicalLegacySaves": 20,
+    "nativePalmErrorCm": 1.41,
+    "screenshots": {
+      "temple": "roadmap/evidence/2026-11-20/funeral/temple.webp",
+      "carrying": "roadmap/evidence/2026-11-20/funeral/carrying.webp",
+      "jackal": "roadmap/evidence/2026-11-20/funeral/jackal.webp"
+    },
+    "scarceBearers": {
+      "before": {
+        "0": {
+          "stages": [
+            "gathering",
+            "procession",
+            "farewell",
+            "receding",
+            "jackals",
+            "returning"
+          ],
+          "distanceMetres": 32.43033540648502,
+          "lowHeight": 0.16,
+          "highHeight": 0.16
+        },
+        "1": {
+          "stages": [
+            "gathering",
+            "procession",
+            "farewell",
+            "receding",
+            "jackals",
+            "returning"
+          ],
+          "distanceMetres": 32.43033540648502,
+          "lowHeight": 0.16,
+          "highHeight": 0.16
+        },
+        "2": {
+          "stages": [
+            "gathering",
+            "procession",
+            "farewell",
+            "receding",
+            "jackals",
+            "returning"
+          ],
+          "distanceMetres": 32.43033540648502,
+          "lowHeight": 0.16,
+          "highHeight": 1.12
+        }
+      },
+      "after": {
+        "0": {
+          "n": 0,
+          "stages": [
+            "farewell"
+          ],
+          "maxCarried": [],
+          "distanceMetres": 0,
+          "lowHeight": 0.0225,
+          "highHeight": 0.0225,
+          "time": 4.999999999999998,
+          "completed": true,
+          "cargoPreserved": true,
+          "save": true
+        },
+        "1": {
+          "n": 1,
+          "stages": [
+            "gathering",
+            "procession",
+            "farewell",
+            "receding",
+            "jackals",
+            "returning"
+          ],
+          "maxCarried": [
+            1
+          ],
+          "distanceMetres": 32.43033540648502,
+          "lowHeight": 0.0225,
+          "highHeight": 0.0225,
+          "time": 41.100000000000314,
+          "completed": true,
+          "cargoPreserved": true,
+          "save": true,
+          "grips": [
+            [
+              0,
+              10,
+              1.7903228872552552,
+              10.025,
+              1.8053228872552551,
+              9.975,
+              1.8053228872552551
+            ]
+          ]
+        },
+        "2": {
+          "n": 2,
+          "stages": [
+            "gathering",
+            "procession",
+            "farewell",
+            "receding",
+            "jackals",
+            "returning"
+          ],
+          "maxCarried": [
+            2
+          ],
+          "distanceMetres": 32.43033540648502,
+          "lowHeight": 0.0225,
+          "highHeight": 1.12,
+          "time": 41.70000000000032,
+          "completed": true,
+          "cargoPreserved": true,
+          "save": true,
+          "grips": [
+            [
+              0,
+              10,
+              1.8353228872552552,
+              10.063,
+              1.8453228872552552,
+              9.937,
+              1.8453228872552552
+            ],
+            [
+              1,
+              10,
+              2.215322887255255,
+              10.063,
+              2.2053228872552553,
+              9.937,
+              2.2053228872552553
+            ]
+          ]
+        }
+      },
+      "realNativeGLBSampledByBabylonNullEngine": {
+        "0": {
+          "samples": 0,
+          "maximumPalmMetres": 0,
+          "rope": false,
+          "stationaryProp": [
+            54,
+            0.022616871269617072,
+            42
+          ],
+          "groundClearance": null
+        },
+        "1": {
+          "samples": 80,
+          "maximumPalmMetres": 2.9127240025512233e-06,
+          "rope": true,
+          "groundClearance": [
+            -0.0007601789059949177,
+            0.0004977754768394099
+          ]
+        },
+        "2": {
+          "samples": 160,
+          "maximumPalmMetres": 5.284960757708472e-06,
+          "rope": false,
+          "groundClearance": null
+        }
+      },
+      "newRegression": "After 5s in the zero-crew scenario time and the same clay deliveries resume. A real cohort of all children left after deaths also completes the vigil. Unreachable adults produce no moving prop. Three actors use distinct holds."
+    }
+  },
+  "roads": {
+    "fixture": "Игра index.html, Южный Шумер, основанный город seed 137. 65 секунд работы жителей; две команды layRoad создают 5 городских отрезков. В обоих прогонах один сохранённый город, камеры и дневной свет.",
+    "tolerance": "A tile is 6 metres. Track offsets are sampled at 65 points per edge; shoulder tests inspect every triangle edge against the navigation obstacles and water.",
+    "historySource": "https://www.archaeopress.com/Archaeopress/download/9781803276694",
+    "before": {
+      "saveSHA256": "2485ad60eb80e26803e6ab745fbb365e216944367ef9e7f2350882b9818fc330",
+      "simTime": 65,
+      "citizens": 12,
+      "buildings": 5,
+      "seed": 137,
+      "roads": {
+        "count": 5,
+        "maxSidewaysMeters": 0.1066651267509151,
+        "averageDeviationMeters": 0.09860570461581872,
+        "totalLengthMeters": 30.048961955406682,
+        "straightDistanceMeters": 30,
+        "unsafeSegments": 0,
+        "waterOrBridgeSamples": 0,
+        "items": [
+          {
+            "id": "road:10,11|9,11",
+            "maxSidewaysMeters": 0.1066651267509151,
+            "lengthMeters": 6.009619886689902
+          },
+          {
+            "id": "road:10,11|11,11",
+            "maxSidewaysMeters": 0.08809021312658061,
+            "lengthMeters": 6.009967207537025
+          },
+          {
+            "id": "road:11,11|12,11",
+            "maxSidewaysMeters": 0.1026820659461194,
+            "lengthMeters": 6.009728154922861
+          },
+          {
+            "id": "road:12,11|13,11",
+            "maxSidewaysMeters": 0.09365536149295295,
+            "lengthMeters": 6.009901148787042
+          },
+          {
+            "id": "road:11,10|11,11",
+            "maxSidewaysMeters": 0.10193575576252556,
+            "lengthMeters": 6.009745557469852
+          }
+        ]
+      },
+      "trails": {
+        "count": 10,
+        "maxSidewaysMeters": 1.5450000000000017,
+        "averageDeviationMeters": 1.1084999999999987,
+        "totalLengthMeters": 68.51390167419444,
+        "straightDistanceMeters": 62.485281374238575,
+        "unsafeSegments": 0,
+        "waterOrBridgeSamples": 0,
+        "items": [
+          {
+            "id": "road:10,9|9,9",
+            "maxSidewaysMeters": 0,
+            "lengthMeters": 6
+          },
+          {
+            "id": "road:9,8|9,9",
+            "maxSidewaysMeters": 0,
+            "lengthMeters": 6
+          },
+          {
+            "id": "road:10,10|10,9",
+            "maxSidewaysMeters": 1.4849999999999923,
+            "lengthMeters": 6.87065864876063
+          },
+          {
+            "id": "road:10,9|11,9",
+            "maxSidewaysMeters": 1.5450000000000017,
+            "lengthMeters": 6.935002602016345
+          },
+          {
+            "id": "road:8,8|9,8",
+            "maxSidewaysMeters": 1.1700000000000017,
+            "lengthMeters": 6.562158797003224
+          },
+          {
+            "id": "road:11,9|12,9",
+            "maxSidewaysMeters": 1.5450000000000017,
+            "lengthMeters": 6.935002602016346
+          },
+          {
+            "id": "road:12,9|13,9",
+            "maxSidewaysMeters": 1.4549999999999983,
+            "lengthMeters": 6.839116081238179
+          },
+          {
+            "id": "road:10,10|9,10",
+            "maxSidewaysMeters": 1.4849999999999923,
+            "lengthMeters": 6.87065864876063
+          },
+          {
+            "id": "road:8,9|9,10",
+            "maxSidewaysMeters": 1.2299999999999969,
+            "lengthMeters": 8.939145497395874
+          },
+          {
+            "id": "road:8,8|8,9",
+            "maxSidewaysMeters": 1.1700000000000017,
+            "lengthMeters": 6.562158797003224
+          }
+        ]
+      },
+      "changedSave": false,
+      "surfaces": {
+        "trails": {
+          "invalidVertices": 64,
+          "vertices": 504,
+          "invalidEdges": 213,
+          "edges": 1238
+        },
+        "roads": {
+          "invalidVertices": 0,
+          "vertices": 455,
+          "invalidEdges": 0,
+          "edges": 1170
+        }
+      },
+      "webgl": {
+        "rg": {
+          "trailVertices": 504,
+          "streets": 5,
+          "gl": 0,
+          "webgl": "WebGL 2.0 (OpenGL ES 3.0 Chromium)"
+        },
+        "exceptions": [],
+        "http": [],
+        "warn": []
+      },
+      "canvas": {
+        "result": {
+          "renderer": "2d",
+          "buildings": 5,
+          "people": 12
+        },
+        "exceptions": [],
+        "http": [],
+        "warn": []
+      },
+      "images": [
+        "roadmap/evidence/2026-11-20/roads/district-before.webp",
+        "roadmap/evidence/2026-11-20/roads/field-path-before.webp",
+        "roadmap/evidence/2026-11-20/roads/canvas-before.webp"
+      ]
+    },
+    "after": {
+      "saveSHA256": "2485ad60eb80e26803e6ab745fbb365e216944367ef9e7f2350882b9818fc330",
+      "simTime": 65,
+      "citizens": 12,
+      "buildings": 5,
+      "seed": 137,
+      "roads": {
+        "count": 5,
+        "maxSidewaysMeters": 0,
+        "averageDeviationMeters": 0,
+        "totalLengthMeters": 30,
+        "straightDistanceMeters": 30,
+        "unsafeSegments": 0,
+        "waterOrBridgeSamples": 0,
+        "items": [
+          {
+            "id": "road:10,11|9,11",
+            "maxSidewaysMeters": 0,
+            "lengthMeters": 6
+          },
+          {
+            "id": "road:10,11|11,11",
+            "maxSidewaysMeters": 0,
+            "lengthMeters": 6
+          },
+          {
+            "id": "road:11,11|12,11",
+            "maxSidewaysMeters": 0,
+            "lengthMeters": 6
+          },
+          {
+            "id": "road:12,11|13,11",
+            "maxSidewaysMeters": 0,
+            "lengthMeters": 6
+          },
+          {
+            "id": "road:11,10|11,11",
+            "maxSidewaysMeters": 0,
+            "lengthMeters": 6
+          }
+        ]
+      },
+      "trails": {
+        "count": 10,
+        "maxSidewaysMeters": 0.20073976539915606,
+        "averageDeviationMeters": 0.07354349774141866,
+        "totalLengthMeters": 62.540563840244175,
+        "straightDistanceMeters": 62.485281374238575,
+        "unsafeSegments": 0,
+        "waterOrBridgeSamples": 0,
+        "items": [
+          {
+            "id": "road:10,9|9,9",
+            "maxSidewaysMeters": 0,
+            "lengthMeters": 6
+          },
+          {
+            "id": "road:9,8|9,9",
+            "maxSidewaysMeters": 0,
+            "lengthMeters": 6
+          },
+          {
+            "id": "road:10,10|10,9",
+            "maxSidewaysMeters": 0,
+            "lengthMeters": 6
+          },
+          {
+            "id": "road:10,9|11,9",
+            "maxSidewaysMeters": 0.19985782822206488,
+            "lengthMeters": 6.016184964754542
+          },
+          {
+            "id": "road:8,8|9,8",
+            "maxSidewaysMeters": 0.1602335839754403,
+            "lengthMeters": 6.010410767242414
+          },
+          {
+            "id": "road:11,9|12,9",
+            "maxSidewaysMeters": 0.17460379981752538,
+            "lengthMeters": 6.012358896034975
+          },
+          {
+            "id": "road:12,9|13,9",
+            "maxSidewaysMeters": 0,
+            "lengthMeters": 6
+          },
+          {
+            "id": "road:10,10|9,10",
+            "maxSidewaysMeters": 0.20073976539915606,
+            "lengthMeters": 6.016327837973673
+          },
+          {
+            "id": "road:8,9|9,10",
+            "maxSidewaysMeters": 0,
+            "lengthMeters": 8.48528137423856
+          },
+          {
+            "id": "road:8,8|8,9",
+            "maxSidewaysMeters": 0,
+            "lengthMeters": 6
+          }
+        ]
+      },
+      "changedSave": false,
+      "surfaces": {
+        "trails": {
+          "invalidVertices": 0,
+          "vertices": 504,
+          "invalidEdges": 0,
+          "edges": 1238
+        },
+        "roads": {
+          "invalidVertices": 0,
+          "vertices": 455,
+          "invalidEdges": 0,
+          "edges": 1170
+        }
+      },
+      "webgl": {
+        "rg": {
+          "trailVertices": 504,
+          "streets": 5,
+          "gl": 0,
+          "webgl": "WebGL 2.0 (OpenGL ES 3.0 Chromium)"
+        },
+        "exceptions": [],
+        "http": [],
+        "warn": []
+      },
+      "canvas": {
+        "result": {
+          "renderer": "2d",
+          "buildings": 5,
+          "people": 12
+        },
+        "exceptions": [],
+        "http": [],
+        "warn": []
+      },
+      "images": [
+        "roadmap/evidence/2026-11-20/roads/district-after.webp",
+        "roadmap/evidence/2026-11-20/roads/field-path-after.webp",
+        "roadmap/evidence/2026-11-20/roads/canvas-after.webp"
+      ]
+    }
+  },
+  "residentAges": {
+    "page": "/index.html",
+    "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+    "glError": 0,
+    "webGL": 2,
+    "scenarios": [
+      "saved pottery work shift seeded 137; controlled age 60 for a working resident",
+      "established strict seed 137 with own 1-year-old child, related adults, pantry and clock set to evening"
+    ],
+    "verified": {
+      "child": {
+        "playing": true,
+        "unemployed": true,
+        "nativeMesh": true,
+        "travelMetres": 7.199999999999989,
+        "homeAtNight": true
+      },
+      "adolescent": {
+        "playing": true,
+        "unemployed": true,
+        "nativeMesh": true,
+        "travelMetres": 4.82408596938331,
+        "homeAtNight": true
+      },
+      "male": {
+        "worked": true,
+        "sex": "m",
+        "age": 20,
+        "kind": {
+          "kind": "pottery",
+          "stage": "working",
+          "task": "forming"
+        },
+        "workplace": "pottery",
+        "visibleSamples": 16,
+        "nativeVariant": "male",
+        "leftHandTravelMetres": 1.5542511584737113
+      },
+      "female": {
+        "worked": true,
+        "sex": "f",
+        "age": 41,
+        "kind": {
+          "kind": "pottery",
+          "stage": "working",
+          "task": "forming"
+        },
+        "workplace": "pottery",
+        "visibleSamples": 6,
+        "nativeVariant": "female",
+        "leftHandTravelMetres": 0.011572811472862356
+      },
+      "elder": {
+        "worked": true,
+        "sex": "m",
+        "age": 60,
+        "kind": {
+          "kind": "gathering",
+          "stage": "waiting",
+          "task": "clay"
+        },
+        "workplace": "clay",
+        "visibleSamples": 6,
+        "nativeVariant": "male",
+        "leftHandTravelMetres": 1.1481824220966659
+      },
+      "infant": {
+        "neverOnStreet": true,
+        "parent": 0,
+        "careComplete": true,
+        "moodDelta": 8,
+        "dinner": true,
+        "householdWaterUsedIncludingRoutineDrinking": 0.5191666666664219
+      }
+    },
+    "night": {
+      "child": {
+        "id": 10,
+        "age": 6,
+        "sex": "m",
+        "home": "9,9",
+        "phase": "home",
+        "workType": null,
+        "work": null,
+        "workplace": null,
+        "employed": false,
+        "simulation": {
+          "time": 35.00000000000002,
+          "hour": 22.000000000000007,
+          "street": false,
+          "playing": false,
+          "walking": false,
+          "x": null,
+          "y": null,
+          "activity": null
+        },
+        "webgl": {
+          "visible": false,
+          "variant": "child",
+          "clothing": null,
+          "position": null,
+          "left": null,
+          "right": null
+        }
+      },
+      "adolescent": {
+        "id": 11,
+        "age": 12,
+        "sex": "f",
+        "home": "9,9",
+        "phase": "home",
+        "workType": null,
+        "work": null,
+        "workplace": null,
+        "employed": false,
+        "simulation": {
+          "time": 35.00000000000002,
+          "hour": 22.000000000000007,
+          "street": false,
+          "playing": false,
+          "walking": false,
+          "x": null,
+          "y": null,
+          "activity": null
+        },
+        "webgl": {
+          "visible": false,
+          "variant": "adolescent",
+          "clothing": null,
+          "position": null,
+          "left": null,
+          "right": null
+        }
+      }
+    },
+    "care": [
+      {
+        "infant": {
+          "id": 10,
+          "age": 1,
+          "sex": "m",
+          "home": "8,8",
+          "phase": "home",
+          "workType": null,
+          "work": null,
+          "workplace": null,
+          "employed": false,
+          "simulation": {
+            "time": 28,
+            "hour": 19.200000000000003,
+            "street": false,
+            "playing": false,
+            "walking": false,
+            "x": null,
+            "y": null,
+            "activity": null
+          },
+          "webgl": {
+            "visible": false,
+            "variant": "child",
+            "clothing": null,
+            "position": null,
+            "left": null,
+            "right": null
+          }
+        },
+        "water": 20,
+        "pantry": 40,
+        "mood": 40,
+        "ate": 0.39999999999999997,
+        "care": null
+      },
+      {
+        "infant": {
+          "id": 10,
+          "age": 1,
+          "sex": "m",
+          "home": "8,8",
+          "phase": "home",
+          "workType": null,
+          "work": null,
+          "workplace": null,
+          "employed": false,
+          "simulation": {
+            "time": 28.4,
+            "hour": 19.36,
+            "street": false,
+            "playing": false,
+            "walking": false,
+            "x": null,
+            "y": null,
+            "activity": null
+          },
+          "webgl": {
+            "visible": false,
+            "variant": "child",
+            "clothing": null,
+            "position": null,
+            "left": null,
+            "right": null
+          }
+        },
+        "water": 19.943333333333385,
+        "pantry": 40,
+        "mood": 40,
+        "ate": 0.39999999999999997,
+        "care": {
+          "day": 0,
+          "helper": 0,
+          "target": 10,
+          "work": 1.5,
+          "done": true
+        }
+      },
+      {
+        "infant": {
+          "id": 10,
+          "age": 1,
+          "sex": "m",
+          "home": "8,8",
+          "phase": "home",
+          "workType": null,
+          "work": null,
+          "workplace": null,
+          "employed": false,
+          "simulation": {
+            "time": 29.9,
+            "hour": 19.96,
+            "street": false,
+            "playing": false,
+            "walking": false,
+            "x": null,
+            "y": null,
+            "activity": null
+          },
+          "webgl": {
+            "visible": false,
+            "variant": "child",
+            "clothing": null,
+            "position": null,
+            "left": null,
+            "right": null
+          }
+        },
+        "water": 19.480833333333578,
+        "pantry": 40,
+        "mood": 48,
+        "ate": 0.39999999999999997,
+        "care": {
+          "day": 0,
+          "helper": 0,
+          "target": 10,
+          "work": 1.5,
+          "done": true
+        }
+      },
+      {
+        "infant": {
+          "id": 10,
+          "age": 1,
+          "sex": "m",
+          "home": "8,8",
+          "phase": "home",
+          "workType": null,
+          "work": null,
+          "workplace": null,
+          "employed": false,
+          "simulation": {
+            "time": 33.9,
+            "hour": 21.560000000000002,
+            "street": false,
+            "playing": false,
+            "walking": false,
+            "x": null,
+            "y": null,
+            "activity": null
+          },
+          "webgl": {
+            "visible": false,
+            "variant": "child",
+            "clothing": null,
+            "position": null,
+            "left": null,
+            "right": null
+          }
+        },
+        "water": 18.914166666667427,
+        "pantry": 33.20000000000075,
+        "mood": 48,
+        "ate": 0.39999999999999997,
+        "care": {
+          "day": 0,
+          "helper": 0,
+          "target": 10,
+          "work": 1.5,
+          "done": true
+        }
+      }
+    ],
+    "day": {
+      "male": [
+        {
+          "id": 0,
+          "age": 20,
+          "sex": "m",
+          "home": "8,8",
+          "phase": "working",
+          "workType": "pottery",
+          "work": "8,9",
+          "workplace": "8,9",
+          "employed": true,
+          "simulation": {
+            "time": 14.250000000000023,
+            "hour": 13.70000000000001,
+            "street": true,
+            "playing": false,
+            "walking": false,
+            "x": 8.5,
+            "y": 9.5,
+            "activity": {
+              "kind": "pottery",
+              "stage": "working",
+              "task": "forming"
+            }
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "male",
+            "clothing": "potter",
+            "position": [
+              49.940000000000005,
+              0,
+              56.400000000000006
+            ],
+            "left": [
+              50.040164947509766,
+              1.075216293334961,
+              56.04042053222656
+            ],
+            "right": [
+              49.8398323059082,
+              1.0752278566360474,
+              56.040435791015625
+            ]
+          }
+        },
+        {
+          "id": 0,
+          "age": 20,
+          "sex": "m",
+          "home": "8,8",
+          "phase": "working",
+          "workType": "pottery",
+          "work": "8,9",
+          "workplace": "8,9",
+          "employed": true,
+          "simulation": {
+            "time": 14.500000000000023,
+            "hour": 13.800000000000011,
+            "street": true,
+            "playing": false,
+            "walking": false,
+            "x": 8.5,
+            "y": 9.5,
+            "activity": {
+              "kind": "pottery",
+              "stage": "working",
+              "task": "forming"
+            }
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "male",
+            "clothing": "potter",
+            "position": [
+              49.940000000000005,
+              0,
+              56.400000000000006
+            ],
+            "left": [
+              50.04019546508789,
+              1.0752323865890503,
+              56.04758071899414
+            ],
+            "right": [
+              49.83986282348633,
+              1.0752100944519043,
+              56.03327178955078
+            ]
+          }
+        },
+        {
+          "id": 0,
+          "age": 20,
+          "sex": "m",
+          "home": "8,8",
+          "phase": "working",
+          "workType": "pottery",
+          "work": "8,9",
+          "workplace": "8,9",
+          "employed": true,
+          "simulation": {
+            "time": 14.750000000000023,
+            "hour": 13.900000000000006,
+            "street": true,
+            "playing": false,
+            "walking": false,
+            "x": 8.5,
+            "y": 9.5,
+            "activity": {
+              "kind": "pottery",
+              "stage": "working",
+              "task": "forming"
+            }
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "male",
+            "clothing": "potter",
+            "position": [
+              49.940000000000005,
+              0,
+              56.400000000000006
+            ],
+            "left": [
+              50.040164947509766,
+              1.075215220451355,
+              56.040283203125
+            ],
+            "right": [
+              49.8398323059082,
+              1.0752274990081787,
+              56.04056930541992
+            ]
+          }
+        },
+        {
+          "id": 0,
+          "age": 20,
+          "sex": "m",
+          "home": "8,8",
+          "phase": "working",
+          "workType": "pottery",
+          "work": "8,9",
+          "workplace": "8,9",
+          "employed": true,
+          "simulation": {
+            "time": 15.000000000000023,
+            "hour": 14.000000000000014,
+            "street": true,
+            "playing": false,
+            "walking": false,
+            "x": 8.5,
+            "y": 9.5,
+            "activity": {
+              "kind": "pottery",
+              "stage": "working",
+              "task": "forming"
+            }
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "male",
+            "clothing": "potter",
+            "position": [
+              49.940000000000005,
+              0,
+              56.400000000000006
+            ],
+            "left": [
+              50.04013442993164,
+              1.0751986503601074,
+              56.03300857543945
+            ],
+            "right": [
+              49.83979797363281,
+              1.0752445459365845,
+              56.04784393310547
+            ]
+          }
+        },
+        {
+          "id": 0,
+          "age": 20,
+          "sex": "m",
+          "home": "8,8",
+          "phase": "working",
+          "workType": "pottery",
+          "work": "8,9",
+          "workplace": "8,9",
+          "employed": true,
+          "simulation": {
+            "time": 15.250000000000023,
+            "hour": 14.100000000000009,
+            "street": true,
+            "playing": false,
+            "walking": false,
+            "x": 8.5,
+            "y": 9.5,
+            "activity": {
+              "kind": "pottery",
+              "stage": "working",
+              "task": "forming"
+            }
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "male",
+            "clothing": "potter",
+            "position": [
+              49.940000000000005,
+              0,
+              56.400000000000006
+            ],
+            "left": [
+              50.04011154174805,
+              1.0751837491989136,
+              56.02698516845703
+            ],
+            "right": [
+              49.83977508544922,
+              1.07525634765625,
+              56.05385971069336
+            ]
+          }
+        },
+        {
+          "id": 0,
+          "age": 20,
+          "sex": "m",
+          "home": "8,8",
+          "phase": "working",
+          "workType": "pottery",
+          "work": "8,9",
+          "workplace": "8,9",
+          "employed": true,
+          "simulation": {
+            "time": 15.500000000000023,
+            "hour": 14.20000000000001,
+            "street": true,
+            "playing": false,
+            "walking": false,
+            "x": 8.5,
+            "y": 9.5,
+            "activity": {
+              "kind": "pottery",
+              "stage": "working",
+              "task": "forming"
+            }
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "male",
+            "clothing": "potter",
+            "position": [
+              49.940000000000005,
+              0,
+              56.400000000000006
+            ],
+            "left": [
+              50.040096282958984,
+              1.075174331665039,
+              56.023231506347656
+            ],
+            "right": [
+              49.83975601196289,
+              1.0752644538879395,
+              56.057613372802734
+            ]
+          }
+        },
+        {
+          "id": 0,
+          "age": 20,
+          "sex": "m",
+          "home": "8,8",
+          "phase": "working",
+          "workType": "pottery",
+          "work": "8,9",
+          "workplace": "8,9",
+          "employed": true,
+          "simulation": {
+            "time": 15.750000000000023,
+            "hour": 14.300000000000011,
+            "street": true,
+            "playing": false,
+            "walking": false,
+            "x": 8.5,
+            "y": 9.5,
+            "activity": {
+              "kind": "pottery",
+              "stage": "working",
+              "task": "forming"
+            }
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "male",
+            "clothing": "potter",
+            "position": [
+              49.940000000000005,
+              0,
+              56.400000000000006
+            ],
+            "left": [
+              50.040096282958984,
+              1.075173258781433,
+              56.02238464355469
+            ],
+            "right": [
+              49.83975601196289,
+              1.0752652883529663,
+              56.0584602355957
+            ]
+          }
+        },
+        {
+          "id": 0,
+          "age": 20,
+          "sex": "m",
+          "home": "8,8",
+          "phase": "working",
+          "workType": "pottery",
+          "work": "8,9",
+          "workplace": "8,9",
+          "employed": true,
+          "simulation": {
+            "time": 16.00000000000002,
+            "hour": 14.400000000000006,
+            "street": true,
+            "playing": false,
+            "walking": false,
+            "x": 8.5,
+            "y": 9.5,
+            "activity": {
+              "kind": "pottery",
+              "stage": "working",
+              "task": "forming"
+            }
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "male",
+            "clothing": "potter",
+            "position": [
+              49.940000000000005,
+              0,
+              56.400000000000006
+            ],
+            "left": [
+              50.040103912353516,
+              1.0751780271530151,
+              56.02458190917969
+            ],
+            "right": [
+              49.83976364135742,
+              1.0752626657485962,
+              56.05626678466797
+            ]
+          }
+        },
+        {
+          "id": 0,
+          "age": 20,
+          "sex": "m",
+          "home": "8,8",
+          "phase": "working",
+          "workType": "pottery",
+          "work": "8,9",
+          "workplace": "8,9",
+          "employed": true,
+          "simulation": {
+            "time": 16.25000000000002,
+            "hour": 14.500000000000007,
+            "street": true,
+            "playing": false,
+            "walking": false,
+            "x": 8.5,
+            "y": 9.5,
+            "activity": {
+              "kind": "pottery",
+              "stage": "working",
+              "task": "forming"
+            }
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "male",
+            "clothing": "potter",
+            "position": [
+              49.940000000000005,
+              0,
+              56.400000000000006
+            ],
+            "left": [
+              50.040122985839844,
+              1.0751898288726807,
+              56.029457092285156
+            ],
+            "right": [
+              49.83978271484375,
+              1.075251579284668,
+              56.051395416259766
+            ]
+          }
+        },
+        {
+          "id": 0,
+          "age": 20,
+          "sex": "m",
+          "home": "8,8",
+          "phase": "working",
+          "workType": "pottery",
+          "work": "8,9",
+          "workplace": "8,9",
+          "employed": true,
+          "simulation": {
+            "time": 16.50000000000002,
+            "hour": 14.600000000000009,
+            "street": true,
+            "playing": false,
+            "walking": false,
+            "x": 8.5,
+            "y": 9.5,
+            "activity": {
+              "kind": "pottery",
+              "stage": "working",
+              "task": "forming"
+            }
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "male",
+            "clothing": "potter",
+            "position": [
+              49.940000000000005,
+              0,
+              56.400000000000006
+            ],
+            "left": [
+              50.0401496887207,
+              1.0752060413360596,
+              56.03618240356445
+            ],
+            "right": [
+              49.839813232421875,
+              1.0752369165420532,
+              56.04467010498047
+            ]
+          }
+        },
+        {
+          "id": 0,
+          "age": 20,
+          "sex": "m",
+          "home": "8,8",
+          "phase": "working",
+          "workType": "pottery",
+          "work": "8,9",
+          "workplace": "8,9",
+          "employed": true,
+          "simulation": {
+            "time": 16.75000000000002,
+            "hour": 14.70000000000001,
+            "street": true,
+            "playing": false,
+            "walking": false,
+            "x": 8.5,
+            "y": 9.5,
+            "activity": {
+              "kind": "pottery",
+              "stage": "working",
+              "task": "forming"
+            }
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "male",
+            "clothing": "potter",
+            "position": [
+              49.940000000000005,
+              0,
+              56.400000000000006
+            ],
+            "left": [
+              50.04018020629883,
+              1.0752222537994385,
+              56.04362106323242
+            ],
+            "right": [
+              49.839847564697266,
+              1.0752185583114624,
+              56.037227630615234
+            ]
+          }
+        },
+        {
+          "id": 0,
+          "age": 20,
+          "sex": "m",
+          "home": "8,8",
+          "phase": "working",
+          "workType": "pottery",
+          "work": "8,9",
+          "workplace": "8,9",
+          "employed": true,
+          "simulation": {
+            "time": 17.00000000000002,
+            "hour": 14.800000000000011,
+            "street": true,
+            "playing": false,
+            "walking": false,
+            "x": 8.5,
+            "y": 9.5,
+            "activity": {
+              "kind": "pottery",
+              "stage": "waiting",
+              "task": "drying"
+            }
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "male",
+            "clothing": "potter",
+            "position": [
+              51,
+              0,
+              57
+            ],
+            "left": [
+              50.942867279052734,
+              0.8952296376228333,
+              57.20506286621094
+            ],
+            "right": [
+              51.08341979980469,
+              0.9454225897789001,
+              56.77503967285156
+            ]
+          }
+        },
+        {
+          "id": 0,
+          "age": 20,
+          "sex": "m",
+          "home": "8,8",
+          "phase": "working",
+          "workType": "pottery",
+          "work": "8,9",
+          "workplace": "8,9",
+          "employed": true,
+          "simulation": {
+            "time": 17.25000000000002,
+            "hour": 14.900000000000006,
+            "street": true,
+            "playing": false,
+            "walking": false,
+            "x": 8.5,
+            "y": 9.5,
+            "activity": {
+              "kind": "pottery",
+              "stage": "waiting",
+              "task": "drying"
+            }
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "male",
+            "clothing": "potter",
+            "position": [
+              51,
+              0,
+              57
+            ],
+            "left": [
+              50.944908142089844,
+              0.9341625571250916,
+              57.296302795410156
+            ],
+            "right": [
+              51.081642150878906,
+              0.9345420002937317,
+              56.71953582763672
+            ]
+          }
+        },
+        {
+          "id": 0,
+          "age": 20,
+          "sex": "m",
+          "home": "8,8",
+          "phase": "working",
+          "workType": "pottery",
+          "work": "8,9",
+          "workplace": "8,9",
+          "employed": true,
+          "simulation": {
+            "time": 17.50000000000002,
+            "hour": 15.000000000000007,
+            "street": true,
+            "playing": false,
+            "walking": false,
+            "x": 8.5,
+            "y": 9.5,
+            "activity": {
+              "kind": "pottery",
+              "stage": "waiting",
+              "task": "drying"
+            }
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "male",
+            "clothing": "potter",
+            "position": [
+              51,
+              0,
+              57
+            ],
+            "left": [
+              50.893192291259766,
+              0.9341625571250916,
+              57.28181076049805
+            ],
+            "right": [
+              51.130130767822266,
+              0.9345420002937317,
+              56.73847198486328
+            ]
+          }
+        },
+        {
+          "id": 0,
+          "age": 20,
+          "sex": "m",
+          "home": "8,8",
+          "phase": "working",
+          "workType": "pottery",
+          "work": "8,9",
+          "workplace": "8,9",
+          "employed": true,
+          "simulation": {
+            "time": 17.75000000000002,
+            "hour": 15.100000000000009,
+            "street": true,
+            "playing": false,
+            "walking": false,
+            "x": 8.5,
+            "y": 9.5,
+            "activity": {
+              "kind": "pottery",
+              "stage": "waiting",
+              "task": "drying"
+            }
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "male",
+            "clothing": "potter",
+            "position": [
+              51,
+              0,
+              57
+            ],
+            "left": [
+              50.874935150146484,
+              0.9341625571250916,
+              57.27419662475586
+            ],
+            "right": [
+              51.14700698852539,
+              0.9345420002937317,
+              56.747581481933594
+            ]
+          }
+        },
+        {
+          "id": 0,
+          "age": 20,
+          "sex": "m",
+          "home": "8,8",
+          "phase": "working",
+          "workType": "pottery",
+          "work": "8,9",
+          "workplace": "8,9",
+          "employed": true,
+          "simulation": {
+            "time": 18.00000000000002,
+            "hour": 15.20000000000001,
+            "street": true,
+            "playing": false,
+            "walking": false,
+            "x": 8.5,
+            "y": 9.5,
+            "activity": {
+              "kind": "pottery",
+              "stage": "waiting",
+              "task": "drying"
+            }
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "male",
+            "clothing": "potter",
+            "position": [
+              51,
+              0,
+              57
+            ],
+            "left": [
+              50.86834716796875,
+              0.9341625571250916,
+              57.271095275878906
+            ],
+            "right": [
+              51.15306091308594,
+              0.9345420002937317,
+              56.75119400024414
+            ]
+          }
+        }
+      ],
+      "female": [
+        {
+          "id": 3,
+          "age": 41,
+          "sex": "f",
+          "home": "8,8",
+          "phase": "working",
+          "workType": "pottery",
+          "work": "8,9",
+          "workplace": null,
+          "employed": true,
+          "simulation": {
+            "time": 14.250000000000023,
+            "hour": 13.70000000000001,
+            "street": true,
+            "playing": false,
+            "walking": false,
+            "x": 8.5,
+            "y": 9.5,
+            "activity": {
+              "kind": "pottery",
+              "stage": "working",
+              "task": "forming"
+            }
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "female",
+            "clothing": "potter",
+            "position": [
+              50.400000000000006,
+              0,
+              55.940000000000005
+            ],
+            "left": [
+              50.03545379638672,
+              1.073495626449585,
+              55.84309005737305
+            ],
+            "right": [
+              50.035518646240234,
+              1.0734944343566895,
+              56.0369873046875
+            ]
+          }
+        },
+        {
+          "id": 3,
+          "age": 41,
+          "sex": "f",
+          "home": "8,8",
+          "phase": "working",
+          "workType": "pottery",
+          "work": "8,9",
+          "workplace": null,
+          "employed": true,
+          "simulation": {
+            "time": 14.500000000000023,
+            "hour": 13.800000000000011,
+            "street": true,
+            "playing": false,
+            "walking": false,
+            "x": 8.5,
+            "y": 9.5,
+            "activity": {
+              "kind": "pottery",
+              "stage": "working",
+              "task": "forming"
+            }
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "female",
+            "clothing": "potter",
+            "position": [
+              50.400000000000006,
+              0,
+              55.940000000000005
+            ],
+            "left": [
+              50.04599380493164,
+              1.0734795331954956,
+              55.84332275390625
+            ],
+            "right": [
+              50.02499771118164,
+              1.0735100507736206,
+              56.0372200012207
+            ]
+          }
+        },
+        {
+          "id": 3,
+          "age": 41,
+          "sex": "f",
+          "home": "8,8",
+          "phase": "working",
+          "workType": "pottery",
+          "work": "8,9",
+          "workplace": null,
+          "employed": true,
+          "simulation": {
+            "time": 14.750000000000023,
+            "hour": 13.900000000000006,
+            "street": true,
+            "playing": false,
+            "walking": false,
+            "x": 8.5,
+            "y": 9.5,
+            "activity": {
+              "kind": "pottery",
+              "stage": "working",
+              "task": "forming"
+            }
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "female",
+            "clothing": "potter",
+            "position": [
+              50.400000000000006,
+              0,
+              55.940000000000005
+            ],
+            "left": [
+              50.040679931640625,
+              1.0734877586364746,
+              55.843204498291016
+            ],
+            "right": [
+              50.03030014038086,
+              1.0735020637512207,
+              56.03710174560547
+            ]
+          }
+        },
+        {
+          "id": 3,
+          "age": 41,
+          "sex": "f",
+          "home": "8,8",
+          "phase": "working",
+          "workType": "pottery",
+          "work": "8,9",
+          "workplace": null,
+          "employed": true,
+          "simulation": {
+            "time": 15.000000000000023,
+            "hour": 14.000000000000014,
+            "street": true,
+            "playing": false,
+            "walking": false,
+            "x": 8.5,
+            "y": 9.5,
+            "activity": {
+              "kind": "pottery",
+              "stage": "working",
+              "task": "forming"
+            }
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "female",
+            "clothing": "potter",
+            "position": [
+              50.400000000000006,
+              0,
+              55.940000000000005
+            ],
+            "left": [
+              50.0347900390625,
+              1.0734970569610596,
+              55.843074798583984
+            ],
+            "right": [
+              50.036190032958984,
+              1.0734937191009521,
+              56.03697204589844
+            ]
+          }
+        },
+        {
+          "id": 3,
+          "age": 41,
+          "sex": "f",
+          "home": "8,8",
+          "phase": "working",
+          "workType": "pottery",
+          "work": "8,9",
+          "workplace": null,
+          "employed": true,
+          "simulation": {
+            "time": 15.250000000000023,
+            "hour": 14.100000000000009,
+            "street": true,
+            "playing": false,
+            "walking": false,
+            "x": 8.5,
+            "y": 9.5,
+            "activity": {
+              "kind": "pottery",
+              "stage": "working",
+              "task": "forming"
+            }
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "female",
+            "clothing": "potter",
+            "position": [
+              50.400000000000006,
+              0,
+              55.940000000000005
+            ],
+            "left": [
+              50.02897262573242,
+              1.0735045671463013,
+              55.84294891357422
+            ],
+            "right": [
+              50.04200744628906,
+              1.073485255241394,
+              56.03684616088867
+            ]
+          }
+        },
+        {
+          "id": 3,
+          "age": 41,
+          "sex": "f",
+          "home": "8,8",
+          "phase": "working",
+          "workType": "pottery",
+          "work": "8,9",
+          "workplace": null,
+          "employed": true,
+          "simulation": {
+            "time": 15.500000000000023,
+            "hour": 14.20000000000001,
+            "street": true,
+            "playing": false,
+            "walking": false,
+            "x": 8.5,
+            "y": 9.5,
+            "activity": {
+              "kind": "pottery",
+              "stage": "working",
+              "task": "forming"
+            }
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "female",
+            "clothing": "potter",
+            "position": [
+              50.400000000000006,
+              0,
+              55.940000000000005
+            ],
+            "left": [
+              50.02388381958008,
+              1.073512315750122,
+              55.84283447265625
+            ],
+            "right": [
+              50.04710006713867,
+              1.0734766721725464,
+              56.03673553466797
+            ]
+          }
+        },
+        {
+          "id": 3,
+          "age": 41,
+          "sex": "f",
+          "home": "8,8",
+          "phase": "toHome",
+          "workType": "clay",
+          "work": "7,7",
+          "workplace": null,
+          "employed": true,
+          "simulation": {
+            "time": 15.750000000000023,
+            "hour": 14.300000000000011,
+            "street": true,
+            "playing": false,
+            "walking": true,
+            "x": 8.5,
+            "y": 9.3425,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "female",
+            "clothing": "clayworker",
+            "position": [
+              50.756058204155636,
+              0,
+              55.62403616067496
+            ],
+            "left": [
+              50.96154022216797,
+              0.8554171919822693,
+              55.776859283447266
+            ],
+            "right": [
+              50.54774856567383,
+              0.9077039957046509,
+              55.42723846435547
+            ]
+          }
+        },
+        {
+          "id": 3,
+          "age": 41,
+          "sex": "f",
+          "home": "8,8",
+          "phase": "toHome",
+          "workType": "clay",
+          "work": "7,7",
+          "workplace": null,
+          "employed": true,
+          "simulation": {
+            "time": 16.00000000000002,
+            "hour": 14.400000000000006,
+            "street": true,
+            "playing": false,
+            "walking": true,
+            "x": 8.5,
+            "y": 9.079999999999998,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "female",
+            "clothing": "clayworker",
+            "position": [
+              50.900820667067045,
+              0,
+              54.30478317848511
+            ],
+            "left": [
+              51.09238052368164,
+              0.8972875475883484,
+              54.26571273803711
+            ],
+            "right": [
+              50.64805221557617,
+              0.8913822770118713,
+              54.31386947631836
+            ]
+          }
+        },
+        {
+          "id": 3,
+          "age": 41,
+          "sex": "f",
+          "home": "8,8",
+          "phase": "toHome",
+          "workType": "clay",
+          "work": "7,7",
+          "workplace": null,
+          "employed": true,
+          "simulation": {
+            "time": 16.25000000000002,
+            "hour": 14.500000000000007,
+            "street": true,
+            "playing": false,
+            "walking": true,
+            "x": 8.5,
+            "y": 8.817499999999997,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "female",
+            "clothing": "clayworker",
+            "position": [
+              50.95967669235615,
+              0,
+              52.83376215649585
+            ],
+            "left": [
+              51.16384506225586,
+              0.939749002456665,
+              52.695167541503906
+            ],
+            "right": [
+              50.718345642089844,
+              0.8765487670898438,
+              52.93868637084961
+            ]
+          }
+        },
+        {
+          "id": 3,
+          "age": 41,
+          "sex": "f",
+          "home": "8,8",
+          "phase": "toHome",
+          "workType": "clay",
+          "work": "7,7",
+          "workplace": null,
+          "employed": true,
+          "simulation": {
+            "time": 16.50000000000002,
+            "hour": 14.600000000000009,
+            "street": true,
+            "playing": false,
+            "walking": true,
+            "x": 8.5,
+            "y": 8.554999999999996,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "female",
+            "clothing": "clayworker",
+            "position": [
+              50.983605766531625,
+              0,
+              51.30103685420585
+            ],
+            "left": [
+              51.20451354980469,
+              0.9689196348190308,
+              51.091773986816406
+            ],
+            "right": [
+              50.77622604370117,
+              0.868752658367157,
+              51.46150207519531
+            ]
+          }
+        },
+        {
+          "id": 3,
+          "age": 41,
+          "sex": "f",
+          "home": "8,8",
+          "phase": "toWork",
+          "workType": "clay",
+          "work": "7,7",
+          "workplace": null,
+          "employed": true,
+          "simulation": {
+            "time": 16.75000000000002,
+            "hour": 14.70000000000001,
+            "street": true,
+            "playing": false,
+            "walking": true,
+            "x": 8.5,
+            "y": 8.3425,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "female",
+            "clothing": "clayworker",
+            "position": [
+              50.993334602077056,
+              0,
+              50.04322446366946
+            ],
+            "left": [
+              51.230369567871094,
+              0.9063456058502197,
+              49.90922927856445
+            ],
+            "right": [
+              50.78731918334961,
+              0.8875205516815186,
+              50.009464263916016
+            ]
+          }
+        },
+        {
+          "id": 3,
+          "age": 41,
+          "sex": "f",
+          "home": "8,8",
+          "phase": "toWork",
+          "workType": "clay",
+          "work": "7,7",
+          "workplace": null,
+          "employed": true,
+          "simulation": {
+            "time": 17.00000000000002,
+            "hour": 14.800000000000011,
+            "street": true,
+            "playing": false,
+            "walking": true,
+            "x": 8.5,
+            "y": 8.079999999999998,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "female",
+            "clothing": "clayworker",
+            "position": [
+              50.99729005143443,
+              0,
+              48.47521242420082
+            ],
+            "left": [
+              51.234439849853516,
+              0.8889142870903015,
+              48.40561294555664
+            ],
+            "right": [
+              50.80746841430664,
+              0.9112830758094788,
+              48.37287902832031
+            ]
+          }
+        },
+        {
+          "id": 3,
+          "age": 41,
+          "sex": "f",
+          "home": "8,8",
+          "phase": "toWork",
+          "workType": "clay",
+          "work": "7,7",
+          "workplace": null,
+          "employed": true,
+          "simulation": {
+            "time": 17.25000000000002,
+            "hour": 14.900000000000006,
+            "street": true,
+            "playing": false,
+            "walking": true,
+            "x": 8.5,
+            "y": 7.817499999999997,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "female",
+            "clothing": "clayworker",
+            "position": [
+              50.99889821713378,
+              0,
+              46.90305351693634
+            ],
+            "left": [
+              51.2359733581543,
+              0.8770681619644165,
+              46.89806365966797
+            ],
+            "right": [
+              50.82567596435547,
+              0.9303504824638367,
+              46.745079040527344
+            ]
+          }
+        },
+        {
+          "id": 3,
+          "age": 41,
+          "sex": "f",
+          "home": "8,8",
+          "phase": "toWork",
+          "workType": "clay",
+          "work": "7,7",
+          "workplace": null,
+          "employed": true,
+          "simulation": {
+            "time": 17.50000000000002,
+            "hour": 15.000000000000007,
+            "street": true,
+            "playing": false,
+            "walking": true,
+            "x": 8.5,
+            "y": 7.554999999999996,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "female",
+            "clothing": "clayworker",
+            "position": [
+              50.99955204851497,
+              0,
+              45.3292086190431
+            ],
+            "left": [
+              51.23296356201172,
+              0.869593620300293,
+              45.38643264770508
+            ],
+            "right": [
+              50.838165283203125,
+              0.9424882531166077,
+              45.12431335449219
+            ]
+          }
+        },
+        {
+          "id": 3,
+          "age": 41,
+          "sex": "f",
+          "home": "8,8",
+          "phase": "toWork",
+          "workType": "clay",
+          "work": "7,7",
+          "workplace": null,
+          "employed": true,
+          "simulation": {
+            "time": 17.75000000000002,
+            "hour": 15.100000000000009,
+            "street": true,
+            "playing": false,
+            "walking": true,
+            "x": 8.292499999999995,
+            "y": 7.488445343933341,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "female",
+            "clothing": "clayworker",
+            "position": [
+              49.75481787651712,
+              0,
+              44.93035031211368
+            ],
+            "left": [
+              50.01301956176758,
+              0.8549392223358154,
+              44.90625
+            ],
+            "right": [
+              49.46588897705078,
+              0.9084793925285339,
+              44.92258834838867
+            ]
+          }
+        },
+        {
+          "id": 3,
+          "age": 41,
+          "sex": "f",
+          "home": "8,8",
+          "phase": "toWork",
+          "workType": "clay",
+          "work": "7,7",
+          "workplace": null,
+          "employed": true,
+          "simulation": {
+            "time": 18.00000000000002,
+            "hour": 15.20000000000001,
+            "street": true,
+            "playing": false,
+            "walking": true,
+            "x": 8.029999999999994,
+            "y": 7.473486336866989,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "female",
+            "clothing": "clayworker",
+            "position": [
+              48.179925954117515,
+              0,
+              44.8407872068096
+            ],
+            "left": [
+              48.36952590942383,
+              0.8604121208190918,
+              44.69267654418945
+            ],
+            "right": [
+              47.945037841796875,
+              0.9059500694274902,
+              44.98722457885742
+            ]
+          }
+        }
+      ],
+      "elder": [
+        {
+          "id": 4,
+          "age": 60,
+          "sex": "m",
+          "home": "8,8",
+          "phase": "working",
+          "workType": "clay",
+          "work": "7,7",
+          "workplace": null,
+          "employed": true,
+          "simulation": {
+            "time": 14.250000000000023,
+            "hour": 13.70000000000001,
+            "street": true,
+            "playing": false,
+            "walking": false,
+            "x": 7.5,
+            "y": 7.5,
+            "activity": {
+              "kind": "gathering",
+              "stage": "waiting",
+              "task": "clay"
+            }
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "male",
+            "clothing": "clayworker",
+            "position": [
+              45,
+              0,
+              45
+            ],
+            "left": [
+              44.69941711425781,
+              0.9082351326942444,
+              45.0705451965332
+            ],
+            "right": [
+              45.291324615478516,
+              0.9086043834686279,
+              45.07056427001953
+            ]
+          }
+        },
+        {
+          "id": 4,
+          "age": 60,
+          "sex": "m",
+          "home": "8,8",
+          "phase": "working",
+          "workType": "clay",
+          "work": "7,7",
+          "workplace": null,
+          "employed": true,
+          "simulation": {
+            "time": 14.500000000000023,
+            "hour": 13.800000000000011,
+            "street": true,
+            "playing": false,
+            "walking": false,
+            "x": 7.5,
+            "y": 7.5,
+            "activity": {
+              "kind": "gathering",
+              "stage": "waiting",
+              "task": "clay"
+            }
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "male",
+            "clothing": "clayworker",
+            "position": [
+              45,
+              0,
+              45
+            ],
+            "left": [
+              44.69941711425781,
+              0.9082351326942444,
+              45.0705451965332
+            ],
+            "right": [
+              45.291324615478516,
+              0.9086043834686279,
+              45.07056427001953
+            ]
+          }
+        },
+        {
+          "id": 4,
+          "age": 60,
+          "sex": "m",
+          "home": "8,8",
+          "phase": "working",
+          "workType": "clay",
+          "work": "7,7",
+          "workplace": null,
+          "employed": true,
+          "simulation": {
+            "time": 14.750000000000023,
+            "hour": 13.900000000000006,
+            "street": true,
+            "playing": false,
+            "walking": false,
+            "x": 7.5,
+            "y": 7.5,
+            "activity": {
+              "kind": "gathering",
+              "stage": "waiting",
+              "task": "clay"
+            }
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "male",
+            "clothing": "clayworker",
+            "position": [
+              45,
+              0,
+              45
+            ],
+            "left": [
+              44.69941711425781,
+              0.9082351326942444,
+              45.0705451965332
+            ],
+            "right": [
+              45.291324615478516,
+              0.9086043834686279,
+              45.07056427001953
+            ]
+          }
+        },
+        {
+          "id": 4,
+          "age": 60,
+          "sex": "m",
+          "home": "8,8",
+          "phase": "working",
+          "workType": "clay",
+          "work": "7,7",
+          "workplace": null,
+          "employed": true,
+          "simulation": {
+            "time": 15.000000000000023,
+            "hour": 14.000000000000014,
+            "street": true,
+            "playing": false,
+            "walking": false,
+            "x": 7.5,
+            "y": 7.5,
+            "activity": {
+              "kind": "gathering",
+              "stage": "working",
+              "task": "clay"
+            }
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "male",
+            "clothing": "clayworker",
+            "position": [
+              43.94,
+              -0.014438403909728947,
+              44.42
+            ],
+            "left": [
+              44.04255676269531,
+              0.9930908679962158,
+              44.14689254760742
+            ],
+            "right": [
+              43.839603424072266,
+              1.0596600770950317,
+              44.250709533691406
+            ]
+          }
+        },
+        {
+          "id": 4,
+          "age": 60,
+          "sex": "m",
+          "home": "8,8",
+          "phase": "working",
+          "workType": "clay",
+          "work": "7,7",
+          "workplace": null,
+          "employed": true,
+          "simulation": {
+            "time": 15.250000000000023,
+            "hour": 14.100000000000009,
+            "street": true,
+            "playing": false,
+            "walking": false,
+            "x": 7.5,
+            "y": 7.5,
+            "activity": {
+              "kind": "gathering",
+              "stage": "working",
+              "task": "clay"
+            }
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "male",
+            "clothing": "clayworker",
+            "position": [
+              43.94,
+              -0.014438403909728947,
+              44.42
+            ],
+            "left": [
+              44.03969192504883,
+              0.9943384528160095,
+              44.142154693603516
+            ],
+            "right": [
+              43.84071731567383,
+              0.9938886165618896,
+              44.135841369628906
+            ]
+          }
+        },
+        {
+          "id": 4,
+          "age": 60,
+          "sex": "m",
+          "home": "8,8",
+          "phase": "working",
+          "workType": "clay",
+          "work": "7,7",
+          "workplace": null,
+          "employed": true,
+          "simulation": {
+            "time": 15.500000000000023,
+            "hour": 14.20000000000001,
+            "street": true,
+            "playing": false,
+            "walking": false,
+            "x": 7.5,
+            "y": 7.5,
+            "activity": {
+              "kind": "gathering",
+              "stage": "working",
+              "task": "clay"
+            }
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "male",
+            "clothing": "clayworker",
+            "position": [
+              43.94,
+              -0.014438403909728947,
+              44.42
+            ],
+            "left": [
+              44.03851318359375,
+              0.9933900833129883,
+              44.13551712036133
+            ],
+            "right": [
+              43.84148025512695,
+              0.9937382936477661,
+              44.1411018371582
+            ]
+          }
+        },
+        {
+          "id": 4,
+          "age": 60,
+          "sex": "m",
+          "home": "8,8",
+          "phase": "toHome",
+          "workType": "shrine",
+          "work": "9,8",
+          "workplace": null,
+          "employed": true,
+          "simulation": {
+            "time": 15.750000000000023,
+            "hour": 14.300000000000011,
+            "street": true,
+            "playing": false,
+            "walking": true,
+            "x": 7.657500000000001,
+            "y": 7.492476443021961,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "male",
+            "clothing": "priest",
+            "position": [
+              45.51403616067497,
+              0,
+              44.71904825548222
+            ],
+            "left": [
+              45.56245803833008,
+              0.8771933913230896,
+              44.90562057495117
+            ],
+            "right": [
+              45.57894515991211,
+              0.9123902916908264,
+              44.4498291015625
+            ]
+          }
+        },
+        {
+          "id": 4,
+          "age": 60,
+          "sex": "m",
+          "home": "8,8",
+          "phase": "toHome",
+          "workType": "shrine",
+          "work": "9,8",
+          "workplace": null,
+          "employed": true,
+          "simulation": {
+            "time": 16.00000000000002,
+            "hour": 14.400000000000006,
+            "street": true,
+            "playing": false,
+            "walking": true,
+            "x": 7.920000000000002,
+            "y": 7.4746442274737515,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "male",
+            "clothing": "priest",
+            "position": [
+              47.34478317848513,
+              0,
+              44.75199200967399
+            ],
+            "left": [
+              47.30875778198242,
+              0.8735811114311218,
+              44.959964752197266
+            ],
+            "right": [
+              47.573204040527344,
+              0.9326591491699219,
+              44.55821228027344
+            ]
+          }
+        },
+        {
+          "id": 4,
+          "age": 60,
+          "sex": "m",
+          "home": "8,8",
+          "phase": "toHome",
+          "workType": "shrine",
+          "work": "9,8",
+          "workplace": null,
+          "employed": true,
+          "simulation": {
+            "time": 16.25000000000002,
+            "hour": 14.500000000000007,
+            "street": true,
+            "playing": false,
+            "walking": true,
+            "x": 8.182500000000003,
+            "y": 7.479936114086009,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "male",
+            "clothing": "priest",
+            "position": [
+              49.02376215649588,
+              0,
+              44.840637487127
+            ],
+            "left": [
+              49.03641891479492,
+              0.8756499290466309,
+              45.042694091796875
+            ],
+            "right": [
+              49.242225646972656,
+              0.9380806684494019,
+              44.6905632019043
+            ]
+          }
+        },
+        {
+          "id": 4,
+          "age": 60,
+          "sex": "m",
+          "home": "8,8",
+          "phase": "toHome",
+          "workType": "shrine",
+          "work": "9,8",
+          "workplace": null,
+          "employed": true,
+          "simulation": {
+            "time": 16.50000000000002,
+            "hour": 14.600000000000009,
+            "street": true,
+            "playing": false,
+            "walking": true,
+            "x": 8.445000000000004,
+            "y": 7.498845719722941,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "male",
+            "clothing": "priest",
+            "position": [
+              50.64103685420589,
+              1.1689959783301878e-08,
+              44.97722655931822
+            ],
+            "left": [
+              50.69413757324219,
+              0.882289469242096,
+              45.180110931396484
+            ],
+            "right": [
+              50.833641052246094,
+              0.9313569068908691,
+              44.8319206237793
+            ]
+          }
+        },
+        {
+          "id": 4,
+          "age": 60,
+          "sex": "m",
+          "home": "8,8",
+          "phase": "toHome",
+          "workType": "shrine",
+          "work": "9,8",
+          "workplace": null,
+          "employed": true,
+          "simulation": {
+            "time": 16.75000000000002,
+            "hour": 14.70000000000001,
+            "street": true,
+            "playing": false,
+            "walking": true,
+            "x": 8.5,
+            "y": 7.707500000000005,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "male",
+            "clothing": "priest",
+            "position": [
+              50.98822446366946,
+              0,
+              46.23855678200785
+            ],
+            "left": [
+              50.78237533569336,
+              0.8759586811065674,
+              46.299800872802734
+            ],
+            "right": [
+              51.2768440246582,
+              0.9290328025817871,
+              46.33137130737305
+            ]
+          }
+        },
+        {
+          "id": 4,
+          "age": 60,
+          "sex": "m",
+          "home": "8,8",
+          "phase": "toHome",
+          "workType": "shrine",
+          "work": "9,8",
+          "workplace": null,
+          "employed": true,
+          "simulation": {
+            "time": 17.00000000000002,
+            "hour": 14.800000000000011,
+            "street": true,
+            "playing": false,
+            "walking": true,
+            "x": 8.5,
+            "y": 7.970000000000006,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "male",
+            "clothing": "priest",
+            "position": [
+              50.99521242420083,
+              0,
+              47.81738038305332
+            ],
+            "left": [
+              50.78449249267578,
+              0.8738909363746643,
+              47.79364776611328
+            ],
+            "right": [
+              51.20833206176758,
+              0.9315168857574463,
+              48.02954864501953
+            ]
+          }
+        },
+        {
+          "id": 4,
+          "age": 60,
+          "sex": "m",
+          "home": "8,8",
+          "phase": "toHome",
+          "workType": "shrine",
+          "work": "9,8",
+          "workplace": null,
+          "employed": true,
+          "simulation": {
+            "time": 17.25000000000002,
+            "hour": 14.900000000000006,
+            "street": true,
+            "playing": false,
+            "walking": true,
+            "x": 8.5,
+            "y": 8.232500000000007,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "male",
+            "clothing": "priest",
+            "position": [
+              50.99805351693635,
+              0,
+              49.39393494322936
+            ],
+            "left": [
+              50.79380416870117,
+              0.8730554580688477,
+              49.348106384277344
+            ],
+            "right": [
+              51.168128967285156,
+              0.9347725510597229,
+              49.637939453125
+            ]
+          }
+        },
+        {
+          "id": 4,
+          "age": 60,
+          "sex": "m",
+          "home": "8,8",
+          "phase": "toHome",
+          "workType": "shrine",
+          "work": "9,8",
+          "workplace": null,
+          "employed": true,
+          "simulation": {
+            "time": 17.50000000000002,
+            "hour": 15.000000000000007,
+            "street": true,
+            "playing": false,
+            "walking": true,
+            "x": 8.5,
+            "y": 8.495000000000008,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "male",
+            "clothing": "priest",
+            "position": [
+              51.24970603796673,
+              0,
+              50.969566980231185
+            ],
+            "left": [
+              51.04479217529297,
+              0.8729672431945801,
+              50.95698165893555
+            ],
+            "right": [
+              51.42347717285156,
+              0.9379529356956482,
+              51.19740295410156
+            ]
+          }
+        },
+        {
+          "id": 4,
+          "age": 60,
+          "sex": "m",
+          "home": "8,8",
+          "phase": "toWork",
+          "workType": "shrine",
+          "work": "9,8",
+          "workplace": null,
+          "employed": true,
+          "simulation": {
+            "time": 17.75000000000002,
+            "hour": 15.100000000000009,
+            "street": true,
+            "playing": false,
+            "walking": true,
+            "x": 8.6575,
+            "y": 8.5,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "male",
+            "clothing": "priest",
+            "position": [
+              52.04652289889131,
+              0,
+              50.999823947299916
+            ],
+            "left": [
+              52.15458679199219,
+              0.947848379611969,
+              51.24711608886719
+            ],
+            "right": [
+              52.091957092285156,
+              0.8906407356262207,
+              50.77769088745117
+            ]
+          }
+        },
+        {
+          "id": 4,
+          "age": 60,
+          "sex": "m",
+          "home": "8,8",
+          "phase": "toWork",
+          "workType": "shrine",
+          "work": "9,8",
+          "workplace": null,
+          "employed": true,
+          "simulation": {
+            "time": 18.00000000000002,
+            "hour": 15.20000000000001,
+            "street": true,
+            "playing": false,
+            "walking": true,
+            "x": 8.920000000000002,
+            "y": 8.5,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "male",
+            "clothing": "priest",
+            "position": [
+              53.56127613045813,
+              0,
+              50.99992842231363
+            ],
+            "left": [
+              53.77090835571289,
+              0.9576374292373657,
+              51.200416564941406
+            ],
+            "right": [
+              53.5089111328125,
+              0.888871431350708,
+              50.779911041259766
+            ]
+          }
+        }
+      ],
+      "child": [
+        {
+          "id": 10,
+          "age": 6,
+          "sex": "m",
+          "home": "9,9",
+          "phase": "home",
+          "workType": null,
+          "work": null,
+          "workplace": null,
+          "employed": false,
+          "simulation": {
+            "time": 14.250000000000023,
+            "hour": 13.70000000000001,
+            "street": true,
+            "playing": true,
+            "walking": false,
+            "x": 8.9,
+            "y": 9.5,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "child",
+            "clothing": null,
+            "position": [
+              53.400000000000006,
+              0,
+              57
+            ],
+            "left": [
+              53.34619903564453,
+              0.6569481492042542,
+              57.22697067260742
+            ],
+            "right": [
+              53.49153137207031,
+              0.6528819799423218,
+              57.22520065307617
+            ]
+          }
+        },
+        {
+          "id": 10,
+          "age": 6,
+          "sex": "m",
+          "home": "9,9",
+          "phase": "home",
+          "workType": null,
+          "work": null,
+          "workplace": null,
+          "employed": false,
+          "simulation": {
+            "time": 14.500000000000023,
+            "hour": 13.800000000000011,
+            "street": true,
+            "playing": true,
+            "walking": true,
+            "x": 8.930000000000021,
+            "y": 9.5,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "child",
+            "clothing": null,
+            "position": [
+              53.580000000000126,
+              0,
+              57
+            ],
+            "left": [
+              53.63803482055664,
+              0.6219609975814819,
+              57.13182067871094
+            ],
+            "right": [
+              53.54998779296875,
+              0.5708515048027039,
+              56.847713470458984
+            ]
+          }
+        },
+        {
+          "id": 10,
+          "age": 6,
+          "sex": "m",
+          "home": "9,9",
+          "phase": "home",
+          "workType": null,
+          "work": null,
+          "workplace": null,
+          "employed": false,
+          "simulation": {
+            "time": 14.750000000000023,
+            "hour": 13.900000000000006,
+            "street": true,
+            "playing": true,
+            "walking": true,
+            "x": 9.095000000000022,
+            "y": 9.5,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "child",
+            "clothing": null,
+            "position": [
+              54.570000000000135,
+              0,
+              57
+            ],
+            "left": [
+              54.6594352722168,
+              0.6143808364868164,
+              57.09971237182617
+            ],
+            "right": [
+              54.49658203125,
+              0.5696834921836853,
+              56.866004943847656
+            ]
+          }
+        },
+        {
+          "id": 10,
+          "age": 6,
+          "sex": "m",
+          "home": "9,9",
+          "phase": "home",
+          "workType": null,
+          "work": null,
+          "workplace": null,
+          "employed": false,
+          "simulation": {
+            "time": 15.000000000000023,
+            "hour": 14.000000000000014,
+            "street": true,
+            "playing": true,
+            "walking": true,
+            "x": 9.260000000000021,
+            "y": 9.5,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "child",
+            "clothing": null,
+            "position": [
+              55.56000000000013,
+              0,
+              57
+            ],
+            "left": [
+              55.6489143371582,
+              0.607001543045044,
+              57.08643341064453
+            ],
+            "right": [
+              55.4787712097168,
+              0.5696573853492737,
+              56.87394332885742
+            ]
+          }
+        },
+        {
+          "id": 10,
+          "age": 6,
+          "sex": "m",
+          "home": "9,9",
+          "phase": "home",
+          "workType": null,
+          "work": null,
+          "workplace": null,
+          "employed": false,
+          "simulation": {
+            "time": 15.250000000000023,
+            "hour": 14.100000000000009,
+            "street": true,
+            "playing": true,
+            "walking": true,
+            "x": 9.425000000000022,
+            "y": 9.5,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "child",
+            "clothing": null,
+            "position": [
+              56.55000000000013,
+              0,
+              57
+            ],
+            "left": [
+              56.629600524902344,
+              0.6000015735626221,
+              57.08256912231445
+            ],
+            "right": [
+              56.47256088256836,
+              0.5700320601463318,
+              56.87562942504883
+            ]
+          }
+        },
+        {
+          "id": 10,
+          "age": 6,
+          "sex": "m",
+          "home": "9,9",
+          "phase": "home",
+          "workType": null,
+          "work": null,
+          "workplace": null,
+          "employed": false,
+          "simulation": {
+            "time": 15.500000000000023,
+            "hour": 14.20000000000001,
+            "street": true,
+            "playing": true,
+            "walking": false,
+            "x": 9.5,
+            "y": 9.5,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "child",
+            "clothing": null,
+            "position": [
+              57,
+              0,
+              57
+            ],
+            "left": [
+              57.21490478515625,
+              0.6523288488388062,
+              57.05950164794922
+            ],
+            "right": [
+              57.21403121948242,
+              0.6546475887298584,
+              56.90896987915039
+            ]
+          }
+        },
+        {
+          "id": 10,
+          "age": 6,
+          "sex": "m",
+          "home": "9,9",
+          "phase": "home",
+          "workType": null,
+          "work": null,
+          "workplace": null,
+          "employed": false,
+          "simulation": {
+            "time": 15.750000000000023,
+            "hour": 14.300000000000011,
+            "street": true,
+            "playing": true,
+            "walking": false,
+            "x": 9.5,
+            "y": 9.5,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "child",
+            "clothing": null,
+            "position": [
+              57,
+              0,
+              57
+            ],
+            "left": [
+              57.20288848876953,
+              0.6595666408538818,
+              57.05880355834961
+            ],
+            "right": [
+              57.20155715942383,
+              0.6566655039787292,
+              56.90916442871094
+            ]
+          }
+        },
+        {
+          "id": 10,
+          "age": 6,
+          "sex": "m",
+          "home": "9,9",
+          "phase": "home",
+          "workType": null,
+          "work": null,
+          "workplace": null,
+          "employed": false,
+          "simulation": {
+            "time": 16.00000000000002,
+            "hour": 14.400000000000006,
+            "street": true,
+            "playing": true,
+            "walking": false,
+            "x": 9.5,
+            "y": 9.5,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "child",
+            "clothing": null,
+            "position": [
+              57,
+              0,
+              57
+            ],
+            "left": [
+              57.20612335205078,
+              0.6588144302368164,
+              57.057708740234375
+            ],
+            "right": [
+              57.20439910888672,
+              0.6556803584098816,
+              56.908626556396484
+            ]
+          }
+        },
+        {
+          "id": 10,
+          "age": 6,
+          "sex": "m",
+          "home": "9,9",
+          "phase": "home",
+          "workType": null,
+          "work": null,
+          "workplace": null,
+          "employed": false,
+          "simulation": {
+            "time": 16.25000000000002,
+            "hour": 14.500000000000007,
+            "street": true,
+            "playing": true,
+            "walking": false,
+            "x": 9.5,
+            "y": 9.5,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "child",
+            "clothing": null,
+            "position": [
+              57,
+              0,
+              57
+            ],
+            "left": [
+              57.21152114868164,
+              0.6577718257904053,
+              57.05656433105469
+            ],
+            "right": [
+              57.20967483520508,
+              0.6543517112731934,
+              56.908443450927734
+            ]
+          }
+        },
+        {
+          "id": 10,
+          "age": 6,
+          "sex": "m",
+          "home": "9,9",
+          "phase": "home",
+          "workType": null,
+          "work": null,
+          "workplace": null,
+          "employed": false,
+          "simulation": {
+            "time": 16.50000000000002,
+            "hour": 14.600000000000009,
+            "street": true,
+            "playing": true,
+            "walking": false,
+            "x": 9.5,
+            "y": 9.5,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "child",
+            "clothing": null,
+            "position": [
+              57,
+              0,
+              57
+            ],
+            "left": [
+              57.218719482421875,
+              0.6569752097129822,
+              57.05525207519531
+            ],
+            "right": [
+              57.216880798339844,
+              0.6532375812530518,
+              56.908424377441406
+            ]
+          }
+        },
+        {
+          "id": 10,
+          "age": 6,
+          "sex": "m",
+          "home": "9,9",
+          "phase": "home",
+          "workType": null,
+          "work": null,
+          "workplace": null,
+          "employed": false,
+          "simulation": {
+            "time": 16.75000000000002,
+            "hour": 14.70000000000001,
+            "street": true,
+            "playing": true,
+            "walking": true,
+            "x": 9.55700000000002,
+            "y": 9.5,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "child",
+            "clothing": null,
+            "position": [
+              57.34200000000012,
+              0.0004534178004189386,
+              57
+            ],
+            "left": [
+              57.5102424621582,
+              0.6432375311851501,
+              57.091461181640625
+            ],
+            "right": [
+              57.21019744873047,
+              0.5774726271629333,
+              56.910621643066406
+            ]
+          }
+        },
+        {
+          "id": 10,
+          "age": 6,
+          "sex": "m",
+          "home": "9,9",
+          "phase": "home",
+          "workType": null,
+          "work": null,
+          "workplace": null,
+          "employed": false,
+          "simulation": {
+            "time": 17.00000000000002,
+            "hour": 14.800000000000011,
+            "street": true,
+            "playing": true,
+            "walking": true,
+            "x": 9.722000000000019,
+            "y": 9.5,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "child",
+            "clothing": null,
+            "position": [
+              58.332000000000114,
+              0.005142065160702374,
+              57
+            ],
+            "left": [
+              58.499786376953125,
+              0.6512629985809326,
+              57.0899543762207
+            ],
+            "right": [
+              58.1954231262207,
+              0.5850481986999512,
+              56.91134262084961
+            ]
+          }
+        },
+        {
+          "id": 10,
+          "age": 6,
+          "sex": "m",
+          "home": "9,9",
+          "phase": "home",
+          "workType": null,
+          "work": null,
+          "workplace": null,
+          "employed": false,
+          "simulation": {
+            "time": 17.25000000000002,
+            "hour": 14.900000000000006,
+            "street": true,
+            "playing": true,
+            "walking": true,
+            "x": 9.88700000000002,
+            "y": 9.5,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "child",
+            "clothing": null,
+            "position": [
+              59.322000000000116,
+              0.011238411787388354,
+              57
+            ],
+            "left": [
+              59.488319396972656,
+              0.6590917110443115,
+              57.088661193847656
+            ],
+            "right": [
+              59.18513870239258,
+              0.5922947525978088,
+              56.91061019897461
+            ]
+          }
+        },
+        {
+          "id": 10,
+          "age": 6,
+          "sex": "m",
+          "home": "9,9",
+          "phase": "home",
+          "workType": null,
+          "work": null,
+          "workplace": null,
+          "employed": false,
+          "simulation": {
+            "time": 17.50000000000002,
+            "hour": 15.000000000000007,
+            "street": true,
+            "playing": true,
+            "walking": true,
+            "x": 10.05200000000002,
+            "y": 9.5,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "child",
+            "clothing": null,
+            "position": [
+              60.31200000000011,
+              0.015627185288181366,
+              57
+            ],
+            "left": [
+              60.4769401550293,
+              0.6652710437774658,
+              57.08733367919922
+            ],
+            "right": [
+              60.17483139038086,
+              0.5978619456291199,
+              56.90980529785156
+            ]
+          }
+        },
+        {
+          "id": 10,
+          "age": 6,
+          "sex": "m",
+          "home": "9,9",
+          "phase": "home",
+          "workType": null,
+          "work": null,
+          "workplace": null,
+          "employed": false,
+          "simulation": {
+            "time": 17.75000000000002,
+            "hour": 15.100000000000009,
+            "street": true,
+            "playing": true,
+            "walking": false,
+            "x": 10.1,
+            "y": 9.5,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "child",
+            "clothing": null,
+            "position": [
+              60.599999999999994,
+              0.01632930087413646,
+              57
+            ],
+            "left": [
+              60.83381271362305,
+              0.704444408416748,
+              57.05140686035156
+            ],
+            "right": [
+              60.83476638793945,
+              0.7004477977752686,
+              56.905982971191406
+            ]
+          }
+        },
+        {
+          "id": 10,
+          "age": 6,
+          "sex": "m",
+          "home": "9,9",
+          "phase": "home",
+          "workType": null,
+          "work": null,
+          "workplace": null,
+          "employed": false,
+          "simulation": {
+            "time": 18.00000000000002,
+            "hour": 15.20000000000001,
+            "street": true,
+            "playing": true,
+            "walking": false,
+            "x": 10.1,
+            "y": 9.5,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "child",
+            "clothing": null,
+            "position": [
+              60.599999999999994,
+              0.01632930087413646,
+              57
+            ],
+            "left": [
+              60.83216857910156,
+              0.7062748074531555,
+              57.05292892456055
+            ],
+            "right": [
+              60.830501556396484,
+              0.702276885509491,
+              56.90882110595703
+            ]
+          }
+        }
+      ],
+      "adolescent": [
+        {
+          "id": 11,
+          "age": 12,
+          "sex": "f",
+          "home": "9,9",
+          "phase": "home",
+          "workType": null,
+          "work": null,
+          "workplace": null,
+          "employed": false,
+          "simulation": {
+            "time": 14.250000000000023,
+            "hour": 13.70000000000001,
+            "street": true,
+            "playing": true,
+            "walking": false,
+            "x": 10.1,
+            "y": 9.5,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "adolescent",
+            "clothing": null,
+            "position": [
+              60.599999999999994,
+              0.01632930087413646,
+              57
+            ],
+            "left": [
+              60.526145935058594,
+              0.8746323585510254,
+              57.25673294067383
+            ],
+            "right": [
+              60.716556549072266,
+              0.869944155216217,
+              57.25492858886719
+            ]
+          }
+        },
+        {
+          "id": 11,
+          "age": 12,
+          "sex": "f",
+          "home": "9,9",
+          "phase": "home",
+          "workType": null,
+          "work": null,
+          "workplace": null,
+          "employed": false,
+          "simulation": {
+            "time": 14.500000000000023,
+            "hour": 13.800000000000011,
+            "street": true,
+            "playing": true,
+            "walking": false,
+            "x": 10.1,
+            "y": 9.5,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "adolescent",
+            "clothing": null,
+            "position": [
+              60.599999999999994,
+              0.01632930087413646,
+              57
+            ],
+            "left": [
+              60.52545928955078,
+              0.8748184442520142,
+              57.25406265258789
+            ],
+            "right": [
+              60.716453552246094,
+              0.8705673217773438,
+              57.252288818359375
+            ]
+          }
+        },
+        {
+          "id": 11,
+          "age": 12,
+          "sex": "f",
+          "home": "9,9",
+          "phase": "home",
+          "workType": null,
+          "work": null,
+          "workplace": null,
+          "employed": false,
+          "simulation": {
+            "time": 14.750000000000023,
+            "hour": 13.900000000000006,
+            "street": true,
+            "playing": true,
+            "walking": false,
+            "x": 10.1,
+            "y": 9.5,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "adolescent",
+            "clothing": null,
+            "position": [
+              60.599999999999994,
+              0.01632930087413646,
+              57
+            ],
+            "left": [
+              60.52354049682617,
+              0.8769229054450989,
+              57.24415969848633
+            ],
+            "right": [
+              60.71674346923828,
+              0.8730925917625427,
+              57.2422981262207
+            ]
+          }
+        },
+        {
+          "id": 11,
+          "age": 12,
+          "sex": "f",
+          "home": "9,9",
+          "phase": "home",
+          "workType": null,
+          "work": null,
+          "workplace": null,
+          "employed": false,
+          "simulation": {
+            "time": 15.000000000000023,
+            "hour": 14.000000000000014,
+            "street": true,
+            "playing": true,
+            "walking": false,
+            "x": 10.1,
+            "y": 9.5,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "adolescent",
+            "clothing": null,
+            "position": [
+              60.599999999999994,
+              0.01632930087413646,
+              57
+            ],
+            "left": [
+              60.52201461791992,
+              0.8795382380485535,
+              57.23619842529297
+            ],
+            "right": [
+              60.71699905395508,
+              0.8760043978691101,
+              57.23427963256836
+            ]
+          }
+        },
+        {
+          "id": 11,
+          "age": 12,
+          "sex": "f",
+          "home": "9,9",
+          "phase": "home",
+          "workType": null,
+          "work": null,
+          "workplace": null,
+          "employed": false,
+          "simulation": {
+            "time": 15.250000000000023,
+            "hour": 14.100000000000009,
+            "street": true,
+            "playing": true,
+            "walking": true,
+            "x": 10.1,
+            "y": 9.591200000000024,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "adolescent",
+            "clothing": null,
+            "position": [
+              60.599999999999994,
+              0.015471117354241145,
+              57.547200000000146
+            ],
+            "left": [
+              60.45686721801758,
+              0.764028012752533,
+              57.500431060791016
+            ],
+            "right": [
+              60.76915740966797,
+              0.7903991937637329,
+              57.6279296875
+            ]
+          }
+        },
+        {
+          "id": 11,
+          "age": 12,
+          "sex": "f",
+          "home": "9,9",
+          "phase": "home",
+          "workType": null,
+          "work": null,
+          "workplace": null,
+          "employed": false,
+          "simulation": {
+            "time": 15.500000000000023,
+            "hour": 14.20000000000001,
+            "street": true,
+            "playing": true,
+            "walking": true,
+            "x": 10.1,
+            "y": 9.771200000000025,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "adolescent",
+            "clothing": null,
+            "position": [
+              60.599999999999994,
+              0.015199413038848805,
+              58.62720000000015
+            ],
+            "left": [
+              60.47275161743164,
+              0.8051274418830872,
+              58.717430114746094
+            ],
+            "right": [
+              60.78059387207031,
+              0.7726446986198425,
+              58.54751205444336
+            ]
+          }
+        },
+        {
+          "id": 11,
+          "age": 12,
+          "sex": "f",
+          "home": "9,9",
+          "phase": "home",
+          "workType": null,
+          "work": null,
+          "workplace": null,
+          "employed": false,
+          "simulation": {
+            "time": 15.750000000000023,
+            "hour": 14.300000000000011,
+            "street": true,
+            "playing": true,
+            "walking": true,
+            "x": 10.1,
+            "y": 9.951200000000025,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "adolescent",
+            "clothing": null,
+            "position": [
+              60.599999999999994,
+              0.015864854314401544,
+              59.70720000000015
+            ],
+            "left": [
+              60.46782302856445,
+              0.8730794787406921,
+              59.915401458740234
+            ],
+            "right": [
+              60.74082565307617,
+              0.7802011966705322,
+              59.54126739501953
+            ]
+          }
+        },
+        {
+          "id": 11,
+          "age": 12,
+          "sex": "f",
+          "home": "9,9",
+          "phase": "home",
+          "workType": null,
+          "work": null,
+          "workplace": null,
+          "employed": false,
+          "simulation": {
+            "time": 16.00000000000002,
+            "hour": 14.400000000000006,
+            "street": true,
+            "playing": true,
+            "walking": false,
+            "x": 10.1,
+            "y": 10.1,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "adolescent",
+            "clothing": null,
+            "position": [
+              60.599999999999994,
+              0.016392063850424018,
+              60.599999999999994
+            ],
+            "left": [
+              60.52412414550781,
+              0.8666933178901672,
+              60.85652160644531
+            ],
+            "right": [
+              60.71930694580078,
+              0.8731145262718201,
+              60.84584045410156
+            ]
+          }
+        },
+        {
+          "id": 11,
+          "age": 12,
+          "sex": "f",
+          "home": "9,9",
+          "phase": "home",
+          "workType": null,
+          "work": null,
+          "workplace": null,
+          "employed": false,
+          "simulation": {
+            "time": 16.25000000000002,
+            "hour": 14.500000000000007,
+            "street": true,
+            "playing": true,
+            "walking": false,
+            "x": 10.1,
+            "y": 10.1,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "adolescent",
+            "clothing": null,
+            "position": [
+              60.599999999999994,
+              0.016392063850424018,
+              60.599999999999994
+            ],
+            "left": [
+              60.52340316772461,
+              0.8776459097862244,
+              60.84248733520508
+            ],
+            "right": [
+              60.71699905395508,
+              0.8735584616661072,
+              60.84052276611328
+            ]
+          }
+        },
+        {
+          "id": 11,
+          "age": 12,
+          "sex": "f",
+          "home": "9,9",
+          "phase": "home",
+          "workType": null,
+          "work": null,
+          "workplace": null,
+          "employed": false,
+          "simulation": {
+            "time": 16.50000000000002,
+            "hour": 14.600000000000009,
+            "street": true,
+            "playing": true,
+            "walking": false,
+            "x": 10.1,
+            "y": 10.1,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "adolescent",
+            "clothing": null,
+            "position": [
+              60.599999999999994,
+              0.016392063850424018,
+              60.599999999999994
+            ],
+            "left": [
+              60.52525329589844,
+              0.8753775954246521,
+              60.852088928222656
+            ],
+            "right": [
+              60.716705322265625,
+              0.8708836436271667,
+              60.850223541259766
+            ]
+          }
+        },
+        {
+          "id": 11,
+          "age": 12,
+          "sex": "f",
+          "home": "9,9",
+          "phase": "home",
+          "workType": null,
+          "work": null,
+          "workplace": null,
+          "employed": false,
+          "simulation": {
+            "time": 16.75000000000002,
+            "hour": 14.70000000000001,
+            "street": true,
+            "playing": true,
+            "walking": false,
+            "x": 10.1,
+            "y": 10.1,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "adolescent",
+            "clothing": null,
+            "position": [
+              60.599999999999994,
+              0.016392063850424018,
+              60.599999999999994
+            ],
+            "left": [
+              60.526371002197266,
+              0.8828194737434387,
+              60.85791015625
+            ],
+            "right": [
+              60.71649932861328,
+              0.8780941367149353,
+              60.85612869262695
+            ]
+          }
+        },
+        {
+          "id": 11,
+          "age": 12,
+          "sex": "f",
+          "home": "9,9",
+          "phase": "home",
+          "workType": null,
+          "work": null,
+          "workplace": null,
+          "employed": false,
+          "simulation": {
+            "time": 17.00000000000002,
+            "hour": 14.800000000000011,
+            "street": true,
+            "playing": true,
+            "walking": false,
+            "x": 10.1,
+            "y": 10.1,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "adolescent",
+            "clothing": null,
+            "position": [
+              60.599999999999994,
+              0.016392063850424018,
+              60.599999999999994
+            ],
+            "left": [
+              60.52674865722656,
+              0.8963800668716431,
+              60.85988998413086
+            ],
+            "right": [
+              60.71639633178711,
+              0.8916060328483582,
+              60.85814666748047
+            ]
+          }
+        },
+        {
+          "id": 11,
+          "age": 12,
+          "sex": "f",
+          "home": "9,9",
+          "phase": "home",
+          "workType": null,
+          "work": null,
+          "workplace": null,
+          "employed": false,
+          "simulation": {
+            "time": 17.25000000000002,
+            "hour": 14.900000000000006,
+            "street": true,
+            "playing": true,
+            "walking": false,
+            "x": 10.1,
+            "y": 10.1,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "adolescent",
+            "clothing": null,
+            "position": [
+              60.599999999999994,
+              0.016392063850424018,
+              60.599999999999994
+            ],
+            "left": [
+              60.52705383300781,
+              0.9071694612503052,
+              60.86146926879883
+            ],
+            "right": [
+              60.71630096435547,
+              0.9023672938346863,
+              60.85975646972656
+            ]
+          }
+        },
+        {
+          "id": 11,
+          "age": 12,
+          "sex": "f",
+          "home": "9,9",
+          "phase": "home",
+          "workType": null,
+          "work": null,
+          "workplace": null,
+          "employed": false,
+          "simulation": {
+            "time": 17.50000000000002,
+            "hour": 15.000000000000007,
+            "street": true,
+            "playing": true,
+            "walking": true,
+            "x": 9.924799999999975,
+            "y": 10.1,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "adolescent",
+            "clothing": null,
+            "position": [
+              59.548799999999844,
+              0.02062729427866933,
+              60.599999999999994
+            ],
+            "left": [
+              59.587364196777344,
+              0.7685352563858032,
+              60.39591598510742
+            ],
+            "right": [
+              59.48065185546875,
+              0.8224391341209412,
+              60.80136489868164
+            ]
+          }
+        },
+        {
+          "id": 11,
+          "age": 12,
+          "sex": "f",
+          "home": "9,9",
+          "phase": "home",
+          "workType": null,
+          "work": null,
+          "workplace": null,
+          "employed": false,
+          "simulation": {
+            "time": 17.75000000000002,
+            "hour": 15.100000000000009,
+            "street": true,
+            "playing": true,
+            "walking": true,
+            "x": 9.744799999999975,
+            "y": 10.1,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "adolescent",
+            "clothing": null,
+            "position": [
+              58.468799999999845,
+              0.02424316699996557,
+              60.599999999999994
+            ],
+            "left": [
+              58.46946334838867,
+              0.7763000726699829,
+              60.454471588134766
+            ],
+            "right": [
+              58.439369201660156,
+              0.7968902587890625,
+              60.78175354003906
+            ]
+          }
+        },
+        {
+          "id": 11,
+          "age": 12,
+          "sex": "f",
+          "home": "9,9",
+          "phase": "home",
+          "workType": null,
+          "work": null,
+          "workplace": null,
+          "employed": false,
+          "simulation": {
+            "time": 18.00000000000002,
+            "hour": 15.20000000000001,
+            "street": true,
+            "playing": true,
+            "walking": true,
+            "x": 9.564799999999975,
+            "y": 10.1,
+            "activity": null
+          },
+          "webgl": {
+            "visible": true,
+            "variant": "adolescent",
+            "clothing": null,
+            "position": [
+              57.38879999999985,
+              0.029013029747124545,
+              60.599999999999994
+            ],
+            "left": [
+              57.274513244628906,
+              0.8270099759101868,
+              60.48382568359375
+            ],
+            "right": [
+              57.49423599243164,
+              0.7853251695632935,
+              60.77177429199219
+            ]
+          }
+        }
+      ]
+    },
+    "errors": [],
+    "failures": [],
+    "method": {
+      "simulation": "advanceTime on two decoded saves. Resident work, phase, family care, stored food, and mood are simulation records. Child-play coordinates from visibleCitizens are presentation on the simulated daytime clock. All key snapshots validated by encode/decode roundtrip.",
+      "webgl": "Ordinary city WebGL renderer on index.html at 127.0.0.1:9942; active mesh, age and sex variant, position and world-space palm samples come directly from Babylon scene nodes. An infant at home and night-time children have no active exterior rig. Care completion is a simulation observation; there is no transparent wall or interior care shot."
+    }
+  },
+  "services": {
+    "canal": {
+      "id": 1,
+      "phase": "working",
+      "siltAtCapture": 0.9984426381759555,
+      "downstreamFieldWater": true,
+      "siltAtEnd": 0
+    },
+    "merchant": {
+      "id": "caravan:1",
+      "phase": "arriving",
+      "route": 12,
+      "traded": true
+    },
+    "market": {
+      "id": 8,
+      "phase": "toStore",
+      "cargo": 3,
+      "delivered": 3
+    }
+  },
+  "largeCity": {
+    "speed": 4,
+    "people": 500,
+    "buildings": 250,
+    "results": [
+      {
+        "before": {
+          "population": 500,
+          "buildings": 250,
+          "ordinaryLevelOne": 70,
+          "saveBytes": 505504,
+          "saveByteEqual": true,
+          "sameCitizenCargoAndResources": true,
+          "sameCitizenIds": true
+        },
+        "timing": {
+          "fps": 30.417575586010134,
+          "frames": 548,
+          "seconds": 18.015900000000002,
+          "population": 500,
+          "buildings": 250,
+          "simulationP95": 10.799999952316284,
+          "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+          "errors": [],
+          "framesMs": {
+            "samples": 547,
+            "p50": 33.29999999999927,
+            "p95": 50
+          },
+          "cpuMs": {
+            "draw": {
+              "samples": 548,
+              "p50": 27,
+              "p95": 36.89999997615814
+            },
+            "buildings": {
+              "samples": 548,
+              "p50": 0.5,
+              "p95": 0.6000000238418579
+            },
+            "actors": {
+              "samples": 548,
+              "p50": 4.300000071525574,
+              "p95": 11.700000047683716
+            },
+            "scene": {
+              "samples": 548,
+              "p50": 20.59999990463257,
+              "p95": 26.5
+            }
+          }
+        },
+        "endSaveByteEqual": true,
+        "endCargoAndResources": true,
+        "scene": {
+          "dressedResidents": 67,
+          "visibleWorkMeshes": 67,
+          "assignedResidents": 52,
+          "ambientDonkeys": [
+            {
+              "id": "ambient-donkey-0",
+              "file": "pasture-donkey.glb",
+              "triangles": 24340
+            },
+            {
+              "id": "ambient-donkey-1",
+              "file": "pasture-donkey.glb",
+              "triangles": 24340
+            }
+          ],
+          "houseTierDistribution": [
+            70,
+            69,
+            69
+          ],
+          "importedEarthHouses": 70,
+          "runtimeAsset": "http://127.0.0.1:9019/assets/3d/sumer-buildings/house.glb?v=84ef78b6072b",
+          "trianglesPerHouse": 8246,
+          "importedParts": 420,
+          "cameraRadius": 739.10423044749,
+          "sceneTextures": 486,
+          "visibleBuildingMeshes": 2976,
+          "houseVisualMeshes": {},
+          "activeIndices": 14988390,
+          "glError": 0,
+          "resolution": [
+            1440,
+            780
+          ]
+        },
+        "viewport": [
+          1440,
+          900
+        ],
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.0.0 Safari/537.36",
+        "canvasHidden": false,
+        "exceptions": [],
+        "label": "before-civic20-1-mixed",
+        "captured": "2026-11-20T14:15:50.849Z"
+      },
+      {
+        "before": {
+          "population": 500,
+          "buildings": 250,
+          "ordinaryLevelOne": 70,
+          "saveBytes": 505504,
+          "saveByteEqual": true,
+          "sameCitizenCargoAndResources": true,
+          "sameCitizenIds": true
+        },
+        "timing": {
+          "fps": 30.500485234992368,
+          "frames": 550,
+          "seconds": 18.032500000000002,
+          "population": 500,
+          "buildings": 250,
+          "simulationP95": 11.300000071525574,
+          "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+          "errors": [],
+          "framesMs": {
+            "samples": 549,
+            "p50": 33.29999999999927,
+            "p95": 50
+          },
+          "cpuMs": {
+            "draw": {
+              "samples": 550,
+              "p50": 26.800000071525574,
+              "p95": 35.89999997615814
+            },
+            "buildings": {
+              "samples": 550,
+              "p50": 0.5,
+              "p95": 0.6000000238418579
+            },
+            "actors": {
+              "samples": 550,
+              "p50": 4.300000071525574,
+              "p95": 11.199999928474426
+            },
+            "scene": {
+              "samples": 550,
+              "p50": 20.399999976158142,
+              "p95": 24
+            }
+          }
+        },
+        "endSaveByteEqual": true,
+        "endCargoAndResources": true,
+        "scene": {
+          "dressedResidents": 68,
+          "visibleWorkMeshes": 67,
+          "assignedResidents": 52,
+          "ambientDonkeys": [
+            {
+              "id": "ambient-donkey-0",
+              "file": "pasture-donkey.glb",
+              "triangles": 24340
+            },
+            {
+              "id": "ambient-donkey-1",
+              "file": "pasture-donkey.glb",
+              "triangles": 24340
+            }
+          ],
+          "houseTierDistribution": [
+            70,
+            69,
+            69
+          ],
+          "importedEarthHouses": 70,
+          "runtimeAsset": "http://127.0.0.1:8991/assets/3d/sumer-buildings/house.glb?v=84ef78b6072b",
+          "trianglesPerHouse": 8246,
+          "importedParts": 420,
+          "cameraRadius": 739.10423044749,
+          "sceneTextures": 486,
+          "visibleBuildingMeshes": 2976,
+          "houseVisualMeshes": {},
+          "activeIndices": 14966598,
+          "glError": 0,
+          "resolution": [
+            1440,
+            780
+          ]
+        },
+        "viewport": [
+          1440,
+          900
+        ],
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.0.0 Safari/537.36",
+        "canvasHidden": false,
+        "exceptions": [],
+        "label": "after-civic20-1-mixed",
+        "captured": "2026-11-20T14:16:24.184Z"
+      }
+    ],
+    "finalRuns": [
+      {
+        "before": {
+          "population": 500,
+          "buildings": 250,
+          "ordinaryLevelOne": 70,
+          "saveBytes": 505504,
+          "saveByteEqual": true,
+          "sameCitizenCargoAndResources": true,
+          "sameCitizenIds": true
+        },
+        "timing": {
+          "fps": 16.701138110669923,
+          "frames": 302,
+          "seconds": 18.082600000000003,
+          "population": 500,
+          "buildings": 250,
+          "simulationP95": 23,
+          "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+          "errors": [],
+          "framesMs": {
+            "samples": 301,
+            "p50": 50,
+            "p95": 100
+          },
+          "cpuMs": {
+            "draw": {
+              "samples": 302,
+              "p50": 44.699999928474426,
+              "p95": 69.20000004768372
+            },
+            "buildings": {
+              "samples": 302,
+              "p50": 0.8000000715255737,
+              "p95": 1.100000023841858
+            },
+            "actors": {
+              "samples": 302,
+              "p50": 7.399999976158142,
+              "p95": 28.100000023841858
+            },
+            "scene": {
+              "samples": 302,
+              "p50": 34.199999928474426,
+              "p95": 47.200000047683716
+            }
+          }
+        },
+        "endSaveByteEqual": true,
+        "endCargoAndResources": true,
+        "scene": {
+          "dressedResidents": 67,
+          "visibleWorkMeshes": 66,
+          "assignedResidents": 52,
+          "ambientDonkeys": [
+            {
+              "id": "ambient-donkey-0",
+              "file": "pasture-donkey.glb",
+              "triangles": 24340
+            },
+            {
+              "id": "ambient-donkey-1",
+              "file": "pasture-donkey.glb",
+              "triangles": 24340
+            }
+          ],
+          "houseTierDistribution": [
+            70,
+            69,
+            69
+          ],
+          "importedEarthHouses": 70,
+          "runtimeAsset": "http://127.0.0.1:9019/assets/3d/sumer-buildings/house.glb?v=84ef78b6072b",
+          "trianglesPerHouse": 8246,
+          "importedParts": 420,
+          "cameraRadius": 739.10423044749,
+          "sceneTextures": 456,
+          "visibleBuildingMeshes": 2976,
+          "houseVisualMeshes": {},
+          "activeIndices": 25243512,
+          "glError": 0,
+          "resolution": [
+            1440,
+            780
+          ]
+        },
+        "viewport": [
+          1440,
+          900
+        ],
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.0.0 Safari/537.36",
+        "canvasHidden": false,
+        "exceptions": [],
+        "label": "before-civic20-final-mixed",
+        "captured": "2026-11-20T17:36:19.527Z"
+      },
+      {
+        "before": {
+          "population": 500,
+          "buildings": 250,
+          "ordinaryLevelOne": 70,
+          "saveBytes": 505504,
+          "saveByteEqual": true,
+          "sameCitizenCargoAndResources": true,
+          "sameCitizenIds": true
+        },
+        "timing": {
+          "fps": 14.349586964591422,
+          "frames": 259,
+          "seconds": 18.049300000000002,
+          "population": 500,
+          "buildings": 250,
+          "simulationP95": 30.700000047683716,
+          "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+          "errors": [],
+          "framesMs": {
+            "samples": 258,
+            "p50": 66.59999999999854,
+            "p95": 100
+          },
+          "cpuMs": {
+            "draw": {
+              "samples": 259,
+              "p50": 49.699999928474426,
+              "p95": 90.60000002384186
+            },
+            "buildings": {
+              "samples": 259,
+              "p50": 0.8999999761581421,
+              "p95": 1.399999976158142
+            },
+            "actors": {
+              "samples": 259,
+              "p50": 8.699999928474426,
+              "p95": 36.799999952316284
+            },
+            "scene": {
+              "samples": 259,
+              "p50": 38.300000071525574,
+              "p95": 58.700000047683716
+            }
+          }
+        },
+        "endSaveByteEqual": true,
+        "endCargoAndResources": true,
+        "scene": {
+          "dressedResidents": 67,
+          "visibleWorkMeshes": 67,
+          "assignedResidents": 52,
+          "ambientDonkeys": [
+            {
+              "id": "ambient-donkey-0",
+              "file": "pasture-donkey.glb",
+              "triangles": 24340
+            },
+            {
+              "id": "ambient-donkey-1",
+              "file": "pasture-donkey.glb",
+              "triangles": 24340
+            }
+          ],
+          "houseTierDistribution": [
+            70,
+            69,
+            69
+          ],
+          "importedEarthHouses": 70,
+          "runtimeAsset": "http://127.0.0.1:8991/assets/3d/sumer-buildings/house.glb?v=84ef78b6072b",
+          "trianglesPerHouse": 8246,
+          "importedParts": 420,
+          "cameraRadius": 739.10423044749,
+          "sceneTextures": 456,
+          "visibleBuildingMeshes": 2976,
+          "houseVisualMeshes": {},
+          "activeIndices": 25231542,
+          "glError": 0,
+          "resolution": [
+            1440,
+            780
+          ]
+        },
+        "viewport": [
+          1440,
+          900
+        ],
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.0.0 Safari/537.36",
+        "canvasHidden": false,
+        "exceptions": [],
+        "label": "after-civic20-final-mixed",
+        "captured": "2026-11-20T17:37:03.386Z"
+      }
+    ],
+    "backgroundDuringFinalPair": "Another user Chrome renderer was active at approximately one CPU core. The computer was running on battery power.",
+    "alternatingFinalRuns": {
+      "method": "ABBA. 18 s per version, 4× simulation, overview with mixed tier dwellings, same 500 residents and 250 buildings, 1440×900 / 1440×780 framebuffer, Chrome 158 Apple M5 Metal. User Chrome 157 kept running; observed one renderer consuming about 100% of one logical core.",
+      "baselineCommit": "c3d4e32e",
+      "browser": "Chrome/158.0.8127.36",
+      "rows": [
+        {
+          "label": "before-1-civic20-final-abba-mixed",
+          "fps": 8.887171561051003,
+          "frames": 161,
+          "seconds": 18.116000000000003,
+          "frameP50": 83.40000000000146,
+          "frameP95": 216.59999999999854,
+          "simP95": 61.200000047683716,
+          "sceneP95": 86.69999992847443,
+          "drawP95": 151.5,
+          "actorsP95": 76.5,
+          "houses": [
+            70,
+            69,
+            69
+          ],
+          "indicesAtEnd": 25198278,
+          "valid": true
+        },
+        {
+          "label": "after-1-civic20-final-abba-mixed",
+          "fps": 9.171676096181047,
+          "frames": 166,
+          "seconds": 18.0992,
+          "frameP50": 83.40000000000146,
+          "frameP95": 166.6999999999971,
+          "simP95": 65.20000004768372,
+          "sceneP95": 81,
+          "drawP95": 134.39999997615814,
+          "actorsP95": 60.09999990463257,
+          "houses": [
+            70,
+            69,
+            69
+          ],
+          "indicesAtEnd": 25197864,
+          "valid": true
+        },
+        {
+          "label": "after-2-civic20-final-abba-mixed",
+          "fps": 13.932060390763763,
+          "frames": 251,
+          "seconds": 18.016000000000005,
+          "frameP50": 66.59999999999854,
+          "frameP95": 116.69999999999709,
+          "simP95": 27,
+          "sceneP95": 54.10000002384186,
+          "drawP95": 84.29999995231628,
+          "actorsP95": 35.799999952316284,
+          "houses": [
+            70,
+            69,
+            69
+          ],
+          "indicesAtEnd": 14893008,
+          "valid": true
+        },
+        {
+          "label": "before-2-civic20-final-abba-mixed",
+          "fps": 14.931481092320796,
+          "frames": 270,
+          "seconds": 18.0826,
+          "frameP50": 50,
+          "frameP95": 116.59999999999854,
+          "simP95": 27.899999976158142,
+          "sceneP95": 52.700000047683716,
+          "drawP95": 88.60000002384186,
+          "actorsP95": 34.40000009536743,
+          "houses": [
+            70,
+            69,
+            69
+          ],
+          "indicesAtEnd": 25257300,
+          "valid": true
+        }
+      ],
+      "meanFps": {
+        "before": 11.9093263266859,
+        "after": 11.551868243472406,
+        "percent": -3.001497090666816
+      },
+      "pairChangesPercent": [
+        3.2012945083328415,
+        -6.6933795473982265
+      ],
+      "rawRuns": [
+        {
+          "before": {
+            "population": 500,
+            "buildings": 250,
+            "ordinaryLevelOne": 70,
+            "saveBytes": 505504,
+            "saveByteEqual": true,
+            "sameCitizenCargoAndResources": true,
+            "sameCitizenIds": true
+          },
+          "timing": {
+            "fps": 8.887171561051003,
+            "frames": 161,
+            "seconds": 18.116000000000003,
+            "population": 500,
+            "buildings": 250,
+            "simulationP95": 61.200000047683716,
+            "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+            "errors": [],
+            "framesMs": {
+              "samples": 160,
+              "p50": 83.40000000000146,
+              "p95": 216.59999999999854
+            },
+            "cpuMs": {
+              "draw": {
+                "samples": 161,
+                "p50": 73.89999997615814,
+                "p95": 151.5
+              },
+              "buildings": {
+                "samples": 161,
+                "p50": 1.2000000476837158,
+                "p95": 1.7999999523162842
+              },
+              "actors": {
+                "samples": 161,
+                "p50": 12.700000047683716,
+                "p95": 76.5
+              },
+              "scene": {
+                "samples": 161,
+                "p50": 55.5,
+                "p95": 86.69999992847443
+              }
+            }
+          },
+          "endSaveByteEqual": true,
+          "endCargoAndResources": true,
+          "scene": {
+            "dressedResidents": 67,
+            "visibleWorkMeshes": 67,
+            "assignedResidents": 52,
+            "ambientDonkeys": [
+              {
+                "id": "ambient-donkey-0",
+                "file": "pasture-donkey.glb",
+                "triangles": 24340
+              },
+              {
+                "id": "ambient-donkey-1",
+                "file": "pasture-donkey.glb",
+                "triangles": 24340
+              }
+            ],
+            "houseTierDistribution": [
+              70,
+              69,
+              69
+            ],
+            "importedEarthHouses": 70,
+            "trianglesPerHouse": 8246,
+            "importedParts": 420,
+            "cameraRadius": 739.10423044749,
+            "sceneTextures": 452,
+            "visibleBuildingMeshes": 2976,
+            "houseVisualMeshes": {},
+            "activeIndices": 25198278,
+            "glError": 0,
+            "resolution": [
+              1440,
+              780
+            ]
+          },
+          "viewport": [
+            1440,
+            900
+          ],
+          "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.0.0 Safari/537.36",
+          "canvasHidden": false,
+          "exceptions": [],
+          "label": "before-1-civic20-final-abba-mixed",
+          "captured": "2026-11-20T17:38:52.224Z"
+        },
+        {
+          "before": {
+            "population": 500,
+            "buildings": 250,
+            "ordinaryLevelOne": 70,
+            "saveBytes": 505504,
+            "saveByteEqual": true,
+            "sameCitizenCargoAndResources": true,
+            "sameCitizenIds": true
+          },
+          "timing": {
+            "fps": 9.171676096181047,
+            "frames": 166,
+            "seconds": 18.0992,
+            "population": 500,
+            "buildings": 250,
+            "simulationP95": 65.20000004768372,
+            "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+            "errors": [],
+            "framesMs": {
+              "samples": 165,
+              "p50": 83.40000000000146,
+              "p95": 166.6999999999971
+            },
+            "cpuMs": {
+              "draw": {
+                "samples": 166,
+                "p50": 77.20000004768372,
+                "p95": 134.39999997615814
+              },
+              "buildings": {
+                "samples": 166,
+                "p50": 1.2999999523162842,
+                "p95": 2.100000023841858
+              },
+              "actors": {
+                "samples": 166,
+                "p50": 12.600000023841858,
+                "p95": 60.09999990463257
+              },
+              "scene": {
+                "samples": 166,
+                "p50": 58.39999997615814,
+                "p95": 81
+              }
+            }
+          },
+          "endSaveByteEqual": true,
+          "endCargoAndResources": true,
+          "scene": {
+            "dressedResidents": 67,
+            "visibleWorkMeshes": 67,
+            "assignedResidents": 52,
+            "ambientDonkeys": [
+              {
+                "id": "ambient-donkey-0",
+                "file": "pasture-donkey.glb",
+                "triangles": 24340
+              },
+              {
+                "id": "ambient-donkey-1",
+                "file": "pasture-donkey.glb",
+                "triangles": 24340
+              }
+            ],
+            "houseTierDistribution": [
+              70,
+              69,
+              69
+            ],
+            "importedEarthHouses": 70,
+            "trianglesPerHouse": 8246,
+            "importedParts": 420,
+            "cameraRadius": 739.10423044749,
+            "sceneTextures": 453,
+            "visibleBuildingMeshes": 2976,
+            "houseVisualMeshes": {},
+            "activeIndices": 25197864,
+            "glError": 0,
+            "resolution": [
+              1440,
+              780
+            ]
+          },
+          "viewport": [
+            1440,
+            900
+          ],
+          "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.0.0 Safari/537.36",
+          "canvasHidden": false,
+          "exceptions": [],
+          "label": "after-1-civic20-final-abba-mixed",
+          "captured": "2026-11-20T17:39:43.095Z"
+        },
+        {
+          "before": {
+            "population": 500,
+            "buildings": 250,
+            "ordinaryLevelOne": 70,
+            "saveBytes": 505504,
+            "saveByteEqual": true,
+            "sameCitizenCargoAndResources": true,
+            "sameCitizenIds": true
+          },
+          "timing": {
+            "fps": 13.932060390763763,
+            "frames": 251,
+            "seconds": 18.016000000000005,
+            "population": 500,
+            "buildings": 250,
+            "simulationP95": 27,
+            "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+            "errors": [],
+            "framesMs": {
+              "samples": 250,
+              "p50": 66.59999999999854,
+              "p95": 116.69999999999709
+            },
+            "cpuMs": {
+              "draw": {
+                "samples": 251,
+                "p50": 50.700000047683716,
+                "p95": 84.29999995231628
+              },
+              "buildings": {
+                "samples": 251,
+                "p50": 0.9000000953674316,
+                "p95": 1.2999999523162842
+              },
+              "actors": {
+                "samples": 251,
+                "p50": 8.400000095367432,
+                "p95": 35.799999952316284
+              },
+              "scene": {
+                "samples": 251,
+                "p50": 39.300000071525574,
+                "p95": 54.10000002384186
+              }
+            }
+          },
+          "endSaveByteEqual": true,
+          "endCargoAndResources": true,
+          "scene": {
+            "dressedResidents": 67,
+            "visibleWorkMeshes": 67,
+            "assignedResidents": 52,
+            "ambientDonkeys": [
+              {
+                "id": "ambient-donkey-0",
+                "file": "pasture-donkey.glb",
+                "triangles": 24340
+              },
+              {
+                "id": "ambient-donkey-1",
+                "file": "pasture-donkey.glb",
+                "triangles": 24340
+              }
+            ],
+            "houseTierDistribution": [
+              70,
+              69,
+              69
+            ],
+            "importedEarthHouses": 70,
+            "runtimeAsset": "http://127.0.0.1:8991/assets/3d/sumer-buildings/house.glb?v=84ef78b6072b",
+            "trianglesPerHouse": 8246,
+            "importedParts": 420,
+            "cameraRadius": 739.10423044749,
+            "sceneTextures": 453,
+            "visibleBuildingMeshes": 2976,
+            "houseVisualMeshes": {},
+            "activeIndices": 14893008,
+            "glError": 0,
+            "resolution": [
+              1440,
+              780
+            ]
+          },
+          "viewport": [
+            1440,
+            900
+          ],
+          "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.0.0 Safari/537.36",
+          "canvasHidden": false,
+          "exceptions": [],
+          "label": "after-2-civic20-final-abba-mixed",
+          "captured": "2026-11-20T17:40:31.871Z"
+        },
+        {
+          "before": {
+            "population": 500,
+            "buildings": 250,
+            "ordinaryLevelOne": 70,
+            "saveBytes": 505504,
+            "saveByteEqual": true,
+            "sameCitizenCargoAndResources": true,
+            "sameCitizenIds": true
+          },
+          "timing": {
+            "fps": 14.931481092320796,
+            "frames": 270,
+            "seconds": 18.0826,
+            "population": 500,
+            "buildings": 250,
+            "simulationP95": 27.899999976158142,
+            "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+            "errors": [],
+            "framesMs": {
+              "samples": 269,
+              "p50": 50,
+              "p95": 116.59999999999854
+            },
+            "cpuMs": {
+              "draw": {
+                "samples": 270,
+                "p50": 48.60000002384186,
+                "p95": 88.60000002384186
+              },
+              "buildings": {
+                "samples": 270,
+                "p50": 0.8999999761581421,
+                "p95": 1.7999999523162842
+              },
+              "actors": {
+                "samples": 270,
+                "p50": 8.099999904632568,
+                "p95": 34.40000009536743
+              },
+              "scene": {
+                "samples": 270,
+                "p50": 37.10000002384186,
+                "p95": 52.700000047683716
+              }
+            }
+          },
+          "endSaveByteEqual": true,
+          "endCargoAndResources": true,
+          "scene": {
+            "dressedResidents": 67,
+            "visibleWorkMeshes": 67,
+            "assignedResidents": 52,
+            "ambientDonkeys": [
+              {
+                "id": "ambient-donkey-0",
+                "file": "pasture-donkey.glb",
+                "triangles": 24340
+              },
+              {
+                "id": "ambient-donkey-1",
+                "file": "pasture-donkey.glb",
+                "triangles": 24340
+              }
+            ],
+            "houseTierDistribution": [
+              70,
+              69,
+              69
+            ],
+            "importedEarthHouses": 70,
+            "runtimeAsset": "http://127.0.0.1:9019/assets/3d/sumer-buildings/house.glb?v=84ef78b6072b",
+            "trianglesPerHouse": 8246,
+            "importedParts": 420,
+            "cameraRadius": 739.10423044749,
+            "sceneTextures": 457,
+            "visibleBuildingMeshes": 2976,
+            "houseVisualMeshes": {},
+            "activeIndices": 25257300,
+            "glError": 0,
+            "resolution": [
+              1440,
+              780
+            ]
+          },
+          "viewport": [
+            1440,
+            900
+          ],
+          "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.0.0 Safari/537.36",
+          "canvasHidden": false,
+          "exceptions": [],
+          "label": "before-2-civic20-final-abba-mixed",
+          "captured": "2026-11-20T17:41:15.219Z"
+        }
+      ]
+    }
+  },
+  "legacySaves": [
+    {
+      "file": "legacy-v1.json",
+      "bytes": 1115,
+      "canonicalBytes": 15586,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "5f60c84e6789e2ce48fa3941351ed3e8bbc89b78d17d72ef6e770dd87011abf5"
+    },
+    {
+      "file": "legacy-v2.json",
+      "bytes": 3722,
+      "canonicalBytes": 14795,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "6eb71b9385b6f9e3a7919cccf19b828d35c0a5c91eafd8f68bbc754facbd86b7"
+    },
+    {
+      "file": "legacy-v3.json",
+      "bytes": 6935,
+      "canonicalBytes": 16420,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "5045bd0494767f469116ed626fdcb1e8ca503fc803f93ab632ffa9b104f922f9"
+    },
+    {
+      "file": "legacy-v4.json",
+      "bytes": 7123,
+      "canonicalBytes": 17736,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 14,
+      "sites": 1,
+      "sha256": "d4f19c224c63cd40f4482addd4bd0ea516ae00760d48c15a6550156da2e81080"
+    },
+    {
+      "file": "legacy-v5.json",
+      "bytes": 10554,
+      "canonicalBytes": 21451,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 14,
+      "sites": 1,
+      "sha256": "d0e2086a6fdf01f3996aee6b53e32f1450ac19bd0ac26a15aba12b7958e248b7"
+    },
+    {
+      "file": "legacy-v6-city.json",
+      "bytes": 7281,
+      "canonicalBytes": 16070,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "a3571a1285a284c2fff5026cc99d96f673e53b951b0dd51b82e3c9ff32983694"
+    },
+    {
+      "file": "legacy-v6-funeral.json",
+      "bytes": 9970,
+      "canonicalBytes": 19447,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "84db001bc085b911964ba561b2e886bdcff883c6712dda0d7498b3fbcc05199d"
+    },
+    {
+      "file": "legacy-v7-city.json",
+      "bytes": 8217,
+      "canonicalBytes": 16168,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "329449361ef9d8786a96da00f94d12ba2bd03dd4091fb23f190a625ab3e6717e"
+    },
+    {
+      "file": "legacy-v8-city.json",
+      "bytes": 8267,
+      "canonicalBytes": 16247,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "0bad910c2e9b407bd17a5cb44bc6a6bdba74aef6226ab06ca2373830fd1d7290"
+    },
+    {
+      "file": "legacy-v10-healer.json",
+      "bytes": 10914,
+      "canonicalBytes": 16730,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "693fa5a2ee18420e344ddc80f585196e5fb93b3923f35aaef8f570796b2e9cf6"
+    },
+    {
+      "file": "legacy-v11-autumn.json",
+      "bytes": 15332,
+      "canonicalBytes": 22504,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "2070d654d1b24d6029afa6368f15b1bffd36232b521473f900766952cd052b84"
+    },
+    {
+      "file": "legacy-v12-harvest.json",
+      "bytes": 13426,
+      "canonicalBytes": 20010,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "1ce6e80b7bae1e7adfb2de59ef1895c937800fc050897bead58b25189108dc82"
+    },
+    {
+      "file": "legacy-v13-autumn.json",
+      "bytes": 13874,
+      "canonicalBytes": 20516,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "1fc4519e7d0d5296411e2c86a78212688020a8d45720e9cf078ac62b2c5c383d"
+    },
+    {
+      "file": "legacy-v14-warning-city.json",
+      "bytes": 12290,
+      "canonicalBytes": 18566,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "4b62d30cb25439becf8ed79bcf1c9dc45d50a7e4818b39aec302cd03a203f46e"
+    },
+    {
+      "file": "legacy-v15-districts.json",
+      "bytes": 13267,
+      "canonicalBytes": 18858,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "f3058a2ffa7cbf5fdb3e5ff14b5c3cc2b436cbc4361f5c81d1b7e76a51f4b27d"
+    },
+    {
+      "file": "legacy-v16-textiles.json",
+      "bytes": 16006,
+      "canonicalBytes": 22268,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "4049d985aae20e2d4b4a8e13a709a03a8c50129e0c185044723663b497bdc160"
+    },
+    {
+      "file": "legacy-v17-water-bricks.json",
+      "bytes": 11682,
+      "canonicalBytes": 16697,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "b422ce3deb9743b093fa6085ec969224fc2ba7db94fe1cb88be7c18c68effa77"
+    },
+    {
+      "file": "legacy-v18-kiln.json",
+      "bytes": 12620,
+      "canonicalBytes": 17329,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "12df80b13eade67b774cfb95d40f4c6277a914d3a31e1b775578d8ea7a55befd"
+    },
+    {
+      "file": "legacy-v19-masonry.json",
+      "bytes": 12435,
+      "canonicalBytes": 16911,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "d4b2943eed7ad25913cd56c0663de3bf12bb7d38094653a60175efd5a3e72acb"
+    },
+    {
+      "file": "legacy-v27-local-stock.json",
+      "bytes": 27798,
+      "canonicalBytes": 17036,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "f1e8483a4b82eb8ca91188ba71beaa82e48a4608abe6348a884aaa6beb88b8e1"
+    }
+  ],
+  "workplaceSurfaces": {
+    "method": "Chrome 158, WebGL 2, live city and saved resident entering a working/strike phase. Per-frame nearest transformed implement vertex (hand joint in hand-kneading) to the triangles of the actual resource; floor independently ray-tested under the two feet and two toes. Distance is a sampled bound, not continuous mesh collision. CPU timings use Node and are not FPS.",
+    "scenes": {
+      "garden": {
+        "meshContact": {
+          "mode": "garden",
+          "id": 0,
+          "tool": "date-bunch-hook",
+          "triangles": 1480,
+          "samples": 71,
+          "minMetres": 0.00594648616429626,
+          "maxMetres": 0.007419935801889603,
+          "contactFrames": 70,
+          "nearestSurface": [
+            67.06682240637527,
+            3.4363632975014538,
+            59.2213689949498
+          ],
+          "nearestImplement": [
+            67.06135101523995,
+            3.435461769739166,
+            59.21922147907317
+          ],
+          "feet": [
+            66.38579610020858,
+            0,
+            59.02472735595592
+          ],
+          "camera": {
+            "alpha": 1.9775576599892424,
+            "beta": 1.27,
+            "score": 4
+          },
+          "webgl": 2,
+          "glError": 0,
+          "errors": [],
+          "http": []
+        },
+        "beforeFooting": {
+          "center": [
+            68.01,
+            0,
+            60.23
+          ],
+          "feet": [
+            [
+              "foot_l",
+              [
+                68.14,
+                0.09,
+                60.19
+              ]
+            ],
+            [
+              "toe_l",
+              [
+                68.08,
+                0.01,
+                60.07
+              ]
+            ],
+            [
+              "foot_r",
+              [
+                67.92,
+                0.09,
+                60.34
+              ]
+            ],
+            [
+              "toe_r",
+              [
+                67.83,
+                0.01,
+                60.23
+              ]
+            ]
+          ],
+          "feetHit": [
+            [
+              "foot_l",
+              [
+                [
+                  "10,9-original-garden-alluvial-earth",
+                  0.02
+                ]
+              ]
+            ],
+            [
+              "toe_l",
+              [
+                [
+                  "10,9-original-garden-alluvial-earth",
+                  0.02
+                ]
+              ]
+            ],
+            [
+              "foot_r",
+              [
+                [
+                  "10,9-original-garden-game-raw-brick-facing",
+                  0.57
+                ],
+                [
+                  "10,9-original-garden-alluvial-earth",
+                  0.02
+                ]
+              ]
+            ],
+            [
+              "toe_r",
+              [
+                [
+                  "10,9-original-garden-game-raw-brick-facing",
+                  0.93
+                ],
+                [
+                  "10,9-original-garden-alluvial-earth",
+                  0.02
+                ]
+              ]
+            ]
+          ]
+        },
+        "afterFooting": {
+          "center": [
+            66.39,
+            0,
+            59.02
+          ],
+          "feet": [
+            [
+              "foot_l",
+              [
+                66.32,
+                0.09,
+                59.15
+              ]
+            ],
+            [
+              "toe_l",
+              [
+                66.45,
+                0.01,
+                59.19
+              ]
+            ],
+            [
+              "foot_r",
+              [
+                66.38,
+                0.09,
+                58.88
+              ]
+            ],
+            [
+              "toe_r",
+              [
+                66.52,
+                0.01,
+                58.9
+              ]
+            ]
+          ],
+          "feetHit": [
+            [
+              "foot_l",
+              [
+                [
+                  "10,9-original-garden-alluvial-earth",
+                  0.02
+                ]
+              ]
+            ],
+            [
+              "toe_l",
+              [
+                [
+                  "10,9-original-garden-alluvial-earth",
+                  0.02
+                ]
+              ]
+            ],
+            [
+              "foot_r",
+              [
+                [
+                  "10,9-original-garden-alluvial-earth",
+                  0.02
+                ]
+              ]
+            ],
+            [
+              "toe_r",
+              [
+                [
+                  "10,9-original-garden-alluvial-earth",
+                  0.02
+                ]
+              ]
+            ]
+          ]
+        }
+      },
+      "logging": {
+        "meshContact": {
+          "mode": "logging",
+          "id": 0,
+          "tool": "logging-axe-head",
+          "triangles": 526,
+          "samples": 50,
+          "minMetres": 2.0546406922434224e-05,
+          "maxMetres": 0.014266836804650244,
+          "contactFrames": 49,
+          "nearestSurface": [
+            43.29609464232896,
+            1.182141274083945,
+            46.92559734160459
+          ],
+          "nearestImplement": [
+            43.296106908768415,
+            1.1821447314321996,
+            46.92561345793307
+          ],
+          "feet": [
+            43.69429492427428,
+            0,
+            47.70702429931727
+          ],
+          "camera": {
+            "alpha": 2.7959734109149705,
+            "beta": 1.27,
+            "score": 4
+          },
+          "webgl": 2,
+          "glError": 0,
+          "errors": [],
+          "http": []
+        },
+        "beforeFooting": {
+          "center": [
+            43.72,
+            0,
+            47.76
+          ],
+          "feet": [
+            [
+              "foot_l",
+              [
+                43.86,
+                0.09,
+                47.72
+              ]
+            ],
+            [
+              "toe_l",
+              [
+                43.8,
+                0.01,
+                47.6
+              ]
+            ],
+            [
+              "foot_r",
+              [
+                43.62,
+                0.09,
+                47.86
+              ]
+            ],
+            [
+              "toe_r",
+              [
+                43.54,
+                0.01,
+                47.74
+              ]
+            ]
+          ],
+          "feetHit": [
+            [
+              "foot_l",
+              [
+                [
+                  "6,8-original-logging-alluvial-earth",
+                  0.02
+                ]
+              ]
+            ],
+            [
+              "toe_l",
+              [
+                [
+                  "6,8-original-logging-alluvial-earth",
+                  0.02
+                ]
+              ]
+            ],
+            [
+              "foot_r",
+              [
+                [
+                  "6,8-original-logging-alluvial-earth",
+                  0.02
+                ]
+              ]
+            ],
+            [
+              "toe_r",
+              [
+                [
+                  "6,8-original-logging-alluvial-earth",
+                  0.02
+                ]
+              ]
+            ]
+          ]
+        },
+        "beforeMinimumMetres": 0.044396359090430555,
+        "afterFooting": {
+          "center": [
+            43.69,
+            0,
+            47.71
+          ],
+          "feet": [
+            [
+              "foot_l",
+              [
+                43.83,
+                0.09,
+                47.67
+              ]
+            ],
+            [
+              "toe_l",
+              [
+                43.77,
+                0.01,
+                47.55
+              ]
+            ],
+            [
+              "foot_r",
+              [
+                43.59,
+                0.09,
+                47.81
+              ]
+            ],
+            [
+              "toe_r",
+              [
+                43.51,
+                0.01,
+                47.69
+              ]
+            ]
+          ],
+          "feetHit": [
+            [
+              "foot_l",
+              [
+                [
+                  "6,8-original-logging-alluvial-earth",
+                  0.02
+                ]
+              ]
+            ],
+            [
+              "toe_l",
+              [
+                [
+                  "6,8-original-logging-alluvial-earth",
+                  0.02
+                ]
+              ]
+            ],
+            [
+              "foot_r",
+              [
+                [
+                  "6,8-original-logging-alluvial-earth",
+                  0.02
+                ]
+              ]
+            ],
+            [
+              "toe_r",
+              [
+                [
+                  "6,8-original-logging-alluvial-earth",
+                  0.02
+                ]
+              ]
+            ]
+          ]
+        }
+      },
+      "quarry": {
+        "meshContact": {
+          "mode": "quarry",
+          "id": 0,
+          "tool": "quarry-pick-head",
+          "triangles": 555,
+          "samples": 107,
+          "minMetres": 0.011784294964957092,
+          "maxMetres": 0.18318452612285438,
+          "contactFrames": 24,
+          "nearestSurface": [
+            61.65916098812325,
+            -2.130915853855992,
+            60.000043572359864
+          ],
+          "nearestImplement": [
+            61.65981674194336,
+            -2.1191506385803223,
+            59.99990463256836
+          ],
+          "feet": [
+            62.379999999999995,
+            -2.6500000000000004,
+            60
+          ],
+          "camera": {
+            "alpha": 5.707992239800103,
+            "beta": 1.05,
+            "score": 4
+          },
+          "webgl": 2,
+          "glError": 0,
+          "errors": [],
+          "http": []
+        },
+        "beforeFooting": {
+          "center": [
+            61.86,
+            -2.4,
+            60
+          ],
+          "feet": [
+            [
+              "foot_l",
+              [
+                61.89,
+                -2.31,
+                59.86
+              ]
+            ],
+            [
+              "toe_l",
+              [
+                61.76,
+                -2.39,
+                59.85
+              ]
+            ],
+            [
+              "foot_r",
+              [
+                61.9,
+                -2.31,
+                60.14
+              ]
+            ],
+            [
+              "toe_r",
+              [
+                61.76,
+                -2.39,
+                60.15
+              ]
+            ]
+          ],
+          "feetHit": [
+            [
+              "foot_l",
+              [
+                [
+                  "deposit-open-stone-10-10",
+                  -2.37
+                ],
+                [
+                  "excavated-stone-bowl-10-10",
+                  -2.65
+                ]
+              ]
+            ],
+            [
+              "toe_l",
+              [
+                [
+                  "deposit-open-stone-10-10",
+                  -2.21
+                ],
+                [
+                  "excavated-stone-bowl-10-10",
+                  -2.65
+                ]
+              ]
+            ],
+            [
+              "foot_r",
+              [
+                [
+                  "excavated-stone-bowl-10-10",
+                  -2.65
+                ]
+              ]
+            ],
+            [
+              "toe_r",
+              [
+                [
+                  "deposit-open-stone-10-10",
+                  -2.14
+                ],
+                [
+                  "excavated-stone-bowl-10-10",
+                  -2.65
+                ]
+              ]
+            ]
+          ]
+        },
+        "afterFooting": {
+          "center": [
+            62.38,
+            -2.65,
+            60
+          ],
+          "feet": [
+            [
+              "foot_l",
+              [
+                62.41,
+                -2.56,
+                59.86
+              ]
+            ],
+            [
+              "toe_l",
+              [
+                62.28,
+                -2.64,
+                59.85
+              ]
+            ],
+            [
+              "foot_r",
+              [
+                62.42,
+                -2.56,
+                60.14
+              ]
+            ],
+            [
+              "toe_r",
+              [
+                62.28,
+                -2.64,
+                60.15
+              ]
+            ]
+          ],
+          "feetHit": [
+            [
+              "foot_l",
+              [
+                [
+                  "excavated-stone-bowl-10-10",
+                  -2.65
+                ]
+              ]
+            ],
+            [
+              "toe_l",
+              [
+                [
+                  "excavated-stone-bowl-10-10",
+                  -2.65
+                ]
+              ]
+            ],
+            [
+              "foot_r",
+              [
+                [
+                  "excavated-stone-bowl-10-10",
+                  -2.65
+                ]
+              ]
+            ],
+            [
+              "toe_r",
+              [
+                [
+                  "excavated-stone-bowl-10-10",
+                  -2.65
+                ]
+              ]
+            ]
+          ]
+        }
+      },
+      "clay": {
+        "meshContact": {
+          "mode": "clay",
+          "id": 0,
+          "tool": "left-and-right-hands",
+          "triangles": 44,
+          "samples": 69,
+          "minMetres": 0.004490260401823379,
+          "maxMetres": 0.004842185974121005,
+          "contactFrames": 68,
+          "nearestSurface": [
+            44.129859924316406,
+            0.9963731092375928,
+            44.452571643785205
+          ],
+          "nearestImplement": [
+            44.129859924316406,
+            0.9952391386032104,
+            44.44822692871094
+          ],
+          "feet": [
+            44.230000000000004,
+            -0.002425833655022913,
+            44.709999999999994
+          ],
+          "camera": {
+            "alpha": -0.24532559561963985,
+            "beta": 1.27,
+            "score": 4
+          },
+          "webgl": 2,
+          "glError": 0,
+          "errors": [],
+          "http": []
+        },
+        "beforeFooting": {
+          "center": [
+            43.94,
+            -0.01,
+            44.42
+          ],
+          "feet": [
+            [
+              "foot_l",
+              [
+                44.08,
+                0.08,
+                44.45
+              ]
+            ],
+            [
+              "toe_l",
+              [
+                44.09,
+                0,
+                44.32
+              ]
+            ],
+            [
+              "foot_r",
+              [
+                43.8,
+                0.08,
+                44.46
+              ]
+            ],
+            [
+              "toe_r",
+              [
+                43.79,
+                0,
+                44.32
+              ]
+            ]
+          ],
+          "feetHit": [
+            [
+              "foot_l",
+              [
+                [
+                  "excavated-clay-rim-7-7",
+                  0
+                ]
+              ]
+            ],
+            [
+              "toe_l",
+              [
+                [
+                  "excavated-clay-bowl-7-7",
+                  -0.03
+                ]
+              ]
+            ],
+            [
+              "foot_r",
+              [
+                [
+                  "excavated-clay-bowl-7-7",
+                  -0.03
+                ]
+              ]
+            ],
+            [
+              "toe_r",
+              [
+                [
+                  "excavated-clay-bowl-7-7",
+                  -0.19
+                ]
+              ]
+            ]
+          ]
+        },
+        "afterFooting": {
+          "center": [
+            44.23,
+            0,
+            44.71
+          ],
+          "feet": [
+            [
+              "foot_l",
+              [
+                44.37,
+                0.09,
+                44.74
+              ]
+            ],
+            [
+              "toe_l",
+              [
+                44.38,
+                0.01,
+                44.61
+              ]
+            ],
+            [
+              "foot_r",
+              [
+                44.09,
+                0.09,
+                44.75
+              ]
+            ],
+            [
+              "toe_r",
+              [
+                44.08,
+                0.01,
+                44.61
+              ]
+            ]
+          ],
+          "feetHit": [
+            [
+              "foot_l",
+              [
+                [
+                  "excavated-clay-rim-7-7",
+                  0
+                ]
+              ]
+            ],
+            [
+              "toe_l",
+              [
+                [
+                  "excavated-clay-rim-7-7",
+                  0
+                ]
+              ]
+            ],
+            [
+              "foot_r",
+              [
+                [
+                  "excavated-clay-rim-7-7",
+                  0
+                ]
+              ]
+            ],
+            [
+              "toe_r",
+              [
+                [
+                  "excavated-clay-rim-7-7",
+                  0
+                ]
+              ]
+            ]
+          ]
+        }
+      },
+      "large-clay": {
+        "meshContact": {
+          "mode": "large-clay",
+          "id": 7,
+          "tool": "clay-hoe-edge",
+          "triangles": 666,
+          "samples": 80,
+          "minMetres": 1.4426245076104691e-05,
+          "maxMetres": 0.0747555494752306,
+          "contactFrames": 53,
+          "nearestSurface": [
+            55.502599229271965,
+            -1.887271557141837,
+            42.015289438808374
+          ],
+          "nearestImplement": [
+            55.50259441873431,
+            -1.8872818353176117,
+            42.015280531823635
+          ],
+          "feet": [
+            56.379999999999995,
+            -2.1500000000000004,
+            42
+          ],
+          "camera": {
+            "alpha": 6.270628617613399,
+            "beta": 1.27,
+            "score": 4
+          },
+          "webgl": 2,
+          "glError": 0,
+          "errors": [],
+          "http": []
+        },
+        "beforeFooting": null,
+        "afterFooting": {
+          "center": [
+            56.38,
+            -2.15,
+            42
+          ],
+          "feet": [
+            [
+              "foot_l",
+              [
+                56.4,
+                -2.04,
+                41.85
+              ]
+            ],
+            [
+              "toe_l",
+              [
+                56.29,
+                -2.14,
+                41.85
+              ]
+            ],
+            [
+              "foot_r",
+              [
+                56.4,
+                -2.04,
+                42.15
+              ]
+            ],
+            [
+              "toe_r",
+              [
+                56.29,
+                -2.14,
+                42.15
+              ]
+            ]
+          ],
+          "feetHit": [
+            [
+              "foot_l",
+              [
+                [
+                  "excavated-clay-bowl-9-7",
+                  -2.15
+                ]
+              ]
+            ],
+            [
+              "toe_l",
+              [
+                [
+                  "excavated-clay-bowl-9-7",
+                  -2.15
+                ]
+              ]
+            ],
+            [
+              "foot_r",
+              [
+                [
+                  "excavated-clay-bowl-9-7",
+                  -2.15
+                ]
+              ]
+            ],
+            [
+              "toe_r",
+              [
+                [
+                  "excavated-clay-bowl-9-7",
+                  -2.15
+                ]
+              ]
+            ]
+          ]
+        }
+      }
+    },
+    "contactCostMs": {
+      "quarry": {
+        "firstWithBothRenderMeshesPresentMs": 37.854584,
+        "warmScanMs": 0.15824,
+        "cachedContactMs": 0.003982
+      },
+      "large-clay": {
+        "firstWithBothRenderMeshesPresentMs": 3.452333,
+        "warmScanMs": 0.394344,
+        "cachedContactMs": 0.003523
+      }
+    },
+    "manualWildCutLookupMs": {
+      "iterations": 500,
+      "before": 0.2098165,
+      "after": 0.006474084000000005
+    }
+  }
+}

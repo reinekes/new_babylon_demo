@@ -2,6 +2,7 @@ import {artisanContact,artisanPose,hasArtisanContact} from './artisan-contacts.j
 import {isExtractionCourt,extractionWorkArea} from '../extraction-courts.js';
 import {isDryPoint} from '../world.js';
 import {insideFootprint,footprintSize} from '../footprints.js';
+import {sheepfoldLayout,sheepfoldWorldPoint} from '../sheepfold-layout.js';
 import {dairyMilkingLayout} from './dairy-layout.js';
 import {lyreLayout,musicCourtyardLayout} from './music-courtyard.js';
 // Shared metre-space equipment and palm targets. Pure view data: no production,
@@ -40,9 +41,27 @@ export function workstationBuilding(b,state,context=null){
 export function workstationLayout(b){
  if(!equipment[b.type]||b.construction)return [];
  if(b.type==='cowshed')return [dairyMilkingLayout(b)];
+ if(b.type==='sheepfold'&&footprintSize(b)===2){
+  // The sorting table is on the street side of the pen, where wool is handed out.
+  const [sx,sz]=b.workCorner||[1,1],{center,halfWidth}=sheepfoldLayout(b);
+  return [{kind:'fleece',x:center+sx*(halfWidth-.05),z:center+sz*(halfWidth-.05),height:.95,sx,sz}];
+ }
  if(b.type==='musicHouse')return [musicCourtyardLayout(b)];
  if(isExtractionCourt(b)){const area=extractionWorkArea(b);return [{kind:equipment[b.type],...area,height:.55,sx:area.x===0?-1:1,sz:area.z===0?-1:1}];}
- return [b.workCorner||[1,1]].map(([sx,sz])=>({kind:equipment[b.type],x:sx*1.94,z:sz*1.94,height:b.type==='cowshed'?.72:b.type==='weaver'?1.05:b.type==='brewery'?.92:.95,sx,sz}));
+ const corner=b.type==='clay'?2.23:1.94;
+ return [b.workCorner||[1,1]].map(([sx,sz])=>({kind:equipment[b.type],x:sx*corner,z:sz*corner,height:b.type==='cowshed'?.72:b.type==='weaver'?1.05:b.type==='brewery'?.92:.95,sx,sz}));
+}
+function milkingApproach(b,c,stand){
+ const {center,halfWidth}=sheepfoldLayout(b),edge=halfWidth+.5;
+ const angle=(b.rotation||0)*Math.PI/2;
+ const dx=(c.x-b.x)*6-center,dz=(c.y-b.y)*6-center;
+ const localX=dx*Math.cos(angle)-dz*Math.sin(angle),localZ=dx*Math.sin(angle)+dz*Math.cos(angle);
+ if(Math.abs(Math.abs(localX)-edge)>.25||Math.abs(Math.abs(localZ)-edge)>.25)return null;
+ const point=(x,z)=>sheepfoldWorldPoint(b,0,x,z),via=[];
+ if(localX<0)via.push(point(edge,Math.sign(localZ)*edge));
+ const lane=Math.sign(localZ)*.86;
+ via.push(point(edge,lane),point(halfWidth,lane),point(halfWidth-.65,lane),stand);
+ return via;
 }
 export function workstationFor(b,c,index=0){
  if(!b?.type||!['working','strike'].includes(c.activity?.stage)||c.walking||c.carrying)return null;
@@ -54,8 +73,19 @@ export function workstationFor(b,c,index=0){
   return Math.hypot(stand.x-c.x,stand.y-c.y)>.50?null:{kind:'lyre',task:'lyre',stand,target,building:b,layout:a};
  }
  if(b.type==='musicHouse'){const a=stations[0],stand=workstationWorldPoint(b,[a.x,0,a.z]),target=workstationWorldPoint(b,[a.x+a.sx*.325,.215,a.z+a.sz*.325]);return Math.hypot(stand.x-c.x,stand.y-c.y)>.3?null:{kind:a.kind,task:'lithophone',stand,target,axis:0,building:b,layout:a};}
- const a=stations[0],axis=index%2,standOffset=a.kind==='wheel'?.46:.48,rimOffset=a.kind==='wheel'?.10:.20,rimHeight=a.height+(a.kind==='wheel'?.08:0),stand=workstationWorldPoint(b,[a.x+(axis?a.sx*standOffset:0),0,a.z+(axis?0:a.sz*standOffset)]),rim=workstationWorldPoint(b,[a.x+(axis?a.sx*rimOffset:0),rimHeight,a.z+(axis?0:a.sz*rimOffset)]),target=['building','farming'].includes(a.kind)?a.world:rim;
+ const a=stations[0],axis=index%2;
+ if(a.kind==='dairy'){
+  const side=axis?-a.sz:a.sz,x=a.x+a.sx*.1,z=a.z+a.sz*.1+a.sx*.094;
+  const stand=workstationWorldPoint(b,[x,0,z+side*.405]),target=workstationWorldPoint(b,[x,.35,z+side*.057]);
+  if(footprintSize(b)===2){
+   const via=milkingApproach(b,c,stand);
+   return via?{kind:a.kind,task:c.activity.task,stand,target,axis,building:b,via,aisleSpeed:2.1}:null;
+  }
+  return Math.hypot(stand.x-c.x,stand.y-c.y)>.52?null:{kind:a.kind,task:c.activity.task,stand,target,axis,building:b};
+ }
+ const standOffset=a.kind==='wheel'?.46:.48,rimOffset=a.kind==='wheel'?.10:.20,rimHeight=a.height+(a.kind==='wheel'?.08:0),stand=workstationWorldPoint(b,[a.x+(axis?a.sx*standOffset:0),0,a.z+(axis?0:a.sz*standOffset)]),rim=workstationWorldPoint(b,[a.x+(axis?a.sx*rimOffset:0),rimHeight,a.z+(axis?0:a.sz*rimOffset)]),target=['building','farming'].includes(a.kind)?a.world:rim;
  if(Math.hypot(stand.x-c.x,stand.y-c.y)>.3)return null;
+ if(a.kind==='fleece')return {kind:a.kind,task:c.activity.task,stand,target,axis,building:b,via:[stand]};
  return {kind:a.kind,task:c.activity.task,stand,target,axis,building:b};
 }
 // Targets remain ON equipment throughout the cycle: hands turn clay, feed cloth,
@@ -78,7 +108,7 @@ export function workstationPose(contact,time){
  if(contact.kind==='building')return {right:[.10,1.28+lift*.13,.49],left:[-.10,height,.49],tool:'building',bend:.15,twist:wave*.012};
  if(contact.kind==='farming'&&contact.task==='harvesting')return {right:[.10,.97+lift*.06,.49],left:[-.10,.93,.49],tool:'sickle',bend:.25,twist:wave*.012};
  if(contact.kind==='farming')return {right:[.10,.89+lift*.11,.49],left:[-.10,1.03+lift*.11,.20],tool:'hoe',bend:.30,twist:wave*.012};
- if(contact.kind==='dairy')return {right:[.10,.45+lift*.035,.49],left:[-.10,.45+(1-lift)*.035,.49],tool:null,bend:.5,twist:wave*.01};
+ if(contact.kind==='dairy')return {right:[.10,.36+lift*.02,.49],left:[-.10,.36+(1-lift)*.02,.49],tool:null,bend:.155,twist:wave*.01};
  if(contact.kind==='loom')return {right:[.12,height,.49+wave*.022],left:[-.12,height,.49-wave*.022],tool:null,bend:.08,twist:wave*.012};
  // The low vat rim needs a forward lean, keeping the near palm within the
  // supplied residents' native arm reach while the workers retain their slots.
@@ -87,6 +117,19 @@ export function workstationPose(contact,time){
 }
 // World targets preserve contact under identity height/width variation and yaw.
 export function workstationHands(contact,time){
+ if(contact.kind==='dairy'){
+  const b=contact.building,a=dairyMilkingLayout(b),x=a.x+a.sx*.1,z=a.z+a.sz*.1+a.sx*.094;
+  // The imported cow faces local +/-X. Each worker grips the two near teats
+  // from their own side of the rail. Their alternating strokes stay on them.
+  const side=contact.axis?-a.sz:a.sz;
+  const picks=[[-.09,side*.057],[.09,side*.057]];
+  const dx=contact.target.x-contact.stand.x,dz=contact.target.y-contact.stand.y;
+  const hands=picks.map(([u,v])=>workstationWorldPoint(b,[x+u,.365,z+v]));
+  hands.sort((p,q)=>(q.x-p.x)*dz-(q.y-p.y)*dx);
+  const stroke=Math.sin(time*3.6)*.014;
+  hands[0].height+=stroke;hands[1].height-=stroke;
+  return {right:hands[0],left:hands[1],tool:null};
+ }
  if(contact.kind==='lyre'){
   const a=contact.layout,near=a.z+a.sz*.045;
   return {left:workstationWorldPoint(contact.building,[a.x-.27,1.12,near]),

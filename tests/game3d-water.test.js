@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {river} from '../world.js';
+import {bridgeSpan,river} from '../world.js';
+import {navigationSegmentClear,obstacleIndex} from '../navigation.js';
 import {shoreDistance,surfaceElevation} from '../district3d/terrain.js';
 import {waterDepth,waterSurfaceGeometry,canalArm, wornRoadGeometry,submergedPebbles,canalSection} from '../game3d/water.js';
 
@@ -21,13 +22,34 @@ test('wet inlet continues from real canal through the bank into river water and 
  assert.equal(arm.a.x,x);assert.ok(Math.abs(arm.startHeight-arm.endHeight)<.5);
  const dry=canalArm(state,{...canal,wet:false,progress:.2},1,0);assert.equal(dry.mouth,false);assert.equal(dry.b.x,x+.1);
 });
-test('worn path preserves endpoints and junctions with nonuniform width, shallow bends and fading fringes',()=>{
+test('built streets keep their route centre, shared shoulders and fading edges in either direction',()=>{
  const a={x:2.5,y:4.5},b={x:3.5,y:4.5},before=JSON.stringify([a,b,state]),g=wornRoadGeometry(state,a,b,1.2,.045,1);
  assert.deepEqual(g.centers[0],{x:15,y:27});assert.deepEqual(g.centers.at(-1),{x:21,y:27});
- assert.ok(g.centers.some(p=>Math.abs(p.y-27)>.01));assert.ok(g.colors.some((v,i)=>i%4===3&&v===0));assert.ok(g.colors.some((v,i)=>i%4===3&&v>.6));
+ assert.ok(g.centers.every(p=>p.y===27));assert.ok(g.colors.some((v,i)=>i%4===3&&v===0));assert.ok(g.colors.some((v,i)=>i%4===3&&v>.6));
  assert.ok(new Set(g.widths.map(v=>v.toFixed(3))).size>3);assert.ok(g.positions.length>12);assert.equal(g.indices.length%3,0);
- const next=wornRoadGeometry(state,b,{x:4.5,y:4.5},1.2,.045,1);assert.deepEqual(g.centers.at(-1),next.centers[0]);
+ const next=wornRoadGeometry(state,{x:4.5,y:4.5},b,1.2,.045,1);assert.deepEqual(g.centers.at(-1),next.centers.at(-1));
+ const joint=road=>Array.from({length:7},(_,i)=>{const j=road.positions.length-21+i*3;return [road.positions[j]+road.origin.x,road.positions[j+1],road.positions[j+2]+road.origin.z];});
+ assert.deepEqual(joint(g),joint(next).reverse());
  assert.equal(JSON.stringify([a,b,state]),before);
+});
+
+test('shoulders narrow at buildings and lakes, and bridge decks keep their own surface',()=>{
+ const a={x:1.5,y:2.46},b={x:2.5,y:2.46};
+ for(const s of [
+  {buildings:[{type:'house',x:2,y:3}],world:{lakes:[]}},
+  {buildings:[],world:{lakes:[{cells:[{x:2,y:3}]}]}},
+ ]){
+  const index=obstacleIndex(s.buildings),g=wornRoadGeometry(s,a,b,1.22,.04,1,.85,null,index);
+  assert.ok(g.indices.length);
+  const point=i=>({x:(g.positions[i*3]+g.origin.x)/6,y:(g.positions[i*3+2]+g.origin.z)/6});
+  for(let i=0;i<g.indices.length;i+=3)for(let j=0;j<3;j++){
+   assert.ok(navigationSegmentClear(s,point(g.indices[i+j]),point(g.indices[i+(j+1)%3]),index),'the whole ribbon stays on clear ground');
+  }
+ }
+ const row=8,span=bridgeSpan(row),s={world:{lakes:[]},buildings:[{type:'bridge',x:Math.round(river(row)),y:row}]};
+ const from={x:span.left,y:span.y},to={x:span.right,y:span.y};
+ assert.ok(navigationSegmentClear(s,from,to));
+ assert.equal(wornRoadGeometry(s,from,to).indices.length,0);
 });
 
 test('canal banks taper below the water surface at the river and pebbles form irregular groups',()=>{

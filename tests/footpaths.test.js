@@ -43,7 +43,8 @@ test('Amal follows the same safe worn curve in either direction and after loadin
  assert.deepEqual(visibleFootpaths(loaded),visibleFootpaths(s));
  const reloaded=visibleCitizens(loaded).find(c=>c.id===amal.id);
  assert.deepEqual([reloaded.x,reloaded.y],[forward.x,forward.y]);
- assert.ok(Math.abs(forward.y-amal.y)>.025,'feet visibly depart from the straight grid edge');
+ const drift=Math.abs(forward.y-amal.y);
+ assert.ok(drift>.001&&drift<=.047,'feet follow the small drift of the worn soil');
  const t=(amal.x-a.x)/(b.x-a.x),curve=footpathRibbonPoint(a,b,trail.control,t);
  assert.ok(Math.hypot(curve.x-forward.x,curve.y-forward.y)<1e-8);
  amal.route=[b,a];amal.routeIndex=1;amal.phase='toHome';
@@ -98,4 +99,19 @@ test('curves share their junction and stay out of buildings',()=>{
  assert.ok(second.control,'the next segment can bend in the open');
  assert.deepEqual(footpathRibbonPoint(first.a,first.b,first.control,1),footpathRibbonPoint(second.a,second.b,second.control,0));
  for(let i=1;i<=20;i++)assert.ok(navigationSegmentClear(s,footpathRibbonPoint(second.a,second.b,second.control,(i-1)/20),footpathRibbonPoint(second.a,second.b,second.control,i/20)));
+});
+
+test('open trails drift gently over several plots and approach junctions along the walking direction',()=>{
+ const s=createGame({start:'established'}),y=2.5;
+ for(let i=0;i<6;i++)recordFootsteps(s,point(1.5+i,y),point(2.5+i,y),5);
+ const paths=visibleFootpaths(s);
+ assert.equal(paths.length,6);
+ const drifts=paths.map(({a,b,control})=>{
+  const at=t=>footpathRibbonPoint(a,b,control,t);
+  assert.ok(Math.abs(at(.001).y-y)<1e-6&&Math.abs(at(.999).y-y)<1e-6,'end tangents match the next straight segment');
+  return at(.5).y-y;
+ });
+ assert.ok(drifts.every(d=>Math.abs(d)<=.047));
+ assert.ok(drifts.some(d=>Math.abs(d)>.008));
+ assert.ok(drifts.filter((d,i)=>i&&d*drifts[i-1]<0).length<=2,'the ground does not switch sides on every tile');
 });

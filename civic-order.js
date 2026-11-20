@@ -8,9 +8,10 @@ import {connectedStores,requestTransfer,transferCarried} from './district-logist
 import {foodAvailability,stockStores,takeStock} from './inventory.js';
 import {homeFoodCouriers,homeMealFood,supplyHome} from './households.js';
 import {DAY_SECONDS} from './city-life.js';
-import {watchOnDuty} from './watch-house.js';
+import {watchOnDuty,watchOnShift,watchShift} from './watch-house.js';
 
 const measure=2;
+const copySeconds=5;
 const dayOf=s=>Math.floor(s.simTime/DAY_SECONDS+1e-8);
 export const civicDayBoundary=s=>s.civicOrder?Math.max(.001,(dayOf(s)+1)*DAY_SECONDS-s.simTime):Infinity;
 export const newCivicOrder=()=>({lastDay:-1,law:null,case:null,history:[],years:[]});
@@ -47,9 +48,21 @@ export function publishCivicLaw(s,id){
  const reason=civicLawReason(s,id);if(reason)return {ok:false,reason};
  const author=s.citizens.find(c=>c.id===id);
  s.resources.clay-=1;
- s.civicOrder.law={author:id,name:name(author),year:s.year,day:dayOf(s)};
+ s.civicOrder.law={author:id,name:name(author),year:s.year,day:dayOf(s),copyRemaining:copySeconds};
  notice(s,'Опубликован свод законов',`${name(author)} записал правила помощи голодным дворам.`,'good');
  return {ok:true};
+}
+export function canCopyLaw(s,c){
+ const law=s.civicOrder?.law;
+ if(!law?.copyRemaining||law.author!==c.id||c.calling!=='lawmaker'||c.phase!=='home'||c.health<60)return false;
+ const watch=c.guardPost&&watchShift(s,c);
+ if(watch&&watchOnShift(watch,s.simTime))return false;
+ return !c.pantryTrip&&!c.waterTrip&&!c.craftSite&&!c.seedField&&!c.clinic&&!c.school&&!c.districtJob&&!c.tradeJob&&!c.saleJob&&!c.fireShelter&&!c.floodShelter&&c.clothingTarget===undefined&&!Object.values(c.cargo||{}).some(n=>n>0)&&!Object.values(c.buildCargo||{}).some(n=>n>0);
+}
+export function copyLaw(s,dt){
+ const law=s.civicOrder.law;
+ law.copyRemaining-=dt;
+ if(law.copyRemaining<=1e-8)delete law.copyRemaining;
 }
 function sources(s,home){
  const free=foodAvailability(s,{reconcile:false});
@@ -208,7 +221,7 @@ export function validateCivicOrder(s){
  const incident=q=>q&&number(q.person)&&text(q.name)&&key(q.home)&&number(q.day,dayOf(s))&&(q.aid===undefined||number(q.aid))
   &&(q.guard===undefined||number(q.guard)&&q.guard!==q.person&&text(q.guardName)&&key(q.source)&&number(q.disputeDay,dayOf(s))&&q.disputeDay>=q.day);
  return !!civic&&(civic.lastDay===-1||number(civic.lastDay,dayOf(s)))
-  &&(civic.law===null||civic.law&&number(civic.law.author)&&text(civic.law.name)&&number(civic.law.year,s.year)&&number(civic.law.day,dayOf(s)))
+  &&(civic.law===null||civic.law&&number(civic.law.author)&&text(civic.law.name)&&number(civic.law.year,s.year)&&number(civic.law.day,dayOf(s))&&(civic.law.copyRemaining===undefined||Number.isFinite(civic.law.copyRemaining)&&civic.law.copyRemaining>0&&civic.law.copyRemaining<=copySeconds))
   &&(civic.case===null||incident(civic.case))
   &&Array.isArray(civic.history)&&civic.history.length<=40&&civic.history.every(q=>incident(q)&&number(q.year,s.year)&&number(q.endedDay,dayOf(s))&&q.endedDay>=q.day&&restitution(q)
    &&(['help','closed','reconciled'].includes(q.outcome)||['assault','killing'].includes(q.outcome)&&q.guard!==undefined||q.outcome==='theft'&&key(q.source)&&Number.isFinite(q.amount)&&q.amount>0&&q.amount<=measure))

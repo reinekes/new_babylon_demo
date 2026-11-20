@@ -29,3 +29,21 @@ test('a grocery journey stays intact and frozen during a small funeral, then rea
  assert.ok(s.simTime>clock);assert.ok(home.pantry>0,'the preserved shopper brings groceries home after the funeral');assert.equal(grocer.pantryTrip,undefined);
 });
 test('a family shopper picks another reachable store after the original is demolished',()=>{const s=createGame({start:'established'});s.buildings=s.buildings.filter(b=>b.type!=='field');s.buildings.push({type:'granary',x:10,y:9,level:1});advanceTime(s,.1);assert.ok(s.citizens.some(c=>c.pantryTrip&&c.phase==='toPantrySupply'));emptyStore(s,'9,8');assert.ok(demolish(s,9,8).ok);for(let i=0;i<200;i++){advanceTime(s,.1);assert.ok(decode(encode(s)));}assert.ok(s.buildings.some(b=>b.pantry>0));assert.ok(!s.citizens.some(c=>c.pantryTrip&&c.store==='9,8'));});
+
+test('children keep playing outside every occupied cell of a communal courtyard',async()=>{
+ const {safeLoop,loopMotion}=await import('../local-motion.js');
+ const {insideFootprint}=await import('../footprints.js');
+ const s=createGame({start:'established',seed:137});
+ const home={type:'communalHouse',x:8,y:6,footprint:2};
+ s.buildings=[home];
+ for(const x of [7.5,9.5])for(const y of [5.5,7.5]){
+  const route=safeLoop(s,{x,y});
+  let walked=false,playedAtRest=false;
+  for(let t=0;t<24;t+=.025){
+   const child=loopMotion(route,t,.6,1.3);
+   assert.equal(insideFootprint(home,child.x,child.y),false,`yard crossed from ${x},${y}`);
+   if(child.walking)walked=true;else playedAtRest=true;
+  }
+  assert.ok(walked&&playedAtRest);
+ }
+});

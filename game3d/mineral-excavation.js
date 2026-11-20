@@ -242,3 +242,58 @@ export function openMineralCells(grid,pits,tile){
  }
  return keep;
 }
+// Vertical rays against the same triangles used by the rendered floor and seam.
+// Index projected bounds once, then inspect just the faces under each boot.
+const heightFields=new WeakMap();
+function heightField(mesh){
+ if(heightFields.has(mesh))return heightFields.get(mesh);
+ const cells=new Map(),p=mesh.positions;
+ for(let i=0;i<mesh.indices.length;i+=3){
+  const a=mesh.indices[i]*3,b=mesh.indices[i+1]*3,c=mesh.indices[i+2]*3;
+  const x=p[a],z=p[a+2],ax=p[b]-x,az=p[b+2]-z,bx=p[c]-x,bz=p[c+2]-z,det=ax*bz-az*bx;
+  if(Math.abs(det)<1e-9)continue;
+  const triangle={x,z,ax,az,bx,bz,det,h:p[a+1],ha:p[b+1]-p[a+1],hb:p[c+1]-p[a+1]};
+  const x0=Math.floor(Math.min(x,p[b],p[c])),x1=Math.floor(Math.max(x,p[b],p[c]));
+  const z0=Math.floor(Math.min(z,p[b+2],p[c+2])),z1=Math.floor(Math.max(z,p[b+2],p[c+2]));
+  for(let xx=x0;xx<=x1;xx++)for(let zz=z0;zz<=z1;zz++){const key=xx+','+zz;if(!cells.has(key))cells.set(key,[]);cells.get(key).push(triangle);}
+ }
+ const height=(x,z)=>{
+  let top=-Infinity;
+  for(const t of cells.get(Math.floor(x)+','+Math.floor(z))||[]){
+   const dx=x-t.x,dz=z-t.z,u=(dx*t.bz-dz*t.bx)/t.det,v=(dz*t.ax-dx*t.az)/t.det;
+   if(u>=0&&v>=0&&u+v<=1)top=Math.max(top,t.h+u*t.ha+v*t.hb);
+  }
+  return top;
+ };
+ heightFields.set(mesh,height);return height;
+}
+
+const workCuts=new WeakMap();
+export function registerMineralWorkGeometry(state,bySite){
+ // Rebuilding a district replaces the entire set, including any newly closed cut.
+ workCuts.set(state,bySite);
+}
+export function mineralWorkingPoint(state,site,worker,scale){
+ if(!(scale>0))return null;
+ const geometry=workCuts.get(state)?.get(site.x+','+site.y);
+ if(!geometry||geometry.cut.kind!==site.kind)return null;
+ const {cut,mesh}=geometry,floor=heightField(mesh),seam=heightField(mineralDepositGeometry(site.kind));
+ const angle=mineralDepositAngle(site),cs=Math.cos(angle),sn=Math.sin(angle);
+ const ore=(x,z)=>seam((x*cs-z*sn)/scale,(x*sn+z*cs)/scale)*scale-cut.depth;
+ const boots=[[.34,0],[-.34,0],[0,.34],[0,-.34],[.24,.24],[.24,-.24],[-.24,.24],[-.24,-.24]];
+ const reach=site.kind==='stone'?.72:.76,dx=(worker.x-site.x)*6,dz=(worker.y-site.y)*6;
+ // Search outwards from the worker's actual arrival. A locally flat ledge
+ // fits both boots, and a strike must land on the exposed material beside it.
+ for(const step of [0,.26,.52,.78,1.04,1.30,1.60,2.0,2.4])for(let j=0;j<(step?12:1);j++){
+  const a=j*Math.PI/6,x=dx+step*Math.cos(a),z=dz+step*Math.sin(a),h=floor(x,z);
+  if(!Number.isFinite(h)||ore(x,z)>h+.02||boots.some(([u,v])=>Math.abs(floor(x+u,z+v)-h)>.055||ore(x+u,z+v)>h+.035))continue;
+  const inward=Math.atan2(-z,-x);
+  for(const turn of [0,.36,-.36,.72,-.72,1.08,-1.08,1.44,-1.44]){
+   const tx=x+reach*Math.cos(inward+turn),tz=z+reach*Math.sin(inward+turn),target=ore(tx,tz);
+   if(!Number.isFinite(target)||target<floor(tx,tz)+.035||target<h+.06||target>h+1.23)continue;
+   const stand={x:site.x+x/6,y:site.y+z/6};
+   return {stand,target:{x:site.x+tx/6,y:site.y+tz/6,height:.012},via:[{x:worker.x,y:worker.y},stand]};
+  }
+ }
+ return null;
+}

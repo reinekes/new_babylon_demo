@@ -714,7 +714,7 @@ export function decode(raw){
   if(oldEducation)for(const c of s.citizens)if(buildings.get(c.work)?.type==='healer'){c.role='healer';if(!c.pendingRole)c.calling='healer';c.medicine=newMedicalSkill(s.year,1);}
   if(!validateManualGathering(s))return null;
   if(!validateEducation(s)||!validateDemography(s)||!validateFearCrisis(s)||!validateHouseholds(s)||!validateCommonMeals(s)||!validateFamilyCare(s)||!validateWellbeing(s)||!validateEveningGames(s))return null;
-  if(s.funeral&&!s.funeral.style){const deceased=s.funeral.deceased;s.funeral=null;startFuneral(s,deceased);}
+  if(s.funeral&&!s.funeral.style){const deceased=s.funeral.deceased;s.funeral=null;startFuneral(s,deceased,{legacyRite:true});}
   if(s.cropCalendar!==undefined&&(s.cropCalendar!==AUTUMN_CROPS||!isStrictSumer(s)))return null;
   if(oldFoodPlan)initializeFoodPlan(s);if(!validateMonumentChapter(s)||!validateCrops(s)||!validateRainDiscovery(s)||!validateFieldSoil(s)||!validateRiverFlood(s)||!validateFoodPlan(s))return null;initializeCrops(s,{legacy:oldAgriculture});
   initializeFestival(s,{legacy:true});if(!validateFestival(s)||!validateSunlightFeast(s)||!validateSunlightService(s)||!validateMiracleCelebration(s))return null;

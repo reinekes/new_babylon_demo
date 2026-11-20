@@ -1,6 +1,7 @@
 import {footpathRibbonPoint} from '../footpaths.js';
+import {navigationSegmentClear,obstacleIndex} from '../navigation.js';
 import {createAlluvialWaterMaterial} from './alluvial-water.js';
-import {worldWidth,worldHeight,riverLength,riverPoint,riverAxis,terrain} from '../world.js';
+import {worldWidth,worldHeight,riverLength,riverPoint,riverAxis,terrain,isDryPoint,onBridge} from '../world.js';
 import {shoreDistance,surfaceElevation,TILE} from '../district3d/terrain.js';
 
 import {organicLakeGeometry,visualSurfaceElevation} from './lake-shore.js';
@@ -58,19 +59,60 @@ export function submergedPebbles(s){
  return result;
 }
 
-export function wornRoadGeometry(s,a,b,width=1.12,height=.04,level=1,segmentsPerMeter=2,control=null){
+function dryClearance(s,a,b,index){
+ return isDryPoint(s,a.x,a.y)&&isDryPoint(s,b.x,b.y)&&navigationSegmentClear(s,a,b,index);
+}
+function safeFraction(clear){
+ if(clear(1))return 1;
+ let lo=0,hi=1;
+ for(let i=0;i<7;i++){const mid=(lo+hi)/2;if(clear(mid))lo=mid;else hi=mid;}
+ return lo;
+}
+function shoulderPoint(row,side,t){
+ const d=row.reach*side*t;
+ return {x:row.p.x+row.nx*d,y:row.p.y+row.nz*d};
+}
+
+export function wornRoadGeometry(s,a,b,width=1.12,height=.04,level=1,segmentsPerMeter=2,control=null,obstacles=obstacleIndex(s.buildings||[])){
  const dx=(b.x-a.x)*TILE,dz=(b.y-a.y)*TILE,len=Math.hypot(dx,dz),steps=Math.max(6,Math.ceil(len*segmentsPerMeter)),fractions=[-1,-.82,-.48,0,.48,.82,1],origin={x:(a.x+b.x)*TILE/2,z:(a.y+b.y)*TILE/2};
- const g={positions:[],indices:[],uvs:[],colors:[],centers:[],widths:[],origin};if(!len)return g;
+ const g={positions:[],indices:[],uvs:[],colors:[],centers:[],widths:[],origin};
+ const rows=[];
+ if(!len||!isDryPoint(s,a.x,a.y)||!isDryPoint(s,b.x,b.y)||onBridge(s.buildings||[],origin.x/TILE,origin.z/TILE,s)||!navigationSegmentClear(s,a,b,obstacles))return g;
  for(let j=0;j<=steps;j++){
   const t=j/steps,p=footpathRibbonPoint(a,b,control,t);
-  const vx=control?((control.x-a.x)*(1-t)+(b.x-control.x)*t)*TILE:dx,vz=control?((control.y-a.y)*(1-t)+(b.y-control.y)*t)*TILE:dz;
+  const slope=control?16*t*(1-t)*(1-2*t)*TILE:0;
+  const vx=control?dx+slope*(control.x-(a.x+b.x)/2):dx,vz=control?dz+slope*(control.y-(a.y+b.y)/2):dz;
   const tangent=Math.hypot(vx,vz)||1,nx=-vz/tangent,nz=vx/tangent;
-  const bend=control?0:Math.sin(Math.PI*t)*Math.sin(t*Math.PI*1.3+noise(a.x+b.x,a.y+b.y)*2)*(.13/Math.sqrt(level));
-  const x=p.x*TILE+nx*bend,z=p.y*TILE+nz*bend;
-  g.centers.push({x:j===0?a.x*TILE:j===steps?b.x*TILE:x,y:j===0?a.y*TILE:j===steps?b.y*TILE:z});
-  const half=width*.5*(.94+.12*Math.sin(x*1.7+z*.8)+.065*Math.sin(x*3.4-z*1.2));g.widths.push(half*2);
+  const x=p.x*TILE,z=p.y*TILE;
+  g.centers.push({x,y:z});
+  const half=width*.5*(.98+.035*Math.sin(x*.7+z*.34)+.022*Math.sin(x*1.03-z*.58)),reach=half*1.045/TILE;
+  const row={t,p,x,z,nx,nz,half,reach,trimLeft:1,trimRight:1};
+  for(const side of [-1,1]){
+   const key=side<0?'left':'right';
+   row[key]=safeFraction(k=>dryClearance(s,p,shoulderPoint(row,side,k),obstacles));
+  }
+  rows.push(row);
+ }
+ // The outer edge between two legal samples can still nick a courtyard corner.
+ // Limit the whole span, sharing the most restrictive width at each junction.
+ for(let j=1;j<=steps;j++){
+  const a=rows[j-1],b=rows[j];
+  for(const side of [-1,1]){
+   const key=side<0?'left':'right';
+   const scale=safeFraction(k=>dryClearance(s,shoulderPoint(a,side,a[key]*k),shoulderPoint(b,side,b[key]*k),obstacles));
+   const trim=side<0?'trimLeft':'trimRight';
+   a[trim]=Math.min(a[trim],scale);b[trim]=Math.min(b[trim],scale);
+  }
+ }
+ for(let j=0;j<=steps;j++){
+  const row=rows[j],{t,x,z,nx,nz,half}=row;
+  const left=row.left*row.trimLeft,right=row.right*row.trimRight;
+  g.widths.push(half*(left+right));
   for(let k=0;k<fractions.length;k++){
-   const side=fractions[k],fray=(Math.abs(side)>.8?1+(noise(x+k,z)-.5)*.24:1),X=x+nx*side*half*fray,Z=z+nz*side*half*fray;
+   // Sample shoulders in world coordinates so the same junction has identical
+   // vertices even when a saved segment was laid in the opposite direction.
+   const side=fractions[k],offset=side*half*(side<0?left:right),fray=Math.abs(side)>.8?1+(noise(x+nx*offset,z+nz*offset)-.5)*.09:1;
+   const X=x+nx*offset*fray,Z=z+nz*offset*fray;
    // Gently crowned paving and shoulders of compacted earth meet the original
    // elevation at every endpoint, including at street and footpath junctions.
    const crown=Math.sin(Math.PI*t)*(1-Math.abs(side))*(level>=3?.022:.012);

@@ -1,0 +1,4437 @@
+{
+  "date": "2026-11-20",
+  "method": "Local game index.html, saved ordinary simulation states with initial materials and appointments, 1x samples per role, additional continuous 4x pen approaches.",
+  "roles": [
+    {
+      "id": "auto",
+      "name": "Свободный работник",
+      "category": "calling",
+      "scenes": [
+        "clay:auto"
+      ],
+      "action": "Автораспределение привело жителя к глине, он работал у стола двора.",
+      "outcome": "18 ед. глины в истории здания.",
+      "test": "tests/working-city.test.js"
+    },
+    {
+      "id": "builder",
+      "name": "Строитель",
+      "category": "calling",
+      "scenes": [
+        "house:builder"
+      ],
+      "action": "Пришёл к оплаченной стройке и работал инструментом у лесов после подвоза материалов.",
+      "outcome": "Строительство одного дома завершилось.",
+      "test": "tests/construction.test.js"
+    },
+    {
+      "id": "carrier",
+      "name": "Носильщик",
+      "category": "calling",
+      "scenes": [
+        "depot",
+        "freight-delivery"
+      ],
+      "action": "Взял древесину у источника и передал груз в приёмном дворе.",
+      "outcome": "Один рейс №1, на приёмке 6 ед. древесины у жителя №8.",
+      "test": "tests/carrier-depot.test.js"
+    },
+    {
+      "id": "production",
+      "name": "Работник производства",
+      "category": "calling",
+      "scenes": [
+        "clay:production"
+      ],
+      "action": "Пришёл на назначенную работу и обрабатывал сырьё у оборудования.",
+      "outcome": "18 ед. глины в истории здания.",
+      "test": "tests/professions.test.js"
+    },
+    {
+      "id": "healer",
+      "name": "Лекарь",
+      "category": "calling",
+      "scenes": [
+        "healer"
+      ],
+      "action": "Работал с волокнистой повязкой у конкретного пациента при запасах еды и тростника.",
+      "outcome": "Здоровье пациента начало расти с 44 до 44,069.",
+      "test": "tests/healer.test.js"
+    },
+    {
+      "id": "tailor",
+      "name": "Мастер одежды",
+      "category": "calling",
+      "scenes": [
+        "tailor"
+      ],
+      "action": "Доставленная ткань попала на рабочий стол, портной обрабатывал её обеими руками.",
+      "outcome": "1 предмет одежды.",
+      "test": "tests/clothing.test.js"
+    },
+    {
+      "id": "watercarrier",
+      "name": "Водонос",
+      "category": "calling",
+      "scenes": [
+        "waterpoint"
+      ],
+      "action": "Пришёл к воде, наклонил сосуд у уреза и вышел на маршрут с водой.",
+      "outcome": "В сосуде переносилось 12 ед. воды.",
+      "test": "tests/water.test.js"
+    },
+    {
+      "id": "farmer",
+      "name": "Земледелец",
+      "category": "calling",
+      "scenes": [
+        "field"
+      ],
+      "action": "Дошёл до полосы посева и работал у земли с доставленными семенами.",
+      "outcome": "На выбранном поле засеяно 100% площади.",
+      "test": "tests/irrigated-harvest.test.js"
+    },
+    {
+      "id": "gardener",
+      "name": "Садовник",
+      "category": "calling",
+      "scenes": [
+        "garden"
+      ],
+      "action": "Подошёл к плодоносящему участку и работал крюком у выбранной пальмы.",
+      "outcome": "3,675 ед. фиников в продовольствии, первая доставка на склад 1,225.",
+      "test": "tests/orchard-maturity.test.js"
+    },
+    {
+      "id": "lumberjack",
+      "name": "Лесоруб",
+      "category": "calling",
+      "scenes": [
+        "logging"
+      ],
+      "action": "Подошёл к выделенному дереву и работал топором.",
+      "outcome": "6 ед. древесины.",
+      "test": "tests/forest-stock.test.js"
+    },
+    {
+      "id": "clayworker",
+      "name": "Добытчик глины",
+      "category": "calling",
+      "scenes": [
+        "clay",
+        "large-clay"
+      ],
+      "action": "В малом дворе обрабатывал глину на площадке, в большом спустился к источнику и работал мотыгой.",
+      "outcome": "18 ед. в малом дворе, в большом подтверждена точка добычи на участке 9,6.",
+      "test": "tests/clay-stock.test.js"
+    },
+    {
+      "id": "reedcutter",
+      "name": "Заготовитель тростника",
+      "category": "calling",
+      "scenes": [
+        "reed"
+      ],
+      "action": "Подошёл к реальному участку и срезал стебли рабочим лезвием.",
+      "outcome": "10 ед. тростника.",
+      "test": "tests/reed-stock.test.js"
+    },
+    {
+      "id": "quarrier",
+      "name": "Каменотёс",
+      "category": "calling",
+      "scenes": [
+        "quarry"
+      ],
+      "action": "Дошёл до породной стенки и бил по выбранному источнику киркой.",
+      "outcome": "5 ед. камня.",
+      "test": "tests/stone-stock.test.js"
+    },
+    {
+      "id": "potter",
+      "name": "Гончар",
+      "category": "calling",
+      "scenes": [
+        "pottery"
+      ],
+      "action": "Пришёл к кругу, формовал сосуды из доставленного сырья, партия прошла сушку и обжиг.",
+      "outcome": "2 сосуда.",
+      "test": "tests/artisan-integration.test.js"
+    },
+    {
+      "id": "brewer",
+      "name": "Пивовар",
+      "category": "calling",
+      "scenes": [
+        "brewery"
+      ],
+      "action": "Мешал содержимое чана после доставки припасов, воды и сосуда.",
+      "outcome": "3 ед. пива.",
+      "test": "tests/artisan-integration.test.js"
+    },
+    {
+      "id": "weaver",
+      "name": "Ткач",
+      "category": "calling",
+      "scenes": [
+        "weaver",
+        "linenYard"
+      ],
+      "action": "Работал на шерстяном станке. Во льняном дворе обрабатывал волокно перед ткачеством.",
+      "outcome": "1 ед. шерстяной ткани и 2 ед. льняной ткани в отдельных сценах.",
+      "test": "tests/textiles.test.js"
+    },
+    {
+      "id": "shepherd",
+      "name": "Пастух",
+      "category": "calling",
+      "scenes": [
+        "sheepfold"
+      ],
+      "action": "Дошёл до стола у наружного угла ограды и разобрал собранную шерсть.",
+      "outcome": "4 ед. шерсти.",
+      "test": "tests/textiles.test.js"
+    },
+    {
+      "id": "dairyman",
+      "name": "Молочник",
+      "category": "calling",
+      "scenes": [
+        "cowshed"
+      ],
+      "action": "Прошёл через створки коровника, сел на табурет и доил закреплённую у стойла корову.",
+      "outcome": "3 ед. молока.",
+      "test": "tests/dairy.test.js"
+    },
+    {
+      "id": "musician",
+      "name": "Музыкант",
+      "category": "calling",
+      "scenes": [
+        "musicHouse",
+        "lyre"
+      ],
+      "action": "Первый играл на каменном инструменте, второй отдельно работал руками у струн лиры.",
+      "outcome": "Два исполнителя вместе, первая завершённая партия принесла 0,12 престижа.",
+      "test": "tests/music-workstation.test.js"
+    },
+    {
+      "id": "fisher",
+      "name": "Рыбак",
+      "category": "calling",
+      "scenes": [
+        "fishing-rod",
+        "fishing"
+      ],
+      "action": "Взял удочку, вышел к рыбному месту и поднял улов.",
+      "outcome": "Носильщик №6 передал 5 ед. рыбы в хранилище 9,8.",
+      "test": "tests/harvest-handling.test.js"
+    },
+    {
+      "id": "hunter",
+      "name": "Охотник",
+      "category": "calling",
+      "scenes": [
+        "hunting-drag",
+        "hunting"
+      ],
+      "action": "После охоты потянул ту же газель за верёвку и разделал её у стола.",
+      "outcome": "Носильщик №7 доставил 4 ед. мяса в хранилище 9,8.",
+      "test": "tests/harvest-handling.test.js"
+    },
+    {
+      "id": "brickmaker",
+      "name": "Формовщик кирпича",
+      "category": "calling",
+      "scenes": [
+        "brickyard"
+      ],
+      "action": "Пришёл к форме, вдавил глину и оставил кирпичи сохнуть.",
+      "outcome": "4 сырцовых кирпича.",
+      "test": "tests/brick-integration.test.js"
+    },
+    {
+      "id": "kilnworker",
+      "name": "Обжигальщик",
+      "category": "calling",
+      "scenes": [
+        "kiln"
+      ],
+      "action": "Обрабатывал загруженную партию у печи.",
+      "outcome": "4 обожжённых кирпича.",
+      "test": "tests/kiln-integration.test.js"
+    },
+    {
+      "id": "priest",
+      "name": "Жрец",
+      "category": "calling",
+      "scenes": [
+        "shrine",
+        "ziggurat"
+      ],
+      "action": "Подходил к жертвенной чаше в святилище и в зиккурате.",
+      "outcome": "В обоих зданиях записаны вера и престиж.",
+      "test": "tests/service-court.test.js"
+    },
+    {
+      "id": "scribe",
+      "name": "Писец",
+      "category": "calling",
+      "scenes": [
+        "granary"
+      ],
+      "action": "Дошёл до рабочего места в амбаре и отмечал запасы стилусом на табличке.",
+      "outcome": "Табличка подписана жителем №0 в момент симуляции 11,2.",
+      "test": "tests/scribes.test.js"
+    },
+    {
+      "id": "lawmaker",
+      "name": "Законодатель",
+      "category": "calling",
+      "scenes": [
+        "lawmaker"
+      ],
+      "action": "После публикации оттискивал знаки на глиняной табличке у собственного дома.",
+      "outcome": "У свода указан автор №0, израсходована одна единица глины.",
+      "test": "tests/lawmaker-action.test.js"
+    },
+    {
+      "id": "baker",
+      "name": "Пекарь",
+      "category": "duty",
+      "scenes": [
+        "bakery"
+      ],
+      "action": "Работал у зернотёрки, затем перешёл к печи с лопатой.",
+      "outcome": "5 ед. готовой пищи.",
+      "test": "tests/artisan-integration.test.js"
+    },
+    {
+      "id": "cheesemaker",
+      "name": "Сыродел",
+      "category": "duty",
+      "scenes": [
+        "dairyStore"
+      ],
+      "action": "У стола обрабатывал доставленные молоко и сосуд.",
+      "outcome": "3 ед. съестного запаса.",
+      "test": "tests/artisan-integration.test.js"
+    },
+    {
+      "id": "basketmaker",
+      "name": "Плетельщик корзин",
+      "category": "duty",
+      "scenes": [
+        "basketry"
+      ],
+      "action": "Плёл тростник у заготовки корзины.",
+      "outcome": "1 готовая корзина.",
+      "test": "tests/basketry.test.js"
+    },
+    {
+      "id": "matmaker",
+      "name": "Мастер циновок",
+      "category": "duty",
+      "scenes": [
+        "matYard"
+      ],
+      "action": "Укладывал полосы тростника на низкой рабочей поверхности.",
+      "outcome": "1 готовая циновка.",
+      "test": "tests/artisan-interaction.test.js"
+    },
+    {
+      "id": "joiner",
+      "name": "Столяр",
+      "category": "duty",
+      "scenes": [
+        "joineryYard"
+      ],
+      "action": "Работал теслом у верстака после доставки строевого леса.",
+      "outcome": "1 готовая столярная деталь.",
+      "test": "tests/joinery.test.js"
+    },
+    {
+      "id": "coppersmith",
+      "name": "Мастер по меди",
+      "category": "duty",
+      "scenes": [
+        "coppersmith"
+      ],
+      "action": "Работал с тиглем у формы, куда поступила медь.",
+      "outcome": "1 готовый топор.",
+      "test": "tests/copper-tools.test.js"
+    },
+    {
+      "id": "guard",
+      "name": "Стражник",
+      "category": "duty",
+      "scenes": [
+        "watchHouse"
+      ],
+      "action": "Шёл ночным патрульным маршрутом от караульного двора.",
+      "outcome": "Маршрут включал 3 точки, зафиксирован проход более 1 клетки.",
+      "test": "tests/watch-house.test.js"
+    },
+    {
+      "id": "medicalStudent",
+      "name": "Ученик лекаря",
+      "category": "duty",
+      "scenes": [
+        "study"
+      ],
+      "action": "Пришёл в храм и упражнялся стилусом на собственной табличке.",
+      "outcome": "У счётчика обучения появился прогресс, исходный уровень 0.",
+      "test": "tests/medical-education.test.js"
+    },
+    {
+      "id": "canalworker",
+      "name": "Рабочий на расчистке канала",
+      "category": "duty",
+      "scenes": [
+        "canal"
+      ],
+      "action": "Подошёл к заиленной кромке и счищал осадок инструментом.",
+      "outcome": "Ил уменьшился с 0,99844 до нуля, вода дошла до нижнего поля.",
+      "test": "tests/service-court.test.js"
+    },
+    {
+      "id": "marketPorter",
+      "name": "Носильщик рынка",
+      "category": "duty",
+      "scenes": [
+        "market"
+      ],
+      "action": "Взял закупку у рынка и принёс камень на склад.",
+      "outcome": "№8 доставил все 3 ед. камня.",
+      "test": "tests/trading.test.js"
+    },
+    {
+      "id": "merchant",
+      "name": "Купец каравана",
+      "category": "duty",
+      "scenes": [
+        "merchant"
+      ],
+      "action": "Шёл вместе с вьючным обозом по собственной торговой дороге.",
+      "outcome": "12 точек пути, торговля завершилась.",
+      "test": "tests/trading.test.js"
+    }
+  ],
+  "scenes": [
+    {
+      "id": "clay:auto",
+      "role": "auto",
+      "frame": 1,
+      "label": "Свободный работник",
+      "actorId": 0,
+      "workplace": "7,7",
+      "activity": {
+        "t": 4.049999999999999,
+        "phase": "working",
+        "kind": "gathering",
+        "task": "clay",
+        "stage": "working",
+        "contact": "clay",
+        "tool": "clay",
+        "worker": [
+          7.5,
+          7.5
+        ],
+        "feet": {
+          "x": 7.323333333333333,
+          "y": 7.403333333333333,
+          "height": 0
+        },
+        "pathToActionTiles": 3.8488239012413277
+      },
+      "observedPhases": [
+        "toPantrySupply",
+        "toPantryHome",
+        "home",
+        "toWork",
+        "working"
+      ],
+      "productionOrOutcome": {
+        "clay": 18
+      },
+      "observedTransfers": [],
+      "webgl": {
+        "version": 2,
+        "entry": "/index.html",
+        "samples": 52,
+        "visibleMeshes": 10,
+        "feetDisplacementM": 0,
+        "palmDisplacementM": 0.018082,
+        "outfit": "clayworker",
+        "tools": [],
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheet": "roadmap/evidence/2026-11-20/profession-actions/actions-1.webp"
+    },
+    {
+      "id": "house:builder",
+      "role": "builder",
+      "frame": 2,
+      "label": "Строитель",
+      "actorId": 0,
+      "workplace": "10,9",
+      "activity": {
+        "t": 6.750000000000005,
+        "phase": "constructing",
+        "kind": "building",
+        "stage": "working",
+        "contact": "building",
+        "worker": [
+          10.5,
+          9.5
+        ],
+        "feet": {
+          "x": 10.453333333333333,
+          "y": 9.533333333333333,
+          "height": 0
+        },
+        "pathToActionTiles": 4.811141470904541
+      },
+      "observedPhases": [
+        "toPantrySupply",
+        "toPantryHome",
+        "home",
+        "toSite",
+        "waiting",
+        "constructing",
+        "toHome"
+      ],
+      "productionOrOutcome": {
+        "built": 1
+      },
+      "observedTransfers": [],
+      "webgl": {
+        "version": 2,
+        "entry": "/index.html",
+        "samples": 33,
+        "visibleMeshes": 12,
+        "feetDisplacementM": 0,
+        "palmDisplacementM": 0.129726,
+        "outfit": "builder",
+        "tools": [
+          "worker-tool-handle",
+          "builder-tool-blade"
+        ],
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheet": "roadmap/evidence/2026-11-20/profession-actions/actions-1.webp"
+    },
+    {
+      "id": "depot",
+      "role": "carrier",
+      "frame": 3,
+      "label": "Носильщик берёт груз",
+      "actorId": 8,
+      "workplace": null,
+      "activity": {
+        "t": 0.9500000000000005,
+        "kind": "collect",
+        "stage": "toDistrictSupply",
+        "phase": "toDistrictSupply",
+        "contact": "collect"
+      },
+      "observedPhases": [],
+      "productionOrOutcome": {
+        "realJob": 1,
+        "transferStage": "collect",
+        "cargo": {}
+      },
+      "observedTransfers": [],
+      "webgl": {
+        "version": 2,
+        "entry": "/index.html",
+        "samples": 44,
+        "visibleMeshes": 10,
+        "feetDisplacementM": 1.255022,
+        "palmDisplacementM": 1.993983,
+        "outfit": "carrier",
+        "tools": [
+          "cargo-bundle",
+          "cargo-bundle-binding"
+        ],
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheet": "roadmap/evidence/2026-11-20/profession-actions/actions-1.webp"
+    },
+    {
+      "id": "freight-delivery",
+      "role": "carrier",
+      "frame": 4,
+      "label": "Носильщик сдаёт груз",
+      "actorId": 8,
+      "workplace": null,
+      "activity": {
+        "t": 3.624999999999991,
+        "kind": "receive",
+        "stage": "toDistrictStore",
+        "phase": "toDistrictStore",
+        "contact": "receive"
+      },
+      "observedPhases": [],
+      "productionOrOutcome": {
+        "realJob": 1,
+        "transferStage": "receive",
+        "cargo": {
+          "wood": 6
+        }
+      },
+      "observedTransfers": [],
+      "webgl": {
+        "version": 2,
+        "entry": "/index.html",
+        "samples": 51,
+        "visibleMeshes": 16,
+        "feetDisplacementM": 0.710823,
+        "palmDisplacementM": 1.472684,
+        "outfit": "carrier",
+        "tools": [
+          "cargo-bundle",
+          "cargo-bundle-binding"
+        ],
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheet": "roadmap/evidence/2026-11-20/profession-actions/actions-1.webp"
+    },
+    {
+      "id": "clay:production",
+      "role": "production",
+      "frame": 5,
+      "label": "Работник производства",
+      "actorId": 0,
+      "workplace": "7,7",
+      "activity": {
+        "t": 3.449999999999999,
+        "phase": "working",
+        "kind": "gathering",
+        "task": "clay",
+        "stage": "working",
+        "contact": "clay",
+        "tool": "clay",
+        "worker": [
+          7.5,
+          7.5
+        ],
+        "feet": {
+          "x": 7.323333333333333,
+          "y": 7.403333333333333,
+          "height": 0
+        },
+        "pathToActionTiles": 3.8258017914164855
+      },
+      "observedPhases": [
+        "toPantrySupply",
+        "toPantryHome",
+        "home",
+        "toWork",
+        "working"
+      ],
+      "productionOrOutcome": {
+        "clay": 18
+      },
+      "observedTransfers": [],
+      "webgl": {
+        "version": 2,
+        "entry": "/index.html",
+        "samples": 52,
+        "visibleMeshes": 11,
+        "feetDisplacementM": 0,
+        "palmDisplacementM": 0.018082,
+        "outfit": "clayworker",
+        "tools": [],
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheet": "roadmap/evidence/2026-11-20/profession-actions/actions-1.webp"
+    },
+    {
+      "id": "healer",
+      "role": "healer",
+      "frame": 6,
+      "label": "Лекарь",
+      "actorId": 0,
+      "workplace": "8,9",
+      "activity": {
+        "t": 4.950000000000001,
+        "phase": "working",
+        "kind": "healing",
+        "stage": "working",
+        "contact": "healing",
+        "tool": "care",
+        "worker": [
+          8.5,
+          9.5
+        ],
+        "feet": {
+          "x": 7.901666666666666,
+          "y": 9.146666666666667
+        },
+        "pathToActionTiles": 2.8900000000000077
+      },
+      "observedPhases": [
+        "toPantrySupply",
+        "toPantryHome",
+        "home",
+        "toWork",
+        "working"
+      ],
+      "productionOrOutcome": {
+        "health": 44.0688
+      },
+      "observedTransfers": [],
+      "webgl": {
+        "version": 2,
+        "entry": "/index.html",
+        "samples": 50,
+        "visibleMeshes": 13,
+        "feetDisplacementM": 0,
+        "palmDisplacementM": 0.004143,
+        "outfit": "healer",
+        "tools": [
+          "healer-fibre-pad"
+        ],
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheet": "roadmap/evidence/2026-11-20/profession-actions/actions-1.webp"
+    },
+    {
+      "id": "tailor",
+      "role": "tailor",
+      "frame": 7,
+      "label": "Мастер одежды",
+      "actorId": 0,
+      "workplace": "8,9",
+      "activity": {
+        "t": 3.149999999999999,
+        "phase": "working",
+        "kind": "weaving",
+        "task": "tailor",
+        "stage": "working",
+        "contact": "table",
+        "tool": "tailor",
+        "worker": [
+          8.5,
+          9.5
+        ],
+        "feet": {
+          "x": 8.323333333333334,
+          "y": 9.403333333333332,
+          "height": 0
+        },
+        "pathToActionTiles": 2.8900000000000077
+      },
+      "observedPhases": [
+        "toPantrySupply",
+        "toPantryHome",
+        "home",
+        "toWork",
+        "working",
+        "toCraftSupply",
+        "toHome"
+      ],
+      "productionOrOutcome": {
+        "clothing": 1
+      },
+      "observedTransfers": [],
+      "webgl": {
+        "version": 2,
+        "entry": "/index.html",
+        "samples": 52,
+        "visibleMeshes": 12,
+        "feetDisplacementM": 0,
+        "palmDisplacementM": 0.018086,
+        "outfit": "tailor",
+        "tools": [],
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheet": "roadmap/evidence/2026-11-20/profession-actions/actions-1.webp"
+    },
+    {
+      "id": "waterpoint",
+      "role": "watercarrier",
+      "frame": 8,
+      "label": "Водонос",
+      "actorId": 0,
+      "workplace": "13,11",
+      "activity": {
+        "t": 60.14999999999961,
+        "phase": "waterTrip",
+        "kind": "gathering",
+        "task": "water-filling",
+        "stage": "working",
+        "worker": [
+          13.5,
+          11.5
+        ],
+        "pathToActionTiles": 20.559694225991954
+      },
+      "observedPhases": [
+        "toPantrySupply",
+        "toPantryHome",
+        "home",
+        "toWork",
+        "working",
+        "toHome",
+        "home",
+        "toWork",
+        "working",
+        "waterTrip"
+      ],
+      "productionOrOutcome": {
+        "filledWater": 12
+      },
+      "observedTransfers": [],
+      "webgl": {
+        "version": 2,
+        "entry": "/index.html",
+        "samples": 51,
+        "visibleMeshes": 14,
+        "feetDisplacementM": 0,
+        "palmDisplacementM": 0.013893,
+        "outfit": "watercarrier",
+        "tools": [
+          "water-jar"
+        ],
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheet": "roadmap/evidence/2026-11-20/profession-actions/actions-1.webp"
+    },
+    {
+      "id": "field",
+      "role": "farmer",
+      "frame": 9,
+      "label": "Земледелец",
+      "actorId": 0,
+      "workplace": "12,8",
+      "activity": {
+        "t": 9.750000000000012,
+        "phase": "working",
+        "kind": "farming",
+        "task": "sowing",
+        "stage": "working",
+        "contact": "farming",
+        "tool": "sowing",
+        "worker": [
+          12.5,
+          8.5
+        ],
+        "feet": {
+          "x": 12.436666666666667,
+          "y": 8.516666666666667,
+          "height": 0
+        },
+        "pathToActionTiles": 5.890000000000008
+      },
+      "observedPhases": [
+        "toPantrySupply",
+        "toPantryHome",
+        "home",
+        "toWork",
+        "working"
+      ],
+      "productionOrOutcome": {
+        "sown": 1
+      },
+      "observedTransfers": [],
+      "webgl": {
+        "version": 2,
+        "entry": "/index.html",
+        "samples": 53,
+        "visibleMeshes": 13,
+        "feetDisplacementM": 0.085715,
+        "palmDisplacementM": 0.08382,
+        "outfit": "farmer",
+        "tools": [],
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheet": "roadmap/evidence/2026-11-20/profession-actions/actions-1.webp"
+    },
+    {
+      "id": "garden",
+      "role": "gardener",
+      "frame": 10,
+      "label": "Садовник",
+      "actorId": 0,
+      "workplace": "10,9",
+      "activity": {
+        "t": 193.65000000000447,
+        "phase": "working",
+        "kind": "gathering",
+        "task": "garden",
+        "stage": "working",
+        "contact": "gathering-site",
+        "tool": "garden",
+        "worker": [
+          11.31,
+          10
+        ],
+        "target": "deposit:11,10:0",
+        "feet": {
+          "x": 11.335371703541881,
+          "y": 10.039015189082782
+        },
+        "pathToActionTiles": 42.8135876366612
+      },
+      "observedPhases": [
+        "toPantrySupply",
+        "toPantryHome",
+        "home",
+        "waterTrip",
+        "home",
+        "waterTrip",
+        "home",
+        "waterTrip",
+        "home",
+        "toWork",
+        "working",
+        "toWorkshop",
+        "working",
+        "toWorkshop",
+        "working"
+      ],
+      "productionOrOutcome": {
+        "food": 3.675
+      },
+      "observedTransfers": [
+        {
+          "id": 26,
+          "resource": "food",
+          "quantity": 1.2249999999999999,
+          "target": "9,8"
+        }
+      ],
+      "webgl": {
+        "version": 2,
+        "entry": "/index.html",
+        "samples": 50,
+        "visibleMeshes": 13,
+        "feetDisplacementM": 0,
+        "palmDisplacementM": 0.003822,
+        "outfit": "gardener",
+        "tools": [],
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheet": "roadmap/evidence/2026-11-20/profession-actions/actions-2.webp",
+      "implementContact": {
+        "mode": "garden",
+        "id": 0,
+        "tool": "date-bunch-hook",
+        "triangles": 1480,
+        "samples": 71,
+        "minMetres": 0.00594648616429626,
+        "maxMetres": 0.007419935801889603,
+        "contactFrames": 70,
+        "nearestSurface": [
+          67.06682240637527,
+          3.4363632975014538,
+          59.2213689949498
+        ],
+        "nearestImplement": [
+          67.06135101523995,
+          3.435461769739166,
+          59.21922147907317
+        ],
+        "feet": [
+          66.38579610020858,
+          0,
+          59.02472735595592
+        ],
+        "camera": {
+          "alpha": 1.9775576599892424,
+          "beta": 1.27,
+          "score": 4
+        },
+        "webgl": 2,
+        "glError": 0,
+        "errors": [],
+        "http": []
+      }
+    },
+    {
+      "id": "logging",
+      "role": "lumberjack",
+      "frame": 11,
+      "label": "Лесоруб",
+      "actorId": 0,
+      "workplace": "6,8",
+      "activity": {
+        "t": 4.65,
+        "phase": "working",
+        "kind": "logging",
+        "task": "logging",
+        "stage": "working",
+        "contact": "gathering-site",
+        "tool": "logging",
+        "worker": [
+          7.31,
+          8
+        ],
+        "target": "deposit:7,8:0",
+        "feet": {
+          "x": 7.287305539126959,
+          "y": 7.959874943197868
+        },
+        "pathToActionTiles": 4.720980827586952
+      },
+      "observedPhases": [
+        "toPantrySupply",
+        "toPantryHome",
+        "home",
+        "toWork",
+        "working",
+        "toWorkshop",
+        "working"
+      ],
+      "productionOrOutcome": {
+        "wood": 6
+      },
+      "observedTransfers": [],
+      "webgl": {
+        "version": 2,
+        "entry": "/index.html",
+        "samples": 52,
+        "visibleMeshes": 13,
+        "feetDisplacementM": 0,
+        "palmDisplacementM": 0.130137,
+        "outfit": "lumberjack",
+        "tools": [
+          "worker-tool-handle"
+        ],
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheet": "roadmap/evidence/2026-11-20/profession-actions/actions-2.webp",
+      "implementContact": {
+        "mode": "logging",
+        "id": 0,
+        "tool": "logging-axe-head",
+        "triangles": 526,
+        "samples": 50,
+        "minMetres": 2.0546406922434224e-05,
+        "maxMetres": 0.014266836804650244,
+        "contactFrames": 49,
+        "nearestSurface": [
+          43.29609464232896,
+          1.182141274083945,
+          46.92559734160459
+        ],
+        "nearestImplement": [
+          43.296106908768415,
+          1.1821447314321996,
+          46.92561345793307
+        ],
+        "feet": [
+          43.69429492427428,
+          0,
+          47.70702429931727
+        ],
+        "camera": {
+          "alpha": 2.7959734109149705,
+          "beta": 1.27,
+          "score": 4
+        },
+        "webgl": 2,
+        "glError": 0,
+        "errors": [],
+        "http": []
+      }
+    },
+    {
+      "id": "clay",
+      "role": "clayworker",
+      "frame": 12,
+      "label": "Малый глиняный карьер",
+      "actorId": 0,
+      "workplace": "7,7",
+      "activity": {
+        "t": 3.449999999999999,
+        "phase": "working",
+        "kind": "gathering",
+        "task": "clay",
+        "stage": "working",
+        "contact": "clay",
+        "tool": "clay",
+        "worker": [
+          7.5,
+          7.5
+        ],
+        "feet": {
+          "x": 7.323333333333333,
+          "y": 7.403333333333333,
+          "height": 0
+        },
+        "pathToActionTiles": 3.8258017914164855
+      },
+      "observedPhases": [
+        "toPantrySupply",
+        "toPantryHome",
+        "home",
+        "toWork",
+        "working"
+      ],
+      "productionOrOutcome": {
+        "clay": 18
+      },
+      "observedTransfers": [],
+      "webgl": {
+        "version": 2,
+        "entry": "/index.html",
+        "samples": 52,
+        "visibleMeshes": 11,
+        "feetDisplacementM": 0,
+        "palmDisplacementM": 0.018082,
+        "outfit": "clayworker",
+        "tools": [],
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheet": "roadmap/evidence/2026-11-20/profession-actions/actions-2.webp",
+      "implementContact": {
+        "mode": "clay",
+        "id": 0,
+        "tool": "left-and-right-hands",
+        "triangles": 44,
+        "samples": 69,
+        "minMetres": 0.004490260401823379,
+        "maxMetres": 0.004842185974121005,
+        "contactFrames": 68,
+        "nearestSurface": [
+          44.129859924316406,
+          0.9963731092375928,
+          44.452571643785205
+        ],
+        "nearestImplement": [
+          44.129859924316406,
+          0.9952391386032104,
+          44.44822692871094
+        ],
+        "feet": [
+          44.230000000000004,
+          -0.002425833655022913,
+          44.709999999999994
+        ],
+        "camera": {
+          "alpha": -0.24532559561963985,
+          "beta": 1.27,
+          "score": 4
+        },
+        "webgl": 2,
+        "glError": 0,
+        "errors": [],
+        "http": []
+      }
+    },
+    {
+      "id": "large-clay",
+      "role": "clayworker",
+      "frame": 13,
+      "label": "Большой глиняный карьер",
+      "actorId": 7,
+      "workplace": "9,6",
+      "activity": {
+        "t": 17.899999999999984,
+        "kind": "gathering",
+        "task": "clay",
+        "stage": "working",
+        "contact": "gathering-site",
+        "target": "deposit:9,7:0"
+      },
+      "observedPhases": [],
+      "productionOrOutcome": {
+        "source": "9,6",
+        "resource": "clay"
+      },
+      "observedTransfers": [],
+      "webgl": {
+        "version": 2,
+        "entry": "/index.html",
+        "samples": 52,
+        "visibleMeshes": 12,
+        "feetDisplacementM": 0,
+        "palmDisplacementM": 0.095734,
+        "outfit": "clayworker",
+        "tools": [],
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheet": "roadmap/evidence/2026-11-20/profession-actions/actions-2.webp",
+      "implementContact": {
+        "mode": "large-clay",
+        "id": 7,
+        "tool": "clay-hoe-edge",
+        "triangles": 666,
+        "samples": 80,
+        "minMetres": 1.4426245076104691e-05,
+        "maxMetres": 0.0747555494752306,
+        "contactFrames": 53,
+        "nearestSurface": [
+          55.502599229271965,
+          -1.887271557141837,
+          42.015289438808374
+        ],
+        "nearestImplement": [
+          55.50259441873431,
+          -1.8872818353176117,
+          42.015280531823635
+        ],
+        "feet": [
+          56.379999999999995,
+          -2.1500000000000004,
+          42
+        ],
+        "camera": {
+          "alpha": 6.270628617613399,
+          "beta": 1.27,
+          "score": 4
+        },
+        "webgl": 2,
+        "glError": 0,
+        "errors": [],
+        "http": []
+      }
+    },
+    {
+      "id": "reed",
+      "role": "reedcutter",
+      "frame": 14,
+      "label": "Заготовитель тростника",
+      "actorId": 0,
+      "workplace": "12,10",
+      "activity": {
+        "t": 7.350000000000007,
+        "phase": "working",
+        "kind": "gathering",
+        "task": "reed",
+        "stage": "working",
+        "contact": "gathering-site",
+        "tool": "reed",
+        "worker": [
+          13.31,
+          11
+        ],
+        "target": "deposit:13,11:0",
+        "feet": {
+          "x": 13.303733811856574,
+          "y": 10.99355799450191
+        },
+        "pathToActionTiles": 9.172939248348474
+      },
+      "observedPhases": [
+        "toPantrySupply",
+        "toPantryHome",
+        "home",
+        "toWork",
+        "working",
+        "toWorkshop",
+        "working",
+        "toWorkshop",
+        "working"
+      ],
+      "productionOrOutcome": {
+        "reed": 10
+      },
+      "observedTransfers": [],
+      "webgl": {
+        "version": 2,
+        "entry": "/index.html",
+        "samples": 52,
+        "visibleMeshes": 13,
+        "feetDisplacementM": 0,
+        "palmDisplacementM": 0.019724,
+        "outfit": "reedcutter",
+        "tools": [],
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheet": "roadmap/evidence/2026-11-20/profession-actions/actions-2.webp"
+    },
+    {
+      "id": "quarry",
+      "role": "quarrier",
+      "frame": 15,
+      "label": "Каменотёс",
+      "actorId": 0,
+      "workplace": "10,9",
+      "activity": {
+        "t": 6.450000000000005,
+        "phase": "working",
+        "kind": "quarry",
+        "task": "quarry",
+        "stage": "working",
+        "contact": "gathering-site",
+        "tool": "quarry",
+        "worker": [
+          10.31,
+          10
+        ],
+        "target": "deposit:10,10:0",
+        "feet": {
+          "x": 10.31,
+          "y": 10
+        },
+        "pathToActionTiles": 7.567043237814442
+      },
+      "observedPhases": [
+        "toPantrySupply",
+        "toPantryHome",
+        "home",
+        "toWork",
+        "working",
+        "toWorkshop",
+        "working"
+      ],
+      "productionOrOutcome": {
+        "stone": 5
+      },
+      "observedTransfers": [],
+      "webgl": {
+        "version": 2,
+        "entry": "/index.html",
+        "samples": 52,
+        "visibleMeshes": 13,
+        "feetDisplacementM": 0,
+        "palmDisplacementM": 0.147315,
+        "outfit": "quarrier",
+        "tools": [
+          "worker-tool-handle",
+          "quarry-pick-head"
+        ],
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheet": "roadmap/evidence/2026-11-20/profession-actions/actions-2.webp",
+      "implementContact": {
+        "mode": "quarry",
+        "id": 0,
+        "tool": "quarry-pick-head",
+        "triangles": 555,
+        "samples": 107,
+        "minMetres": 0.011784294964957092,
+        "maxMetres": 0.18318452612285438,
+        "contactFrames": 24,
+        "nearestSurface": [
+          61.65916098812325,
+          -2.130915853855992,
+          60.000043572359864
+        ],
+        "nearestImplement": [
+          61.65981674194336,
+          -2.1191506385803223,
+          59.99990463256836
+        ],
+        "feet": [
+          62.379999999999995,
+          -2.6500000000000004,
+          60
+        ],
+        "camera": {
+          "alpha": 5.707992239800103,
+          "beta": 1.05,
+          "score": 4
+        },
+        "webgl": 2,
+        "glError": 0,
+        "errors": [],
+        "http": []
+      }
+    },
+    {
+      "id": "pottery",
+      "role": "potter",
+      "frame": 16,
+      "label": "Гончар",
+      "actorId": 0,
+      "workplace": "8,9",
+      "activity": {
+        "t": 14.250000000000023,
+        "phase": "working",
+        "kind": "pottery",
+        "task": "forming",
+        "stage": "working",
+        "contact": "wheel",
+        "tool": "forming",
+        "worker": [
+          8.5,
+          9.5
+        ],
+        "feet": {
+          "x": 8.323333333333334,
+          "y": 9.4,
+          "height": 0
+        },
+        "pathToActionTiles": 12.890000000000008
+      },
+      "observedPhases": [
+        "toPantrySupply",
+        "toPantryHome",
+        "home",
+        "toWork",
+        "waterTrip",
+        "working",
+        "toHome",
+        "home"
+      ],
+      "productionOrOutcome": {
+        "pottery": 2
+      },
+      "observedTransfers": [],
+      "webgl": {
+        "version": 2,
+        "entry": "/index.html",
+        "samples": 50,
+        "visibleMeshes": 11,
+        "feetDisplacementM": 0,
+        "palmDisplacementM": 0.018109,
+        "outfit": "potter",
+        "tools": [],
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheet": "roadmap/evidence/2026-11-20/profession-actions/actions-2.webp"
+    },
+    {
+      "id": "brewery",
+      "role": "brewer",
+      "frame": 17,
+      "label": "Пивовар",
+      "actorId": 0,
+      "workplace": "8,9",
+      "activity": {
+        "t": 14.250000000000023,
+        "phase": "working",
+        "kind": "brewing",
+        "task": "brewing",
+        "stage": "working",
+        "contact": "vat",
+        "tool": "brewing",
+        "worker": [
+          8.5,
+          9.5
+        ],
+        "feet": {
+          "x": 8.323333333333334,
+          "y": 9.403333333333332,
+          "height": 0
+        },
+        "pathToActionTiles": 12.890000000000008
+      },
+      "observedPhases": [
+        "toPantrySupply",
+        "toPantryHome",
+        "home",
+        "toWork",
+        "waterTrip",
+        "working"
+      ],
+      "productionOrOutcome": {
+        "beer": 3
+      },
+      "observedTransfers": [],
+      "webgl": {
+        "version": 2,
+        "entry": "/index.html",
+        "samples": 53,
+        "visibleMeshes": 12,
+        "feetDisplacementM": 0,
+        "palmDisplacementM": 0.039978,
+        "outfit": "brewer",
+        "tools": [
+          "worker-tool-handle"
+        ],
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheet": "roadmap/evidence/2026-11-20/profession-actions/actions-2.webp"
+    },
+    {
+      "id": "weaver",
+      "role": "weaver",
+      "frame": 18,
+      "label": "Ткач",
+      "actorId": 0,
+      "workplace": "8,9",
+      "activity": {
+        "t": 3.149999999999999,
+        "phase": "working",
+        "kind": "weaving",
+        "task": "weaver",
+        "stage": "working",
+        "contact": "loom",
+        "tool": "weaver",
+        "worker": [
+          8.5,
+          9.5
+        ],
+        "feet": {
+          "x": 8.323333333333334,
+          "y": 9.403333333333332,
+          "height": 0
+        },
+        "pathToActionTiles": 2.8900000000000077
+      },
+      "observedPhases": [
+        "toPantrySupply",
+        "toPantryHome",
+        "home",
+        "toWork",
+        "working",
+        "toCraftSupply",
+        "toHome"
+      ],
+      "productionOrOutcome": {
+        "cloth": 1
+      },
+      "observedTransfers": [],
+      "webgl": {
+        "version": 2,
+        "entry": "/index.html",
+        "samples": 52,
+        "visibleMeshes": 12,
+        "feetDisplacementM": 0,
+        "palmDisplacementM": 0.022122,
+        "outfit": "weaver",
+        "tools": [],
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheet": "roadmap/evidence/2026-11-20/profession-actions/actions-2.webp"
+    },
+    {
+      "id": "linenYard",
+      "role": "weaver",
+      "frame": 19,
+      "label": "Льняной двор",
+      "actorId": 0,
+      "workplace": "8,9",
+      "activity": {
+        "t": 14.250000000000023,
+        "phase": "working",
+        "kind": "work",
+        "task": "preparingFiber",
+        "stage": "working",
+        "contact": "artisan",
+        "tool": "preparingFiber",
+        "worker": [
+          8.5,
+          9.5
+        ],
+        "feet": {
+          "x": 7.751666666666667,
+          "y": 9.258333333333333,
+          "height": 0
+        },
+        "pathToActionTiles": 12.890000000000008
+      },
+      "observedPhases": [
+        "toPantrySupply",
+        "toPantryHome",
+        "home",
+        "toWork",
+        "waterTrip",
+        "working",
+        "waterTrip"
+      ],
+      "productionOrOutcome": {
+        "cloth": 2
+      },
+      "observedTransfers": [],
+      "webgl": {
+        "version": 2,
+        "entry": "/index.html",
+        "samples": 52,
+        "visibleMeshes": 11,
+        "feetDisplacementM": 0,
+        "palmDisplacementM": 0.036176,
+        "outfit": "weaver",
+        "tools": [],
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheet": "roadmap/evidence/2026-11-20/profession-actions/actions-3.webp"
+    },
+    {
+      "id": "sheepfold",
+      "role": "shepherd",
+      "frame": 20,
+      "label": "Пастух",
+      "actorId": 0,
+      "workplace": "10,9",
+      "activity": {
+        "t": 5.250000000000002,
+        "phase": "working",
+        "kind": "gathering",
+        "task": "sheepfold",
+        "stage": "working",
+        "contact": "fleece",
+        "tool": "sheepfold",
+        "worker": [
+          11.5,
+          10.5
+        ],
+        "feet": {
+          "x": 11.408333333333333,
+          "y": 10.488333333333333,
+          "height": 0
+        },
+        "pathToActionTiles": 6.284356189863306
+      },
+      "observedPhases": [
+        "toPantrySupply",
+        "toPantryHome",
+        "home",
+        "toWork",
+        "working"
+      ],
+      "productionOrOutcome": {
+        "wool": 4
+      },
+      "observedTransfers": [],
+      "webgl": {
+        "version": 2,
+        "entry": "/index.html",
+        "samples": 52,
+        "visibleMeshes": 11,
+        "feetDisplacementM": 0,
+        "palmDisplacementM": 0.018082,
+        "outfit": "shepherd",
+        "tools": [],
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheet": "roadmap/evidence/2026-11-20/profession-actions/actions-3.webp"
+    },
+    {
+      "id": "cowshed",
+      "role": "dairyman",
+      "frame": 21,
+      "label": "Молочник",
+      "actorId": 0,
+      "workplace": "10,9",
+      "activity": {
+        "t": 16.950000000000017,
+        "phase": "working",
+        "kind": "gathering",
+        "task": "cowshed",
+        "stage": "working",
+        "contact": "dairy",
+        "tool": "cowshed",
+        "worker": [
+          11.5,
+          10.5
+        ],
+        "feet": {
+          "x": 11.216666666666667,
+          "y": 9.729833333333334,
+          "height": 0
+        },
+        "pathToActionTiles": 14.284356189863306
+      },
+      "observedPhases": [
+        "toPantrySupply",
+        "toPantryHome",
+        "home",
+        "toWork",
+        "waterTrip",
+        "working",
+        "waterTrip"
+      ],
+      "productionOrOutcome": {
+        "milk": 3
+      },
+      "observedTransfers": [],
+      "webgl": {
+        "version": 2,
+        "entry": "/index.html",
+        "samples": 52,
+        "visibleMeshes": 16,
+        "feetDisplacementM": 0,
+        "palmDisplacementM": 0.035299,
+        "outfit": "dairyman",
+        "tools": [
+          "citizen-0-milking-seat",
+          "milking-stool-seat",
+          "milking-stool-leg"
+        ],
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheet": "roadmap/evidence/2026-11-20/profession-actions/actions-3.webp",
+      "closeup": "roadmap/evidence/2026-11-20/profession-actions/milking.webp"
+    },
+    {
+      "id": "musicHouse",
+      "role": "musician",
+      "frame": 22,
+      "label": "Каменный инструмент",
+      "actorId": 0,
+      "workplace": "8,9",
+      "activity": {
+        "t": 2.849999999999999,
+        "phase": "working",
+        "kind": "music",
+        "task": "lithophone",
+        "stage": "working",
+        "contact": "lithophone",
+        "tool": "lithophone",
+        "worker": [
+          8.5,
+          9.5
+        ],
+        "feet": {
+          "x": 8.316666666666666,
+          "y": 9.316666666666666,
+          "height": 0
+        },
+        "pathToActionTiles": 2.8900000000000077
+      },
+      "observedPhases": [
+        "toPantrySupply",
+        "toPantryHome",
+        "home",
+        "toWork",
+        "working"
+      ],
+      "productionOrOutcome": {
+        "prestige": 0.12
+      },
+      "observedTransfers": [],
+      "webgl": {
+        "version": 2,
+        "entry": "/index.html",
+        "samples": 51,
+        "visibleMeshes": 15,
+        "feetDisplacementM": 0,
+        "palmDisplacementM": 0.067747,
+        "outfit": "musician",
+        "tools": [
+          "citizen-0-music-mallet-l",
+          "music-mallet-handle-l",
+          "music-mallet-head-l",
+          "citizen-0-music-mallet-r",
+          "music-mallet-handle-r",
+          "music-mallet-head-r"
+        ],
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheet": "roadmap/evidence/2026-11-20/profession-actions/actions-3.webp"
+    },
+    {
+      "id": "lyre",
+      "role": "musician",
+      "frame": 23,
+      "label": "Лирист",
+      "actorId": 1,
+      "workplace": "8,9",
+      "activity": {
+        "t": 5.349999999999996,
+        "kind": "music",
+        "task": "lyre",
+        "stage": "working",
+        "contact": "lyre"
+      },
+      "observedPhases": [],
+      "productionOrOutcome": {
+        "performers": [
+          0,
+          1
+        ]
+      },
+      "observedTransfers": [],
+      "webgl": {
+        "version": 2,
+        "entry": "/index.html",
+        "samples": 50,
+        "visibleMeshes": 11,
+        "feetDisplacementM": 0,
+        "palmDisplacementM": 0.172614,
+        "outfit": "musician",
+        "tools": [],
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheet": "roadmap/evidence/2026-11-20/profession-actions/actions-3.webp"
+    },
+    {
+      "id": "fishing-rod",
+      "role": "fisher",
+      "frame": 24,
+      "label": "Рыбак берёт удочку",
+      "actorId": 0,
+      "workplace": "5,13",
+      "activity": {
+        "t": 6.399999999999993,
+        "kind": "fishing",
+        "task": "take-rod",
+        "stage": "working",
+        "phase": "working"
+      },
+      "observedPhases": [
+        "rod",
+        "fish-cast",
+        "fish-lift",
+        "fish-return",
+        "output",
+        "porter-dispatch",
+        "porter",
+        "delivered"
+      ],
+      "productionOrOutcome": {
+        "phase": "delivered",
+        "target": "9,8",
+        "carrier": 6,
+        "delivered": 5,
+        "stock": 77.09880000000071
+      },
+      "observedTransfers": [],
+      "webgl": {
+        "version": 2,
+        "entry": "/index.html",
+        "samples": 52,
+        "visibleMeshes": 12,
+        "feetDisplacementM": 0,
+        "palmDisplacementM": 0.003595,
+        "outfit": "fisher",
+        "tools": [
+          "fishing-rod",
+          "fishing-rod-tip"
+        ],
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheet": "roadmap/evidence/2026-11-20/profession-actions/actions-3.webp"
+    },
+    {
+      "id": "fishing",
+      "role": "fisher",
+      "frame": 25,
+      "label": "Рыбак поднимает улов",
+      "actorId": 0,
+      "workplace": "5,13",
+      "activity": {
+        "t": 11.699999999999974,
+        "kind": "fishing",
+        "task": "fishing",
+        "stage": "strike",
+        "phase": "working",
+        "target": "fish:lake-0:5,14:0"
+      },
+      "observedPhases": [
+        "rod",
+        "fish-cast",
+        "fish-lift",
+        "fish-return",
+        "output",
+        "porter-dispatch",
+        "porter",
+        "delivered"
+      ],
+      "productionOrOutcome": {
+        "phase": "delivered",
+        "target": "9,8",
+        "carrier": 6,
+        "delivered": 5,
+        "stock": 77.09880000000071
+      },
+      "observedTransfers": [],
+      "webgl": {
+        "version": 2,
+        "entry": "/index.html",
+        "samples": 52,
+        "visibleMeshes": 16,
+        "feetDisplacementM": 0,
+        "palmDisplacementM": 0.048684,
+        "outfit": "fisher",
+        "tools": [
+          "fishing-rod",
+          "fishing-rod-tip"
+        ],
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheet": "roadmap/evidence/2026-11-20/profession-actions/actions-3.webp"
+    },
+    {
+      "id": "hunting-drag",
+      "role": "hunter",
+      "frame": 26,
+      "label": "Охотник тянет тушу",
+      "actorId": 0,
+      "workplace": "10,9",
+      "activity": {
+        "t": 14.199999999999966,
+        "kind": "gathering",
+        "task": "haul-game",
+        "stage": "carry",
+        "phase": "toWorkshop"
+      },
+      "observedPhases": [
+        "fallen",
+        "drag",
+        "dress",
+        "output",
+        "porter-dispatch",
+        "porter",
+        "delivered"
+      ],
+      "productionOrOutcome": {
+        "phase": "delivered",
+        "target": "9,8",
+        "carrier": 7,
+        "delivered": 4,
+        "stock": 76.0580000000008
+      },
+      "observedTransfers": [],
+      "webgl": {
+        "version": 2,
+        "entry": "/index.html",
+        "samples": 52,
+        "visibleMeshes": 12,
+        "feetDisplacementM": 0.834805,
+        "palmDisplacementM": 0.900788,
+        "outfit": "hunter",
+        "tools": [],
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheet": "roadmap/evidence/2026-11-20/profession-actions/actions-3.webp"
+    },
+    {
+      "id": "hunting",
+      "role": "hunter",
+      "frame": 27,
+      "label": "Разделка добычи",
+      "actorId": 0,
+      "workplace": "10,9",
+      "activity": {
+        "t": 17.799999999999983,
+        "kind": "gathering",
+        "task": "dress-game",
+        "stage": "working",
+        "phase": "toWorkshop"
+      },
+      "observedPhases": [
+        "fallen",
+        "drag",
+        "dress",
+        "output",
+        "porter-dispatch",
+        "porter",
+        "delivered"
+      ],
+      "productionOrOutcome": {
+        "phase": "delivered",
+        "target": "9,8",
+        "carrier": 7,
+        "delivered": 4,
+        "stock": 76.0580000000008
+      },
+      "observedTransfers": [],
+      "webgl": {
+        "version": 2,
+        "entry": "/index.html",
+        "samples": 51,
+        "visibleMeshes": 11,
+        "feetDisplacementM": 0,
+        "palmDisplacementM": 0.024722,
+        "outfit": "hunter",
+        "tools": [],
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheet": "roadmap/evidence/2026-11-20/profession-actions/actions-3.webp"
+    },
+    {
+      "id": "brickyard",
+      "role": "brickmaker",
+      "frame": 28,
+      "label": "Формовщик кирпича",
+      "actorId": 0,
+      "workplace": "8,9",
+      "activity": {
+        "t": 14.250000000000023,
+        "phase": "working",
+        "kind": "brickmaking",
+        "task": "brickyard",
+        "stage": "working",
+        "contact": "mould",
+        "tool": "brickyard",
+        "worker": [
+          8.5,
+          9.5
+        ],
+        "feet": {
+          "x": 8.323333333333334,
+          "y": 9.403333333333332,
+          "height": 0
+        },
+        "pathToActionTiles": 12.890000000000008
+      },
+      "observedPhases": [
+        "toPantrySupply",
+        "toPantryHome",
+        "home",
+        "toWork",
+        "waterTrip",
+        "working",
+        "toHome",
+        "home"
+      ],
+      "productionOrOutcome": {
+        "brick": 4
+      },
+      "observedTransfers": [],
+      "webgl": {
+        "version": 2,
+        "entry": "/index.html",
+        "samples": 52,
+        "visibleMeshes": 11,
+        "feetDisplacementM": 0,
+        "palmDisplacementM": 0.018086,
+        "outfit": "brickmaker",
+        "tools": [],
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheet": "roadmap/evidence/2026-11-20/profession-actions/actions-4.webp"
+    },
+    {
+      "id": "kiln",
+      "role": "kilnworker",
+      "frame": 29,
+      "label": "Обжигальщик",
+      "actorId": 0,
+      "workplace": "8,9",
+      "activity": {
+        "t": 4.950000000000001,
+        "phase": "working",
+        "kind": "gathering",
+        "task": "kiln",
+        "stage": "working",
+        "contact": "kiln",
+        "tool": "kiln",
+        "worker": [
+          8.5,
+          9.5
+        ],
+        "feet": {
+          "x": 8.323333333333334,
+          "y": 9.403333333333332,
+          "height": 0
+        },
+        "pathToActionTiles": 2.8900000000000077
+      },
+      "observedPhases": [
+        "toPantrySupply",
+        "toPantryHome",
+        "home",
+        "toWork",
+        "working",
+        "toHome",
+        "home"
+      ],
+      "productionOrOutcome": {
+        "firedBrick": 4
+      },
+      "observedTransfers": [],
+      "webgl": {
+        "version": 2,
+        "entry": "/index.html",
+        "samples": 52,
+        "visibleMeshes": 11,
+        "feetDisplacementM": 0,
+        "palmDisplacementM": 0.018086,
+        "outfit": "kilnworker",
+        "tools": [],
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheet": "roadmap/evidence/2026-11-20/profession-actions/actions-4.webp"
+    },
+    {
+      "id": "shrine",
+      "role": "priest",
+      "frame": 30,
+      "label": "Обряд в святилище",
+      "actorId": 0,
+      "workplace": "9,8",
+      "activity": {
+        "t": 2.849999999999999,
+        "phase": "working",
+        "kind": "work",
+        "task": "offering",
+        "stage": "working",
+        "contact": "offering",
+        "tool": "offering",
+        "worker": [
+          9.5,
+          8.5
+        ],
+        "feet": {
+          "x": 8.691666666666666,
+          "y": 8.403333333333332
+        },
+        "pathToActionTiles": 2.8900000000000077
+      },
+      "observedPhases": [
+        "toPantrySupply",
+        "toPantryHome",
+        "home",
+        "toWork",
+        "working"
+      ],
+      "productionOrOutcome": {
+        "faith": 1.7944444444444445,
+        "prestige": 0.34
+      },
+      "observedTransfers": [
+        {
+          "id": 1,
+          "resource": "pottery",
+          "quantity": 2,
+          "target": "8,8"
+        },
+        {
+          "id": 3,
+          "resource": "pottery",
+          "quantity": 2,
+          "target": "9,9"
+        },
+        {
+          "id": 2,
+          "resource": "milk",
+          "quantity": 12,
+          "target": "8,8"
+        },
+        {
+          "id": 4,
+          "resource": "milk",
+          "quantity": 8,
+          "target": "9,9"
+        }
+      ],
+      "webgl": {
+        "version": 2,
+        "entry": "/index.html",
+        "samples": 51,
+        "visibleMeshes": 11,
+        "feetDisplacementM": 0.38324,
+        "palmDisplacementM": 1.010678,
+        "outfit": "priest",
+        "tools": [],
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheet": "roadmap/evidence/2026-11-20/profession-actions/actions-4.webp"
+    },
+    {
+      "id": "ziggurat",
+      "role": "priest",
+      "frame": 31,
+      "label": "Обряд в зиккурате",
+      "actorId": 0,
+      "workplace": "10,9",
+      "activity": {
+        "t": 5.250000000000002,
+        "phase": "working",
+        "kind": "work",
+        "task": "offering",
+        "stage": "working",
+        "contact": "offering",
+        "tool": "offering",
+        "worker": [
+          11.5,
+          10.5
+        ],
+        "feet": {
+          "x": 10.825,
+          "y": 10.338333333333333
+        },
+        "pathToActionTiles": 6.284356189863306
+      },
+      "observedPhases": [
+        "toPantrySupply",
+        "toPantryHome",
+        "home",
+        "toWork",
+        "working",
+        "toStore",
+        "returnWork"
+      ],
+      "productionOrOutcome": {
+        "faith": 2.216666666666667,
+        "prestige": 0.7
+      },
+      "observedTransfers": [],
+      "webgl": {
+        "version": 2,
+        "entry": "/index.html",
+        "samples": 50,
+        "visibleMeshes": 11,
+        "feetDisplacementM": 0.77,
+        "palmDisplacementM": 1.353376,
+        "outfit": "priest",
+        "tools": [],
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheet": "roadmap/evidence/2026-11-20/profession-actions/actions-4.webp"
+    },
+    {
+      "id": "granary",
+      "role": "scribe",
+      "frame": 32,
+      "label": "Писец",
+      "actorId": 0,
+      "workplace": "8,9",
+      "activity": {
+        "t": 2.849999999999999,
+        "phase": "working",
+        "kind": "scribing",
+        "task": "account",
+        "stage": "working",
+        "contact": "artisan",
+        "tool": "account",
+        "worker": [
+          8.5,
+          9.5
+        ],
+        "feet": {
+          "x": 7.87,
+          "y": 9.35,
+          "height": 0
+        },
+        "pathToActionTiles": 2.8900000000000077
+      },
+      "observedPhases": [
+        "toPantrySupply",
+        "toPantryHome",
+        "home",
+        "toWork",
+        "working"
+      ],
+      "productionOrOutcome": {
+        "tablet": 11.200000000000015
+      },
+      "observedTransfers": [],
+      "webgl": {
+        "version": 2,
+        "entry": "/index.html",
+        "samples": 49,
+        "visibleMeshes": 22,
+        "feetDisplacementM": 0,
+        "palmDisplacementM": 0.024999,
+        "outfit": "scribe",
+        "tools": [
+          "scribe-reed-stylus",
+          "scribe-tablet",
+          "scribe-clay-tablet",
+          "scribe-impression"
+        ],
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheet": "roadmap/evidence/2026-11-20/profession-actions/actions-4.webp"
+    },
+    {
+      "id": "lawmaker",
+      "role": "lawmaker",
+      "frame": 33,
+      "label": "Законодатель",
+      "actorId": 0,
+      "workplace": null,
+      "activity": {
+        "t": 0.1,
+        "stage": "working",
+        "kind": "scribing",
+        "task": "law-tablet"
+      },
+      "observedPhases": [
+        "home",
+        "copyingLaw"
+      ],
+      "productionOrOutcome": {
+        "author": 0,
+        "claySpent": 1
+      },
+      "observedTransfers": [],
+      "webgl": {
+        "version": 2,
+        "entry": "/index.html",
+        "samples": 53,
+        "visibleMeshes": 22,
+        "feetDisplacementM": 0,
+        "palmDisplacementM": 0.020627,
+        "outfit": "lawmaker",
+        "tools": [
+          "scribe-reed-stylus",
+          "scribe-tablet",
+          "scribe-clay-tablet",
+          "scribe-impression"
+        ],
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheet": "roadmap/evidence/2026-11-20/profession-actions/actions-4.webp"
+    },
+    {
+      "id": "bakery",
+      "role": "baker",
+      "frame": 34,
+      "label": "Пекарь",
+      "actorId": 0,
+      "workplace": "8,9",
+      "activity": {
+        "t": 14.550000000000024,
+        "phase": "working",
+        "kind": "work",
+        "task": "milling",
+        "stage": "working",
+        "contact": "artisan",
+        "tool": "milling",
+        "worker": [
+          8.5,
+          9.5
+        ],
+        "feet": {
+          "x": 8.245,
+          "y": 9.305,
+          "height": 0
+        },
+        "pathToActionTiles": 12.890000000000008
+      },
+      "observedPhases": [
+        "toPantrySupply",
+        "toPantryHome",
+        "home",
+        "toWork",
+        "waterTrip",
+        "working",
+        "waterTrip"
+      ],
+      "productionOrOutcome": {
+        "food": 5
+      },
+      "observedTransfers": [],
+      "webgl": {
+        "version": 2,
+        "entry": "/index.html",
+        "samples": 53,
+        "visibleMeshes": 11,
+        "feetDisplacementM": 0,
+        "palmDisplacementM": 0.045,
+        "outfit": "baker",
+        "tools": [],
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheet": "roadmap/evidence/2026-11-20/profession-actions/actions-4.webp"
+    },
+    {
+      "id": "dairyStore",
+      "role": "cheesemaker",
+      "frame": 35,
+      "label": "Сыродел",
+      "actorId": 0,
+      "workplace": "8,9",
+      "activity": {
+        "t": 4.950000000000001,
+        "phase": "working",
+        "kind": "work",
+        "task": "preservingMilk",
+        "stage": "working",
+        "contact": "artisan",
+        "tool": "preservingMilk",
+        "worker": [
+          8.5,
+          9.5
+        ],
+        "feet": {
+          "x": 7.963333333333333,
+          "y": 9.386666666666667,
+          "height": 0
+        },
+        "pathToActionTiles": 2.8900000000000077
+      },
+      "observedPhases": [
+        "toPantrySupply",
+        "toPantryHome",
+        "home",
+        "toWork",
+        "working",
+        "toCraftSupply"
+      ],
+      "productionOrOutcome": {
+        "food": 3
+      },
+      "observedTransfers": [],
+      "webgl": {
+        "version": 2,
+        "entry": "/index.html",
+        "samples": 52,
+        "visibleMeshes": 11,
+        "feetDisplacementM": 0,
+        "palmDisplacementM": 0.052128,
+        "outfit": "dairyman",
+        "tools": [],
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheet": "roadmap/evidence/2026-11-20/profession-actions/actions-4.webp"
+    },
+    {
+      "id": "basketry",
+      "role": "basketmaker",
+      "frame": 36,
+      "label": "Плетельщик корзин",
+      "actorId": 0,
+      "workplace": "8,9",
+      "activity": {
+        "t": 3.149999999999999,
+        "phase": "working",
+        "kind": "work",
+        "task": "weavingBasket",
+        "stage": "working",
+        "contact": "artisan",
+        "tool": "weavingBasket",
+        "worker": [
+          8.5,
+          9.5
+        ],
+        "feet": {
+          "x": 7.803333333333334,
+          "y": 9.39,
+          "height": 0
+        },
+        "pathToActionTiles": 2.8900000000000077
+      },
+      "observedPhases": [
+        "toPantrySupply",
+        "toPantryHome",
+        "home",
+        "toWork",
+        "working",
+        "toCraftSupply",
+        "toHome"
+      ],
+      "productionOrOutcome": {
+        "basket": 1
+      },
+      "observedTransfers": [],
+      "webgl": {
+        "version": 2,
+        "entry": "/index.html",
+        "samples": 52,
+        "visibleMeshes": 11,
+        "feetDisplacementM": 0,
+        "palmDisplacementM": 0.0617,
+        "outfit": "basketweaver",
+        "tools": [],
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheet": "roadmap/evidence/2026-11-20/profession-actions/actions-4.webp"
+    },
+    {
+      "id": "matYard",
+      "role": "matmaker",
+      "frame": 37,
+      "label": "Мастер циновок",
+      "actorId": 0,
+      "workplace": "8,9",
+      "activity": {
+        "t": 3.149999999999999,
+        "phase": "working",
+        "kind": "work",
+        "task": "weavingMat",
+        "stage": "working",
+        "contact": "artisan",
+        "tool": "weavingMat",
+        "worker": [
+          8.5,
+          9.5
+        ],
+        "feet": {
+          "x": 8.063333333333333,
+          "y": 9.265,
+          "height": 0
+        },
+        "pathToActionTiles": 2.8900000000000077
+      },
+      "observedPhases": [
+        "toPantrySupply",
+        "toPantryHome",
+        "home",
+        "toWork",
+        "working",
+        "toCraftSupply"
+      ],
+      "productionOrOutcome": {
+        "mat": 1
+      },
+      "observedTransfers": [],
+      "webgl": {
+        "version": 2,
+        "entry": "/index.html",
+        "samples": 52,
+        "visibleMeshes": 11,
+        "feetDisplacementM": 0,
+        "palmDisplacementM": 0.060796,
+        "outfit": "matweaver",
+        "tools": [],
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheet": "roadmap/evidence/2026-11-20/profession-actions/actions-5.webp"
+    },
+    {
+      "id": "joineryYard",
+      "role": "joiner",
+      "frame": 38,
+      "label": "Столяр",
+      "actorId": 0,
+      "workplace": "8,9",
+      "activity": {
+        "t": 3.149999999999999,
+        "phase": "working",
+        "kind": "work",
+        "task": "cuttingJoinery",
+        "stage": "working",
+        "contact": "artisan",
+        "tool": "cuttingJoinery",
+        "worker": [
+          8.5,
+          9.5
+        ],
+        "feet": {
+          "x": 7.9,
+          "y": 9.35,
+          "height": 0
+        },
+        "pathToActionTiles": 2.8900000000000077
+      },
+      "observedPhases": [
+        "toPantrySupply",
+        "toPantryHome",
+        "home",
+        "toWork",
+        "working",
+        "toCraftSupply"
+      ],
+      "productionOrOutcome": {
+        "joinery": 1
+      },
+      "observedTransfers": [],
+      "webgl": {
+        "version": 2,
+        "entry": "/index.html",
+        "samples": 53,
+        "visibleMeshes": 13,
+        "feetDisplacementM": 0,
+        "palmDisplacementM": 0.075,
+        "outfit": "joiner",
+        "tools": [
+          "artisan-tool-shaft"
+        ],
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheet": "roadmap/evidence/2026-11-20/profession-actions/actions-5.webp"
+    },
+    {
+      "id": "coppersmith",
+      "role": "coppersmith",
+      "frame": 39,
+      "label": "Мастер по меди",
+      "actorId": 0,
+      "workplace": "8,9",
+      "activity": {
+        "t": 4.950000000000001,
+        "phase": "working",
+        "kind": "work",
+        "task": "castingAxe",
+        "stage": "working",
+        "contact": "artisan",
+        "tool": "castingAxe",
+        "worker": [
+          8.5,
+          9.5
+        ],
+        "feet": {
+          "x": 7.84,
+          "y": 9.15,
+          "height": 0
+        },
+        "pathToActionTiles": 2.8900000000000077
+      },
+      "observedPhases": [
+        "toPantrySupply",
+        "toPantryHome",
+        "home",
+        "toWork",
+        "working"
+      ],
+      "productionOrOutcome": {
+        "axe": 1
+      },
+      "observedTransfers": [],
+      "webgl": {
+        "version": 2,
+        "entry": "/index.html",
+        "samples": 52,
+        "visibleMeshes": 13,
+        "feetDisplacementM": 0,
+        "palmDisplacementM": 0.037274,
+        "outfit": "coppersmith",
+        "tools": [
+          "artisan-tool-shaft"
+        ],
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheet": "roadmap/evidence/2026-11-20/profession-actions/actions-5.webp"
+    },
+    {
+      "id": "watchHouse",
+      "role": "guard",
+      "frame": 40,
+      "label": "Стражник",
+      "actorId": 0,
+      "workplace": "5,6",
+      "activity": {
+        "t": 41.900000000000325,
+        "kind": "patrol",
+        "stage": "returnWork",
+        "phase": "returnWork"
+      },
+      "observedPhases": [],
+      "productionOrOutcome": {
+        "patrolDistanceTiles": 1.004999999999992,
+        "route": [
+          [
+            4.5,
+            6.5
+          ],
+          [
+            4.5,
+            5.5
+          ],
+          [
+            4.5,
+            6.5
+          ]
+        ]
+      },
+      "observedTransfers": [],
+      "webgl": {
+        "version": 2,
+        "entry": "/index.html",
+        "samples": 53,
+        "visibleMeshes": 10,
+        "feetDisplacementM": 0.03,
+        "palmDisplacementM": 0.053044,
+        "outfit": "guard",
+        "tools": [],
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheet": "roadmap/evidence/2026-11-20/profession-actions/actions-5.webp"
+    },
+    {
+      "id": "study",
+      "role": "medicalStudent",
+      "frame": 41,
+      "label": "Ученик лекаря",
+      "actorId": 0,
+      "workplace": "9,8",
+      "activity": {
+        "t": 0.9999999999999999,
+        "kind": "scribing",
+        "task": "school-tablet",
+        "stage": "working",
+        "phase": "studying",
+        "contact": "study"
+      },
+      "observedPhases": [],
+      "productionOrOutcome": {
+        "trainee": {
+          "level": 0,
+          "study": 0.07235621521335164,
+          "practice": 0,
+          "year": 1
+        }
+      },
+      "observedTransfers": [],
+      "webgl": {
+        "version": 2,
+        "entry": "/index.html",
+        "samples": 53,
+        "visibleMeshes": 23,
+        "feetDisplacementM": 0,
+        "palmDisplacementM": 0.02496,
+        "outfit": "healer",
+        "tools": [
+          "scribe-reed-stylus",
+          "scribe-tablet",
+          "scribe-clay-tablet",
+          "scribe-impression"
+        ],
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheet": "roadmap/evidence/2026-11-20/profession-actions/actions-5.webp"
+    },
+    {
+      "id": "canal",
+      "role": "canalworker",
+      "frame": 42,
+      "label": "Рабочий на расчистке канала",
+      "actorId": 1,
+      "workplace": "13,6",
+      "activity": {
+        "t": 5.1999999999999895,
+        "phase": "working",
+        "kind": "farming",
+        "task": "canal-cleaning",
+        "stage": "working",
+        "contact": "farming"
+      },
+      "observedPhases": [],
+      "productionOrOutcome": {
+        "id": 1,
+        "phase": "working",
+        "siltAtCapture": 0.9984426381759555,
+        "downstreamFieldWater": true,
+        "siltAtEnd": 0
+      },
+      "observedTransfers": [],
+      "webgl": {
+        "version": 2,
+        "entry": "/index.html",
+        "samples": 45,
+        "visibleMeshes": 12,
+        "feetDisplacementM": 0,
+        "palmDisplacementM": 0.078255,
+        "outfit": "canalworker",
+        "tools": [
+          "worker-tool-handle"
+        ],
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheet": "roadmap/evidence/2026-11-20/profession-actions/actions-5.webp"
+    },
+    {
+      "id": "market",
+      "role": "marketPorter",
+      "frame": 43,
+      "label": "Носильщик рынка",
+      "actorId": 8,
+      "workplace": "10,9",
+      "activity": {
+        "t": 84.19999999999912,
+        "phase": "toStore",
+        "kind": "toStore",
+        "stage": "toStore"
+      },
+      "observedPhases": [],
+      "productionOrOutcome": {
+        "id": 8,
+        "phase": "toStore",
+        "cargo": 3,
+        "delivered": 3
+      },
+      "observedTransfers": [],
+      "webgl": {
+        "version": 2,
+        "entry": "/index.html",
+        "samples": 48,
+        "visibleMeshes": 13,
+        "feetDisplacementM": 0.705196,
+        "palmDisplacementM": 0.718754,
+        "outfit": "carrier",
+        "tools": [
+          "cargo-material"
+        ],
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheet": "roadmap/evidence/2026-11-20/profession-actions/actions-5.webp"
+    },
+    {
+      "id": "merchant",
+      "role": "merchant",
+      "frame": 44,
+      "label": "Купец каравана",
+      "actorId": "caravan:1",
+      "workplace": null,
+      "activity": {
+        "t": 66.60000000000012,
+        "phase": "arriving",
+        "kind": "arriving",
+        "stage": "arriving"
+      },
+      "observedPhases": [],
+      "productionOrOutcome": {
+        "id": "caravan:1",
+        "phase": "arriving",
+        "route": 12,
+        "traded": true
+      },
+      "observedTransfers": [],
+      "webgl": {
+        "version": 2,
+        "entry": "/index.html",
+        "samples": 53,
+        "visibleMeshes": 9,
+        "feetDisplacementM": 0.72864,
+        "palmDisplacementM": 0,
+        "outfit": null,
+        "tools": [],
+        "glError": 0,
+        "jsErrors": [],
+        "httpErrors": []
+      },
+      "sheet": "roadmap/evidence/2026-11-20/profession-actions/actions-5.webp"
+    }
+  ],
+  "yardWalks": {
+    "cowshed": {
+      "entry": "index.html",
+      "simSpeed": 4,
+      "id": 0,
+      "framesVisible": 739,
+      "framesAtStation": 330,
+      "cowFrames": 330,
+      "touches": [
+        3.631
+      ],
+      "minDistanceToStationMetres": 0,
+      "rightPalmPathAtStationMetres": 1.2813393600774747,
+      "renderedRoute": [
+        [
+          0.083,
+          75.885,
+          63.424
+        ],
+        [
+          1.076,
+          72.525,
+          63.424
+        ],
+        [
+          2.53,
+          69.585,
+          63.424
+        ],
+        [
+          3.417,
+          68.436,
+          57.86
+        ],
+        [
+          3.908,
+          67.3,
+          58.379
+        ],
+        [
+          6.291,
+          67.3,
+          58.379
+        ],
+        [
+          6.67,
+          67.3,
+          58.379
+        ],
+        [
+          7.094,
+          67.3,
+          58.379
+        ],
+        [
+          7.429,
+          67.3,
+          58.379
+        ],
+        [
+          7.753,
+          67.3,
+          58.379
+        ],
+        [
+          8.115,
+          67.3,
+          58.379
+        ],
+        [
+          8.49,
+          67.3,
+          58.379
+        ],
+        [
+          8.851,
+          67.3,
+          58.379
+        ],
+        [
+          9.201,
+          67.3,
+          58.379
+        ],
+        [
+          9.543,
+          67.3,
+          58.379
+        ],
+        [
+          9.883,
+          67.3,
+          58.379
+        ],
+        [
+          10.342,
+          67.3,
+          58.379
+        ],
+        [
+          10.667,
+          67.3,
+          58.379
+        ],
+        [
+          11.01,
+          67.3,
+          58.379
+        ],
+        [
+          11.338,
+          67.3,
+          58.379
+        ],
+        [
+          11.675,
+          67.3,
+          58.379
+        ],
+        [
+          12.81,
+          67.3,
+          58.379
+        ],
+        [
+          13.203,
+          67.3,
+          58.379
+        ],
+        [
+          13.704,
+          67.3,
+          58.379
+        ],
+        [
+          14.047,
+          67.3,
+          58.379
+        ],
+        [
+          14.381,
+          67.3,
+          58.379
+        ],
+        [
+          14.715,
+          69.025,
+          58.052
+        ],
+        [
+          15.033,
+          69.701,
+          60.617
+        ],
+        [
+          15.429,
+          71.922,
+          62.995
+        ],
+        [
+          15.773,
+          73.042,
+          62.594
+        ],
+        [
+          16.142,
+          74.197,
+          62.576
+        ],
+        [
+          16.469,
+          75.195,
+          62.576
+        ],
+        [
+          16.811,
+          76.51,
+          62.576
+        ],
+        [
+          17.161,
+          78.203,
+          62.576
+        ],
+        [
+          17.594,
+          80.219,
+          62.576
+        ],
+        [
+          17.919,
+          81.912,
+          63.304
+        ],
+        [
+          18.265,
+          83.524,
+          63.227
+        ],
+        [
+          18.632,
+          83.732,
+          63.008
+        ],
+        [
+          18.974,
+          83.732,
+          63
+        ],
+        [
+          19.323,
+          83.732,
+          63
+        ],
+        [
+          19.648,
+          83.732,
+          63
+        ],
+        [
+          19.964,
+          83.732,
+          63
+        ],
+        [
+          20.282,
+          83.732,
+          63
+        ],
+        [
+          20.599,
+          83.732,
+          63
+        ],
+        [
+          20.969,
+          83.732,
+          63
+        ],
+        [
+          21.346,
+          83.732,
+          63
+        ],
+        [
+          21.725,
+          83.732,
+          63
+        ],
+        [
+          22.123,
+          83.732,
+          63
+        ],
+        [
+          22.524,
+          82.651,
+          63.296
+        ],
+        [
+          22.947,
+          80.635,
+          63.421
+        ]
+      ],
+      "glError": 0,
+      "webgl": 2,
+      "errors": [],
+      "http": []
+    },
+    "sheepfold": {
+      "entry": "index.html",
+      "simSpeed": 4,
+      "id": 0,
+      "framesVisible": 1308,
+      "framesAtStation": 627,
+      "touches": [
+        5.774
+      ],
+      "minDistanceToStationMetres": 0,
+      "rightPalmPathAtStationMetres": 2.4433716915189874,
+      "renderedRoute": [
+        [
+          0.147,
+          50.924,
+          53.72
+        ],
+        [
+          0.61,
+          50.989,
+          56.366
+        ],
+        [
+          1.14,
+          52.194,
+          58.339
+        ],
+        [
+          1.974,
+          53.715,
+          60.041
+        ],
+        [
+          2.225,
+          54.509,
+          60.805
+        ],
+        [
+          2.474,
+          55.34,
+          61.534
+        ],
+        [
+          2.724,
+          56.183,
+          62.25
+        ],
+        [
+          2.973,
+          56.996,
+          62.996
+        ],
+        [
+          3.222,
+          58.097,
+          63.096
+        ],
+        [
+          3.475,
+          59.199,
+          63.232
+        ],
+        [
+          3.724,
+          60.302,
+          63.264
+        ],
+        [
+          3.975,
+          61.404,
+          63.164
+        ],
+        [
+          4.224,
+          62.507,
+          63.025
+        ],
+        [
+          4.474,
+          63.609,
+          63.02
+        ],
+        [
+          4.725,
+          64.711,
+          63.1
+        ],
+        [
+          4.974,
+          65.814,
+          63.15
+        ],
+        [
+          5.224,
+          66.916,
+          63.124
+        ],
+        [
+          5.473,
+          67.86,
+          63.194
+        ],
+        [
+          5.724,
+          68.734,
+          62.849
+        ],
+        [
+          5.974,
+          68.45,
+          62.93
+        ],
+        [
+          6.225,
+          68.45,
+          62.93
+        ],
+        [
+          6.474,
+          68.45,
+          62.93
+        ],
+        [
+          6.723,
+          68.45,
+          62.93
+        ],
+        [
+          6.974,
+          68.45,
+          62.93
+        ],
+        [
+          7.224,
+          68.45,
+          62.93
+        ],
+        [
+          7.472,
+          68.45,
+          62.93
+        ],
+        [
+          7.723,
+          68.45,
+          62.93
+        ],
+        [
+          7.972,
+          68.45,
+          62.93
+        ],
+        [
+          8.223,
+          68.45,
+          62.93
+        ],
+        [
+          8.475,
+          68.45,
+          62.93
+        ],
+        [
+          8.724,
+          68.45,
+          62.93
+        ],
+        [
+          8.974,
+          68.45,
+          62.93
+        ],
+        [
+          9.223,
+          68.45,
+          62.93
+        ],
+        [
+          9.474,
+          68.45,
+          62.93
+        ],
+        [
+          9.723,
+          68.45,
+          62.93
+        ],
+        [
+          9.974,
+          68.45,
+          62.93
+        ],
+        [
+          10.224,
+          68.45,
+          62.93
+        ],
+        [
+          10.475,
+          68.45,
+          62.93
+        ],
+        [
+          10.722,
+          68.45,
+          62.93
+        ],
+        [
+          10.973,
+          68.45,
+          62.93
+        ],
+        [
+          11.223,
+          68.45,
+          62.93
+        ],
+        [
+          11.473,
+          68.45,
+          62.93
+        ],
+        [
+          11.723,
+          68.45,
+          62.93
+        ],
+        [
+          11.973,
+          68.45,
+          62.93
+        ],
+        [
+          12.224,
+          68.45,
+          62.93
+        ],
+        [
+          12.473,
+          68.45,
+          62.93
+        ],
+        [
+          12.723,
+          68.45,
+          62.93
+        ],
+        [
+          12.974,
+          68.45,
+          62.93
+        ],
+        [
+          13.223,
+          68.45,
+          62.93
+        ],
+        [
+          13.473,
+          68.45,
+          62.93
+        ],
+        [
+          13.724,
+          68.45,
+          62.93
+        ],
+        [
+          13.973,
+          68.45,
+          62.93
+        ],
+        [
+          14.224,
+          68.45,
+          62.93
+        ],
+        [
+          14.474,
+          68.45,
+          62.93
+        ],
+        [
+          14.723,
+          68.45,
+          62.93
+        ],
+        [
+          14.974,
+          68.45,
+          62.93
+        ],
+        [
+          15.224,
+          68.45,
+          62.93
+        ],
+        [
+          15.473,
+          68.45,
+          62.93
+        ],
+        [
+          15.722,
+          68.45,
+          62.93
+        ],
+        [
+          15.973,
+          68.45,
+          62.93
+        ],
+        [
+          16.225,
+          68.427,
+          62.745
+        ],
+        [
+          16.474,
+          68.226,
+          61.36
+        ],
+        [
+          16.723,
+          67.97,
+          59.983
+        ],
+        [
+          16.974,
+          67.641,
+          58.623
+        ],
+        [
+          17.223,
+          67.204,
+          57.293
+        ],
+        [
+          17.473,
+          66.546,
+          56.064
+        ],
+        [
+          17.723,
+          66.259,
+          55.982
+        ],
+        [
+          17.977,
+          66.038,
+          55.98
+        ],
+        [
+          18.224,
+          65.819,
+          55.98
+        ],
+        [
+          18.473,
+          65.6,
+          55.98
+        ],
+        [
+          18.723,
+          65.381,
+          55.98
+        ],
+        [
+          18.972,
+          65.162,
+          55.98
+        ],
+        [
+          19.224,
+          64.943,
+          55.98
+        ],
+        [
+          19.474,
+          64.724,
+          55.98
+        ],
+        [
+          19.723,
+          64.505,
+          55.98
+        ],
+        [
+          19.974,
+          64.285,
+          55.98
+        ],
+        [
+          20.224,
+          64.067,
+          55.98
+        ],
+        [
+          20.474,
+          69,
+          63
+        ],
+        [
+          20.724,
+          69,
+          63
+        ],
+        [
+          20.974,
+          69,
+          63
+        ],
+        [
+          21.224,
+          69,
+          63
+        ],
+        [
+          21.473,
+          69,
+          63
+        ],
+        [
+          21.723,
+          69,
+          63
+        ],
+        [
+          21.973,
+          69,
+          63
+        ],
+        [
+          22.224,
+          69,
+          63
+        ],
+        [
+          22.473,
+          69,
+          63
+        ],
+        [
+          22.723,
+          69,
+          63
+        ],
+        [
+          22.974,
+          69,
+          63
+        ]
+      ],
+      "glError": 0,
+      "webgl": 2,
+      "errors": [],
+      "http": []
+    }
+  },
+  "milkingContact": {
+    "trunkSlice": [
+      57.67059292049197,
+      58.29492986178558
+    ],
+    "joints": {
+      "citizen-0-pelvis": [
+        67.30000305175781,
+        0.22373825311660767,
+        58.36360168457031
+      ],
+      "citizen-0-neck_01": [
+        67.2999038696289,
+        0.6610773205757141,
+        58.36514663696289
+      ],
+      "citizen-0-head": [
+        67.29979705810547,
+        0.7526937127113342,
+        58.31782913208008
+      ],
+      "citizen-0-upperarm_l": [
+        67.44694519042969,
+        0.5891228318214417,
+        58.3753662109375
+      ],
+      "citizen-0-upperarm_r": [
+        67.1529312133789,
+        0.5892742872238159,
+        58.377323150634766
+      ]
+    },
+    "workerBounds": [
+      [
+        "citizen-0-Native civilian skin",
+        [
+          67.30497492613203,
+          0.8500793513383014,
+          58.35864845904501
+        ]
+      ],
+      [
+        "citizen-0-Native upper cloth",
+        [
+          67.30388019537459,
+          1.179113717978316,
+          58.36719717924862
+        ]
+      ],
+      [
+        "citizen-0-Native draped wool skirt",
+        [
+          67.27481997617281,
+          0.736634270349529,
+          58.35600280939045
+        ]
+      ],
+      [
+        "citizen-0-Source flat leather foot cover",
+        [
+          67.2999959243225,
+          0.061112489385151576,
+          58.34177268891593
+        ]
+      ],
+      [
+        "citizen-0-Source eye white",
+        [
+          67.29973452335581,
+          1.5703719706954136,
+          58.29643950391971
+        ]
+      ],
+      [
+        "citizen-0-Source eye dark",
+        [
+          67.29999684718408,
+          1.579645991698749,
+          58.28190878976034
+        ]
+      ],
+      [
+        "citizen-0-Source lip",
+        [
+          67.30057540721681,
+          1.5077700954087394,
+          58.2725649589366
+        ]
+      ],
+      [
+        "citizen-0-Source scalp hair",
+        [
+          67.30004984198429,
+          1.593919851701278,
+          58.35905011001017
+        ]
+      ],
+      [
+        "profession-upper-wrap-dairyman",
+        [
+          67.29953135922011,
+          0.7993449457399391,
+          58.24029568020444
+        ]
+      ],
+      [
+        "citizen-0-inspired",
+        [
+          67.30000305175781,
+          1.2904698848724365,
+          58.37900161743164
+        ]
+      ],
+      [
+        "citizen-0-shadow-lod",
+        [
+          67.30000305175781,
+          0.8528140187263489,
+          58.37900161743164
+        ]
+      ],
+      [
+        "milking-stool-seat",
+        [
+          67.30000305175781,
+          0.17357271909713745,
+          58.40400314331055
+        ]
+      ],
+      [
+        "milking-stool-leg",
+        [
+          67.40921020507812,
+          0.0782582238316536,
+          58.499000549316406
+        ]
+      ],
+      [
+        "milking-stool-leg",
+        [
+          67.40921020507812,
+          0.0782582238316536,
+          58.30900192260742
+        ]
+      ],
+      [
+        "milking-stool-leg",
+        [
+          67.1907958984375,
+          0.0782582238316536,
+          58.499000549316406
+        ]
+      ],
+      [
+        "milking-stool-leg",
+        [
+          67.1907958984375,
+          0.0782582238316536,
+          58.30900192260742
+        ]
+      ]
+    ],
+    "worker": 0,
+    "cow": "dairy-10,9-0",
+    "cowFile": "pasture-cow.glb",
+    "body": [
+      "dairy-10,9-0-geometry_0",
+      "dairy-10,9-0-Udder and four teats"
+    ],
+    "activeCowMeshes": 2,
+    "activeWorkerMeshes": 15,
+    "udder": "dairy-10,9-0-Udder and four teats",
+    "udderInActiveMeshes": true,
+    "reaching": [
+      {
+        "teats": [
+          [
+            67.2077,
+            0.3272,
+            57.9173
+          ],
+          [
+            67.3884,
+            0.3351,
+            57.9173
+          ],
+          [
+            67.2077,
+            0.3272,
+            58.0312
+          ],
+          [
+            67.3884,
+            0.3351,
+            58.0312
+          ]
+        ],
+        "hands": [
+          [
+            67.5823,
+            0.3763,
+            58.1565
+          ],
+          [
+            67.3844,
+            0.4125,
+            58.1612
+          ]
+        ],
+        "distanceToNearestTip": [
+          0.23455795858059797,
+          0.15132090130151785
+        ],
+        "tipIndex": [
+          3,
+          3
+        ],
+        "distanceToUdderSurface": [
+          0.16886655654051158,
+          0.07291800750102134
+        ]
+      },
+      {
+        "teats": [
+          [
+            67.2077,
+            0.3272,
+            57.9173
+          ],
+          [
+            67.3884,
+            0.3351,
+            57.9173
+          ],
+          [
+            67.2077,
+            0.3272,
+            58.0312
+          ],
+          [
+            67.3884,
+            0.3351,
+            58.0312
+          ]
+        ],
+        "hands": [
+          [
+            67.39,
+            0.3694,
+            58.031
+          ],
+          [
+            67.2056,
+            0.3817,
+            58.068
+          ]
+        ],
+        "distanceToNearestTip": [
+          0.03435751603299487,
+          0.06578734610139284
+        ],
+        "tipIndex": [
+          3,
+          2
+        ],
+        "distanceToUdderSurface": [
+          0.004376613058519888,
+          0.014014115142338692
+        ]
+      }
+    ],
+    "frames": [
+      {
+        "teats": [
+          [
+            67.2077,
+            0.3272,
+            57.9173
+          ],
+          [
+            67.3884,
+            0.3351,
+            57.9173
+          ],
+          [
+            67.2077,
+            0.3272,
+            58.0312
+          ],
+          [
+            67.3884,
+            0.3351,
+            58.0312
+          ]
+        ],
+        "hands": [
+          [
+            67.39,
+            0.3694,
+            58.031
+          ],
+          [
+            67.2056,
+            0.3817,
+            58.068
+          ]
+        ],
+        "distanceToNearestTip": [
+          0.03435751603299487,
+          0.06578734610139284
+        ],
+        "tipIndex": [
+          3,
+          2
+        ],
+        "distanceToUdderSurface": [
+          0.004376613058519888,
+          0.014014115142338692
+        ]
+      },
+      {
+        "teats": [
+          [
+            67.2077,
+            0.3272,
+            57.9173
+          ],
+          [
+            67.3884,
+            0.3351,
+            57.9173
+          ],
+          [
+            67.2077,
+            0.3272,
+            58.0312
+          ],
+          [
+            67.3884,
+            0.3351,
+            58.0312
+          ]
+        ],
+        "hands": [
+          [
+            67.39,
+            0.3608,
+            58.031
+          ],
+          [
+            67.2096,
+            0.3709,
+            58.0338
+          ]
+        ],
+        "distanceToNearestTip": [
+          0.02581024732429046,
+          0.04376861691400965
+        ],
+        "tipIndex": [
+          3,
+          2
+        ],
+        "distanceToUdderSurface": [
+          0.00982486712788789,
+          0.010705940170741507
+        ]
+      },
+      {
+        "teats": [
+          [
+            67.2077,
+            0.3272,
+            57.9173
+          ],
+          [
+            67.3884,
+            0.3351,
+            57.9173
+          ],
+          [
+            67.2077,
+            0.3272,
+            58.0312
+          ],
+          [
+            67.3884,
+            0.3351,
+            58.0312
+          ]
+        ],
+        "hands": [
+          [
+            67.39,
+            0.3551,
+            58.031
+          ],
+          [
+            67.21,
+            0.3749,
+            58.031
+          ]
+        ],
+        "distanceToNearestTip": [
+          0.02009621723510715,
+          0.047716040965213494
+        ],
+        "tipIndex": [
+          3,
+          2
+        ],
+        "distanceToUdderSurface": [
+          0.011387484753331671,
+          0.011590595462719545
+        ]
+      },
+      {
+        "teats": [
+          [
+            67.2077,
+            0.3272,
+            57.9173
+          ],
+          [
+            67.3884,
+            0.3351,
+            57.9173
+          ],
+          [
+            67.2077,
+            0.3272,
+            58.0312
+          ],
+          [
+            67.3884,
+            0.3351,
+            58.0312
+          ]
+        ],
+        "hands": [
+          [
+            67.3902,
+            0.3524,
+            58.0324
+          ],
+          [
+            67.21,
+            0.3786,
+            58.031
+          ]
+        ],
+        "distanceToNearestTip": [
+          0.01741805686996185,
+          0.05144169816322329
+        ],
+        "tipIndex": [
+          3,
+          2
+        ],
+        "distanceToUdderSurface": [
+          0.011222285872545723,
+          0.012483036954587117
+        ]
+      },
+      {
+        "teats": [
+          [
+            67.2077,
+            0.3272,
+            57.9173
+          ],
+          [
+            67.3884,
+            0.3351,
+            57.9173
+          ],
+          [
+            67.2077,
+            0.3272,
+            58.0312
+          ],
+          [
+            67.3884,
+            0.3351,
+            58.0312
+          ]
+        ],
+        "hands": [
+          [
+            67.3903,
+            0.3531,
+            58.0326
+          ],
+          [
+            67.21,
+            0.378,
+            58.031
+          ]
+        ],
+        "distanceToNearestTip": [
+          0.018199276424082724,
+          0.050792251407167394
+        ],
+        "tipIndex": [
+          3,
+          2
+        ],
+        "distanceToUdderSurface": [
+          0.01090091839348953,
+          0.01254917531820031
+        ]
+      },
+      {
+        "teats": [
+          [
+            67.2077,
+            0.3272,
+            57.9173
+          ],
+          [
+            67.3884,
+            0.3351,
+            57.9173
+          ],
+          [
+            67.2077,
+            0.3272,
+            58.0312
+          ],
+          [
+            67.3884,
+            0.3351,
+            58.0312
+          ]
+        ],
+        "hands": [
+          [
+            67.39,
+            0.3584,
+            58.031
+          ],
+          [
+            67.21,
+            0.3716,
+            58.031
+          ]
+        ],
+        "distanceToNearestTip": [
+          0.02333677158070515,
+          0.044469818690907124
+        ],
+        "tipIndex": [
+          3,
+          2
+        ],
+        "distanceToUdderSurface": [
+          0.011786466381866336,
+          0.010740615534929289
+        ]
+      },
+      {
+        "teats": [
+          [
+            67.2077,
+            0.3272,
+            57.9173
+          ],
+          [
+            67.3884,
+            0.3351,
+            57.9173
+          ],
+          [
+            67.2077,
+            0.3272,
+            58.0312
+          ],
+          [
+            67.3884,
+            0.3351,
+            58.0312
+          ]
+        ],
+        "hands": [
+          [
+            67.39,
+            0.3648,
+            58.031
+          ],
+          [
+            67.21,
+            0.3652,
+            58.031
+          ]
+        ],
+        "distanceToNearestTip": [
+          0.02980543757629682,
+          0.0379988935003351
+        ],
+        "tipIndex": [
+          3,
+          2
+        ],
+        "distanceToUdderSurface": [
+          0.006489464074519095,
+          0.0054925730293121765
+        ]
+      },
+      {
+        "teats": [
+          [
+            67.2077,
+            0.3272,
+            57.9173
+          ],
+          [
+            67.3884,
+            0.3351,
+            57.9173
+          ],
+          [
+            67.2077,
+            0.3272,
+            58.0312
+          ],
+          [
+            67.3884,
+            0.3351,
+            58.0312
+          ]
+        ],
+        "hands": [
+          [
+            67.39,
+            0.3705,
+            58.031
+          ],
+          [
+            67.21,
+            0.3595,
+            58.031
+          ]
+        ],
+        "distanceToNearestTip": [
+          0.035441951424629636,
+          0.032366835991353225
+        ],
+        "tipIndex": [
+          3,
+          2
+        ],
+        "distanceToUdderSurface": [
+          0.004444323516086414,
+          0.004944992276568416
+        ]
+      },
+      {
+        "teats": [
+          [
+            67.2077,
+            0.3272,
+            57.9173
+          ],
+          [
+            67.3884,
+            0.3351,
+            57.9173
+          ],
+          [
+            67.2077,
+            0.3272,
+            58.0312
+          ],
+          [
+            67.3884,
+            0.3351,
+            58.0312
+          ]
+        ],
+        "hands": [
+          [
+            67.39,
+            0.3764,
+            58.031
+          ],
+          [
+            67.2096,
+            0.3552,
+            58.0334
+          ]
+        ],
+        "distanceToNearestTip": [
+          0.04137428782397279,
+          0.028088877714158005
+        ],
+        "tipIndex": [
+          3,
+          2
+        ],
+        "distanceToUdderSurface": [
+          0.008063611987998836,
+          0.009378936851559602
+        ]
+      },
+      {
+        "teats": [
+          [
+            67.2077,
+            0.3272,
+            57.9173
+          ],
+          [
+            67.3884,
+            0.3351,
+            57.9173
+          ],
+          [
+            67.2077,
+            0.3272,
+            58.0312
+          ],
+          [
+            67.3884,
+            0.3351,
+            58.0312
+          ]
+        ],
+        "hands": [
+          [
+            67.39,
+            0.379,
+            58.031
+          ],
+          [
+            67.2094,
+            0.3535,
+            58.0347
+          ]
+        ],
+        "distanceToNearestTip": [
+          0.04391714478243646,
+          0.02659032039668865
+        ],
+        "tipIndex": [
+          3,
+          2
+        ],
+        "distanceToUdderSurface": [
+          0.010296051408276198,
+          0.010993101565863549
+        ]
+      },
+      {
+        "teats": [
+          [
+            67.2077,
+            0.3272,
+            57.9173
+          ],
+          [
+            67.3884,
+            0.3351,
+            57.9173
+          ],
+          [
+            67.2077,
+            0.3272,
+            58.0312
+          ],
+          [
+            67.3884,
+            0.3351,
+            58.0312
+          ]
+        ],
+        "hands": [
+          [
+            67.39,
+            0.3778,
+            58.031
+          ],
+          [
+            67.2095,
+            0.3543,
+            58.0341
+          ]
+        ],
+        "distanceToNearestTip": [
+          0.04273752622576338,
+          0.027276438651479232
+        ],
+        "tipIndex": [
+          3,
+          2
+        ],
+        "distanceToUdderSurface": [
+          0.00924190523170052,
+          0.010487209437723998
+        ]
+      },
+      {
+        "teats": [
+          [
+            67.2077,
+            0.3272,
+            57.9173
+          ],
+          [
+            67.3884,
+            0.3351,
+            57.9173
+          ],
+          [
+            67.2077,
+            0.3272,
+            58.0312
+          ],
+          [
+            67.3884,
+            0.3351,
+            58.0312
+          ]
+        ],
+        "hands": [
+          [
+            67.39,
+            0.3744,
+            58.031
+          ],
+          [
+            67.2098,
+            0.3565,
+            58.0323
+          ]
+        ],
+        "distanceToNearestTip": [
+          0.03936992855101768,
+          0.02933263903239376
+        ],
+        "tipIndex": [
+          3,
+          2
+        ],
+        "distanceToUdderSurface": [
+          0.006471139655961457,
+          0.00775320705316124
+        ]
+      }
+    ],
+    "webgl": 2,
+    "glError": 0,
+    "errors": [],
+    "http": []
+  }
+}

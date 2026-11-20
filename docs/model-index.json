@@ -17,11 +17,11 @@
     },
     {
       "file": "game3d/actors.js",
-      "sha256": "d5b80a7ddfb3e5940a9d5e65559f3779ef26e7d20ca1e87afda3eb2ace23217e"
+      "sha256": "f83b3aba33320791f846e5f36dd59d76a7d740b4d6b56f02c7629a229385c151"
     },
     {
       "file": "game3d/ambient-fauna.js",
-      "sha256": "697f767ce32db020d3676d1d3973c13c65ac4f22723aa1f3787e84399616a76b"
+      "sha256": "a80bb6442a480623e7c62aea722f400754f5918a27c4b27f07f35c906b6a0be6"
     },
     {
       "file": "game3d/asset-loading.js",
@@ -65,7 +65,7 @@
     },
     {
       "file": "game3d/landscape.js",
-      "sha256": "5e19e2860bfc7b72f6397f5d8cfcca877603dfa90c253db924b3f303ca28d6d8"
+      "sha256": "e216f039c27c9955858b5aebe71977df46c86e94baaac1fb9719a79a198f9ba3"
     },
     {
       "file": "game3d/miracle-garden.js",
@@ -97,7 +97,7 @@
     },
     {
       "file": "game3d/test-livestock.js",
-      "sha256": "9761d1375e033732bad751f0a55452cc574a2b34a32da53794e12e26bd54a4d3"
+      "sha256": "3a31e06bcb6d8dcbe39ace56681f2ece5ec6a2ca874dad76f0af52e59c9bed3a"
     },
     {
       "file": "game3d/valley-vegetation.js",
@@ -678,7 +678,7 @@
         {
           "model": "date-palm.glb",
           "file": "game3d/landscape.js",
-          "line": 192,
+          "line": 193,
           "kind": "literal"
         }
       ]
@@ -1827,7 +1827,7 @@
         {
           "model": "pasture-cow.glb",
           "file": "game3d/test-livestock.js",
-          "line": 177,
+          "line": 179,
           "kind": "literal"
         }
       ]

@@ -61,7 +61,7 @@ export function artisanWalk(actor,contact,c,dt,speed,paused){
  if(!contact?.via&&!state)return null;
  if(c.controlled||c.festivalContact||c.funeralContact||c.eventContact){actor.workAisle=null;return null;}
  if(actor.lastX===null){
-  actor.workAisle=contact?.via?{key:contact.target.x+','+contact.target.y+','+contact.task,building:c.work,via:contact.via,steps:contact.via,index:contact.via.length,x:contact.stand.x,y:contact.stand.y}:null;return null;
+  actor.workAisle=contact?.via?{key:contact.target.x+','+contact.target.y+','+contact.task,building:c.work,speed:contact.aisleSpeed,via:contact.via,steps:contact.via,index:contact.via.length,x:contact.stand.x,y:contact.stand.y}:null;return null;
  }
  let walk=state;
  if(contact?.via){
@@ -69,12 +69,12 @@ export function artisanWalk(actor,contact,c,dt,speed,paused){
   if(!walk||walk.key!==key){
    const changing=walk&&!walk.exiting&&walk.building===c.work;
    const steps=changing?[...walk.via.slice(1).reverse(),...contact.via.slice(1)]:contact.via;
-   walk=actor.workAisle={key,building:c.work,via:contact.via,steps,index:0,x:actor.lastX,y:actor.lastY};
+   walk=actor.workAisle={key,building:c.work,speed:contact.aisleSpeed,via:contact.via,steps,index:0,x:actor.lastX,y:actor.lastY};
   }
  }else if(!walk.exiting){
   walk={...walk,exiting:true,steps:walk.via.slice(0,Math.min(walk.index,walk.via.length)).reverse(),index:0};actor.workAisle=walk;
  }
- let metres=paused?0:Math.max(0,dt)*Math.max(1,speed)*1.4;
+ let metres=paused?0:Math.max(0,dt)*Math.max(1,speed)*(walk.speed??1.4);
  while(walk.index<walk.steps.length){
   const target=walk.steps[walk.index],dx=target.x-walk.x,dy=target.y-walk.y,dist=Math.hypot(dx,dy)*6;
   if(dist<=.004){walk.index++;continue;}

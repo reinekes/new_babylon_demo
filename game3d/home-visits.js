@@ -158,7 +158,7 @@ export function createHomeVisits(homeAsset=()=>true,homePlatform=()=>null){
   for(const c of residents){
    const b=homes.get(c.home),real=shown.get(c.id),prior=previous.get(c.id),wasHome=prior?.home===c.home&&homePhase(prior.phase);
    if(b&&real?.playing&&!ineligible(c)){next.set(c.id,{home:c.home,phase:'playing',port:{x:real.x,y:real.y}});transits.delete(c.id);continue;}
-   if(!b||ineligible(c)||real&&(real.eventContact||real.miracleContact||real.funeralContact||real.festivalContact||real.peaceRelief)||s.funeral?.scope==='city'){transits.delete(c.id);continue;}
+   if(!b||ineligible(c)||real&&(real.eventContact||real.miracleContact||real.funeralContact||real.festivalContact||real.peaceRelief||real.phase==='copyingLaw')||s.funeral?.scope==='city'){transits.delete(c.id);continue;}
    const atHome=homePhase(c.phase),given=transits.get(c.id);
    if(!atHome&&!wasHome&&!given){if(returning(c.phase))next.set(c.id,{home:c.home,phase:c.phase,parcel:real?.carrying?{...real.cargo}:null});continue;}
    let transit=given,p;

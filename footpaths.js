@@ -110,22 +110,22 @@ function footpathControl(s,view,id,from,to){
  if(view.controls.has(id))return view.controls.get(id);
  const [a,b]=from.x<to.x||from.x===to.x&&from.y<to.y?[from,to]:[to,from];
  const dx=b.x-a.x,dy=b.y-a.y,len=Math.hypot(dx,dy),mx=(a.x+b.x)/2,my=(a.y+b.y)/2;
- // Adjacent stretches on a straight run bend to alternating sides so their
- // tangents lead into one another. Opposite trips share the same control.
- const along=Math.floor(dx?mx:my),across=Math.floor(dx?my-dy*mx:mx);
- const line=Math.imul(across+3,374761393)^(s.world?.seed||0),shape=(Math.imul(along+2,1274126177)^line)>>>0;
- const side=((along+line)&1)?1:-1,bend=.38+(shape%29)/200;
+ // Ground varies over several plots. An open run can drift a few handbreadths
+ // to one side; the worn centre eases back onto its heading at each junction.
+ const phase=(s.world?.seed||0)*.013;
+ const drift=.068*Math.sin(mx*.86+my*.39+phase)+.026*Math.cos(mx*.35-my*.78-phase);
  const clear=(p,q)=>isDryPoint(s,p.x,p.y)&&isDryPoint(s,q.x,q.y)&&!(view.flooded&&floodedSegment(view.flooded,p,q))&&navigationSegmentClear(s,p,q,view.obstacles);
  let control=null;
- if(len>EPSILON&&cachedFootpathAccess(s,view)(id,a,b))for(const offset of [side*bend,-side*bend,side*bend*.5,-side*bend*.5]){
-  const candidate={x:mx-dy/len*offset,y:my+dx/len*offset};
-  let previous=a,safe=true;
-  for(let i=1;i<=8;i++){
-   const point=footpathRibbonPoint(a,b,candidate,i/8);
-   if(!clear(previous,point)){safe=false;break;}
-   previous=point;
+ if(len>EPSILON&&Math.abs(drift)>.008&&cachedFootpathAccess(s,view)(id,a,b)){
+  const offset=d=>({x:mx-dy/len*d,y:my+dx/len*d});
+  const candidate=offset(drift),margin=offset(drift+Math.sign(drift)*.09);
+  let centre=a,edge=a,safe=true;
+  for(let i=1;i<=6;i++){
+   const p=footpathRibbonPoint(a,b,candidate,i/6),outer=footpathRibbonPoint(a,b,margin,i/6);
+   if(!clear(centre,p)||!clear(edge,outer)){safe=false;break;}
+   centre=p;edge=outer;
   }
-  if(safe){control=candidate;break;}
+  if(safe)control=candidate;
  }
  view.controls.set(id,control);
  return control;
@@ -174,8 +174,8 @@ export function validateFootpaths(s){
 }
 
 export function footpathRibbonPoint(a,b,control,t){
- const rest=1-t;
- return control
-  ?{x:rest*rest*a.x+2*rest*t*control.x+t*t*b.x,y:rest*rest*a.y+2*rest*t*control.y+t*t*b.y}
-  :{x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t};
+ const x=a.x+(b.x-a.x)*t,y=a.y+(b.y-a.y)*t;
+ if(!control)return {x,y};
+ const weight=8*t*t*(1-t)*(1-t);
+ return {x:x+weight*(control.x-(a.x+b.x)/2),y:y+weight*(control.y-(a.y+b.y)/2)};
 }

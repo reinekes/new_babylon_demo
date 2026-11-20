@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import vm from 'node:vm';
 import {readFileSync} from 'node:fs';
-import {mineralDepositGeometry,mineralExcavations,mineralPitGeometry} from '../game3d/mineral-excavation.js';
+import {mineralDepositGeometry,mineralExcavations,mineralPitGeometry,mineralWorkingPoint} from '../game3d/mineral-excavation.js';
 import {createDistrictTerrain} from '../district3d/terrain.js';
 import {createArchitecture} from '../game3d/architecture.js';
 import {createGame} from '../engine.js';
@@ -68,5 +68,30 @@ test('residents follow the visible quarry floor and the surface of a diminishing
   assert.equal(view.mineralHeightAt(10,10,.7),.7);
   s.stonePits={'7,7':0};view.update(s,0);
   assert.ok(Math.abs(view.mineralHeightAt(x,y,ground)+pit.depth)<1e-4,'the emptied pit exposes the floor underfoot');
+ }finally{view.dispose();scene.dispose();engine.dispose();}
+});
+
+test('a quarry worker has clear boots on the excavated floor and can reach the exposed seam as it shrinks',()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),s=fixture(),site=s.world.deposits[0];
+ s.buildings=[{type:'quarry',x:7,y:7,footprint:2,deposit:{x:7,y:7}}];
+ const view=createDistrictTerrain(B,scene,s,palette(scene));
+ try{
+  for(const stock of [1,.65,.34]){
+   const seam=view.meshes.find(mesh=>mesh.name==='deposit-open-stone-7-7');
+   seam.unfreezeWorldMatrix();seam.scaling.setAll(stock);seam.freezeWorldMatrix();
+   const worker={x:7.31,y:7},contact=mineralWorkingPoint(s,site,worker,stock);
+   assert.ok(contact);assert.deepEqual(contact.via,[worker,contact.stand]);
+   const {stand,target}=contact,x=stand.x*6,z=stand.y*6;
+   const ray=(x,z)=>new B.Ray(new B.Vector3(x,3,z),new B.Vector3(0,-1,0));
+   const bowl=view.meshes.find(mesh=>mesh.metadata?.mineralCut?.role==='bowl');
+   for(const [dx,dz] of [[0,0],[.26,.12],[-.26,.12],[.26,-.12],[-.26,-.12]]){
+    const r=ray(x+dx,z+dz),floor=r.intersectsMesh(bowl).pickedPoint?.y,ore=r.intersectsMesh(seam).pickedPoint?.y;
+    assert.ok(Number.isFinite(floor)&&(!Number.isFinite(ore)||ore<=floor+.035),'both feet clear exposed rock');
+   }
+   const cut=ray(target.x*6,target.y*6),face=cut.intersectsMesh(seam).pickedPoint?.y;
+   assert.ok(face>cut.intersectsMesh(bowl).pickedPoint.y+.035,'aim falls on exposed material');
+   assert.ok(Math.abs(Math.hypot(target.x-stand.x,target.y-stand.y)*6-.72)<1e-6);
+  }
+  assert.equal(mineralWorkingPoint(s,site,{x:7.31,y:7},0),null);
  }finally{view.dispose();scene.dispose();engine.dispose();}
 });

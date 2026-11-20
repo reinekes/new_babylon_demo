@@ -1,8 +1,17 @@
 import {isDryPoint,terrain} from './world.js';
+import {footprintCells,footprintSize} from './footprints.js';
 import {networkFor} from './workforce.js';
 const plans=new WeakMap();
 export function safeLoop(s,center,radius=.6,cellSafe=false){
- const solid=s.buildings.filter(b=>!['field','garden','bridge'].includes(b.type)),free=p=>[[0,0],[.06,0],[-.06,0],[0,.06],[0,-.06]].every(([dx,dy])=>isDryPoint(s,p.x+dx,p.y+dy))&&(!cellSafe||terrain(Math.round(p.x),Math.round(p.y),s)!=='water'&&!s.buildings.some(b=>b.x===Math.round(p.x)&&b.y===Math.round(p.y)))&&!solid.some(b=>Math.abs(p.x-b.x)<.48&&Math.abs(p.y-b.y)<.48);
+ const solid=s.buildings.filter(b=>!['field','garden','bridge'].includes(b.type)).map(b=>{
+  const size=footprintSize(b);
+  return {left:b.x-.48,right:b.x+size-.52,top:b.y-.48,bottom:b.y+size-.52};
+ });
+ const occupied=cellSafe?new Set(s.buildings.flatMap(footprintCells).map(p=>p.x+','+p.y)):null;
+ const clearance=[[0,0],[.06,0],[-.06,0],[0,.06],[0,-.06]];
+ const free=p=>clearance.every(([dx,dy])=>isDryPoint(s,p.x+dx,p.y+dy))&&
+  (!occupied||terrain(Math.round(p.x),Math.round(p.y),s)!=='water'&&!occupied.has(Math.round(p.x)+','+Math.round(p.y)))&&
+  !solid.some(b=>p.x>b.left&&p.x<b.right&&p.y>b.top&&p.y<b.bottom);
  const clear=(a,b)=>{for(let i=0;i<=12;i++)if(!free({x:a.x+(b.x-a.x)*i/12,y:a.y+(b.y-a.y)*i/12}))return false;return true;};
  const route=[{x:center.x,y:center.y}];for(const [dx,dy]of [[radius,0],[radius,radius],[0,radius],[-radius,radius],[-radius,0],[0,-radius]]){const p={x:center.x+dx,y:center.y+dy};if(clear(route.at(-1),p)&&clear(p,center))route.push(p);}route.push({x:center.x,y:center.y});return route;
 }

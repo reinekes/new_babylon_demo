@@ -115,7 +115,9 @@ function routeLength(points){
 const penKey=building=>building.type+':'+buildingKey(building);
 
 function penTargets(state,building,kind){
- if(kind==='bull')return dairyHerd(state).filter(animal=>animal.building===building).slice(0,MAX_HERD).map(animal=>({...animal.anchor,id:animal.id,young:animal.calf}));
+ // The cow fixed at the milking rail is already on the farm. Incoming animals
+ // may occupy the other recorded places without removing her from the milkers.
+ if(kind==='bull')return dairyHerd(state).filter(animal=>animal.building===building&&animal.index!==0).slice(0,MAX_HERD).map(animal=>({...animal.anchor,id:animal.id,young:animal.calf}));
  const {halfWidth,spacing}=sheepfoldLayout(building),side=sheepfoldGateSide(building,state);
  return Array.from({length:Math.min(MAX_HERD,flockSize(building))},(_,i)=>({
   ...sheepfoldWorldPoint(building,side,Math.min(halfWidth-.45,spacing)*(i%3-1),Math.min(halfWidth-.45,spacing)*(Math.floor(i/3)-1)),

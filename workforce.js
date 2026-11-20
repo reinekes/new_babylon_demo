@@ -50,6 +50,7 @@ import {recordBuildingProduction} from './building-production-history.js';
 import {workMusic} from './music.js';
 import {canStaffBuilding,workplaceCapacity,hasWorkplace,professionForBuilding,professionRole,innateProfession,residentCareerRoll} from './professions.js';
 import {queueGranaryReceipt,workOnAccount} from './scribes.js';
+import {canCopyLaw,copyLaw} from './civic-order.js';
 import {workDairy} from './dairy.js';
 import {advanceFestival,recoverFestivalCitizen,festivalCitizenView} from './festival.js';
 import {toolResource,wearWorkTool} from './axe-kit.js';
@@ -957,6 +958,7 @@ function advanceCitizen(s,c,dt,ctx,constructionWork){
  if((day||watch)&&['working','toWork','returnWork','waiting','constructing','toSite','toSupply'].includes(c.phase)&&
   !c.craftSite&&!c.seedField&&!hasCargo(c)&&!hasBuildCargo(c)&&!(watch?watchOpen:shiftOpen(s,c,ctx)))startTrip(s,c,c.home,'toHome',ctx);
  if(c.phase==='home'){
+  if(day&&canCopyLaw(s,c)){copyLaw(s,dt);return;}
   const own=ctx.buildings.get(c.home);if(own?.householdStock?.clothing>=1){const target=residentsAtHome(s,ctx,c.home).filter(p=>p.clothing<=REPLACE_CLOTHING_AT&&!s.citizens.some(q=>q.clothingTarget===p.id)).sort((a,b)=>a.clothing-b.clothing)[0];if(target){own.householdStock.clothing--;equipClothing(target);}}
   const evening=hourAt(s.simTime)>=19&&hourAt(s.simTime)<20;
   const householdTime=day&&canDepartForWork(undefined,c.id,s.simTime);
@@ -1193,6 +1195,10 @@ export function visibleCitizens(s){
  const footpathPosition=residentFootpathPositions(s);
  const people=(s.citizens||[]).filter(c=>!['home','resting','studying'].includes(c.phase)||c.phase==='studying'&&!!c.school||c.phase==='home'&&c.age>=3&&c.age<16&&isWorkday(s.simTime)).map(c=>({...c,lifeStage:lifeStage(c),kind:'person',walking:(c.floodShelter||c.fireShelter)&&c.routeIndex<c.route.length||waterBusy(c)||['toEveningGame','toManualGathering','toCommonMeal','toWork','toWorkshop','toStore','returnWork','toHome','toSupply','toSite','toMarket','toSaleSupply','toSaleMarket','toPantrySupply','toPantryHome','toRest','toHealer','toSchool','toDistrictSupply','toDistrictStore','toCraftSupply','toClothesSupply','toClothesHome'].includes(c.phase),carrying:c.memorialMove?true:c.waterTrip?.load>0?true:c.clothingLoad>0?true:craftLoad(c)>0?true:c.seedFood>0?true:c.pantryTrip?c.pantryFood>0:hasCargo(c)||Object.values(c.buildCargo||{}).some(n=>n>0),cargo:c.waterTrip?.load>0?{water:c.waterTrip.load}:c.clothingLoad>0?{clothing:c.clothingLoad}:craftLoad(c)>0?c.craftMaterial?{[c.craftMaterial]:c.craftAmount}:c.craftCloth>0?{cloth:c.craftCloth}:{wool:c.craftWool}:c.seedFood>0?{food:c.seedFood}:c.pantryTrip?{food:c.pantryFood||0}:hasCargo(c)?c.cargo:c.buildCargo,robe:c.role==='tailor'?'#ad826b':c.role==='healer'?(medicalLevel(c)?'#e6eee1':'#80aaa3'):['#f0dfb5','#b76c4e','#527f82','#d2b66e','#a195ac','#e6e4cf'][c.id%6],step:(s.simTime||0)*(4+(c.id%4)*.2),...guardView(s,c),...isWorkday(s.simTime)?childPlay(s,c):null,...festivalCitizenView(s,c),...relicCitizenView(s,c),...godhoodCitizenView(s,c),...treatmentViewPosition(s,c)}));
  const walkingPlots=s.gathering?.jobs.filter(j=>j.source&&j.stage==='approach');
+ if(s.civicOrder?.law?.copyRemaining&&isWorkday(s.simTime)){
+  const author=s.citizens.find(c=>c.id===s.civicOrder.law.author);
+  if(author&&canCopyLaw(s,author))people.push({...author,kind:'person',lifeStage:lifeStage(author),phase:'copyingLaw',walking:false,carrying:false});
+ }
  for(const person of people){
   if(person.walking)Object.assign(person,footpathPosition(person));
   else if(walkingPlots?.length&&walkingPlots.some(j=>j.citizen===person.id))person.walking=true;

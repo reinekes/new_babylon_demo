@@ -27,6 +27,7 @@ function workplaceType(buildings,id){
 // same job and never changes a person's dress, assignment or saved inventory.
 export function professionClothing(c,buildings=[],state={}){
  if(c.age<16||c.phase==='mourning')return null;
+ if(c.phase==='copyingLaw')return clothes.lawmaker;
  const workplace=id=>forWork(workplaceType(buildings,id));
  let id;
  if(c.manualGathering){
