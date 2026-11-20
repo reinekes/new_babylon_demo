@@ -111,3 +111,21 @@ test('a raised house enters from the dry timber stairs before using its deck and
  }
  assert.ok(atStairs&&atDoor&&roof);
 });
+
+test('communal residents reach the left bench and the right roof of the rotated four-cell plot',()=>{
+ for(let rotation=0;rotation<4;rotation++){
+  const b={type:'communalHouse',x:6,y:11,footprint:2,rotation};
+  const s=city(b),view=createHomeVisits(),seats=new Set();
+  const yaw=rotation*Math.PI/2,cos=Math.cos(yaw),sin=Math.sin(yaw);
+  for(let t=0;t<1200;t+=.25){
+   const [actor]=seen(s,view,t);
+   if(!actor||actor.walking)continue;
+   const stage=actor.homeVisit.stage;seats.add(stage);
+   const [x,z,height]=stage==='bench'?[3.21,1.87,.065]:[-4.12,-.12,2.525];
+   assert.ok(Math.abs(actor.x-(b.x+.5+(x*cos+z*sin)/6))<1e-8);
+   assert.ok(Math.abs(actor.y-(b.y+.5+(z*cos-x*sin)/6))<1e-8);
+   assert.equal(actor.homeVisit.height,height);
+  }
+  assert.deepEqual([...seats].sort(),['bench','roof']);
+ }
+});

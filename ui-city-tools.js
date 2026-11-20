@@ -36,7 +36,8 @@ import {buildingDefinition} from './building-presentation.js';
 import {renderTestTools} from './ui-test-tools.js';
 import {PROFESSION_NAMES,PROFESSION_IDS,professionRole,professionMatchesTask,staffingCandidates} from './professions.js';
 import {cityDiagnostics,filterCitizens,CITY_ROLE_NAMES} from './city-diagnostics.js';
-import {BUILDINGS,RESOURCE_NAMES,buildingKey} from './definitions.js';
+import {residentMood} from './wellbeing.js';
+import {BUILDINGS,RESOURCE_NAMES,buildingKey,isResidence,COMMUNAL_MOOD_PENALTY} from './definitions.js';
 import {RESOURCE_GROUPS} from './season-balance.js';
 import {cityProduction} from './building-production-history.js';
 import {displayName} from './citizen-epithets.js';
@@ -78,6 +79,7 @@ export function sortedCityCitizens(s,filter={}){
  });
 }
 export function birthFoodHTML(s,home){
+ if(home?.type==='communalHouse')return `<p class="city-tools-muted" data-birth-food>В общинном доме у семей не рождаются дети. Довольство жильцов ниже на ${COMMUNAL_MOOD_PENALTY} пунктов. После переселения в семейный двор действуют обычные условия.</p>`;
  const local=usesCourtyardBirthFood(s);
  if(local&&!home)return '<p class="city-tools-muted" data-birth-food>Еда для рождения проверяется в каждом дворе. Запас и порог видны в карточке дома.</p>';
  const {available,needed,enough}=birthFoodStatus(s,home),amount=n=>Number(n.toFixed(2));
@@ -104,9 +106,10 @@ function registerVital(id,label,value,warning,reason,action,link){
 }
 export function residentVitalsHTML(c,s,scope='register'){
  const homeKey=supplyHome(c,{arrived:true});
- const home=s?.buildings.find(b=>b.type==='house'&&buildingKey(b)===homeKey),lastMeal=c.lastMealQuality??1;
+ const home=s?.buildings.find(b=>isResidence(b)&&buildingKey(b)===homeKey),lastMeal=c.lastMealQuality??1;
  const food=home?homeMealFood(home):null,hungry=(c.hunger??0)>=30,thirsty=(c.thirst??0)>30,worn=(c.clothing??100)<=25;
- const pressures=[hungry?'сильный голод':'',thirsty?'жажда':'',worn?'ветхая одежда':'',home?.reedCamp?'жизнь в тростниковом шалаше':''].filter(Boolean);
+ const ownHome=c.home===homeKey?home:s?.buildings.find(b=>buildingKey(b)===c.home);
+ const pressures=[ownHome?.type==='communalHouse'?`общинное жильё (−${COMMUNAL_MOOD_PENALTY} к довольству)`:'',hungry?'сильный голод':'',thirsty?'жажда':'',worn?'ветхая одежда':'',home?.reedCamp?'жизнь в тростниковом шалаше':''].filter(Boolean);
  const lastRation=home?.lastRation;
  const rationEvidence=lastRation?` Доставка во двор на ${Math.floor(lastRation.time/60)+1}-й день города: ${number(lastRation.amount)} ед. еды.`:'';
  const civicEvent=s?.civicOrder?.history.find(event=>event.person===c.id||event.guard===c.id);
@@ -129,12 +132,12 @@ export function residentVitalsHTML(c,s,scope='register'){
   ['health','Здоровье',c.health??100,60,current+'Здоровье снижают недоедание, сильная жажда и ветхая одежда.'+impactText('health'),home?.reedCamp?'Дострой или освободи место в доступном доме. Пока житель в шалаше, проверяй доставку еды и воды.':'Проверь еду и воду дома, запас одежды на складе. Если жителю всё ещё плохо, проверь доступность лечебницы.'],
   ['food','Сытость',100-(c.hunger??0),70,`Последний ужин: ${Math.round(lastMeal*100)}% порции.${impact?` Учтён на ${Math.floor(impact.time/60)+1}-й день города.`:''}${home?` Сейчас у двора ${number(food)} ед. еды.`:''} Голод растёт, когда житель не съедает свою порцию.${rationEvidence}`,'Открой дом → «Еда»: проверь запас, носильщиков и путь до склада. Еду нужно доставить во двор. При сильном голоде взрослый может прервать работу.'],
   ['water','Утоление жажды',100-(c.thirst??0),70,(home?`В запасе двора ${number(home.water)} ед. воды. При нехватке воды растёт жажда.`:'Жажда растёт, если жителю не хватает доступной воды.')+reactionText(['thirst','drank']),'Открой дом → «Вода»: проверь запас, ближайший водозабор и доставку. При жажде взрослый может уйти с работы за водой.'],
-  ['mood','Настроение',c.mood??75,35,current+'Настроение может падать из-за недоедания, жажды, ветхой одежды и утраты близких.'+civicEvidence+impactText('mood')+reactionText(['aid','guardedAid','threat']),'Наладь снабжение двора и замену одежды. Семейный ужин и благоустроенный двор помогают восстановиться.'],
+  ['mood','Настроение',residentMood(c,ownHome),35,current+'Настроение может падать из-за недоедания, жажды, ветхой одежды и утраты близких.'+civicEvidence+impactText('mood')+reactionText(['aid','guardedAid','threat']),'Наладь снабжение двора и замену одежды. Семейный ужин и благоустроенный двор помогают восстановиться.'],
   ['faith','Вера',c.faith??60,0,'Это личная вера жителя. Недоедание снижает её, сытый ужин помогает восстановлению.','Начни с запасов еды во дворе.'],
   ['clothing','Состояние одежды',c.clothing??100,26,'Одежда постепенно изнашивается. При остатке 25% или меньше ветхая одежда ухудшает здоровье и настроение.','Проверь, есть ли готовая одежда на доступном складе. Взрослые приносят замену себе и детям.']
  ];
  const homeLink=(key)=>{
-  const civicHome=key==='mood'&&civicEvent&&s.buildings.find(b=>b.type==='house'&&buildingKey(b)===civicEvent.home);
+  const civicHome=key==='mood'&&civicEvent&&s.buildings.find(b=>isResidence(b)&&buildingKey(b)===civicEvent.home);
   const target=civicHome||home;
   if(!target)return null;
   const tab=civicHome?'family':key==='water'||key==='health'&&thirsty?'water':'food';
@@ -178,14 +181,14 @@ function workshopCard(s,w,b,expanded){
  const inventory=open?(w.inventory||buildingInventory(s,b)):null;
  const compactInventory=inventory?{...inventory,storage:Object.fromEntries(Object.entries(inventory.storage||{}).filter(([,n])=>n>0))}:null;
  const slots=w.staffing?`${w.staffing.count} / ${w.staffing.capacity}`:b?.construction?`${w.builders.length} строит.`:'—',color=w.staffing?.state||(b?.construction?'construction':'ready');
- return `<article class="city-tools-row city-tools-workshop" data-city-building="${escape(w.key)}" data-staffing="${color}"><details data-city-disclosure="${escape(w.key)}"${expanded.has(w.key)?' open':''}><summary class="city-tools-building-summary"><span class="city-tools-building-name">${uiIcon(w.type)}<span><b>${escape(w.name)}</b><small>${w.x}, ${w.y} · Ур. ${b?.level||1} · ${escape(date.label)}</small></span></span><span class="city-tools-building-slots" aria-label="${escape(w.staffing?.label||w.reason.label)}: ${escape(slots)}">${w.staffing?'<i aria-hidden="true"></i>':''}${escape(slots)}</span><span class="city-register-building-status${w.status==='attention'?' is-warning':''}"><span>${escape(w.reason.label)}</span></span></summary>${open?`<div class="city-tools-building-body"><div class="city-tools-row-head">${focus(w.key,'Показать на карте')}${tag(`Клетка ${w.x}, ${w.y}`)}</div>${w.reason.detail||w.reason.target?`<div class="city-tools-production ${w.status==='attention'?'is-warning':''}">${w.reason.target?focus(w.reason.target,w.reason.label):''}<span>${escape(w.reason.detail)}</span></div>`:''}${w.reason.code==='construction'?`<p class="city-tools-note">Строителей: ${w.builders.length} · носильщиков: ${w.carriers.length}. Год будет записан после завершения.</p>`:''}${staffingHTML(s,w)}${buildingInventoryHTML(compactInventory,{house:w.type==='house',production:!!Object.keys(BUILDINGS[w.type]?.output||{}).filter(k=>!['faith','prestige'].includes(k)).length})}${buildingProductionHistoryHTML(s,b)}</div>`:''}</details></article>`;
+ return `<article class="city-tools-row city-tools-workshop" data-city-building="${escape(w.key)}" data-staffing="${color}"><details data-city-disclosure="${escape(w.key)}"${expanded.has(w.key)?' open':''}><summary class="city-tools-building-summary"><span class="city-tools-building-name">${uiIcon(w.type)}<span><b>${escape(w.name)}</b><small>${w.x}, ${w.y} · Ур. ${b?.level||1} · ${escape(date.label)}</small></span></span><span class="city-tools-building-slots" aria-label="${escape(w.staffing?.label||w.reason.label)}: ${escape(slots)}">${w.staffing?'<i aria-hidden="true"></i>':''}${escape(slots)}</span><span class="city-register-building-status${w.status==='attention'?' is-warning':''}"><span>${escape(w.reason.label)}</span></span></summary>${open?`<div class="city-tools-building-body"><div class="city-tools-row-head">${focus(w.key,'Показать на карте')}${tag(`Клетка ${w.x}, ${w.y}`)}</div>${w.reason.detail||w.reason.target?`<div class="city-tools-production ${w.status==='attention'?'is-warning':''}">${w.reason.target?focus(w.reason.target,w.reason.label):''}<span>${escape(w.reason.detail)}</span></div>`:''}${w.reason.code==='construction'?`<p class="city-tools-note">Строителей: ${w.builders.length} · носильщиков: ${w.carriers.length}. Год будет записан после завершения.</p>`:''}${staffingHTML(s,w)}${buildingInventoryHTML(compactInventory,{house:isResidence(w),production:!!Object.keys(BUILDINGS[w.type]?.output||{}).filter(k=>!['faith','prestige'].includes(k)).length})}${buildingProductionHistoryHTML(s,b)}</div>`:''}</details></article>`;
 }
 export const CITY_WORK_CATEGORIES=[
  {id:'food',name:'Пища',icon:'field',types:['field','garden','fishing','hunting','cowshed']},
  {id:'materials',name:'Добыча',icon:'quarry',types:['clay','reed','logging','quarry','sheepfold']},
  {id:'production',name:'Ремёсла',icon:'pottery',types:['pottery','brewery','bakery','linenYard','dairyStore','basketry','matYard','coppersmith','joineryYard','kiln','brickyard','weaver','tailor']},
  {id:'services',name:'Снабжение и услуги',icon:'depot',types:['waterpoint','depot','granary','market','healer','musicHouse','bridge','canal','levee','harbor']},
- {id:'housing',name:'Жильё',icon:'house',types:['house']},
+ {id:'housing',name:'Жильё',icon:'house',types:['house','communalHouse']},
  {id:'sacred',name:'Культ',icon:'shrine',types:['shrine','ziggurat','ishtarGate']}
 ];
 function harvestCallHTML(s){

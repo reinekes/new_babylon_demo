@@ -5,7 +5,7 @@ import {matchesCraftEndingLesson,matchesProjectWaterReceipt,waterNameEvidence} f
 import {earnedResultNames,RESULT_NAMES} from './divinity.js';
 import {familyMemorialsAt} from './life-analytics.js';
 import {cityCommandReason} from './city-command-lock.js';
-import {buildingKey,isOperational} from './definitions.js';
+import {isResidence,buildingKey,isOperational} from './definitions.js';
 import {homeMealFood} from './households.js';
 import {isStrictSumer} from './scenario-profiles.js';
 import {mealRation} from './wellbeing.js';
@@ -29,7 +29,7 @@ function inheritedMemory(s){
  const followers=new Set(s.godhood.believerIds);
  const descendants=s.citizens.filter(c=>c.parents?.some(id=>followers.has(id)));
  if(!descendants.length)return false;
- const homes=new Map(s.buildings.filter(b=>b.type==='house'&&isOperational(b)).map(b=>[buildingKey(b),b]));
+ const homes=new Map(s.buildings.filter(b=>isResidence(b)&&isOperational(b)).map(b=>[buildingKey(b),b]));
  return descendants.some(c=>{
   const home=homes.get(c.home);
   return home&&familyMemorialsAt(s,home).some(p=>c.parents.includes(p.id)&&followers.has(p.id));
@@ -71,7 +71,7 @@ export function hearthEndingOffer(s){
   if(!p.waterStory||!dead.has(p.waterStory.tellerId))continue;
   const listener=residents.get(p.id);
   if(!listener||listener.floodShelter||listener.fireShelter)continue;
-  const home=s.buildings.find(b=>b.type==='house'&&isOperational(b)&&buildingKey(b)===listener.home);
+  const home=s.buildings.find(b=>isResidence(b)&&isOperational(b)&&buildingKey(b)===listener.home);
   if(!home)continue;
   const family=s.citizens.filter(c=>c.home===listener.home&&!c.floodShelter&&!c.fireShelter);
   const water=waterSummary(s,home);

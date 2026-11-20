@@ -1,4 +1,4 @@
-import {buildingKey,isOperational} from './definitions.js';
+import {isResidence,buildingKey,isOperational} from './definitions.js';
 import {familyMemorialsAt} from './life-analytics.js';
 import {usesCatDiscovery} from './scenario-profiles.js';
 
@@ -32,7 +32,7 @@ export function landMemoryStories(s){
  for(const person of people){
   if(stories.length>=3)break;
   if(!person.memorial)continue;
-  const home=person.memorial.built&&buildings.find(b=>b.type==='house'&&buildingKey(b)===person.memorial.home);
+  const home=person.memorial.built&&buildings.find(b=>isResidence(b)&&buildingKey(b)===person.memorial.home);
   const place=home&&familyMemorialsAt(s,home).includes(person)?home:null;
   const children=s.citizens.filter(c=>c.parents?.includes(person.id)).map(c=>c.id);
   add('memorial',person.id,place,[person.partner,...person.parents,...children]);

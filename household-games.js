@@ -1,4 +1,4 @@
-import {buildingKey,isOperational} from './definitions.js';
+import {isResidence,buildingKey,isOperational} from './definitions.js';
 import {isStrictSumer} from './scenario-profiles.js';
 import {hourOf,mealCycle,mealRation} from './wellbeing.js';
 
@@ -13,7 +13,7 @@ export function availableEveningPlayer(c,time,day,home,phases=['home','resting']
 export const peacefulGame=(s,b)=>isOperational(b)&&!b.floodDamage&&!s.funeral&&!s.festival&&!s.miracleCelebration&&!s.event;
 
 export function advanceEveningGame(s,b,family){
- if(!isStrictSumer(s)||b.type!=='house')return;
+ if(!isStrictSumer(s)||!isResidence(b))return;
  const hour=hourOf(s.simTime),day=mealCycle(s.simTime),game=b.eveningGame,key=buildingKey(b);
  const peaceful=peacefulGame(s,b);
  if(game?.guestHome&&['waiting','playing'].includes(game.status)){
@@ -45,7 +45,7 @@ export function validateEveningGames(s){
  return s.buildings.every(b=>{
   const game=b.eveningGame;
   if(game===undefined)return true;
-  return isStrictSumer(s)&&b.type==='house'&&game&&Number.isFinite(game.startedAt)&&game.startedAt>=0&&game.startedAt<=s.simTime&&
+  return isStrictSumer(s)&&isResidence(b)&&game&&Number.isFinite(game.startedAt)&&game.startedAt>=0&&game.startedAt<=s.simTime&&
    Number.isSafeInteger(game.day)&&game.day===mealCycle(game.startedAt)&&hourOf(game.startedAt)>=21&&hourOf(game.startedAt)<23&&
    Array.isArray(game.players)&&game.players.length===2&&game.players[0]!==game.players[1]&&
    game.players.every(id=>Number.isSafeInteger(id)&&id>=0&&id<s.demography.nextId)&&

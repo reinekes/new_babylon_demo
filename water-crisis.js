@@ -1,4 +1,4 @@
-import {buildingKey,isOperational} from './definitions.js';
+import {isResidence,buildingKey,isOperational} from './definitions.js';
 import {homeMealFood} from './households.js';
 
 const LIMIT=8;
@@ -20,7 +20,7 @@ export function recordWaterChoice(s,preferred,before,after){
 
 export function linkWaterCrisisAid(s,crisis,incident,job){
  if(!s.waterCrises?.includes(crisis)||crisis.aid||!incident||job?.target!==incident.home||job.resource!=='food')return false;
- const home=s.buildings.find(b=>b.type==='house'&&buildingKey(b)===incident.home&&isOperational(b));
+ const home=s.buildings.find(b=>isResidence(b)&&buildingKey(b)===incident.home&&isOperational(b));
  if(!home)return false;
  crisis.aid={job:job.id,home:incident.home,homeId:home.waterEntityId??null,person:incident.person,
   day:dayOf(s),initialFood:homeMealFood(home),ordered:job.amount,delivered:job.delivered,after:null};
@@ -35,7 +35,7 @@ export function reviewWaterCrisisNeeds(s){
  const day=dayOf(s);
  for(const {aid} of s.waterCrises||[]){
   if(!aid||aid.after||day<aid.day+3)continue;
-  const home=s.buildings.find(b=>b.type==='house'&&buildingKey(b)===aid.home&&(b.waterEntityId??null)===aid.homeId);
+  const home=s.buildings.find(b=>isResidence(b)&&buildingKey(b)===aid.home&&(b.waterEntityId??null)===aid.homeId);
   const person=s.citizens.find(c=>c.id===aid.person&&c.home===aid.home);
   aid.after={day,food:home?homeMealFood(home):null,hunger:person?.hunger??null};
  }

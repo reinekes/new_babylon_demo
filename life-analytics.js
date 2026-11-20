@@ -1,7 +1,7 @@
 import {ensureHouseEntityId,recordHealingNameEvidence} from './causal-facts.js';
 import {isStrictSumer} from './scenario-profiles.js';
-import {citizenName,BUILDINGS,buildingKey,isOperational} from './definitions.js';
-import {mealCycle,mealRation,workRate} from './wellbeing.js';
+import {isResidence,citizenName,BUILDINGS,buildingKey,isOperational} from './definitions.js';
+import {mealCycle,mealRation,workRate,residentMood} from './wellbeing.js';
 import {displayName,syncCitizenEpithets} from './citizen-epithets.js';
 import {PROFESSION_NAMES,professionRole} from './professions.js';
 
@@ -73,7 +73,7 @@ export function recordMedicalRecovery(s,healer,patient){
 
 function recordFamilyMemorial(s,c,p){
  if(!isStrictSumer(s)||p.cause==='unknown')return;
- const home=s.buildings.find(b=>b.type==='house'&&isOperational(b)&&buildingKey(b)===c.home);
+ const home=s.buildings.find(b=>isResidence(b)&&isOperational(b)&&buildingKey(b)===c.home);
  if(!home)return;
  const skills=[];
  if(c.builderSkill?.projects>0)skills.push({kind:'builder',level:c.builderSkill.level});
@@ -82,7 +82,7 @@ function recordFamilyMemorial(s,c,p){
 }
 
 export function familyMemorialsAt(s,home){
- if(home.type!=='house')return [];
+ if(!isResidence(home))return [];
  const built=home.built??null;
  return (s.lifeAnalytics?.people||[]).filter(p=>{
   const m=p.memorial;
@@ -96,7 +96,7 @@ const isMemorialRelative=(record,person)=>!!record&&(
 export function prepareMemorialMove(s,c,destination){
  if(!isStrictSumer(s)||c.phase!=='home'||c.age<16||c.memorialMove||c.commonMealTarget||c.clinic||c.school||c.floodShelter||c.districtJob||c.saleJob||c.tradeJob||c.waterTrip||c.pantryTrip||c.craftSite||c.seedField||c.clothingTarget!==undefined||Object.values(c.cargo||{}).some(n=>n>0)||Object.values(c.buildCargo||{}).some(n=>n>0))return false;
  const origin=s.buildings.find(b=>buildingKey(b)===c.home),target=buildingKey(destination);
- if(!origin||target===c.home||destination.type!=='house'||!isOperational(destination))return false;
+ if(!origin||target===c.home||!isResidence(destination)||!isOperational(destination))return false;
  const record=familyMemorialsAt(s,origin).find(p=>isMemorialRelative(p,c)&&!s.citizens.some(other=>other.memorialMove?.id===p.id));
  if(!record)return false;
  const sourceId=ensureHouseEntityId(s,origin),targetId=ensureHouseEntityId(s,destination);
@@ -108,10 +108,10 @@ export function prepareMemorialMove(s,c,destination){
 export function finishMemorialMove(s,c){
  const move=c.memorialMove;
  if(!move)return;
- const destination=s.buildings.find(b=>b.type==='house'&&isOperational(b)&&buildingKey(b)===move.target);
+ const destination=s.buildings.find(b=>isResidence(b)&&isOperational(b)&&buildingKey(b)===move.target);
  const record=s.lifeAnalytics?.people.find(p=>p.id===move.id);
  const originMatches=move.sourceId===undefined||record?.memorial?.homeId===move.sourceId&&
-  s.buildings.some(b=>b.type==='house'&&b.waterEntityId===move.sourceId&&buildingKey(b)===move.source);
+  s.buildings.some(b=>isResidence(b)&&b.waterEntityId===move.sourceId&&buildingKey(b)===move.source);
  const targetMatches=move.targetId===undefined||destination?.waterEntityId===move.targetId;
  if(destination&&originMatches&&targetMatches&&isMemorialRelative(record,c)&&c.home===move.target&&record?.memorial?.home===move.source){
   record.memorial.home=move.target;
@@ -168,8 +168,8 @@ export function validateLifeAnalytics(s){
   const linked=m.sourceId!==undefined||m.targetId!==undefined;
   if(linked&&(!integer(m.sourceId)||m.sourceId===0||!integer(m.targetId)||m.targetId===0||m.sourceId===m.targetId||
    record.memorial.homeId!==m.sourceId||
-   !s.buildings.some(b=>b.type==='house'&&b.waterEntityId===m.sourceId&&buildingKey(b)===m.source)||
-   !s.buildings.some(b=>b.type==='house'&&b.waterEntityId===m.targetId&&buildingKey(b)===m.target)))return false;
+   !s.buildings.some(b=>isResidence(b)&&b.waterEntityId===m.sourceId&&buildingKey(b)===m.source)||
+   !s.buildings.some(b=>isResidence(b)&&b.waterEntityId===m.targetId&&buildingKey(b)===m.target)))return false;
   if(!linked&&record.memorial.homeId!==undefined)return false;
   carried.add(m.id);
  }
@@ -178,12 +178,12 @@ export function validateLifeAnalytics(s){
 }
 
 export function lifeAnalytics(s){
- const live=s.citizens||[],stored=s.lifeAnalytics?.people||live.map(c=>identity(c,s)),byId=new Map(live.map(c=>[c.id,c])),homes=new Map((s.buildings||[]).filter(b=>b.type==='house').map(b=>[`${b.x},${b.y}`,b])),buildings=new Map((s.buildings||[]).map(b=>[`${b.x},${b.y}`,b]));
- const people=stored.map(p=>{const c=byId.get(p.id),home=c&&homes.get(c.home),work=c&&buildings.get(c.workplace||c.work),naming={...p,...c,name:p.name};return {...p,...epithetRecord(c||p),baseName:p.name,name:displayName(s,naming),...(c?{age:c.age,parents:[...(c.parents||[])],partner:c.partner??null,home:c.home}:{}),alive:!!c,role:c?.role||null,calling:c?.calling||null,professionLabel:c?PROFESSION_NAMES[c.calling&&professionRole(c.calling)===c.role?c.calling:c.role||'auto']||c.role:null,workplace:c?.workplace||c?.work||null,workLabel:work?BUILDINGS[work.type]?.name||work.type:null,phase:c?.phase||null,hunger:c?.hunger??null,health:c?.health??null,mood:c?.mood??null,faith:c?.faith??null,thirst:c?.thirst??null,mealEaten:c?.mealEaten??null,mealRequired:c?mealRation(c):null,homeFood:home?(home.pantry||0):null,homeWater:home?.water??null,workRate:c&&c.age>=16?workRate(c,c.siteDuty||buildings.get(c.work)?.type||c.role):null,missedMeals:c?.missedMeals??null};});
+ const live=s.citizens||[],stored=s.lifeAnalytics?.people||live.map(c=>identity(c,s)),byId=new Map(live.map(c=>[c.id,c])),homes=new Map((s.buildings||[]).filter(b=>isResidence(b)).map(b=>[`${b.x},${b.y}`,b])),buildings=new Map((s.buildings||[]).map(b=>[`${b.x},${b.y}`,b]));
+ const people=stored.map(p=>{const c=byId.get(p.id),home=c&&homes.get(c.home),work=c&&buildings.get(c.workplace||c.work),naming={...p,...c,name:p.name};return {...p,...epithetRecord(c||p),baseName:p.name,name:displayName(s,naming),...(c?{age:c.age,parents:[...(c.parents||[])],partner:c.partner??null,home:c.home}:{}),alive:!!c,role:c?.role||null,calling:c?.calling||null,professionLabel:c?PROFESSION_NAMES[c.calling&&professionRole(c.calling)===c.role?c.calling:c.role||'auto']||c.role:null,workplace:c?.workplace||c?.work||null,workLabel:work?BUILDINGS[work.type]?.name||work.type:null,phase:c?.phase||null,hunger:c?.hunger??null,health:c?.health??null,mood:c?residentMood(c,home):null,faith:c?.faith??null,thirst:c?.thirst??null,mealEaten:c?.mealEaten??null,mealRequired:c?mealRation(c):null,homeFood:home?(home.pantry||0):null,homeWater:home?.water??null,workRate:c&&c.age>=16?workRate(c,c.siteDuty||buildings.get(c.work)?.type||c.role,home):null,missedMeals:c?.missedMeals??null};});
  const ages={children:0,adults:0,elders:0},buckets=Array.from({length:9},(_,i)=>({label:i===8?'80+':`${i*10}–${i*10+9}`,count:0})),causes={oldAge:0,starvation:0,unknown:0};
  for(const c of live){ages[c.age<16?'children':c.age<55?'adults':'elders']++;buckets[Math.min(8,Math.floor((c.age||0)/10))].count++;}
  for(const p of people)if(p.diedTick!==null&&Object.hasOwn(LIFE_CAUSE_NAMES,p.cause))causes[p.cause]=(causes[p.cause]||0)+1;
- const average=Object.fromEntries(['age','health','mood','hunger','thirst','faith'].map(k=>{const values=live.map(c=>c[k]).filter(Number.isFinite);return[k,values.length?values.reduce((a,b)=>a+b,0)/values.length:null];}));
+ const average=Object.fromEntries(['age','health','mood','hunger','thirst','faith'].map(k=>{const values=live.map(c=>k==='mood'?residentMood(c,homes.get(c.home)):c[k]).filter(Number.isFinite);return[k,values.length?values.reduce((a,b)=>a+b,0)/values.length:null];}));
  const distribution=(key,limits,labels)=>labels.map((label,i)=>({label,count:live.filter(c=>Number.isFinite(c[key])&&c[key]>=(limits[i-1]??-Infinity)&&c[key]<(limits[i]??Infinity)).length}));
  const distributions={health:distribution('health',[60,85],['Ниже 60%','60–84%','85–100%']),hunger:distribution('hunger',[10,30],['Меньше 10%','10–29%','30% и выше']),thirst:distribution('thirst',[10,30],['Меньше 10%','10–29%','30% и выше']),faith:distribution('faith',[25,50,75],['Меньше 25%','25–49%','50–74%','75–100%'])};
  for(const [key,rows] of Object.entries(distributions)){const missing=live.filter(c=>!Number.isFinite(c[key])).length;if(missing)rows.push({label:'Нет данных',count:missing});}

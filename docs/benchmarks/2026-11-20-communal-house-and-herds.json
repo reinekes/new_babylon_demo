@@ -1,0 +1,1793 @@
+{
+  "release": "communal-house-herds-20261120",
+  "animals": {
+    "scenario": {
+      "entry": "ordinary index.html, normal simulation and existing trade-city save, 12 citizens, seed 73129, same city and all assets on both runs",
+      "baselineCommit": "bf614dd520e8eea56850b7c44f1dff5a39001d84",
+      "clock": "10s at 1×, 34s at 4× to allow crowds to meet, 10s at 4×, then 2s on pause. Sum ground distance from each active model root on requestAnimationFrame. An animal counts as moving above 0.02m in the interval.",
+      "renderer": "Chrome WebGL2 / Apple M5 Metal"
+    },
+    "ordinaryCity": {
+      "before": {
+        "one": {
+          "speed": "1",
+          "elapsedSeconds": 10.034700000047684,
+          "engineFrames": 550,
+          "visibleHerdAnimals": 28,
+          "movingHerdAnimals": 28,
+          "herds": {
+            "herd-pig": {
+              "count": 7,
+              "moving": 7,
+              "min": 1.80386,
+              "max": 3.68735
+            },
+            "herd-goat": {
+              "count": 7,
+              "moving": 7,
+              "min": 1.36205,
+              "max": 5.1942
+            },
+            "herd-bull": {
+              "count": 7,
+              "moving": 7,
+              "min": 1.57029,
+              "max": 4.21758
+            },
+            "herd-sheep": {
+              "count": 7,
+              "moving": 7,
+              "min": 1.13681,
+              "max": 3.44929
+            }
+          },
+          "otherGround": {
+            "ambient-dog": {
+              "count": 2,
+              "moving": 2,
+              "min": 3.02911,
+              "max": 3.02911
+            },
+            "ambient-donkey": {
+              "count": 2,
+              "moving": 2,
+              "min": 3.96773,
+              "max": 4.54373
+            },
+            "fauna-goat": {
+              "count": 7,
+              "moving": 7,
+              "min": 0.23933,
+              "max": 1.58667
+            },
+            "fauna-gazelle": {
+              "count": 12,
+              "moving": 7,
+              "min": 0,
+              "max": 2.30789
+            },
+            "fauna-jackal": {
+              "count": 5,
+              "moving": 5,
+              "min": 2.6682,
+              "max": 2.6685
+            }
+          },
+          "webGLError": 0
+        },
+        "warmingFour": {
+          "speed": "4",
+          "elapsedSeconds": 34.043600000023844,
+          "engineFrames": 2002,
+          "visibleHerdAnimals": 28,
+          "movingHerdAnimals": 23,
+          "herds": {
+            "herd-pig": {
+              "count": 7,
+              "moving": 7,
+              "min": 1.57792,
+              "max": 44.26676
+            },
+            "herd-goat": {
+              "count": 7,
+              "moving": 5,
+              "min": 0,
+              "max": 46.40516
+            },
+            "herd-bull": {
+              "count": 7,
+              "moving": 7,
+              "min": 2.08818,
+              "max": 44.42886
+            },
+            "herd-sheep": {
+              "count": 7,
+              "moving": 4,
+              "min": 0,
+              "max": 29.26959
+            }
+          },
+          "otherGround": {
+            "ambient-dog": {
+              "count": 2,
+              "moving": 2,
+              "min": 29.86435,
+              "max": 38.26836
+            },
+            "ambient-donkey": {
+              "count": 2,
+              "moving": 2,
+              "min": 57.37118,
+              "max": 57.6282
+            },
+            "fauna-goat": {
+              "count": 7,
+              "moving": 7,
+              "min": 8.4,
+              "max": 11.22498
+            },
+            "fauna-gazelle": {
+              "count": 12,
+              "moving": 12,
+              "min": 12.27072,
+              "max": 15.20962
+            },
+            "fauna-jackal": {
+              "count": 5,
+              "moving": 5,
+              "min": 37.49078,
+              "max": 37.49233
+            }
+          },
+          "webGLError": 0
+        },
+        "four": {
+          "speed": "4",
+          "elapsedSeconds": 10.034899999976158,
+          "engineFrames": 562,
+          "visibleHerdAnimals": 28,
+          "movingHerdAnimals": 4,
+          "herds": {
+            "herd-pig": {
+              "count": 7,
+              "moving": 1,
+              "min": 0,
+              "max": 14.70293
+            },
+            "herd-goat": {
+              "count": 7,
+              "moving": 2,
+              "min": 0,
+              "max": 15.9169
+            },
+            "herd-bull": {
+              "count": 7,
+              "moving": 1,
+              "min": 0,
+              "max": 7.44469
+            },
+            "herd-sheep": {
+              "count": 7,
+              "moving": 0,
+              "min": 0,
+              "max": 0
+            }
+          },
+          "otherGround": {
+            "ambient-dog": {
+              "count": 2,
+              "moving": 1,
+              "min": 0,
+              "max": 12.15917
+            },
+            "ambient-donkey": {
+              "count": 2,
+              "moving": 2,
+              "min": 6.91118,
+              "max": 16.9271
+            },
+            "fauna-goat": {
+              "count": 7,
+              "moving": 7,
+              "min": 1.03529,
+              "max": 4.08362
+            },
+            "fauna-gazelle": {
+              "count": 12,
+              "moving": 12,
+              "min": 2.89565,
+              "max": 4.2
+            },
+            "fauna-jackal": {
+              "count": 5,
+              "moving": 5,
+              "min": 11.11461,
+              "max": 11.11697
+            }
+          },
+          "webGLError": 0
+        },
+        "pause": {
+          "speed": "4",
+          "elapsedSeconds": 2.029,
+          "engineFrames": 120,
+          "visibleHerdAnimals": 28,
+          "movingHerdAnimals": 0,
+          "herds": {
+            "herd-pig": {
+              "count": 7,
+              "moving": 0,
+              "min": 0,
+              "max": 0
+            },
+            "herd-goat": {
+              "count": 7,
+              "moving": 0,
+              "min": 0,
+              "max": 0
+            },
+            "herd-bull": {
+              "count": 7,
+              "moving": 0,
+              "min": 0,
+              "max": 0
+            },
+            "herd-sheep": {
+              "count": 7,
+              "moving": 0,
+              "min": 0,
+              "max": 0
+            }
+          },
+          "otherGround": {
+            "ambient-dog": {
+              "count": 2,
+              "moving": 0,
+              "min": 0,
+              "max": 0
+            },
+            "ambient-donkey": {
+              "count": 2,
+              "moving": 0,
+              "min": 0,
+              "max": 0
+            },
+            "fauna-goat": {
+              "count": 7,
+              "moving": 0,
+              "min": 0,
+              "max": 0
+            },
+            "fauna-gazelle": {
+              "count": 12,
+              "moving": 0,
+              "min": 0,
+              "max": 0
+            },
+            "fauna-jackal": {
+              "count": 5,
+              "moving": 0,
+              "min": 0,
+              "max": 0
+            }
+          },
+          "webGLError": 0
+        }
+      },
+      "after": {
+        "one": {
+          "speed": "1",
+          "elapsedSeconds": 10.033100000023842,
+          "engineFrames": 433,
+          "visibleHerdAnimals": 28,
+          "movingHerdAnimals": 28,
+          "herds": {
+            "herd-pig": {
+              "count": 7,
+              "moving": 7,
+              "min": 2.05234,
+              "max": 3.68706
+            },
+            "herd-goat": {
+              "count": 7,
+              "moving": 7,
+              "min": 2.09698,
+              "max": 5.07399
+            },
+            "herd-bull": {
+              "count": 7,
+              "moving": 7,
+              "min": 1.53967,
+              "max": 4.21758
+            },
+            "herd-sheep": {
+              "count": 7,
+              "moving": 7,
+              "min": 1.67801,
+              "max": 4.12379
+            }
+          },
+          "otherGround": {
+            "ambient-dog": {
+              "count": 2,
+              "moving": 2,
+              "min": 2.95978,
+              "max": 2.95979
+            },
+            "ambient-donkey": {
+              "count": 2,
+              "moving": 2,
+              "min": 3.8638,
+              "max": 4.43974
+            },
+            "fauna-goat": {
+              "count": 7,
+              "moving": 7,
+              "min": 0.23932,
+              "max": 1.55093
+            },
+            "fauna-gazelle": {
+              "count": 12,
+              "moving": 7,
+              "min": 0,
+              "max": 2.2559
+            },
+            "fauna-jackal": {
+              "count": 5,
+              "moving": 5,
+              "min": 2.60666,
+              "max": 2.60839
+            }
+          },
+          "webGLError": 0
+        },
+        "warmingFour": {
+          "speed": "4",
+          "elapsedSeconds": 34.02710000002384,
+          "engineFrames": 1674,
+          "visibleHerdAnimals": 28,
+          "movingHerdAnimals": 28,
+          "herds": {
+            "herd-pig": {
+              "count": 7,
+              "moving": 7,
+              "min": 33.9082,
+              "max": 51.86575
+            },
+            "herd-goat": {
+              "count": 7,
+              "moving": 7,
+              "min": 34.29676,
+              "max": 43.64731
+            },
+            "herd-bull": {
+              "count": 7,
+              "moving": 7,
+              "min": 30.50511,
+              "max": 46.55416
+            },
+            "herd-sheep": {
+              "count": 7,
+              "moving": 7,
+              "min": 36.98389,
+              "max": 46.95506
+            }
+          },
+          "otherGround": {
+            "ambient-dog": {
+              "count": 2,
+              "moving": 2,
+              "min": 29.96969,
+              "max": 37.88385
+            },
+            "ambient-donkey": {
+              "count": 2,
+              "moving": 2,
+              "min": 56.76189,
+              "max": 56.95419
+            },
+            "fauna-goat": {
+              "count": 7,
+              "moving": 7,
+              "min": 8.4,
+              "max": 11.10155
+            },
+            "fauna-gazelle": {
+              "count": 12,
+              "moving": 12,
+              "min": 11.96688,
+              "max": 15.25359
+            },
+            "fauna-jackal": {
+              "count": 5,
+              "moving": 5,
+              "min": 37.13135,
+              "max": 37.1412
+            }
+          },
+          "webGLError": 0
+        },
+        "four": {
+          "speed": "4",
+          "elapsedSeconds": 10.029800000071525,
+          "engineFrames": 553,
+          "visibleHerdAnimals": 28,
+          "movingHerdAnimals": 28,
+          "herds": {
+            "herd-pig": {
+              "count": 7,
+              "moving": 7,
+              "min": 9.966,
+              "max": 13.21677
+            },
+            "herd-goat": {
+              "count": 7,
+              "moving": 7,
+              "min": 7.93159,
+              "max": 13.56008
+            },
+            "herd-bull": {
+              "count": 7,
+              "moving": 7,
+              "min": 10.77903,
+              "max": 15.11361
+            },
+            "herd-sheep": {
+              "count": 7,
+              "moving": 7,
+              "min": 9.26267,
+              "max": 14.76656
+            }
+          },
+          "otherGround": {
+            "ambient-dog": {
+              "count": 2,
+              "moving": 1,
+              "min": 0,
+              "max": 12.1588
+            },
+            "ambient-donkey": {
+              "count": 2,
+              "moving": 2,
+              "min": 7.519,
+              "max": 17.02237
+            },
+            "fauna-goat": {
+              "count": 7,
+              "moving": 7,
+              "min": 1.03523,
+              "max": 4.2
+            },
+            "fauna-gazelle": {
+              "count": 12,
+              "moving": 12,
+              "min": 2.89555,
+              "max": 4.2
+            },
+            "fauna-jackal": {
+              "count": 5,
+              "moving": 5,
+              "min": 11.11578,
+              "max": 11.11617
+            }
+          },
+          "webGLError": 0
+        },
+        "pause": {
+          "speed": "4",
+          "elapsedSeconds": 2.0193999999761583,
+          "engineFrames": 121,
+          "visibleHerdAnimals": 28,
+          "movingHerdAnimals": 0,
+          "herds": {
+            "herd-pig": {
+              "count": 7,
+              "moving": 0,
+              "min": 0,
+              "max": 0
+            },
+            "herd-goat": {
+              "count": 7,
+              "moving": 0,
+              "min": 0,
+              "max": 0
+            },
+            "herd-bull": {
+              "count": 7,
+              "moving": 0,
+              "min": 0,
+              "max": 0
+            },
+            "herd-sheep": {
+              "count": 7,
+              "moving": 0,
+              "min": 0,
+              "max": 0
+            }
+          },
+          "otherGround": {
+            "ambient-dog": {
+              "count": 2,
+              "moving": 0,
+              "min": 0,
+              "max": 0
+            },
+            "ambient-donkey": {
+              "count": 2,
+              "moving": 0,
+              "min": 0,
+              "max": 0
+            },
+            "fauna-goat": {
+              "count": 7,
+              "moving": 0,
+              "min": 0,
+              "max": 0
+            },
+            "fauna-gazelle": {
+              "count": 12,
+              "moving": 0,
+              "min": 0,
+              "max": 0
+            },
+            "fauna-jackal": {
+              "count": 5,
+              "moving": 0,
+              "min": 0,
+              "max": 0
+            }
+          },
+          "webGLError": 0
+        }
+      }
+    },
+    "longSimulation": {
+      "baseline5Minutes": {
+        "seed": 73129,
+        "passageOfTimeWhenLast10SecondsHadNoStep": {
+          "30": 10,
+          "60": 24,
+          "90": 26,
+          "120": 25,
+          "150": 28,
+          "180": 28,
+          "210": 28,
+          "240": 28,
+          "270": 28,
+          "300": 28
+        }
+      },
+      "fixed15Minutes": [
+        {
+          "seed": 12,
+          "visibleMembers": 26,
+          "largestIndividualRestSeconds": 17.55,
+          "minimumNeighborDistanceAsFractionOfSpeciesSpacing": 0.9200254794663961,
+          "membersMotionlessInFinal10Seconds": 0
+        },
+        {
+          "seed": 137,
+          "visibleMembers": 25,
+          "largestIndividualRestSeconds": 24.25,
+          "minimumNeighborDistanceAsFractionOfSpeciesSpacing": 0.9200014033762434,
+          "membersMotionlessInFinal10Seconds": 0
+        },
+        {
+          "seed": 977,
+          "visibleMembers": 26,
+          "largestIndividualRestSeconds": 18.45,
+          "minimumNeighborDistanceAsFractionOfSpeciesSpacing": 0.9200141213139671,
+          "membersMotionlessInFinal10Seconds": 0
+        },
+        {
+          "seed": 1409,
+          "visibleMembers": 22,
+          "largestIndividualRestSeconds": 13.15,
+          "minimumNeighborDistanceAsFractionOfSpeciesSpacing": 0.9200025894150204,
+          "membersMotionlessInFinal10Seconds": 0
+        },
+        {
+          "seed": 898,
+          "visibleMembers": 23,
+          "largestIndividualRestSeconds": 14.9,
+          "minimumNeighborDistanceAsFractionOfSpeciesSpacing": 0.9200047264067921,
+          "membersMotionlessInFinal10Seconds": 0
+        },
+        {
+          "seed": 48,
+          "visibleMembers": 25,
+          "largestIndividualRestSeconds": 12,
+          "minimumNeighborDistanceAsFractionOfSpeciesSpacing": 0.9200071111397047,
+          "membersMotionlessInFinal10Seconds": 0
+        }
+      ]
+    },
+    "tests": {
+      "targeted": 28,
+      "failed": 0,
+      "regression": "old code stalls for at least one minute, new code passes five successive one-minute windows for all four species, preserves pause and minimum clearances, and shows actual backwards movement without a stationary pivot"
+    }
+  },
+  "community": {
+    "cells": [
+      2,
+      2
+    ],
+    "capacity": 24,
+    "residentMoodPenalty": 8,
+    "fullCityPopulation": 40,
+    "ordinaryGameInterfaces": [
+      {
+        "mode": "2d",
+        "origin": "http://127.0.0.1:8991",
+        "catalogue": {
+          "text": "×\nНОВАЯ ПОСТРОЙКА\nОбщинный дом\nИллюстрация · устройство здания видно на карте\n\nБольшой жилой двор на 24 человека. Общая кладовая и вода снабжают жильцов. Теснота снижает их настроение на 8 пунктов. Дети здесь не рождаются.\n\n24 места · настроение жильцов −8 · без рождений\nЦена постройки\nГлина — 36\nесть 54\nТростник — 24\nесть 21 · не хватает 3\nДерево — 8\nесть 12\n\nНажми на свободную клетку. Материалы резервируются сразу. Escape — отмена.",
+          "group": "life"
+        },
+        "result": {
+          "info": "×\nОБЩЕЕ ЖИЛЬЁ · 2 × 2\nОбщинный дом\n\nКлетка 8, 6 · Год 1\n\n24 места · настроение жильцов −8 · без рождений\nЖильцы · 24\nЕда · 0\nВода · 0\n\nЖивут 24 / 24 · свободно 0\n\nДома 24 / 24\nСемейный ужин с 20:00, после возвращения домой.\n\nВ общинном доме у семей не рождаются дети. Довольство жильцов ниже на 8 пунктов. После переселения в семейный двор действуют обычные условия.\n\nЦиновка · ожидается\nНавес · ожидается\n\nСемейный уход\nС 18:00 до ужина родственники помогают дома больному, пожилому или малышу. На уход нужно 0,25 воды и запас еды на ужин.\nПоказать переулок к берегу\nВзрослые и родители · 24\nШуба 2\n45 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nТари 2\n23 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nИшме 2\n30 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nНанна 2\n37 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nЛугаль 2\n44 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nСила 2\n22 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nУту 2\n29 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nБелет 2\n36 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nАмал 3\n43 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nНин-Ая 3\n21 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nИлду 3\n28 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nЭнлил 3\n35 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nШуба 3\n42 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nТари 3\n20 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nИшме 3\n27 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nНанна 3\n34 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nЛугаль 3\n41 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nСила 3\n48 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nУту 3\n26 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nБелет 3\n33 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nАмал 4\n40 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nНин-Ая 4\n47 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nИлду 4\n25 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nЭнлил 4\n32 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nДОМАШНИЕ ПРИПАСЫ\n0\n/ 38,4\n0\n/ 4\n0\n/ 2\n0\n/ 2\n0\n/ 48\n0\n/ 2\n0\n/ 72\nОдин уровень\nУ сооружения один уровень\nСнести здание\nНет доступного жилья для переселения жителей\nО здании\nЖилые дворы Диялы",
+          "residents": 24,
+          "food": true,
+          "water": true,
+          "glError": null,
+          "model": []
+        },
+        "errors": [],
+        "failures": []
+      },
+      {
+        "mode": "3d",
+        "origin": "http://127.0.0.1:8991",
+        "catalogue": {
+          "text": "×\nНОВАЯ ПОСТРОЙКА\nОбщинный дом\nИллюстрация · устройство здания видно на карте\n\nБольшой жилой двор на 24 человека. Общая кладовая и вода снабжают жильцов. Теснота снижает их настроение на 8 пунктов. Дети здесь не рождаются.\n\n24 места · настроение жильцов −8 · без рождений\nЦена постройки\nГлина — 36\nесть 54\nТростник — 24\nесть 21 · не хватает 3\nДерево — 8\nесть 12\n\nНажми на свободную клетку. Материалы резервируются сразу. Escape — отмена.",
+          "group": "life"
+        },
+        "result": {
+          "info": "×\nОБЩЕЕ ЖИЛЬЁ · 2 × 2\nОбщинный дом\n\nКлетка 8, 6 · Год 1\n\n24 места · настроение жильцов −8 · без рождений\nЖильцы · 24\nЕда · 0\nВода · 0\n\nЖивут 24 / 24 · свободно 0\n\nДома 24 / 24\nСемейный ужин с 20:00, после возвращения домой.\n\nВ общинном доме у семей не рождаются дети. Довольство жильцов ниже на 8 пунктов. После переселения в семейный двор действуют обычные условия.\n\nЦиновка · ожидается\nНавес · ожидается\n\nСемейный уход\nС 18:00 до ужина родственники помогают дома больному, пожилому или малышу. На уход нужно 0,25 воды и запас еды на ужин.\nПоказать переулок к берегу\nВзрослые и родители · 24\nШуба 2\n45 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nТари 2\n23 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nИшме 2\n30 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nНанна 2\n37 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nЛугаль 2\n44 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nСила 2\n22 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nУту 2\n29 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nБелет 2\n36 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nАмал 3\n43 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nНин-Ая 3\n21 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nИлду 3\n28 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nЭнлил 3\n35 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nШуба 3\n42 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nТари 3\n20 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nИшме 3\n27 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nНанна 3\n34 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nЛугаль 3\n41 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nСила 3\n48 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nУту 3\n26 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nБелет 3\n33 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nАмал 4\n40 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nНин-Ая 4\n47 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nИлду 4\n25 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nЭнлил 4\n32 лет · взрослый\nГолод 0% · здоровье 100% · настроение 67% · вера 60%\nОснователь / переселенец\nДОМАШНИЕ ПРИПАСЫ\n0\n/ 38,4\n0\n/ 4\n0\n/ 2\n0\n/ 2\n0\n/ 48\n0\n/ 2\n0\n/ 72\nОдин уровень\nУ сооружения один уровень\nСнести здание\nНет доступного жилья для переселения жителей\nО здании\nЖилые дворы Диялы",
+          "residents": 24,
+          "food": true,
+          "water": true,
+          "glError": 0,
+          "model": [
+            "http://127.0.0.1:8991/assets/3d/sumer-buildings/communalHouse.glb?v=78a44f4137f1"
+          ]
+        },
+        "errors": [],
+        "failures": []
+      }
+    ],
+    "birthChecksWithSameCouple": {
+      "inCommunalHouseRounds": 12,
+      "inCommunalHouseBirths": 0,
+      "afterTransferToPrivateHouseBirths": 1
+    },
+    "firstSeason": {
+      "pantryDelivered": 38.4,
+      "waterDelivered": 18,
+      "sharedDinner": true
+    },
+    "model": {
+      "browser": {
+        "facts": {
+          "key": "9,11",
+          "asset": [
+            {
+              "url": "http://127.0.0.1:8991/assets/3d/sumer-buildings/communalHouse.glb?v=78a44f4137f1",
+              "encodedBytes": 1426972
+            }
+          ],
+          "meshes": [
+            {
+              "name": "9,11-game-Communal courtyard house_primitive0",
+              "material": "Straw-tempered mud plaster",
+              "triangles": 6998
+            },
+            {
+              "name": "9,11-game-Communal courtyard house_primitive1",
+              "material": "Compacted alluvial soil",
+              "triangles": 616
+            },
+            {
+              "name": "9,11-game-Communal courtyard house_primitive2",
+              "material": "Dry reed rind and binding",
+              "triangles": 4728
+            },
+            {
+              "name": "9,11-game-Communal courtyard house_primitive3",
+              "material": "Unpeeled weathered timber",
+              "triangles": 1160
+            },
+            {
+              "name": "9,11-game-Communal courtyard house_primitive4",
+              "material": "Unpolished terracotta slip",
+              "triangles": 1504
+            }
+          ],
+          "bounds": [
+            [
+              51.32378816604614,
+              0.008055382408201694,
+              63.21505928039551
+            ],
+            [
+              62.66404724121094,
+              4.04768705368042,
+              74.75023698806763
+            ]
+          ],
+          "renderer": "3d",
+          "webgl": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+          "glError": 0,
+          "contacts": {
+            "bench": {
+              "target": 0.495,
+              "hit": 0.495762829786794
+            },
+            "roof": {
+              "target": 2.525,
+              "hit": 2.5306853862456484
+            },
+            "stair1": {
+              "target": 0.27,
+              "hit": 0.2696966675214568
+            },
+            "stair6": {
+              "target": 1.295,
+              "hit": 1.2952994113573628
+            },
+            "stair12": {
+              "target": 2.525,
+              "hit": 2.525404929433661
+            },
+            "court": {
+              "target": 0.065,
+              "hit": 0.0663787609685152
+            }
+          }
+        },
+        "exceptions": [],
+        "http": [],
+        "warn": []
+      },
+      "babylonNullEngineRotationSamples": [
+        {
+          "catalogue": false,
+          "rotation": 0,
+          "name": "bench",
+          "local": [
+            3.21,
+            1.87
+          ],
+          "world": [
+            42.21,
+            70.87
+          ],
+          "target": 0.495,
+          "actual": 0.4950000047683717
+        },
+        {
+          "catalogue": false,
+          "rotation": 0,
+          "name": "stair 1",
+          "local": [
+            -3.06,
+            3.5
+          ],
+          "world": [
+            35.94,
+            72.5
+          ],
+          "target": 0.27,
+          "actual": 0.2700000107288363
+        },
+        {
+          "catalogue": false,
+          "rotation": 0,
+          "name": "stair 6",
+          "local": [
+            -3.06,
+            2.1
+          ],
+          "world": [
+            35.94,
+            71.1
+          ],
+          "target": 1.295,
+          "actual": 1.2950000762939453
+        },
+        {
+          "catalogue": false,
+          "rotation": 0,
+          "name": "stair 12",
+          "local": [
+            -3.06,
+            0.42
+          ],
+          "world": [
+            35.94,
+            69.42
+          ],
+          "target": 2.525,
+          "actual": 2.5250000953674316
+        },
+        {
+          "catalogue": false,
+          "rotation": 0,
+          "name": "roof",
+          "local": [
+            -4.12,
+            -0.12
+          ],
+          "world": [
+            34.88,
+            68.88
+          ],
+          "target": 2.525,
+          "actual": 2.5250000953674316
+        },
+        {
+          "catalogue": false,
+          "rotation": 1,
+          "name": "bench",
+          "local": [
+            3.21,
+            1.87
+          ],
+          "world": [
+            40.87,
+            65.79
+          ],
+          "target": 0.495,
+          "actual": 0.4950000047683717
+        },
+        {
+          "catalogue": false,
+          "rotation": 1,
+          "name": "stair 1",
+          "local": [
+            -3.06,
+            3.5
+          ],
+          "world": [
+            42.5,
+            72.06
+          ],
+          "target": 0.27,
+          "actual": 0.2700000107288363
+        },
+        {
+          "catalogue": false,
+          "rotation": 1,
+          "name": "stair 6",
+          "local": [
+            -3.06,
+            2.1
+          ],
+          "world": [
+            41.1,
+            72.06
+          ],
+          "target": 1.295,
+          "actual": 1.2950000762939453
+        },
+        {
+          "catalogue": false,
+          "rotation": 1,
+          "name": "stair 12",
+          "local": [
+            -3.06,
+            0.42
+          ],
+          "world": [
+            39.42,
+            72.06
+          ],
+          "target": 2.525,
+          "actual": 2.5250000953674316
+        },
+        {
+          "catalogue": false,
+          "rotation": 1,
+          "name": "roof",
+          "local": [
+            -4.12,
+            -0.12
+          ],
+          "world": [
+            38.88,
+            73.12
+          ],
+          "target": 2.525,
+          "actual": 2.5250000953674316
+        },
+        {
+          "catalogue": false,
+          "rotation": 2,
+          "name": "bench",
+          "local": [
+            3.21,
+            1.87
+          ],
+          "world": [
+            35.79,
+            67.13
+          ],
+          "target": 0.495,
+          "actual": 0.4950000047683717
+        },
+        {
+          "catalogue": false,
+          "rotation": 2,
+          "name": "stair 1",
+          "local": [
+            -3.06,
+            3.5
+          ],
+          "world": [
+            42.06,
+            65.5
+          ],
+          "target": 0.27,
+          "actual": 0.2700000107288363
+        },
+        {
+          "catalogue": false,
+          "rotation": 2,
+          "name": "stair 6",
+          "local": [
+            -3.06,
+            2.1
+          ],
+          "world": [
+            42.06,
+            66.9
+          ],
+          "target": 1.295,
+          "actual": 1.2950000762939453
+        },
+        {
+          "catalogue": false,
+          "rotation": 2,
+          "name": "stair 12",
+          "local": [
+            -3.06,
+            0.42
+          ],
+          "world": [
+            42.06,
+            68.58
+          ],
+          "target": 2.525,
+          "actual": 2.5250000953674316
+        },
+        {
+          "catalogue": false,
+          "rotation": 2,
+          "name": "roof",
+          "local": [
+            -4.12,
+            -0.12
+          ],
+          "world": [
+            43.12,
+            69.12
+          ],
+          "target": 2.525,
+          "actual": 2.5250000953674316
+        },
+        {
+          "catalogue": false,
+          "rotation": 3,
+          "name": "bench",
+          "local": [
+            3.21,
+            1.87
+          ],
+          "world": [
+            37.13,
+            72.21
+          ],
+          "target": 0.495,
+          "actual": 0.4950000047683717
+        },
+        {
+          "catalogue": false,
+          "rotation": 3,
+          "name": "stair 1",
+          "local": [
+            -3.06,
+            3.5
+          ],
+          "world": [
+            35.5,
+            65.94
+          ],
+          "target": 0.27,
+          "actual": 0.2700000107288363
+        },
+        {
+          "catalogue": false,
+          "rotation": 3,
+          "name": "stair 6",
+          "local": [
+            -3.06,
+            2.1
+          ],
+          "world": [
+            36.9,
+            65.94
+          ],
+          "target": 1.295,
+          "actual": 1.2950000762939453
+        },
+        {
+          "catalogue": false,
+          "rotation": 3,
+          "name": "stair 12",
+          "local": [
+            -3.06,
+            0.42
+          ],
+          "world": [
+            38.58,
+            65.94
+          ],
+          "target": 2.525,
+          "actual": 2.5250000953674316
+        },
+        {
+          "catalogue": false,
+          "rotation": 3,
+          "name": "roof",
+          "local": [
+            -4.12,
+            -0.12
+          ],
+          "world": [
+            39.12,
+            64.88
+          ],
+          "target": 2.525,
+          "actual": 2.5250000953674316
+        },
+        {
+          "catalogue": true,
+          "rotation": 0,
+          "name": "bench",
+          "local": [
+            3.21,
+            1.87
+          ],
+          "world": [
+            42.21,
+            70.87
+          ],
+          "target": 0.495,
+          "actual": 0.495762829786794
+        },
+        {
+          "catalogue": true,
+          "rotation": 0,
+          "name": "stair 1",
+          "local": [
+            -3.06,
+            3.5
+          ],
+          "world": [
+            35.94,
+            72.5
+          ],
+          "target": 0.27,
+          "actual": 0.2696966675214568
+        },
+        {
+          "catalogue": true,
+          "rotation": 0,
+          "name": "stair 6",
+          "local": [
+            -3.06,
+            2.1
+          ],
+          "world": [
+            35.94,
+            71.1
+          ],
+          "target": 1.295,
+          "actual": 1.2952994113573628
+        },
+        {
+          "catalogue": true,
+          "rotation": 0,
+          "name": "stair 12",
+          "local": [
+            -3.06,
+            0.42
+          ],
+          "world": [
+            35.94,
+            69.42
+          ],
+          "target": 2.525,
+          "actual": 2.525404929433661
+        },
+        {
+          "catalogue": true,
+          "rotation": 0,
+          "name": "roof",
+          "local": [
+            -4.12,
+            -0.12
+          ],
+          "world": [
+            34.88,
+            68.88
+          ],
+          "target": 2.525,
+          "actual": 2.5306853862456484
+        },
+        {
+          "catalogue": true,
+          "rotation": 1,
+          "name": "bench",
+          "local": [
+            3.21,
+            1.87
+          ],
+          "world": [
+            40.87,
+            65.79
+          ],
+          "target": 0.495,
+          "actual": 0.4957628297867941
+        },
+        {
+          "catalogue": true,
+          "rotation": 1,
+          "name": "stair 1",
+          "local": [
+            -3.06,
+            3.5
+          ],
+          "world": [
+            42.5,
+            72.06
+          ],
+          "target": 0.27,
+          "actual": 0.269696667521457
+        },
+        {
+          "catalogue": true,
+          "rotation": 1,
+          "name": "stair 6",
+          "local": [
+            -3.06,
+            2.1
+          ],
+          "world": [
+            41.1,
+            72.06
+          ],
+          "target": 1.295,
+          "actual": 1.2952994113573633
+        },
+        {
+          "catalogue": true,
+          "rotation": 1,
+          "name": "stair 12",
+          "local": [
+            -3.06,
+            0.42
+          ],
+          "world": [
+            39.42,
+            72.06
+          ],
+          "target": 2.525,
+          "actual": 2.5254049294336616
+        },
+        {
+          "catalogue": true,
+          "rotation": 1,
+          "name": "roof",
+          "local": [
+            -4.12,
+            -0.12
+          ],
+          "world": [
+            38.88,
+            73.12
+          ],
+          "target": 2.525,
+          "actual": 2.5306853862456475
+        },
+        {
+          "catalogue": true,
+          "rotation": 2,
+          "name": "bench",
+          "local": [
+            3.21,
+            1.87
+          ],
+          "world": [
+            35.79,
+            67.13
+          ],
+          "target": 0.495,
+          "actual": 0.49576282978679376
+        },
+        {
+          "catalogue": true,
+          "rotation": 2,
+          "name": "stair 1",
+          "local": [
+            -3.06,
+            3.5
+          ],
+          "world": [
+            42.06,
+            65.5
+          ],
+          "target": 0.27,
+          "actual": 0.26969666752145677
+        },
+        {
+          "catalogue": true,
+          "rotation": 2,
+          "name": "stair 6",
+          "local": [
+            -3.06,
+            2.1
+          ],
+          "world": [
+            42.06,
+            66.9
+          ],
+          "target": 1.295,
+          "actual": 1.2952994113573628
+        },
+        {
+          "catalogue": true,
+          "rotation": 2,
+          "name": "stair 12",
+          "local": [
+            -3.06,
+            0.42
+          ],
+          "world": [
+            42.06,
+            68.58
+          ],
+          "target": 2.525,
+          "actual": 2.525404929433661
+        },
+        {
+          "catalogue": true,
+          "rotation": 2,
+          "name": "roof",
+          "local": [
+            -4.12,
+            -0.12
+          ],
+          "world": [
+            43.12,
+            69.12
+          ],
+          "target": 2.525,
+          "actual": 2.530685386245649
+        },
+        {
+          "catalogue": true,
+          "rotation": 3,
+          "name": "bench",
+          "local": [
+            3.21,
+            1.87
+          ],
+          "world": [
+            37.13,
+            72.21
+          ],
+          "target": 0.495,
+          "actual": 0.49576282978679354
+        },
+        {
+          "catalogue": true,
+          "rotation": 3,
+          "name": "stair 1",
+          "local": [
+            -3.06,
+            3.5
+          ],
+          "world": [
+            35.5,
+            65.94
+          ],
+          "target": 0.27,
+          "actual": 0.2696966675214566
+        },
+        {
+          "catalogue": true,
+          "rotation": 3,
+          "name": "stair 6",
+          "local": [
+            -3.06,
+            2.1
+          ],
+          "world": [
+            36.9,
+            65.94
+          ],
+          "target": 1.295,
+          "actual": 1.2952994113573626
+        },
+        {
+          "catalogue": true,
+          "rotation": 3,
+          "name": "stair 12",
+          "local": [
+            -3.06,
+            0.42
+          ],
+          "world": [
+            38.58,
+            65.94
+          ],
+          "target": 2.525,
+          "actual": 2.525404929433661
+        },
+        {
+          "catalogue": true,
+          "rotation": 3,
+          "name": "roof",
+          "local": [
+            -4.12,
+            -0.12
+          ],
+          "world": [
+            39.12,
+            64.88
+          ],
+          "target": 2.525,
+          "actual": 2.5306853862456498
+        }
+      ]
+    }
+  },
+  "legacySaves": [
+    {
+      "file": "legacy-v1.json",
+      "bytes": 1115,
+      "canonicalBytes": 15586,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "5f60c84e6789e2ce48fa3941351ed3e8bbc89b78d17d72ef6e770dd87011abf5"
+    },
+    {
+      "file": "legacy-v2.json",
+      "bytes": 3722,
+      "canonicalBytes": 14795,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "6eb71b9385b6f9e3a7919cccf19b828d35c0a5c91eafd8f68bbc754facbd86b7"
+    },
+    {
+      "file": "legacy-v3.json",
+      "bytes": 6935,
+      "canonicalBytes": 16420,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "5045bd0494767f469116ed626fdcb1e8ca503fc803f93ab632ffa9b104f922f9"
+    },
+    {
+      "file": "legacy-v4.json",
+      "bytes": 7123,
+      "canonicalBytes": 17736,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 14,
+      "sites": 1,
+      "sha256": "d4f19c224c63cd40f4482addd4bd0ea516ae00760d48c15a6550156da2e81080"
+    },
+    {
+      "file": "legacy-v5.json",
+      "bytes": 10554,
+      "canonicalBytes": 21451,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 14,
+      "sites": 1,
+      "sha256": "d0e2086a6fdf01f3996aee6b53e32f1450ac19bd0ac26a15aba12b7958e248b7"
+    },
+    {
+      "file": "legacy-v6-city.json",
+      "bytes": 7281,
+      "canonicalBytes": 16070,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "a3571a1285a284c2fff5026cc99d96f673e53b951b0dd51b82e3c9ff32983694"
+    },
+    {
+      "file": "legacy-v6-funeral.json",
+      "bytes": 9970,
+      "canonicalBytes": 19447,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "84db001bc085b911964ba561b2e886bdcff883c6712dda0d7498b3fbcc05199d"
+    },
+    {
+      "file": "legacy-v7-city.json",
+      "bytes": 8217,
+      "canonicalBytes": 16168,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "329449361ef9d8786a96da00f94d12ba2bd03dd4091fb23f190a625ab3e6717e"
+    },
+    {
+      "file": "legacy-v8-city.json",
+      "bytes": 8267,
+      "canonicalBytes": 16247,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "0bad910c2e9b407bd17a5cb44bc6a6bdba74aef6226ab06ca2373830fd1d7290"
+    },
+    {
+      "file": "legacy-v10-healer.json",
+      "bytes": 10914,
+      "canonicalBytes": 16730,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "693fa5a2ee18420e344ddc80f585196e5fb93b3923f35aaef8f570796b2e9cf6"
+    },
+    {
+      "file": "legacy-v11-autumn.json",
+      "bytes": 15332,
+      "canonicalBytes": 22504,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "2070d654d1b24d6029afa6368f15b1bffd36232b521473f900766952cd052b84"
+    },
+    {
+      "file": "legacy-v12-harvest.json",
+      "bytes": 13426,
+      "canonicalBytes": 20010,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "1ce6e80b7bae1e7adfb2de59ef1895c937800fc050897bead58b25189108dc82"
+    },
+    {
+      "file": "legacy-v13-autumn.json",
+      "bytes": 13874,
+      "canonicalBytes": 20516,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "1fc4519e7d0d5296411e2c86a78212688020a8d45720e9cf078ac62b2c5c383d"
+    },
+    {
+      "file": "legacy-v14-warning-city.json",
+      "bytes": 12290,
+      "canonicalBytes": 18566,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "4b62d30cb25439becf8ed79bcf1c9dc45d50a7e4818b39aec302cd03a203f46e"
+    },
+    {
+      "file": "legacy-v15-districts.json",
+      "bytes": 13267,
+      "canonicalBytes": 18858,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "f3058a2ffa7cbf5fdb3e5ff14b5c3cc2b436cbc4361f5c81d1b7e76a51f4b27d"
+    },
+    {
+      "file": "legacy-v16-textiles.json",
+      "bytes": 16006,
+      "canonicalBytes": 22268,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "4049d985aae20e2d4b4a8e13a709a03a8c50129e0c185044723663b497bdc160"
+    },
+    {
+      "file": "legacy-v17-water-bricks.json",
+      "bytes": 11682,
+      "canonicalBytes": 16697,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "b422ce3deb9743b093fa6085ec969224fc2ba7db94fe1cb88be7c18c68effa77"
+    },
+    {
+      "file": "legacy-v18-kiln.json",
+      "bytes": 12620,
+      "canonicalBytes": 17329,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "12df80b13eade67b774cfb95d40f4c6277a914d3a31e1b775578d8ea7a55befd"
+    },
+    {
+      "file": "legacy-v19-masonry.json",
+      "bytes": 12435,
+      "canonicalBytes": 16911,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "d4b2943eed7ad25913cd56c0663de3bf12bb7d38094653a60175efd5a3e72acb"
+    },
+    {
+      "file": "legacy-v27-local-stock.json",
+      "bytes": 27798,
+      "canonicalBytes": 17036,
+      "sameAsPreviousRelease": true,
+      "secondLoad": true,
+      "ids": 12,
+      "sites": 1,
+      "sha256": "f1e8483a4b82eb8ca91188ba71beaa82e48a4608abe6348a884aaa6beb88b8e1"
+    }
+  ],
+  "largeCity4x": {
+    "baseline": "bf614dd5",
+    "city": "500 residents, 250 buildings, house tier counts 70/69/69, overview, no communal house in fixture",
+    "speed": 4,
+    "viewport": [
+      1440,
+      900
+    ],
+    "drawingBuffer": [
+      1440,
+      780
+    ],
+    "gpu": "Apple M5",
+    "browser": "HeadlessChrome 157",
+    "beforeAverageFps": 29.029912466210405,
+    "afterAverageFps": 29.585798816568047,
+    "differencePercent": 1.9148743593514927,
+    "checksPassed": [
+      "stable start/end population and building counts",
+      "same viewport, overview camera and house levels",
+      "start and end save byte-equal on encode/decode, identity and cargo retained",
+      "no renderer detail, WebGL or uncaught JS errors",
+      "foreground graphics surface"
+    ],
+    "runs": [
+      {
+        "label": "before-nb20-1-mixed",
+        "frames": 523,
+        "seconds": 18.0159,
+        "fps": 29.029912466210405,
+        "p95FrameMs": 50,
+        "simulationP95Ms": 10.5,
+        "actorsP95Ms": 12.100000023841858,
+        "measurement": {
+          "before": {
+            "population": 500,
+            "buildings": 250,
+            "ordinaryLevelOne": 70,
+            "saveBytes": 505504,
+            "saveByteEqual": true,
+            "sameCitizenCargoAndResources": true,
+            "sameCitizenIds": true
+          },
+          "timing": {
+            "fps": 29.029912466210405,
+            "frames": 523,
+            "seconds": 18.0159,
+            "population": 500,
+            "buildings": 250,
+            "simulationP95": 10.5,
+            "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+            "errors": [],
+            "framesMs": {
+              "samples": 522,
+              "p50": 33.29999999999927,
+              "p95": 50
+            },
+            "cpuMs": {
+              "draw": {
+                "samples": 523,
+                "p50": 28.399999976158142,
+                "p95": 38.5
+              },
+              "buildings": {
+                "samples": 523,
+                "p50": 0.5,
+                "p95": 0.6999999284744263
+              },
+              "actors": {
+                "samples": 523,
+                "p50": 4.5,
+                "p95": 12.100000023841858
+              },
+              "scene": {
+                "samples": 523,
+                "p50": 21.799999952316284,
+                "p95": 28.300000071525574
+              }
+            }
+          },
+          "endSaveByteEqual": true,
+          "endCargoAndResources": true,
+          "scene": {
+            "dressedResidents": 68,
+            "visibleWorkMeshes": 67,
+            "assignedResidents": 52,
+            "ambientDonkeys": [
+              {
+                "id": "ambient-donkey-0",
+                "file": "pasture-donkey.glb",
+                "triangles": 24340
+              },
+              {
+                "id": "ambient-donkey-1",
+                "file": "pasture-donkey.glb",
+                "triangles": 24340
+              }
+            ],
+            "houseTierDistribution": [
+              70,
+              69,
+              69
+            ],
+            "importedEarthHouses": 70,
+            "runtimeAsset": "http://127.0.0.1:9016/assets/3d/sumer-buildings/house.glb?v=84ef78b6072b",
+            "trianglesPerHouse": 8246,
+            "importedParts": 420,
+            "cameraRadius": 739.10423044749,
+            "sceneTextures": 490,
+            "visibleBuildingMeshes": 2976,
+            "houseVisualMeshes": {},
+            "activeIndices": 25575960,
+            "glError": 0,
+            "resolution": [
+              1440,
+              780
+            ]
+          },
+          "viewport": [
+            1440,
+            900
+          ],
+          "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+          "canvasHidden": false,
+          "exceptions": [],
+          "label": "before-nb20-1-mixed",
+          "captured": "2026-11-19T20:23:01.067Z"
+        }
+      },
+      {
+        "label": "after-nb20-1-mixed",
+        "frames": 534,
+        "seconds": 18.0492,
+        "fps": 29.585798816568047,
+        "p95FrameMs": 50,
+        "simulationP95Ms": 10.900000095367432,
+        "actorsP95Ms": 11.600000023841858,
+        "measurement": {
+          "before": {
+            "population": 500,
+            "buildings": 250,
+            "ordinaryLevelOne": 70,
+            "saveBytes": 505504,
+            "saveByteEqual": true,
+            "sameCitizenCargoAndResources": true,
+            "sameCitizenIds": true
+          },
+          "timing": {
+            "fps": 29.585798816568047,
+            "frames": 534,
+            "seconds": 18.0492,
+            "population": 500,
+            "buildings": 250,
+            "simulationP95": 10.900000095367432,
+            "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+            "errors": [],
+            "framesMs": {
+              "samples": 533,
+              "p50": 33.29999999999927,
+              "p95": 50
+            },
+            "cpuMs": {
+              "draw": {
+                "samples": 534,
+                "p50": 28.09999990463257,
+                "p95": 36.89999997615814
+              },
+              "buildings": {
+                "samples": 534,
+                "p50": 0.5,
+                "p95": 0.7000000476837158
+              },
+              "actors": {
+                "samples": 534,
+                "p50": 4.299999952316284,
+                "p95": 11.600000023841858
+              },
+              "scene": {
+                "samples": 534,
+                "p50": 21.199999928474426,
+                "p95": 24.899999976158142
+              }
+            }
+          },
+          "endSaveByteEqual": true,
+          "endCargoAndResources": true,
+          "scene": {
+            "dressedResidents": 67,
+            "visibleWorkMeshes": 65,
+            "assignedResidents": 52,
+            "ambientDonkeys": [
+              {
+                "id": "ambient-donkey-0",
+                "file": "pasture-donkey.glb",
+                "triangles": 24340
+              },
+              {
+                "id": "ambient-donkey-1",
+                "file": "pasture-donkey.glb",
+                "triangles": 24340
+              }
+            ],
+            "houseTierDistribution": [
+              70,
+              69,
+              69
+            ],
+            "importedEarthHouses": 70,
+            "runtimeAsset": "http://127.0.0.1:8991/assets/3d/sumer-buildings/house.glb?v=84ef78b6072b",
+            "trianglesPerHouse": 8246,
+            "importedParts": 420,
+            "cameraRadius": 739.10423044749,
+            "sceneTextures": 486,
+            "visibleBuildingMeshes": 2976,
+            "houseVisualMeshes": {},
+            "activeIndices": 25238787,
+            "glError": 0,
+            "resolution": [
+              1440,
+              780
+            ]
+          },
+          "viewport": [
+            1440,
+            900
+          ],
+          "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+          "canvasHidden": false,
+          "exceptions": [],
+          "label": "after-nb20-1-mixed",
+          "captured": "2026-11-19T20:23:34.479Z"
+        }
+      }
+    ]
+  }
+}

@@ -4,7 +4,7 @@ import {depthSearchReason} from './depth-supply.js';
 import {relicControlActive,relicCommandReason} from './city-command-lock.js';
 export {relicControlActive,relicCommandReason} from './city-command-lock.js';
 // Unique cult objects belong to their quests, never to material freight.
-import {buildingKey,isOperational} from './definitions.js';
+import {buildingKey,isResidence,isOperational} from './definitions.js';
 import {networkFor,invalidateAssignments} from './workforce.js';
 import {navigationSegmentClear} from './navigation.js';
 import {isDryPoint,worldWidth,worldHeight} from './world.js';
@@ -32,7 +32,7 @@ function news(s,title,text,kind='good'){s.news??=[];s.news.unshift({title,text,k
 function templePort(s,key){return networkFor(s).ports.find(p=>!p.building.siteKey&&buildingKey(p.building)===key&&readyTemple(p.building));}
 function siteFor(s){
  if(!s.world?.lakes?.length)return null;
- const net=networkFor(s),homes=net.ports.filter(p=>p.building.type==='house'),components=new Set(homes.map(p=>net.components.get(p.key))),candidates=[];
+ const net=networkFor(s),homes=net.ports.filter(p=>isResidence(p.building)),components=new Set(homes.map(p=>net.components.get(p.key))),candidates=[];
  for(const lake of s.world.lakes)for(const water of lake.cells)for(const shore of net.nodes.values()){
   if(!components.has(net.components.get(shore.key))||distance(shore,water)>2.05)continue;
   const homeDistance=Math.min(...homes.filter(h=>net.components.get(h.key)===net.components.get(shore.key)).map(h=>distance(h,shore)));
@@ -42,7 +42,7 @@ function siteFor(s){
  const site=candidates.find(site=>relicPathTo(s,{site},site.shore,site));if(!site)return null;delete site.rank;return site;
 }
 function landSiteFor(s){
- const net=networkFor(s),homes=net.ports.filter(p=>p.building.type==='house'),candidates=[];
+ const net=networkFor(s),homes=net.ports.filter(p=>isResidence(p.building)),candidates=[];
  for(let y=2;y<worldHeight(s)-2;y++)for(let x=2;x<worldWidth(s)-2;x++){
   const p={x,y};if(!isDryPoint(s,x,y)||!navigationSegmentClear(s,p,p,net.navigation?.obstacles)||s.world.deposits.some(d=>d.x===x&&d.y===y))continue;
   const nearest=Math.min(...homes.map(h=>distance(p,h)));if(nearest<4||nearest>8)continue;candidates.push({...p,rank:Math.abs(nearest-5.5)});

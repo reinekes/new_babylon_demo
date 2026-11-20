@@ -1,5 +1,5 @@
 import {buildingDefinition} from './building-presentation.js';
-import {BUILDINGS,MATERIALS,RESOURCE_NAMES,buildingKey,levelOf,capacityOf,isOperational} from './definitions.js';
+import {BUILDINGS,MATERIALS,RESOURCE_NAMES,buildingKey,isResidence,levelOf,capacityOf,isOperational} from './definitions.js';
 import {stockStores,syncInventory,putStock} from './inventory.js';
 import {cityCommandReason as relicCommandReason} from './city-command-lock.js';
 import {syncCitizens,recoverCitizenCargo,networkFor} from './workforce.js';
@@ -79,7 +79,7 @@ export function addTestCitizens(state,count){
  const reason=testToolsReason(state);if(reason)return denied(reason);
  if(!Number.isSafeInteger(count)||count<1||count>300)return denied('Введи целое число от 1 до 300');
  if((state.demography?.nextId||0)+count>1e6)return denied('Достигнут предел номеров жителей');
- const homes=state.buildings.filter(b=>b.type==='house'&&isOperational(b));
+ const homes=state.buildings.filter(b=>isResidence(b)&&isOperational(b));
  const camps=homes.filter(b=>b.reedCamp&&!b.campSalvage);
  const vacantHomes=arrivalHousing(state).reduce((n,h)=>n+h.beds,0);
  const flooded=networkFor(state,{materializeRoads:false}).navigation.flooded;

@@ -1,4 +1,4 @@
-import {buildingKey,isOperational} from './definitions.js';
+import {isResidence,buildingKey,isOperational} from './definitions.js';
 import {weatherAt} from './environment.js';
 import {FIRING_SECONDS,FIRE_RESPONSE_SECONDS,kilnNeedsRepair} from './kilns.js';
 import {isStrictSumer} from './scenario-profiles.js';
@@ -15,7 +15,7 @@ function fireConditions(s){
 function exposedHomes(s,kiln){
  const homes=new Map();
  for(const b of s.buildings){
-  if(b.type==='house'&&isOperational(b)&&Math.max(Math.abs(b.x-kiln.x),Math.abs(b.y-kiln.y))<=1)
+  if(isResidence(b)&&isOperational(b)&&Math.max(Math.abs(b.x-kiln.x),Math.abs(b.y-kiln.y))<=1)
    homes.set(buildingKey(b),{home:b,need:0});
  }
  for(const c of s.citizens){

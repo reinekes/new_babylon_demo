@@ -8,7 +8,8 @@ const fs = require('node:fs');
 const {spawnSync} = require('node:child_process');
 const {MeshoptSimplifier} = require('meshoptimizer');
 
-async function build(source, destination) {
+async function build(source, destination, budgetScale = 1) {
+  if (!Number.isFinite(Number(budgetScale)) || budgetScale <= 0) throw Error('Expected a positive triangle budget multiplier');
   const raw = fs.readFileSync(source);
   const jsonLength = raw.readUInt32LE(12);
   const gltf = JSON.parse(raw.subarray(20, 20 + jsonLength));
@@ -60,7 +61,7 @@ async function build(source, destination) {
     }
     const [indices] = MeshoptSimplifier.simplifyWithAttributes(
       read(primitive.indices), positions, 3, attributes, 5, [.18, .18, .18, .03, .03],
-      null, Math.min(oldAccessors[primitive.indices].count, triangleBudgets[gltf.materials[primitive.material].name] * 3), .009, ['Permissive']
+      null, Math.min(oldAccessors[primitive.indices].count, Math.round(triangleBudgets[gltf.materials[primitive.material].name] * budgetScale) * 3), .009, ['Permissive']
     );
     const [remap, count] = MeshoptSimplifier.compactMesh(indices);
     if (count > 65535) throw Error('City mesh exceeds 16-bit index range');

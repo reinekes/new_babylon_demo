@@ -40,7 +40,7 @@ import {PROFESSION_IDS,professionRole,canStaffBuilding,workplaceCapacity,hasWork
 import {affectResidents} from './wellbeing.js';
 import {canWork} from './demography.js';
 import {registerInspiration} from './divinity.js';
-import {BUILDINGS,buildingKey,capacityOf,housingOf,storageOf,levelOf,MATERIALS,guardCapacity} from './definitions.js';
+import {housingPriority,isResidence,BUILDINGS,buildingKey,capacityOf,housingOf,storageOf,levelOf,MATERIALS,guardCapacity} from './definitions.js';
 import {isComplete,constructionEntities} from './construction.js';
 import {syncCitizens,invalidateAssignments,rerouteCitizens,networkFor,recoverCitizenCargo} from './workforce.js';
 import {bridgeSpanAt,worldFromRiver,onBridge,worldWidth,worldHeight} from './world.js';
@@ -106,9 +106,9 @@ export function cancelConstruction(s,x,y,expected){
 }
 function ports(s){const net=networkFor(s),map=new Map(net.ports.filter(p=>!p.building.siteKey).map(p=>[buildingKey(p.building),p]));for(const p of net.ports.filter(p=>p.building.siteKey))map.set(`site:${p.building.siteKey}:${p.building.side}`,p);return {net,map};}
 function relocations(s,b){
- if(b.type!=='house')return new Map();
+ if(!isResidence(b))return new Map();
  const {net,map}=ports(s),source=map.get(buildingKey(b)),residents=s.citizens.filter(c=>c.home===buildingKey(b));
- const beds=s.buildings.filter(h=>h!==b&&h.type==='house'&&isComplete(h)&&!householdAwaitingFamily(s,h)).map(h=>({key:buildingKey(h),free:capacityOf(h)-reservedArrivalBeds(s,buildingKey(h))-s.citizens.filter(c=>c.home===buildingKey(h)).length}));
+ const beds=s.buildings.filter(h=>h!==b&&isResidence(h)&&isComplete(h)&&!householdAwaitingFamily(s,h)).sort((a,b)=>housingPriority(a)-housingPriority(b)).map(h=>({key:buildingKey(h),free:capacityOf(h)-reservedArrivalBeds(s,buildingKey(h))-s.citizens.filter(c=>c.home===buildingKey(h)).length}));
  const result=new Map();
  for(const c of residents){const target=beds.find(h=>h.free>0&&source&&map.get(h.key)&&net.components.get(source.key)===net.components.get(map.get(h.key).key));if(!target)return null;target.free--;result.set(c.id,target.key);}
  return result;
@@ -118,7 +118,7 @@ function relocations(s,b){
 function foundingStockTransfer(s,b){
  if(!b.starterHut||b.type!=='house')return null;
  const {net,map}=ports(s),source=map.get(buildingKey(b));if(!source)return null;
- const component=net.components.get(source.key),targets=s.buildings.filter(t=>t!==b&&isComplete(t)&&['house','shrine','granary','depot'].includes(t.type)&&map.get(buildingKey(t))&&net.components.get(map.get(buildingKey(t)).key)===component).sort((a,c)=>Math.hypot(a.x-b.x,a.y-b.y)-Math.hypot(c.x-b.x,c.y-b.y));
+ const component=net.components.get(source.key),targets=s.buildings.filter(t=>t!==b&&isComplete(t)&&['house','communalHouse','shrine','granary','depot'].includes(t.type)&&map.get(buildingKey(t))&&net.components.get(map.get(buildingKey(t)).key)===component).sort((a,c)=>Math.hypot(a.x-b.x,a.y-b.y)-Math.hypot(c.x-b.x,c.y-b.y));
  const plan=[];
  for(const k of MATERIALS){let left=b.stock?.[k]||0;
   for(const target of targets){const n=Math.min(left,Math.max(0,storeCapacity(target)-(target.stock?.[k]||0)));if(n>0){plan.push({target,key:k,amount:n});left-=n;}if(left<1e-7)break;}

@@ -2,14 +2,14 @@ import {isDryPoint,isShore} from './world.js';
 import {stockStores,foodAvailability,projectedStoreStock} from './inventory.js';
 import {availableFood,seedReserve} from './food-planning.js';
 import {household,homeFoodCouriers,carriedMealFood} from './households.js';
-import {buildingKey} from './definitions.js';
+import {isResidence,buildingKey} from './definitions.js';
 import {networkFor,routeBetween} from './workforce.js';
 export function supplyOverview(s){
  const food=foodAvailability(s,{reconcile:false}),net=networkFor(s,{materializeRoads:false}),ctx={network:net},ports=new Map(net.ports.filter(p=>!p.building.siteKey).map(p=>[buildingKey(p.building),p.key]));
  let stores=stockStores(s);
  const milk=projectedStoreStock(s,'milk',stores);
- if(!stores.length)stores=s.buildings.filter(b=>b.type==='house'&&b.construction?.kind!=='new').slice(0,1);
- const houses=s.buildings.filter(b=>b.type==='house'&&b.construction?.kind!=='new').map(b=>{const h=household(s,b),demand=h.demand*4/3,trips=homeFoodCouriers(s,buildingKey(b)),reachableStores=stores.filter(store=>routeBetween(s,ports.get(buildingKey(b)),ports.get(buildingKey(store)),ctx)),reachable=reachableStores.length>0;
+ if(!stores.length)stores=s.buildings.filter(b=>isResidence(b)&&b.construction?.kind!=='new').slice(0,1);
+ const houses=s.buildings.filter(b=>isResidence(b)&&b.construction?.kind!=='new').map(b=>{const h=household(s,b),demand=h.demand*4/3,trips=homeFoodCouriers(s,buildingKey(b)),reachableStores=stores.filter(store=>routeBetween(s,ports.get(buildingKey(b)),ports.get(buildingKey(store)),ctx)),reachable=reachableStores.length>0;
  const localStaples=reachableStores.reduce((n,store)=>n+(food.get(buildingKey(store))||0),0);
  const localMilk=reachableStores.reduce((n,store)=>n+(milk.get(buildingKey(store))||0),0);
  const localFood=localStaples+localMilk*.5;
@@ -19,7 +19,7 @@ export function supplyOverview(s){
 }
 
 export function householdSupplyRoute(s,key,resource){
- const home=s.buildings.find(b=>b.type==='house'&&buildingKey(b)===key&&b.construction?.kind!=='new');
+ const home=s.buildings.find(b=>isResidence(b)&&buildingKey(b)===key&&b.construction?.kind!=='new');
  if(!home)return null;
  const points=(courier,route,index)=>[{x:courier.x,y:courier.y},...route.slice(index)];
  const water=resource==='water';

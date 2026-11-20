@@ -1,4 +1,4 @@
-import {buildingKey,isOperational} from './definitions.js';
+import {isResidence,buildingKey,isOperational} from './definitions.js';
 import {supplyHome} from './households.js';
 import {usesCatDiscovery} from './scenario-profiles.js';
 import {worldHeight,worldWidth} from './world.js';
@@ -13,7 +13,7 @@ export function retireDepthPressure(s,x,y){
 
 export function recordDepthSupply(s,c,b,amount){
  const homes=s.depthSupply?.homes;
- if(!homes||homes.length>=DEPTH_HOMES_REQUIRED||b.type!=='house'||!isOperational(b)||!(amount>1e-8)||
+ if(!homes||homes.length>=DEPTH_HOMES_REQUIRED||!isResidence(b)||!isOperational(b)||!(amount>1e-8)||
   c.age<16||!['fisher','watercarrier'].includes(c.calling))return;
  const home=buildingKey(b);
  if(homes.some(row=>row.x===b.x&&row.y===b.y)||!s.citizens.some(c=>supplyHome(c,{arrived:true})===home))return;

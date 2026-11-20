@@ -224,7 +224,7 @@ function render() {
 }
 
 async function readData(name) {
-  const response=await fetch(new URL(`./data/${name}.json?v=river-farms-and-pits-20261118`,import.meta.url),{cache:'no-cache'});
+  const response=await fetch(new URL(`./data/${name}.json?v=communal-house-herds-20261120`,import.meta.url),{cache:'no-cache'});
   if (!response.ok) throw Error(`HTTP ${response.status}`);
   return response.json();
 }

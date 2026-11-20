@@ -27,6 +27,37 @@ function rooftop(a,x,z,w,d){
  // Continuous parapet returns keep the small roofs visibly solid.
  a.line([[x-w,z-2],[x,z-d-2],[x+w,z-2]],'#fff0cc',1.3);
 }
+// Draw the shared court around the same central gate and right-hand stair as the GLB.
+export function drawCommunalHouse(r,b){
+ const yaw=(b.rotation||0)*Math.PI/2,cos=Math.cos(yaw),sin=Math.sin(yaw);
+ const position=(x,z,h=0)=>r.point(b.x+.5+(x*cos+z*sin)/6,b.y+.5+(z*cos-x*sin)/6,h*10);
+ const faces=[];
+ function block(x,z,w,d,height,top=EARTH.plaster,side=EARTH.shade,bottom=0){
+  const corners=[[x-w/2,z-d/2],[x+w/2,z-d/2],[x+w/2,z+d/2],[x-w/2,z+d/2]];
+  const low=corners.map(([xx,zz])=>position(xx,zz,bottom)),high=corners.map(([xx,zz])=>position(xx,zz,height));
+  faces.push({depth:position(x,z).y,draw(){
+   for(let i=0;i<4;i++){
+    const j=(i+1)%4;
+    if(low[j].x<low[i].x)r.polygon([low[i],low[j],high[j],high[i]],low[i].y>low[j].y?side:'#bf9e76');
+   }
+   r.polygon(high,top);
+  }});
+ }
+ r.polygon([[-5.55,-5.57],[5.55,-5.57],[5.55,5.57],[-5.55,5.57]].map(([x,z])=>position(x,z,.06)),'#b59a77');
+ block(0,-3.77,5.55,3.2,3.82,'#d0b68e');
+ for(const x of [-4.25,4.25])block(x,-.12,2.48,10.48,2.53);
+ block(3.22,1.87,.64,3.12,.50,'#c6ac86');
+ for(let i=0;i<12;i++)block(-3.06,3.50-i*.28,.84,.28,.065+2.46*(i+1)/12);
+ block(2.18,-.84,2.10,1.70,1.81,'#af965f',EARTH.reed,1.69);
+ for(const x of [3.13,1.24])block(x,-.07,.13,.13,1.69,'#947247','#866541');
+ for(const x of [-3.11,3.11])block(x,5.22,4.7,.38,1.58);
+ block(0,5.22,1.54,.23,1.74,'#a18160','#7a614a',1.58);
+ if(cos+sin>0){
+  const door=[[-.72,.07],[.72,.07],[.72,2.43],[-.72,2.43]].map(([x,h])=>position(x,-2.15,h));
+  faces.push({depth:position(0,-2.14).y,draw:()=>r.polygon(door,'#554635')});
+ }
+ faces.sort((a,c)=>a.depth-c.depth);for(const face of faces)face.draw();
+}
 export function drawCourtyardHouse(r,b,state){
  const a=brush(r,b),{p,q,c}=a,level=levelOf(b),variant=houseVariant(b),h=25+(level-1)*9+(variant===3?7:0),night=(r.lighting?.night||0)>.12;
  const residents=r.houseOccupancy?.get(`${b.x},${b.y}`)??state.citizens?.filter(v=>v.home===`${b.x},${b.y}`).length??0,lights=night?houseLightCount(b,residents):0;

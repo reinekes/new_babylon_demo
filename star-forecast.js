@@ -1,4 +1,4 @@
-import {buildingKey,isOperational} from './definitions.js';
+import {isResidence,buildingKey,isOperational} from './definitions.js';
 import {homeFoodInTransit,homeMealFood,ration,supplyHome} from './households.js';
 import {fieldCalendar} from './crop-calendar.js';
 import {fieldWater} from './irrigation.js';
@@ -9,7 +9,7 @@ const kinds=['food','water','construction'];
 
 function forecast(s,b,kind){
  const key=buildingKey(b);
- if(kind==='food'&&b.type==='house'&&isOperational(b)){
+ if(kind==='food'&&isResidence(b)&&isOperational(b)){
   const demand=s.citizens.reduce((n,c)=>n+(supplyHome(c)===key?ration(c)*4/3:0),0);
   const missing=demand-homeMealFood(b)-homeFoodInTransit(s,key,{deliverable:true});
   if(missing>1e-7)return {score:missing,title:'К ужину может не хватить еды',

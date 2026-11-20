@@ -128,6 +128,9 @@ test('model register compares the two visuals and filters status without changin
   assert.equal(house.querySelectorAll('figure img').length,2);
   assert.notEqual(...[...house.querySelectorAll('img')].map(img=>img.src));
   assert.match(house.textContent,/Проверка в игре/);
+  const communal=doc.querySelector('[data-model="communalHouse"]');
+  assert.match(communal.querySelector('figure').textContent,/Исходный референс/);
+  assert.match(communal.querySelector('img').src,/reference\.webp$/);
   const quarry=doc.querySelector('[data-model="quarry"]');
   const download=new URL([...quarry.querySelectorAll('a')].find(a=>a.textContent==='Новая GLB').href);
   assert.equal(download.pathname,'/assets/3d/sumer-buildings/quarry.glb');

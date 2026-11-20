@@ -1,6 +1,7 @@
+import {residentMood} from './wellbeing.js';
 import {WATER_CRISIS_YEAR_TITLE,waterCrisisForYear} from './water-crisis.js';
 import {civicTrustAdjustment} from './resident-reactions.js';
-import {buildingKey,citizenName,isOperational} from './definitions.js';
+import {isResidence,buildingKey,citizenName,isOperational} from './definitions.js';
 import {cityCommandReason} from './city-command-lock.js';
 import {fearTension} from './city-events.js';
 import {connectedStores,requestTransfer,transferCarried} from './district-logistics.js';
@@ -14,7 +15,8 @@ const dayOf=s=>Math.floor(s.simTime/DAY_SECONDS+1e-8);
 export const civicDayBoundary=s=>s.civicOrder?Math.max(.001,(dayOf(s)+1)*DAY_SECONDS-s.simTime):Infinity;
 export const newCivicOrder=()=>({lastDay:-1,law:null,case:null,history:[],years:[]});
 const name=c=>c.birthName||citizenName(c.id);
-const houseAt=(s,key)=>s.buildings.find(b=>b.type==='house'&&isOperational(b)&&buildingKey(b)===key);
+const civicMood=(s,c)=>residentMood(c,houseAt(s,c.home));
+const houseAt=(s,key)=>s.buildings.find(b=>isResidence(b)&&isOperational(b)&&buildingKey(b)===key);
 const ready=s=>cityCommandReason(s)||(s.event?'Сначала заверши событие':s.funeral?'Жители прощаются с умершими':s.lost?'Поселение покинуто':'');
 function notice(s,title,text,kind='info'){
  s.news.unshift({title,text,kind,year:s.year,season:s.season,tick:s.tick});
@@ -30,7 +32,7 @@ function remember(s,incident,outcome){
 function trustedLaw(s,c){
  const law=s.civicOrder.law;
  const author=law&&s.citizens.find(p=>p.id===law.author&&p.calling==='lawmaker');
- return !!author&&c.mood+civicTrustAdjustment(s,c)>=25&&c.faith>=30&&fearTension(s)<3;
+ return !!author&&civicMood(s,c)+civicTrustAdjustment(s,c)>=25&&c.faith>=30&&fearTension(s)<3;
 }
 export function civicLawReason(s,id){
  if(!s.civicOrder)return 'Свод доступен в новом «Пробуждении»';
@@ -51,7 +53,7 @@ export function publishCivicLaw(s,id){
 }
 function sources(s,home){
  const free=foodAvailability(s,{reconcile:false});
- return stockStores(s).filter(b=>b.type!=='house'&&(free.get(buildingKey(b))||0)>=measure&&connectedStores(s,buildingKey(b),home));
+ return stockStores(s).filter(b=>!isResidence(b)&&(free.get(buildingKey(b))||0)>=measure&&connectedStores(s,buildingKey(b),home));
 }
 function aidJob(s,incident){return s.district?.jobs.find(q=>q.id===incident.aid);}
 export function civicAidPending(s,incident=s.civicOrder?.case){if(!incident)return false;const q=aidJob(s,incident);return !!q&&(q.remaining>1e-7||transferCarried(s,q)>1e-7);}
@@ -85,7 +87,7 @@ export function orderCivicRestitution(s,key){
  if(progress.complete||progress.active)return {ok:false,reason:progress.complete?'Зерно уже возмещено':'Возмещение уже заказано'};
  const author=s.citizens.find(c=>c.id===civic.law?.author&&c.age>=16&&c.calling==='lawmaker');
  if(!author)return {ok:false,reason:'Нужен действующий законодатель со сводом'};
- const stores=stockStores(s).filter(b=>b.type!=='house'&&!b.recoveryOnly);
+ const stores=stockStores(s).filter(b=>!isResidence(b)&&!b.recoveryOnly);
  if(!stores.some(b=>buildingKey(b)===q.source))return {ok:false,reason:'По адресу из дела нет действующего склада'};
  const amount=q.amount-progress.paid;
  let reason='Нужен другой склад со свободным зерном';
@@ -144,7 +146,7 @@ export function advanceCivicOrder(s,recordDeath){
    return;
   }
   if(homeFoodCouriers(s,incident.home).some(p=>p.phase!=='blocked'))return;
-  if(day-incident.day<(trustedLaw(s,c)?3:2)||c.hunger<45||c.mood>=55)return;
+  if(day-incident.day<(trustedLaw(s,c)?3:2)||c.hunger<45||civicMood(s,c)>=55)return;
   // Leave reserved seed and specially tracked fish or miracle food in their stores.
   const source=sources(s,incident.home).find(b=>!b.fishStock?.length&&!b.giftStock?.length&&!b.creatorStock?.food);
   if(!source)return;
@@ -166,7 +168,7 @@ export function advanceCivicOrder(s,recordDeath){
   return;
  }
  const subject=s.citizens.find(c=>{
-  if(c.age<16||c.hunger<40||c.mood>=60)return false;
+  if(c.age<16||c.hunger<40||civicMood(s,c)>=60)return false;
   const key=supplyHome(c,{arrived:true}),home=houseAt(s,key);
   return home&&homeMealFood(home)<measure&&!homeFoodCouriers(s,key).some(p=>p.phase!=='blocked');
  });

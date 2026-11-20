@@ -1,5 +1,5 @@
 import {ensureHouseEntityId} from './causal-facts.js';
-import {buildingKey,isOperational} from './definitions.js';
+import {isResidence,buildingKey,isOperational} from './definitions.js';
 import {homeMealFood,ration,supplyHome} from './households.js';
 import {usesCatDiscovery} from './scenario-profiles.js';
 import {floodFootprint,floodPhase} from './river-flood.js';
@@ -33,7 +33,7 @@ function suppliedHomes(s){
  const flooded=floodPhase(s)==='active'?floodFootprint(s,s.riverFlood):null;
  return s.buildings.filter(b=>{
   const key=buildingKey(b);
-  if(b.type!=='house'||!isOperational(b)||flooded?.has(key))return false;
+  if(!isResidence(b)||!isOperational(b)||flooded?.has(key))return false;
   const demand=needs.get(key);
   return demand&&homeMealFood(b)+1e-8>=demand.food&&(b.water||0)+1e-8>=demand.water;
  });
@@ -63,7 +63,7 @@ export function blessingDiscoveryView(s){
 
 export function blessingCupAt(s,home){
  const cup=s?.blessingDiscovery?.cup;
- return !!cup&&home.type==='house'&&home.waterEntityId===cup.homeId&&buildingKey(home)===cup.home;
+ return !!cup&&isResidence(home)&&home.waterEntityId===cup.homeId&&buildingKey(home)===cup.home;
 }
 
 export function validateBlessingDiscovery(s){

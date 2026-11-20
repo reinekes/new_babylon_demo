@@ -56,7 +56,7 @@ export function bindCraftTabs(section){
 }
 
 export const BUILDING_GROUPS=[
- {id:'life',name:'Жители',types:['house','healer','musicHouse']},
+ {id:'life',name:'Жители',types:['house','communalHouse','healer','musicHouse']},
  {id:'food',name:'Пища',types:['field','garden','fishing','hunting','cowshed']},
  {id:'materials',name:'Сырьё',types:['clay','reed','logging','quarry']},
  {id:'craft',name:'Ремёсла',types:CRAFT_GROUPS.flatMap(group=>group.types)},

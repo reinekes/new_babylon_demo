@@ -1,6 +1,6 @@
-// Local coordinates are metres in the five shipped courtyard/shelter meshes.
+// Local coordinates are metres from the centre of the occupied plot.
 // The same door and furniture have different positions in the procedural fallback.
-import {buildingKey} from '../definitions.js';
+import {buildingKey,isResidence} from '../definitions.js';
 import {BASE_TIME_RATE} from '../calendar.js';
 import {DAY_SECONDS} from '../city-life.js';
 import {workHourAt} from '../work-schedule.js';
@@ -13,6 +13,16 @@ function layoutFor(kind,catalogue){
  if(layouts.has(key))return layouts.get(key);
  const earth=catalogue,ground=earth?.073:.076;
  let gate=0,door,bench,benchYaw=0,benchHeight,roof=[];
+ if(kind==='communalHouse'){
+  const floor=.065,deck=2.525,door=point(0,-2.25,floor),inner=point(0,-2.78,floor);
+  const sill=point(0,-1.92,floor),court=point(0,-1.45,floor),entry=[inner,door,sill,court];
+  const bench=[...entry,point(2.58,.75,floor),point(2.77,1.87,floor),point(3.21,1.87,floor)];
+  const roof=[...entry,point(-2.24,2.99,floor),point(-2.59,3.83,floor),point(-3.06,3.83,floor)];
+  for(let i=0;i<12;i++)roof.push(point(-3.06,3.50-i*.28,floor+(deck-floor)*(i+1)/12));
+  roof.push(point(-3.06,-.02,deck),point(-4.12,-.12,deck));
+  const layout={inner,door,sill,court,gate:point(0,5.52,floor),outsideCorner:5.83,bench,benchYaw:-Math.PI/2,benchHeight:.495,roof};
+  layouts.set(key,layout);return layout;
+ }
  if(kind==='camp'||kind==='hut'){
   const camp=kind==='camp';gate=camp?-.20:.04;
   door=point(gate,camp?.94:.74);bench=point(camp?-.42:.08,camp?1.65:1.79,ground);
@@ -56,14 +66,15 @@ function follow(route,t){
  return {x:a.x+(b.x-a.x)*k,z:a.z+(b.z-a.z)*k,height:a.height+(b.height-a.height)*k,
   yaw:Math.abs(a.height-b.height)>.6?-Math.PI/2:Math.atan2(b.x-a.x,b.z-a.z),climbing:Math.abs(a.height-b.height)>.6,walking:true};
 }
+const plotCenter=b=>b.type==='communalHouse'?.5:0;
 const quarter=b=>(b.rotation||0)*Math.PI/2;
 function local(b,c){
- const a=quarter(b),cos=Math.cos(a),sin=Math.sin(a),dx=(c.x-b.x)*6,dz=(c.y-b.y)*6;
+ const a=quarter(b),cos=Math.cos(a),sin=Math.sin(a),offset=plotCenter(b),dx=(c.x-b.x-offset)*6,dz=(c.y-b.y-offset)*6;
  return point(dx*cos-dz*sin,dx*sin+dz*cos,.035);
 }
 function world(b,p){
  const a=quarter(b),cos=Math.cos(a),sin=Math.sin(a);
- return {x:b.x+(p.x*cos+p.z*sin)/6,y:b.y+(p.z*cos-p.x*sin)/6};
+ const offset=plotCenter(b);return {x:b.x+offset+(p.x*cos+p.z*sin)/6,y:b.y+offset+(p.z*cos-p.x*sin)/6};
 }
 // Follow the outside wall first if the city's street port is behind the house.
 function streetToRoom(b,l,c,platform){
@@ -80,10 +91,11 @@ function streetToRoom(b,l,c,platform){
   start=points.at(-1);
  }
  const side=start.x<0?-1:1;
- if(start.z<2.50){points.push(point(side*2.85,start.z),point(side*2.85,2.76));}
+ const corner=l.outsideCorner||2.85;
+ if(start.z<(l.outsideCorner||2.50)){points.push(point(side*corner,start.z),point(side*corner,l.outsideCorner||2.76));}
  points.push(l.gate,l.court,l.sill,l.door,l.inner);return points;
 }
-const kindOf=(b,s)=>b.reedCamp?'camp':b.starterHut&&!isStrictSumer(s)&&(b.level||1)===1?'hut':Math.min(3,b.level||1);
+const kindOf=(b,s)=>b.type==='communalHouse'?b.type:b.reedCamp?'camp':b.starterHut&&!isStrictSumer(s)&&(b.level||1)===1?'hut':Math.min(3,b.level||1);
 const returning=p=>['toHome','toRest','toPantryHome','toClothesHome'].includes(p);
 const leaving=p=>typeof p==='string'&&(p.startsWith('to')||p==='returnWork')&&!returning(p);
 const homePhase=p=>p==='home'||p==='resting';
@@ -124,7 +136,7 @@ export function createHomeVisits(homeAsset=()=>true,homePlatform=()=>null){
   if(s!==lastState||clock<lastClock||clock-lastClock>40){previous.clear();transits.clear();seats.clear();}
   lastClock=clock;lastState=s;
   const homes=new Map(),shown=new Map(),next=new Map(),residents=s.citizens||[];
-  for(const b of s.buildings||[])if(b.type==='house'&&!b.campSalvage&&b.construction?.kind!=='new')homes.set(buildingKey(b),b);
+  for(const b of s.buildings||[])if(isResidence(b)&&!b.campSalvage&&b.construction?.kind!=='new')homes.set(buildingKey(b),b);
   for(const c of people)shown.set(c.id,c);
   // Reserve a household's single seat for one daylight outing. A new arrival
   // must not replace someone already halfway up the ladder.

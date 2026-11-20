@@ -77,7 +77,7 @@ function candidateFinder(s,branch,sites){
  if(branch==='abundance'&&s.abundanceDiscovery?.homes.length<ABUNDANCE_HOMES&&abundanceReserveReady(s)){
   const homes=s.abundanceDiscovery.homes,occupied=new Set(s.citizens.map(c=>c.home));
   return c=>{
-   const key=c.pantryTarget||c.home,home=at(key,'house'),source=at(c.store);
+   const key=c.pantryTarget||c.home,home=at(key,'house','communalHouse'),source=at(c.store);
    if(c.phase!=='toPantryHome'||!home||homes.includes(key)||!occupied.has(key)||
     !(c.pantryFood-giftAmount(c.giftPantry)>1e-8)||!source?.stock||
     source.stock.food+1e-8<(source.stockMinimum?.food??(source.type==='depot'?12*(source.level||1):0)))return null;

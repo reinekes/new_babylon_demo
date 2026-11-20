@@ -17,12 +17,12 @@ import {monumentChapterReason} from './monument-chapter.js';
 import {dispatchNeighborWater,neighborWaterRoute} from './water.js';
 import {isStrictSumer,usesCatDiscovery} from './scenario-profiles.js';
 import {preparedFisherInspiration} from './miracle-discovery.js';
-import {buildingKey,isCityFortification,isOperational} from './definitions.js';
+import {isResidence,buildingKey,isCityFortification,isOperational} from './definitions.js';
 import {networkFor,routeBetween,invalidateAssignments} from './workforce.js';
 import {navigationSegmentClear} from './navigation.js';
 import {isDryPoint,worldWidth,worldHeight} from './world.js';
 import {footprintSize} from './footprints.js';
-const BASIC=new Set(['house','clay','reed','field','garden','fishing','hunting','waterpoint','bridge','canal','brickyard','granary','sheepfold']);
+const BASIC=new Set(['house','communalHouse','clay','reed','field','garden','fishing','hunting','waterpoint','bridge','canal','brickyard','granary','sheepfold']);
 const MONUMENTS=new Set(['shrine','ziggurat','ishtarGate','harbor']);
 const cargo=c=>!!c.memorialMove||Object.values(c.cargo||{}).some(n=>n>0)||Object.values(c.buildCargo||{}).some(n=>n>0);
 export const gameMode=s=>s.godhood?.mode||'legacy';
@@ -198,7 +198,7 @@ function signRoute(s,c){
 }
 const isRecoverySign=s=>isStrictSumer(s)&&s.godhood.recognitionAt!==null;
 function homeSignRoute(s,c){
- const home=networkFor(s).ports.find(p=>p.building.type==='house'&&buildingKey(p.building)===c.home);
+ const home=networkFor(s).ports.find(p=>isResidence(p.building)&&buildingKey(p.building)===c.home);
  const origin={x:c.x,y:c.y};
  if(!home||!isDryPoint(s,home.x,home.y)||!clearSignSegment(s,c,origin,home,true))return null;
  return [origin,{x:home.x,y:home.y}];
@@ -220,7 +220,7 @@ export function beginFirstSign(s,id){
 }
 export function firstWaterHelpChoices(s){
  if(!isStrictSumer(s)||!isAwakening(s)||s.godhood.stage!=='unseen'||s.godhood.recognitionAt!==null||s.lost||s.funeral||s.event)return [];
- const homes=new Map(s.buildings.filter(b=>b.type==='house'&&isOperational(b)).map(b=>[buildingKey(b),b]));
+ const homes=new Map(s.buildings.filter(b=>isResidence(b)&&isOperational(b)).map(b=>[buildingKey(b),b]));
  const residents=new Map();
  for(const c of s.citizens)if(homes.has(c.home)&&!c.floodShelter&&!residents.has(c.home))residents.set(c.home,c);
  const choices=[];

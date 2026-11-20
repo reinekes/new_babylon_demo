@@ -1,4 +1,4 @@
-import {buildingKey,capacityOf} from './definitions.js';
+import {isResidence,buildingKey,capacityOf} from './definitions.js';
 // Food values are meal equivalents: two units of actual milk replace one food.
 export const homeMealFood=b=>(b?.pantry||0)+(b?.householdStock?.milk||0)*.5;
 export function homeFoodCouriers(s,key){const jobs=new Set((s.district?.jobs||[]).filter(q=>q.target===key&&q.targetKind==='input'&&['food','milk'].includes(q.resource)).map(q=>q.id));return (s.citizens||[]).filter(c=>c.pantryTrip&&(c.pantryTarget||c.home)===key||jobs.has(c.districtJob));}
@@ -17,7 +17,7 @@ export function totalFood(s){return s.resources.food+(s.resources.milk||0)*.5+s.
 export function houseLightCount(b,residents){const n=Math.sin(b.x*127.1+b.y*311.7)*43758.5453,tall=n-Math.floor(n)>.64,total=tall?4:3;
  return residents<=0?0:Math.max(1,Math.floor(total*Math.min(1,residents/capacityOf(b))));}
 export function recordHomeRation(s,home,c,amount,source=null,grain=[]){
- if(home?.type!=='house'||amount<=1e-8)return;
+ if(!isResidence(home)||amount<=1e-8)return;
  home.lastRation={time:s.simTime,carrier:c.id,amount,source};
  if(grain.length)home.lastRation.grain=grain;
  if(c.pantryOrigin===source&&c.pantryRemainder!==undefined)home.lastRation.remainder=c.pantryRemainder;
@@ -25,6 +25,6 @@ export function recordHomeRation(s,home,c,amount,source=null,grain=[]){
 const validRemainder=n=>n===undefined||Number.isFinite(n)&&n>=0;
 function validRation(s,b){
  const r=b.lastRation;
- return r===undefined||b.type==='house'&&r&&Number.isFinite(r.time)&&r.time>=0&&r.time<=s.simTime+1e-7&&Number.isSafeInteger(r.carrier)&&r.carrier>=0&&Number.isFinite(r.amount)&&r.amount>0&&r.amount<=1e9&&validRemainder(r.remainder)&&(r.remainder===undefined||r.source!==null)&&(r.source===null||typeof r.source==='string'&&/^\d+,\d+$/.test(r.source));
+ return r===undefined||isResidence(b)&&r&&Number.isFinite(r.time)&&r.time>=0&&r.time<=s.simTime+1e-7&&Number.isSafeInteger(r.carrier)&&r.carrier>=0&&Number.isFinite(r.amount)&&r.amount>0&&r.amount<=1e9&&validRemainder(r.remainder)&&(r.remainder===undefined||r.source!==null)&&(r.source===null||typeof r.source==='string'&&/^\d+,\d+$/.test(r.source));
 }
-export function validateHouseholds(s){return s.buildings.every(b=>validRation(s,b)&&['pantry','pantryDelivered'].every(k=>b[k]===undefined||b.type==='house'&&Number.isFinite(b[k])&&b[k]>=0&&b[k]<=1e9)&&(!(b.pantry>0)||b.pantry<=(b.pantryDelivered||0)+1e-7))&&s.citizens.every(c=>validRemainder(c.pantryRemainder)&&(c.pantryRemainder===undefined||c.pantryOrigin!==undefined)&&(c.pantryOrigin===undefined||c.pantryTrip===true&&c.pantryFood>0&&typeof c.pantryOrigin==='string'&&/^\d+,\d+$/.test(c.pantryOrigin))&&(!['toPantrySupply','toPantryHome'].includes(c.phase)||c.pantryTrip===true)&&(c.pantryTrip===undefined?c.pantryFood===undefined&&c.pantryTarget===undefined:c.pantryTrip===true&&(c.pantryTarget===undefined||typeof c.pantryTarget==='string'&&s.buildings.some(b=>b.type==='house'&&buildingKey(b)===c.pantryTarget&&b.construction?.kind!=='new'))&&Number.isFinite(c.pantryFood)&&c.pantryFood>=0&&c.pantryFood<=6&&c.age>=16&&['toPantrySupply','toPantryHome','blocked'].includes(c.phase)&&!c.saleJob&&!Object.values(c.buildCargo||{}).some(n=>n>0)));}
+export function validateHouseholds(s){return s.buildings.every(b=>validRation(s,b)&&['pantry','pantryDelivered'].every(k=>b[k]===undefined||isResidence(b)&&Number.isFinite(b[k])&&b[k]>=0&&b[k]<=1e9)&&(!(b.pantry>0)||b.pantry<=(b.pantryDelivered||0)+1e-7))&&s.citizens.every(c=>validRemainder(c.pantryRemainder)&&(c.pantryRemainder===undefined||c.pantryOrigin!==undefined)&&(c.pantryOrigin===undefined||c.pantryTrip===true&&c.pantryFood>0&&typeof c.pantryOrigin==='string'&&/^\d+,\d+$/.test(c.pantryOrigin))&&(!['toPantrySupply','toPantryHome'].includes(c.phase)||c.pantryTrip===true)&&(c.pantryTrip===undefined?c.pantryFood===undefined&&c.pantryTarget===undefined:c.pantryTrip===true&&(c.pantryTarget===undefined||typeof c.pantryTarget==='string'&&s.buildings.some(b=>isResidence(b)&&buildingKey(b)===c.pantryTarget&&b.construction?.kind!=='new'))&&Number.isFinite(c.pantryFood)&&c.pantryFood>=0&&c.pantryFood<=6&&c.age>=16&&['toPantrySupply','toPantryHome','blocked'].includes(c.phase)&&!c.saleJob&&!Object.values(c.buildCargo||{}).some(n=>n>0)));}

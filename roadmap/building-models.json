@@ -42,6 +42,17 @@
           "release": "../docs/versions/2026-11-18-04.md"
         },
         {
+          "id": "communalHouse",
+          "name": "Общинный дом · двор на 24 жильца",
+          "status": "ready",
+          "previous": null,
+          "reference": "evidence/2026-11-20/communal-house/reference.webp",
+          "image": "evidence/2026-11-20/communal-house/game-courtyard.webp",
+          "model": "../assets/3d/sumer-buildings/communalHouse.glb",
+          "checked": "../docs/benchmarks/2026-11-20-communal-house-and-herds.json",
+          "note": "Новая постройка на четырёх клетках. Из ворот видны общий зал, скамья под тростниковым навесом, печь и лестница на крышу."
+        },
+        {
           "id": "starterHut",
           "name": "Стартовый дом-улей",
           "status": "ready",

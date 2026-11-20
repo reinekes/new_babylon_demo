@@ -1,3 +1,4 @@
+import {createTestLivestock} from '../game3d/test-livestock.js';
 import test from 'node:test';import assert from 'node:assert/strict';import {readFileSync} from 'node:fs';import vm from 'node:vm';import {createGame} from '../engine.js';import {river} from '../world.js';import {createAmbientFauna,AMBIENT_MODELS,ambientDryPoint,ambientClearSegment,ambientAnchor} from '../game3d/ambient-fauna.js';
 const box={exports:{},module:{exports:{}},console,setTimeout,clearTimeout,performance,window:{addEventListener(){},removeEventListener(){}},navigator:{userAgent:'node'}};vm.runInNewContext(readFileSync(new URL('../assets/vendor/babylon-9.31.0.js',import.meta.url),'utf8'),box);const B=box.exports.NullEngine?box.exports:box.module.exports;
 function source(scene,name){const c=new B.AssetContainer(scene),root=new B.TransformNode(`${name}-source`,scene),body=B.MeshBuilder.CreateBox(`${name}-body`,{size:.2},scene);body.parent=root;c.rootNodes=[root];c.transformNodes=[root];c.meshes=[body];c.animationGroups=[];if(name.includes('orange')){const a=new B.Animation('anim','rotation.x',30,B.Animation.ANIMATIONTYPE_FLOAT,B.Animation.ANIMATIONLOOPMODE_CYCLE);a.setKeys([{frame:0,value:0},{frame:15,value:.03},{frame:30,value:0}]);const g=new B.AnimationGroup('anim',scene);g.addTargetedAnimation(a,body);c.animationGroups.push(g);}c.removeAllFromScene();return c;}
@@ -193,4 +194,45 @@ test('mallards make a long riverbank circuit with separate feeding and lookout s
   assert.ok(['walking','swimming','feeding','scanning'].every(phase=>phases.has(phase)));
   assert.ok(feedSites.length>=2,'two distinct feeding patches');
  }
+});
+
+
+test('free herds keep grazing after encounters, without overlapping, pivoting in place or moving on pause',async()=>{
+ const engine=new B.NullEngine(),scene=new B.Scene(engine),state=createGame({start:'established',seed:73129});
+ const names=['pig','goat','bull','cow','ram'].map(kind=>'pasture-'+kind+'.glb');
+ const shared=new Map(names.map(file=>[file,source(scene,file)]));
+ const view=createTestLivestock(B,scene,[],ambientDryPoint,ambientClearSegment,shared);
+ try{
+  await new Promise(resolve=>setImmediate(resolve));
+  view.update(state,0,true,1);
+  const herd=scene.transformNodes.filter(n=>n.metadata?.herdSpecies&&n.isEnabled());
+  assert.deepEqual(new Set(herd.map(n=>n.metadata.herdSpecies)),new Set(['pig','goat','bull','sheep']));
+  const previous=new Map(),recent=new Map();
+  let reverseSteps=0;
+  for(let frame=0;frame<3000;frame++){
+   view.update(state,.05,false,2);
+   for(const n of herd){
+    const {x,z}=n.position,yaw=n.rotation.y,last=previous.get(n);
+    if(last){
+     const dx=x-last.x,dz=z-last.z,distance=Math.hypot(dx,dz);
+     if(distance>1e-6){
+      recent.set(n,(recent.get(n)||0)+distance);
+      if(dx*Math.sin(yaw)+dz*Math.cos(yaw)<-distance*.9)reverseSteps++;
+     }else assert.equal(yaw,last.yaw,'stationary turn '+n.name);
+    }
+    for(const other of herd)if(other!==n&&other.metadata.herdSpecies===n.metadata.herdSpecies){
+     const space={bull:.32,sheep:.21,goat:.22,pig:.22}[n.metadata.herdSpecies];
+     assert.ok(Math.hypot(x-other.position.x,z-other.position.z)>=space*.92*6-1e-6,'overlap '+n.name);
+    }
+    previous.set(n,{x,z,yaw});
+   }
+   if((frame+1)%600===0){
+    for(const n of herd)assert.ok((recent.get(n)||0)>.1,n.name+' stalled for a minute');
+    recent.clear();
+   }
+  }
+  assert.ok(reverseSteps>0,'at least one blocked animal backs out');
+  view.update(state,.1,true,4);
+  for(const n of herd)assert.deepEqual({x:n.position.x,z:n.position.z,yaw:n.rotation.y},previous.get(n));
+ }finally{view.dispose();for(const asset of shared.values())asset.dispose();scene.dispose();engine.dispose();}
 });

@@ -3,7 +3,7 @@ import {ensureHouseEntityId} from './causal-facts.js';
 import {DAY_SECONDS} from './city-life.js';
 import {MONTH_NAMES} from './calendar.js';
 import {cityActivityReason,cityCommandReason} from './city-command-lock.js';
-import {BUILDINGS,buildingKey,capacityOf,isOperational} from './definitions.js';
+import {BUILDINGS,buildingKey,isResidence,capacityOf,isOperational} from './definitions.js';
 import {build,canBuild} from './engine.js';
 import {projectedStoreStock,stockStores} from './inventory.js';
 import {floodFootprint,floodPhase} from './river-flood.js';
@@ -19,7 +19,7 @@ function components(s,options){
 }
 
 export function householdInitiativeFrom(project,home){
- return !!project&&home.type==='house'&&project.source===buildingKey(home)&&
+ return !!project&&isResidence(home)&&project.source===buildingKey(home)&&
   (project.sourceId===undefined||project.sourceId===home.waterEntityId);
 }
 
@@ -71,7 +71,7 @@ export function householdMoveWaitingStatus(s,house,family){
 }
 
 export function householdInitiative(s,source){
- if(!isStrictSumer(s)||source?.type!=='house'||!isOperational(source)||!s.buildings.includes(source))return refuse('Нужен жилой двор Южного Шумера');
+ if(!isStrictSumer(s)||!isResidence(source)||!isOperational(source)||!s.buildings.includes(source))return refuse('Нужен жилой двор Южного Шумера');
  const sourceKey=buildingKey(source),residents=s.citizens.filter(c=>c.home===sourceKey);
  if(!residents.length)return refuse('Во дворе пока никто не живёт');
  const occupied=new Set(s.citizens.map(c=>c.home)),byId=new Map(s.citizens.map(c=>[c.id,c]));
@@ -80,7 +80,7 @@ export function householdInitiative(s,source){
   const partner=byId.get(c.partner);
   if(c.age<16||!partner||partner.age<16)return [];
   const split=c.home!==partner.home;
-  const crowded=residents.some(other=>other!==c&&other!==partner&&other.partner!==null&&byId.get(other.partner)?.home===sourceKey);
+  const crowded=source.type==='communalHouse'||residents.some(other=>other!==c&&other!==partner&&other.partner!==null&&byId.get(other.partner)?.home===sourceKey);
   if(!split&&(!crowded||c.id>partner.id))return [];
   return [householdMovingFamily(s,c,partner)];
  });
@@ -97,7 +97,7 @@ export function householdInitiative(s,source){
  const canMoveInto=(b,family)=>{
   const key=buildingKey(b);
   const project=b.householdInitiative;
-  return current.get(key)===district&&!occupied.has(key)&&
+  return b.type==='house'&&!b.reedCamp&&current.get(key)===district&&!occupied.has(key)&&
    !householdInitiativeReserved(project,byId.get(project?.members[0]))&&
    capacityOf(b)-reservedArrivalBeds(s,key)>=family.length;
  };
@@ -176,7 +176,7 @@ export function advanceAutonomousHousing(s){
  if(s.buildings.some(b=>b.householdInitiative&&b.construction?.kind==='new')||
   s.resources.clay<BUILDINGS.house.clay||s.resources.reed<BUILDINGS.house.reed)return;
  for(const home of s.buildings){
-  if(home.type!=='house'||!isOperational(home))continue;
+  if(!isResidence(home)||!isOperational(home))continue;
   const offer=householdInitiative(s,home);
   if(offer.ok&&startHouseholdInitiative(s,home,offer,true).ok)return;
  }

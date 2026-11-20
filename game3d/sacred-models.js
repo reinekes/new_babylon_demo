@@ -9,6 +9,7 @@ const MARKET_MODEL='market-2x2.glb';
 const WATCH_HOUSE_MODEL='watch-house-v2.glb';
 const REED_CAMP_MODEL='reed-camp-sf3d.glb';
 const HOUSE_CATALOGUE={
+ communalHouse:['communalHouse','78a44f4137f1'],
  'courtyard-1':['house','84ef78b6072b'],
  'courtyard-2':['house-2','feb3dfd79f0c'],
  'courtyard-3':['house-3','f5b16b4399d7'],
@@ -130,6 +131,7 @@ export function createSumerGate(B,scene,m,b={type:'ishtarGate'}){
 }
 
 function modelKey(b,state){
+ if(b?.type==='communalHouse'&&b.construction?.kind!=='new')return 'communalHouse';
  if(b?.type==='house'&&!b.reedCamp&&!b.campSalvage&&b.construction?.kind!=='new')return houseVisualKind(b,state);
  // These Southern Sumer buildings are authored around their actual city joints and ports.
  if(isStrictSumer(state)&&['market','watchHouse','cityWall','cityGate'].includes(b?.type))return null;

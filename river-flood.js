@@ -1,6 +1,6 @@
 import {riverLength,riverLocal,signedRiverDistance,terrain,worldHeight,worldWidth} from './world.js';
 import {isStrictSumer} from './scenario-profiles.js';
-import {isOperational} from './definitions.js';
+import {isResidence,isOperational} from './definitions.js';
 import {canalShares} from './canal-maintenance.js';
 
 const SPILL_REACH=5;
@@ -26,7 +26,7 @@ export function changeFloodSeason(state){
  if(state.season!==3||state.year%4!==3)return null;
  let closest=null,distance=Infinity;
  for(const home of state.buildings){
-  if(home.type!=='house'||!isOperational(home))continue;
+  if(!isResidence(home)||!isOperational(home))continue;
   const offset=signedRiverDistance(home.x,home.y,state),gap=Math.abs(offset);
   if(gap>=distance)continue;
   closest={along:riverLocal(home.x,home.y,state).along,bank:offset<0?-1:1};

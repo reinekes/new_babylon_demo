@@ -1,5 +1,5 @@
 import {giftAmount} from './abundance-origin.js';
-import {buildingKey,isOperational} from './definitions.js';
+import {isResidence,buildingKey,isOperational} from './definitions.js';
 import {seedTarget} from './food-planning.js';
 import {stockStores} from './inventory.js';
 import {usesCatDiscovery} from './scenario-profiles.js';
@@ -25,7 +25,7 @@ export function abundanceKnowledgeReason(s){
 
 export function recordAbundanceHome(s,home,c,source,accepted,gift){
  const q=s.abundanceDiscovery;
- if(!q||q.homes.length>=ABUNDANCE_HOMES||accepted-gift<=EPS||home?.type!=='house'||!isOperational(home)||
+ if(!q||q.homes.length>=ABUNDANCE_HOMES||accepted-gift<=EPS||!isResidence(home)||!isOperational(home)||
   !source?.stock||source.stock.food+EPS<(source.stockMinimum?.food??(source.type==='depot'?12*(source.level||1):0)))return;
  const key=buildingKey(home);
  if(q.homes.includes(key)||!s.citizens.some(p=>p.home===key))return;

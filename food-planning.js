@@ -3,7 +3,7 @@ import {fieldResting,nextSaltYieldFactor} from './field-soil.js';
 import {calendarRateFor} from './calendar.js';
 import {cityCommandReason as relicCommandReason} from './city-command-lock.js';
 import {homeMealFood,homeFoodCouriers,homeFoodInTransit} from './households.js';
-import {buildingKey,isOperational,outputMultiplier} from './definitions.js';
+import {isResidence,buildingKey,isOperational,outputMultiplier} from './definitions.js';
 import {mealRation,mealCycle,isDinnerTime,hourOf} from './wellbeing.js';
 import {fieldWater,lowWaterYear} from './irrigation.js';
 export const SEED_COST=4;
@@ -44,7 +44,7 @@ export function foodWarnings(s,forecast=foodForecast(s,{includeCrops:false})){
  const night=isDinnerTime(s.simTime),day=mealCycle(s.simTime),nearDinner=hourOf(s.simTime)>=16||night,byHome=new Map(),byTarget=new Map(),noFood=availableFood(s)<=1e-7;
  for(const c of s.citizens){if(c.pantryTrip){const key=c.pantryTarget||c.home;if(!byTarget.has(key))byTarget.set(key,[]);byTarget.get(key).push(c);}if(!byHome.has(c.home))byHome.set(c.home,[]);byHome.get(c.home).push(c);}
  const houses=[];
- for(const b of s.buildings){if(b.type!=='house'||!isOperational(b))continue;const key=`${b.x},${b.y}`,residents=byHome.get(key)||[],couriers=homeFoodCouriers(s,key);if(!residents.length)continue;
+ for(const b of s.buildings){if(!isResidence(b)||!isOperational(b))continue;const key=`${b.x},${b.y}`,residents=byHome.get(key)||[],couriers=homeFoodCouriers(s,key);if(!residents.length)continue;
   const hungryResidents=residents.filter(c=>(c.hunger||0)>=30||((c.missedMeals||0)>0&&(c.lastMealQuality??1)<.95&&!(night&&c.mealDay===day&&c.mealEaten>=mealRation(c)*.95)));
   const need=residents.reduce((n,c)=>n+(night?Math.max(0,mealRation(c)-(c.mealDay===day?c.mealEaten:0)):mealRation(c)),0),food=homeMealFood(b),inTransit=homeFoodInTransit(s,key),deliverable=homeFoodInTransit(s,key,{deliverable:true}),blockedDelivery=couriers.some(c=>c.phase==='blocked'),shortfall=Math.max(0,need-food-deliverable),atRisk=shortfall>1e-7&&(nearDinner||noFood);
   houses.push({key,x:b.x,y:b.y,residents,hungryResidents,hungry:hungryResidents.length,hungryChildren:hungryResidents.filter(c=>c.age<16).length,severe:hungryResidents.some(c=>(c.hunger||0)>=70),need,food,inTransit,shortfall,atRisk,blockedDelivery,awaitingDelivery:need>food+1e-7&&deliverable>0});

@@ -210,7 +210,7 @@ export async function createGameBuildings(B,scene,materials,options={}){
     }
    }else if(sacredModels.sources(b,state)){
     const {center,scale}=sacredModelTransform(b);
-    for(const source of sacredModels.sources(b,state)){const mesh=source.clone(`game-${source.name}`,null,true);mesh.parent=root;mesh.position.set(center,.06,center);mesh.scaling.setAll(scale);mesh.overrideMaterialSideOrientation=source.overrideMaterialSideOrientation;sources.push(mesh);}
+    for(const source of sacredModels.sources(b,state)){const mesh=source.clone(`game-${source.name}`,null,true);mesh.parent=root;mesh.position.set(center,b.type==='communalHouse'?0:.06,center);mesh.scaling.setAll(scale);mesh.overrideMaterialSideOrientation=source.overrideMaterialSideOrientation;sources.push(mesh);}
    }else for(const mesh of sacredModels.fallback(b,materialSet,state)||createArchitecture(B,scene,workstationBuilding(b,state),materialSet,state)){mesh.parent=root;sources.push(mesh);}
 
   }
@@ -303,7 +303,7 @@ export async function createGameBuildings(B,scene,materials,options={}){
   if(disposed)return null;if(!input){clearPreview();return null;}
   fieldBedContext(state);
   const b={...input,level:1,construction:undefined};
-  if(isHouse(b))sacredModels.request(b,state);
+  if(isHouse(b)||b.type==='communalHouse')sacredModels.request(b,state);
   const shoreContext=foundationContext(state),signature=visualSignature(b,state,shoreContext),allowed=options.allowed!==false;
   if(!previewRecord||previewRecord.signature!==signature){
    clearPreview();let template=previewTemplates.get(signature);

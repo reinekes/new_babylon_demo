@@ -60,6 +60,17 @@ function segmentDistance(point,from,to){
 const closeToGroup=(herd,member,point)=>herd.members.some(other=>other!==member&&other.point&&
  Math.hypot(other.point.x-point.x,other.point.y-point.y)<herd.spec.space*2.9);
 
+function staysWithGroup(herd,member,from,to){
+ if(closeToGroup(herd,member,to))return true;
+ // Others may have walked away during a rest. Permit steps that close the gap.
+ let before=Infinity,after=Infinity;
+ for(const other of herd.members)if(other!==member&&other.point){
+  before=Math.min(before,Math.hypot(other.point.x-from.x,other.point.y-from.y));
+  after=Math.min(after,Math.hypot(other.point.x-to.x,other.point.y-to.y));
+ }
+ return before===Infinity||after<before;
+}
+
 function clearOfGroup(herd,member,from,to){
  return herd.members.every(other=>other===member||!other.point||
   segmentDistance(other.point,from,to)>=herd.spec.space*.92);
@@ -184,7 +195,7 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map(),cl
   return member;
  }
 
- function pose(member,point,state,dt,walking){
+ function pose(member,point,state,dt,walking,backing=false){
   const {root}=member;
   const last=member.point;
   root.setEnabled(true);
@@ -194,7 +205,7 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map(),cl
    const distance=Math.hypot(point.x-last.x,point.y-last.y)*6;
    if(distance<1.5){
     root.rotation.y=groundHeading(root.rotation.y,point.yaw,distance,member.turnRadius);
-    member.phase+=distance/member.stride;
+    member.phase+=(backing?-distance:distance)/member.stride;
    }
   }
   member.point=point;
@@ -210,7 +221,8 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map(),cl
   }
   if(!dt&&last&&!clipChanged)return;
   const phase=clip===member.walk?member.phase:clock*.26+member.phase;
-  clip.goToFrame(clip.from+(phase%1)*(clip.to-clip.from));
+  const fraction=phase%1;
+  clip.goToFrame(clip.from+(fraction<0?fraction+1:fraction)*(clip.to-clip.from));
   if(!walking&&!member.idle){
    for(const {target,position} of member.restPositions)target.position.copyFrom(position);
    for(const {target,rotation} of member.rest)target.rotationQuaternion.copyFrom(rotation);
@@ -263,25 +275,40 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map(),cl
   }
   if(!elapsed)return;
   const from=member.point;
+  const canMoveTo=point=>clearOfGroup(herd,member,from,point)&&staysWithGroup(herd,member,from,point)&&clear(state,from,point);
+  const radius=member.turnRadius/6;
   if(!member.goal&&clock>=member.waitUntil){
+   member.backing=false;
    for(let i=0;i<16;i++){
     const goal=randomPoint(herd,member);
     const distance=Math.hypot(goal.x-from.x,goal.y-from.y);
-    if(distance<herd.spec.space*.7||distance>herd.zone.radius*.85)continue;
-    if(!clearOfGroup(herd,member,from,goal)||!clear(state,from,goal))continue;
-    if(!closeToGroup(herd,member,goal))continue;
+    if(distance<herd.spec.space*.7||distance>herd.zone.radius*.85||!canMoveTo(goal))continue;
     const direction=Math.atan2(goal.x-from.x,goal.y-from.y)-member.root.rotation.y;
     if(i<12&&Math.cos(direction)<.15)continue;
+    // A clear straight line to a grazing spot may start with an obstructed turn.
+    if(!canMoveTo(groundStep(from,goal,member.root.rotation.y,radius,radius)))continue;
     member.goal=goal;
     break;
+   }
+   // Back a few hoof-lengths out of a blocked turn. Keep heading and gait
+   // consistent with walking backwards until there is space to turn forward.
+   if(!member.goal){
+    const yaw=member.root.rotation.y+Math.PI,side=member.attempt%2?1:-1;
+    for(const angle of [side*.65,-side*.65,0]){
+     const goal={x:from.x+Math.sin(yaw+angle)*radius*2.4,y:from.y+Math.cos(yaw+angle)*radius*2.4};
+     if(Math.hypot(goal.x-herd.zone.x,goal.y-herd.zone.y)>herd.zone.radius+radius*2.4||!canMoveTo(goal))continue;
+     member.goal=goal;member.backing=true;break;
+    }
    }
    if(!member.goal)member.waitUntil=clock+.55+seed(herd.seed,member.attempt)*1.1;
   }
   if(member.goal){
-   const pace=PACE*(.70+seed(herd.seed,member.index+herd.index*23+671)*.45);
-   const next=groundStep(from,member.goal,member.root.rotation.y,pace*elapsed,member.turnRadius/6);
-   if(clearOfGroup(herd,member,from,next)&&closeToGroup(herd,member,next)&&clear(state,from,next)){
-    pose(member,next,state,elapsed,true);
+   const pace=PACE*(.70+seed(herd.seed,member.index+herd.index*23+671)*.45)*(member.backing?.6:1);
+   const offset=member.backing?Math.PI:0;
+   const next=groundStep(from,member.goal,member.root.rotation.y+offset,pace*elapsed,radius);
+   next.yaw-=offset;
+   if(canMoveTo(next)){
+    pose(member,next,state,elapsed,true,member.backing);
     if(!next.arrived)return;
    }
    member.goal=null;

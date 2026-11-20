@@ -1,3 +1,4 @@
+import {isResidence} from './definitions.js';
 // Offsets count the unlabelled food before a batch. Trailing unlabelled food
 // is implicit, so older saves and other food producers need no extra records.
 const EPS=1e-8, LIMIT=32;
@@ -48,9 +49,9 @@ function validQueue(queue,physical=0){
 export function validateGrainOrigin(s){
  return s.buildings.every(b=>validQueue(b.grainStock,b.stock?.food)&&
   (b.grainOutput===undefined||b.type==='field'&&validQueue(b.grainOutput,b.workshopStock?.output?.food))&&
-  (b.grainPantry===undefined||b.type==='house'&&validQueue(b.grainPantry,b.pantry))&&
+  (b.grainPantry===undefined||isResidence(b)&&validQueue(b.grainPantry,b.pantry))&&
   validQueue(b.lastRation?.grain,b.lastRation?.amount)&&
-  (b.grainDinner===undefined||b.type==='house'&&Number.isSafeInteger(b.grainDinner?.day)&&
+  (b.grainDinner===undefined||isResidence(b)&&Number.isSafeInteger(b.grainDinner?.day)&&
    b.grainDinner.day>=0&&b.grainDinner.day<=Math.floor(s.simTime/60)&&
    Array.isArray(b.grainDinner.fields)&&b.grainDinner.fields.length>0&&b.grainDinner.fields.length<=LIMIT&&
    b.grainDinner.fields.every(validPart)))&&

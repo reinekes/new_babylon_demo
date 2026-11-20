@@ -3,7 +3,7 @@ import {sickleBlunt} from './agriculture.js';
 import {fieldCalendar} from './crop-calendar.js';
 import {buildingDefinition} from './building-presentation.js';
 import {PROFESSION_NAMES,professionRole,professionMatchesTask,hasWorkplace,workplaceCapacity} from './professions.js';
-import {BUILDINGS,buildingKey,isOperational,outputMultiplier,RESOURCE_NAMES} from './definitions.js';
+import {BUILDINGS,buildingKey,isResidence,isOperational,outputMultiplier,RESOURCE_NAMES} from './definitions.js';
 import {generateStreets,DAY_SECONDS} from './city-life.js';
 import {stockStores,storeCapacity} from './inventory.js';
 import {seedReserve} from './food-planning.js';
@@ -92,7 +92,7 @@ export function cityDiagnostics(s){
  const citizens=s.citizens||[],buildings=s.buildings||[],{components}=topology(s),stores=stockStores(s),food=localFood(s,stores),byHome=new Map(),byWork=new Map(),bySite=new Map(),byPantryTarget=new Map();
  const same=(a,b)=>components.has(a)&&components.get(a)!==undefined&&components.get(a)===components.get(b);
  for(const c of citizens){if(c.pantryTrip){const target=c.pantryTarget||c.home;if(!byPantryTarget.has(target))byPantryTarget.set(target,[]);byPantryTarget.get(target).push(c);}if(!byHome.has(c.home))byHome.set(c.home,[]);byHome.get(c.home).push(c);if(c.work&&adult(c)){if(!byWork.has(c.work))byWork.set(c.work,[]);byWork.get(c.work).push(c);}if(c.site&&adult(c)){if(!bySite.has(c.site))bySite.set(c.site,[]);bySite.get(c.site).push(c);}}
- const homes=buildings.filter(b=>b.type==='house'&&isOperational(b)).map(b=>{
+ const homes=buildings.filter(b=>isResidence(b)&&isOperational(b)).map(b=>{
   const key=buildingKey(b),residents=byHome.get(key)||[],couriers=homeFoodCouriers(s,key),connected=stores.filter(st=>same(key,buildingKey(st))),demand=homeDemand(residents,s),waterNeed=waterDemand(residents),pantry=homeMealFood(b),water=amount(b.water),foodInTransit=homeFoodInTransit(s,key),waterInTransit=citizens.reduce((n,c)=>n+(c.waterTrip?.target===key?amount(c.waterTrip.load):0),0),accessibleFood=connected.reduce((n,st)=>n+(food.get(buildingKey(st))||0),0),reasons=[];
   const h={key,x:b.x,y:b.y,residents:residents.map(c=>c.id),population:residents.length,adults:residents.filter(adult).length,workers:residents.filter(c=>adult(c)&&(c.workplace||c.work||c.site||c.guardPost||c.districtJob||c.tradeJob||c.saleJob||c.manualGathering)).length,hungry:residents.filter(c=>hungry(c,s)).length,ill:residents.filter(ill).length,food:pantry,demand,water,waterDemand:waterNeed,foodInTransit,waterInTransit,accessibleFood,reasons,inventory:buildingInventory(s,b)};
   if(residents.length&&!connected.length)reasons.push(reason('path','Нет пути к складу','Общий запас не доступен этому дому',key));

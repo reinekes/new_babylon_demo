@@ -5,7 +5,7 @@ import {footprintSize} from './footprints.js';
 import {usesCatDiscovery} from './scenario-profiles.js';
 import {catTargetSite} from './pests.js';
 import {foodAvailability,takeStock} from './inventory.js';
-import {buildingKey,isOperational,MIRACLES} from './definitions.js';
+import {buildingKey,isResidence,isOperational,MIRACLES} from './definitions.js';
 import {hourOf,mealRation} from './wellbeing.js';
 import {worldWidth,worldHeight,isDryPoint} from './world.js';
 import {relicControlActive} from './relic-quest.js';
@@ -36,7 +36,7 @@ export function advanceCatDiscovery(s,dt){
   const available=foodAvailability(s),total=[...available.values()].reduce((a,b)=>a+b,0),minimum=s.citizens.reduce((n,c)=>n+2*mealRation(c),0);
   let offering;
   if(total>=minimum+1){const sources={};let left=1;for(const [key,n]of available){const taken=takeStock(s,key,'food',Math.min(n,left));if(taken>0){sources[key]=taken;left-=taken;}if(left<1e-9)break;}offering={kind:'food',amount:1,sources};}
-  else {const home=s.buildings.find(b=>b.type==='house'&&isOperational(b)&&b.water>=1);if(!home)return;home.water-=1;offering={kind:'water',amount:1,sources:{[buildingKey(home)]:1}};}
+  else {const home=s.buildings.find(b=>isResidence(b)&&isOperational(b)&&b.water>=1);if(!home)return;home.water-=1;offering={kind:'water',amount:1,sources:{[buildingKey(home)]:1}};}
   Object.assign(q,{phase:'offering',initiatorId:fisher.id,offeredAt:t,offering,trace:{site:site.key,x:site.x,y:site.y}});
   news(s,'Тот, кто пришёл без приглашения',offering.kind==='food'?'Рыбак оставил малую порцию еды у хранилища. Ночью станет ясно, кто откликнется.':'Рыбак поставил чашу воды у хранилища. Ночью станет ясно, кто откликнется.');
  }

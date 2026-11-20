@@ -41,8 +41,9 @@ export function advanceGenerations(s,recover=()=>{}){
  for(const a of singles){if(a.partner!==null)continue;const partner=singles.find(c=>c!==a&&c.partner===null&&c.sex!==a.sex&&!a.parents.includes(c.id)&&!c.parents.includes(a.id)&&!a.parents.some(id=>c.parents.includes(id)));if(partner){a.partner=partner.id;partner.partner=a.id;}}
  // Housing needs reachability, not a route. Topology is stable throughout this pass.
  let housingNetwork,housingPorts;
- const reservedHomes=new Map();
+ const reservedHomes=new Map(),communalHomes=new Set();
  for(const b of s.buildings){
+  if(b.type==='communalHouse')communalHomes.add(buildingKey(b));
   const project=b.householdInitiative,first=project?.members[0];
   if(!reservedHomes.has(first)&&householdInitiativeReserved(project,living.get(first)))reservedHomes.set(first,b);
  }
@@ -51,7 +52,7 @@ export function advanceGenerations(s,recover=()=>{}){
   const family=householdMovingFamily(s,a,partner),current=homes.get(a.home)||[];
   const awaiting=b=>householdInitiativeReserved(b.householdInitiative,living.get(b.householdInitiative?.members[0]));
   const reserved=reservedHomes.get(a.id)||reservedHomes.get(partner.id);
-  if(!reserved&&a.home===partner.home&&!current.some(c=>c.sex==='f'&&c.partner!==null&&c.id!==a.id))continue;
+  if(!reserved&&!communalHomes.has(a.home)&&a.home===partner.home&&!current.some(c=>c.sex==='f'&&c.partner!==null&&c.id!==a.id))continue;
   if(!housingNetwork){housingNetwork=networkFor(s);housingPorts=new Map(housingNetwork.ports.map(p=>[buildingKey(p.building),p.key]));}
   const districtAt=home=>housingNetwork.components.get(housingPorts.get(home));
   const component=districtAt(a.home);

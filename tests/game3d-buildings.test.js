@@ -433,3 +433,34 @@ test('ordinary homes share the loaded earth model until the effective level chan
   assert.equal(earthFor(neighbor.id)[0],b[0]);
  }finally{B.SceneLoader.LoadAssetContainerAsync=original;t.dispose();}
 });
+
+test('the communal courtyard preserves its gate, bench and stairs at all four rotations, before and after its GLB loads',async()=>{
+ const t=await setup(),original=B.SceneLoader.LoadAssetContainerAsync;
+ try{
+  const home={type:'communalHouse',x:6,y:11,footprint:2,level:1,rotation:0};
+  const state={buildings:[home],citizens:[]};
+  B.SceneLoader.LoadAssetContainerAsync=async(directory,file)=>{
+   assert.equal(directory,'assets/3d/sumer-buildings/');
+   assert.equal(file.split('?')[0],'communalHouse.glb');
+   return loadGeometry(t.scene,'communalHouse.glb',directory);
+  };
+  for(const catalogue of [false,true]){
+   if(catalogue)await t.layer.sacredReady();
+   for(let rotation=0;rotation<4;rotation++){
+    home.rotation=rotation;t.layer.sync(state);
+    assert.equal(t.layer.homeCatalogue(home,state),catalogue);
+    const yaw=rotation*Math.PI/2,cs=Math.cos(yaw),sn=Math.sin(yaw);
+    const sample=(x,y,z)=>new B.Vector3(home.x*6+3+x*cs+z*sn,y,home.y*6+3+z*cs-x*sn);
+    const hit=(ray)=>t.scene.pickWithRay(ray,m=>t.layer.meshes.includes(m));
+    for(const [name,x,z,height] of [['bench',3.21,1.87,.495],['stair 1',-3.06,3.50,.27],['stair 6',-3.06,2.10,1.295],['stair 12',-3.06,.42,2.525],['roof',-4.12,-.12,2.525]]){
+     const surface=hit(new B.Ray(sample(x,height+.3,z),new B.Vector3(0,-1,0),.60));
+     assert.ok(surface.hit&&Math.abs(surface.pickedPoint.y-height)<.02,name+' at rotation '+rotation);
+    }
+    // A standing resident can pass beneath the lintel and into the main hall.
+    assert.equal(hit(new B.Ray(sample(0,1.35,5.72),new B.Vector3(-sn,0,-cs),8.4)).hit,false);
+   }
+  }
+  const ghost=t.layer.preview(home,state);
+  assert.ok(ghost.meshes.some(m=>m.material.name.includes('mud plaster')));
+ }finally{B.SceneLoader.LoadAssetContainerAsync=original;t.dispose();}
+});

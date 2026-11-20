@@ -15,7 +15,7 @@ import {createMusicCourtyard} from './music-courtyard.js';
 import {createIshtarGateFallback,createSumerGate} from './sacred-models.js';
 // Original Sumerian-inspired silhouettes; specific workshops are artistic models,
 // not reconstructions. One merged mesh per shared material and building template.
-export const ARCHITECTURE_TYPES=Object.freeze(['cowshed','pottery','brewery','bakery','dairyStore','coppersmith','levee','cityWall','cityGate','harbor','kiln','brickyard','waterpoint','watchHouse','tailor','sheepfold','weaver','linenYard','basketry','matYard','joineryYard','clay','reed','shrine','garden','depot','granary','ziggurat','fishing','hunting','logging','quarry','healer','market','musicHouse','ishtarGate']);
+export const ARCHITECTURE_TYPES=Object.freeze(['communalHouse','cowshed','pottery','brewery','bakery','dairyStore','coppersmith','levee','cityWall','cityGate','harbor','kiln','brickyard','waterpoint','watchHouse','tailor','sheepfold','weaver','linenYard','basketry','matYard','joineryYard','clay','reed','shrine','garden','depot','granary','ziggurat','fishing','hunting','logging','quarry','healer','market','musicHouse','ishtarGate']);
 export function createArchitecture(B,scene,b,m,state){
  if(b.type==='musicHouse')return createMusicCourtyard(B,scene,b,m);
  if(b.type==='ishtarGate')return isStrictSumer(state)?createSumerGate(B,scene,m,b):createIshtarGateFallback(B,scene,m,null,b);
@@ -115,6 +115,25 @@ export function createArchitecture(B,scene,b,m,state){
  };
  const referenceYard=drawReferenceYard(B,scene,b,state,{groups,add,block,beam,cylinder,jar,m});
  if(!referenceYard)switch(b.type){
+ case 'communalHouse':{
+  const size=footprintSize(b),scale=size/2,center=(size-1)*3;
+  const adobe=(x,z,w,d,base,top,material=m.plaster)=>block(center+x*scale,(base+top)*scale/2,center+z*scale,w*scale,(top-base)*scale,d*scale,material);
+  adobe(0,0,11.0,10.9,0,.065,m.soil);
+  adobe(0,-4.05,4.80,2.45,.065,3.87);
+  for(const side of [-1,1]){
+   adobe(side*1.56,-2.51,1.72,.56,.065,3.87);
+   adobe(side*3.94,-3.78,3.02,3.02,.065,2.70);
+   adobe(side*4.52,1.45,1.76,7.35,.065,2.525);
+   adobe(side*3.08,5.22,4.59,.34,.065,1.52);
+   adobe(side*.94,5.22,.4,.51,.065,1.95);
+  }
+  adobe(0,-2.51,1.50,.56,2.11,3.87);
+  adobe(0,5.22,2.02,.16,1.75,1.94,m.wood);
+  adobe(3.21,2.0,.69,3.10,.065,.495,m.raw);
+  for(let i=0;i<12;i++)adobe(-3.06,3.50-i*.28,.94,.30,.065,.065+(2.525-.065)*(i+1)/12,m.raw);
+  adobe(-3.33,-.02,1.43,.58,.065,2.525);
+  break;
+ }
  case 'pottery':case 'bakery':case 'coppersmith':case 'dairyStore':case 'brewery':case 'granary':case 'depot':
  case 'brickyard':case 'kiln':case 'joineryYard':case 'matYard':case 'basketry':case 'linenYard':case 'weaver':case 'tailor':
   createReferenceWorkshop(b,{B,scene,add,block,beam,cylinder,jar,ground,m,wall});

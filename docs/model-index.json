@@ -29,7 +29,7 @@
     },
     {
       "file": "game3d/buildings.js",
-      "sha256": "5b153890768921ca13e63cc1113af8ee843fc2fb7d117e910dcab517c86c5c50"
+      "sha256": "1581fb6bda81984decfd7024f0d8173befcd26e35125a3031ef24f189dc04c11"
     },
     {
       "file": "game3d/caravan.js",
@@ -85,7 +85,7 @@
     },
     {
       "file": "game3d/sacred-models.js",
-      "sha256": "c212941f2ba4316a9a6ae083cb499c535fe835e7b8e116baa5fdadddc7d9579f"
+      "sha256": "5452e68dbc06413240474976d1f68be4b851c2beec06d183db5d0e53c6cd628c"
     },
     {
       "file": "game3d/sky-flight.js",
@@ -97,7 +97,7 @@
     },
     {
       "file": "game3d/test-livestock.js",
-      "sha256": "d1ec8426dba00a3de4f31deace9a939597face1d2881418c060d254aa86c873f"
+      "sha256": "9761d1375e033732bad751f0a55452cc574a2b34a32da53794e12e26bd54a4d3"
     },
     {
       "file": "game3d/valley-vegetation.js",
@@ -1827,7 +1827,7 @@
         {
           "model": "pasture-cow.glb",
           "file": "game3d/test-livestock.js",
-          "line": 166,
+          "line": 177,
           "kind": "literal"
         }
       ]
@@ -2152,7 +2152,7 @@
         {
           "model": "sacred-ishtar-gate.glb",
           "file": "game3d/sacred-models.js",
-          "line": 20,
+          "line": 21,
           "kind": "literal"
         }
       ]
@@ -2181,7 +2181,7 @@
         {
           "model": "sacred-shrine-3.glb",
           "file": "game3d/sacred-models.js",
-          "line": 21,
+          "line": 22,
           "kind": "literal"
         }
       ]
@@ -2210,7 +2210,7 @@
         {
           "model": "sacred-ziggurat-1.glb",
           "file": "game3d/sacred-models.js",
-          "line": 22,
+          "line": 23,
           "kind": "literal"
         }
       ]
@@ -2239,7 +2239,7 @@
         {
           "model": "sacred-ziggurat-3.glb",
           "file": "game3d/sacred-models.js",
-          "line": 23,
+          "line": 24,
           "kind": "literal"
         }
       ]

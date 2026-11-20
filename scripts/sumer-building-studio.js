@@ -16,6 +16,7 @@ import {stockStores} from '../inventory.js';
 
 const query=new URLSearchParams(location.search);
 const requested=query.get('model')||'house';
+const stress=query.has('stress');
 const craftDownloads=new Set(['pottery','brickyard','kiln','bakery','brewery']);
 const riverDownloads=new Set(['field','fishing','waterpoint','harbor','clay','quarry']);
 const homeVariants={'house-2':'Дом II','house-3':'Дом III',starterHut:'Дом основателей',reedCamp:'Тростниковый шалаш'};
@@ -27,6 +28,8 @@ const models=new Map();
 // The founding hut belongs to the legacy city. Strict-only workshops and
 // fortifications load on their own scenario through the selector.
 for(const type of legacyFounder?['house']:Object.keys(BUILDINGS)){
+ // The established 500/250 fixture keeps its original set of workplaces and homes.
+ if(stress&&type==='communalHouse')continue;
  state.resources.faith=3000;state.resources.prestige=3000;
  const stock=stockStores(state)[0].stock;
  for(const k of MATERIALS){const restock=Math.max(0,500-stock[k]);stock[k]+=restock;state.resources[k]+=restock;}
@@ -45,7 +48,6 @@ for(const type of legacyFounder?['house']:Object.keys(BUILDINGS)){
  models.set(type,building);
 }
 
-const stress=query.has('stress');
 const home=models.get('house');
 for(const variant of Object.keys(homeVariants))models.set(variant,home);
 if(!stress){
@@ -99,6 +101,7 @@ const meshesFor=(type)=>{
 function cameraAngle(type){
  const b=models.get(type);
  if(type==='cityGate')return .27;
+ if(type==='communalHouse')return Math.PI/2+.10;
  if(isReferenceWorkshop(type))return 1.05-workshopAngle(workstationBuilding(b,state).workCorner);
  return 1.05-referenceYardFrame(b,state).angle;
 }

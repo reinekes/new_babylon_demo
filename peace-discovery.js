@@ -1,6 +1,6 @@
 import {usesCatDiscovery} from './scenario-profiles.js';
 import {mealCycle} from './wellbeing.js';
-import {buildingKey,isOperational} from './definitions.js';
+import {isResidence,buildingKey,isOperational} from './definitions.js';
 import {supplyHome} from './households.js';
 import {worldHeight,worldWidth} from './world.js';
 
@@ -43,7 +43,7 @@ function validCenter(s,center){
 
 export function peaceQuote(s,target){
  if(!validCenter(s,target))return {reason:'Укажи квартал на карте'};
- const homes=new Map(s.buildings.filter(b=>b.type==='house'&&isOperational(b)).map(b=>[
+ const homes=new Map(s.buildings.filter(b=>isResidence(b)&&isOperational(b)).map(b=>[
   buildingKey(b),Math.hypot(b.x-target.x,b.y-target.y)
  ]));
  const ids=s.citizens.filter(c=>c.health>0&&c.mood<100&&homes.get(supplyHome(c))<=PEACE_RADIUS)

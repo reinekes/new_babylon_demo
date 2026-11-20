@@ -41,7 +41,8 @@ export const BUILDINGS={
  healer:{name:'Дом лекаря',icon:'✚',clay:24,reed:16,wood:8,desc:'Нужен вдохновлённый лекарь после обучения в храме. Принимает жителей со здоровьем ниже 60%, расходует еду и тростник. Мастерство растёт каждый год с практикой: лечение быстрее, расход меньше, здоровье до 85–95%. Дети тоже получают помощь; ночью все возвращаются домой.',effect:'Лечение · 1 лекарь · 2 места',output:{}},
  levee:{name:'Береговой вал',icon:'▰',clay:8,reed:3,desc:'Земляная насыпь у реки. Соедини готовые участки вдоль берега: вода может обойти разрыв. Прогноз города показывает эффект до весеннего разлива.',effect:'Защита от разлива · участки должны смыкаться',output:{}},
  canal:{name:'Оросительный канал',icon:'≈',clay:4,reed:2,desc:'Жители доставляют глину и тростник, выкапывают русло и укрепляют берега. Соединяй участки стороной клетки от реки или озера. Готовый канал поливает соседние поля и защищает их от засухи. Пересечения дорог получают небольшие настилы.',effect:'Вода соседним полям · 4 глины + 2 тростника',output:{}},
- market:{name:'Рынок',icon:'⚖',clay:20,reed:12,wood:8,desc:'Принимает караваны. Два носильщика доставляют покупки на склад.',effect:'Торговля · 2 носильщика',output:{}}
+ market:{name:'Рынок',icon:'⚖',clay:20,reed:12,wood:8,desc:'Принимает караваны. Два носильщика доставляют покупки на склад.',effect:'Торговля · 2 носильщика',output:{}},
+ communalHouse:{name:'Общинный дом',icon:'▦',clay:36,reed:24,wood:8,desc:'Большой жилой двор на 24 человека. Общая кладовая и вода снабжают жильцов. Теснота снижает их настроение на 8 пунктов. Дети здесь не рождаются.',effect:'24 места · настроение жильцов −8 · без рождений',output:{}}
 };
 export const MIRACLES={
  inannaProtection:{name:'Покров Инанны',cost:80,cooldown:4,icon:'♜',domain:'life',unlockBuilding:'ishtarGate',desc:'Три сезона мыши портят вдвое меньше еды, настроение жителей растёт. Чудесный эффект — игровой.'},
@@ -65,10 +66,14 @@ export const MIRACLES={
 export const RESOURCE_NAMES={timber:'привозной лес',joinery:'столярные детали',blade:'медный нож',chisel:'медное долото',copper:'медь',axe:'медный топор',mat:'циновка',basket:'корзина',flax:'лён',milk:'молоко',pottery:'керамика',beer:'напиток',food:'еда',clay:'глина',reed:'тростник',wood:'дерево',stone:'камень',hides:'шкуры',wool:'шерсть',cloth:'ткань',clothing:'одежда',brick:'сырцовый кирпич',firedBrick:'обожжённый кирпич',faith:'вера',prestige:'престиж'};
 export const levelOf=b=>b.level||1;
 export const isOperational=b=>!b.construction||b.construction.kind==='upgrade'||b.construction.kind==='repair'||b.construction.kind==='boat';
-export const capacityOf=b=>b.type==='house'&&isOperational(b)?(b.starterHut&&levelOf(b)===1?4:4+4*levelOf(b)):0;
+export const COMMUNAL_CAPACITY=24;
+export const COMMUNAL_MOOD_PENALTY=8;
+export const isResidence=b=>b?.type==='house'||b?.type==='communalHouse';
+export const housingPriority=b=>b.reedCamp?2:b.type==='communalHouse'?1:0;
+export const capacityOf=b=>isResidence(b)&&isOperational(b)?(b.type==='communalHouse'?COMMUNAL_CAPACITY:b.starterHut&&levelOf(b)===1?4:4+4*levelOf(b)):0;
 export const outputMultiplier=b=>[0,1,1.6,2.4][levelOf(b)];
 export const buildingKey=b=>b.id||`${b.x},${b.y}`;
-export const storageOf=s=>{const stores=s.buildings.filter(b=>isOperational(b)&&(['shrine','granary','depot'].includes(b.type)||b.type==='house'&&b.stock&&MATERIALS.some(k=>b.stock[k]>0)));return s.inventory?(stores.length?stores.reduce((n,b)=>n+(b.type==='granary'?150*levelOf(b):b.type==='depot'?60*levelOf(b):200),0):200):200+s.buildings.filter(b=>b.type==='granary'&&isOperational(b)).reduce((n,b)=>n+150*levelOf(b),0);};
+export const storageOf=s=>{const stores=s.buildings.filter(b=>isOperational(b)&&(['shrine','granary','depot'].includes(b.type)||isResidence(b)&&b.stock&&MATERIALS.some(k=>b.stock[k]>0)));return s.inventory?(stores.length?stores.reduce((n,b)=>n+(b.type==='granary'?150*levelOf(b):b.type==='depot'?60*levelOf(b):200),0):200):200+s.buildings.filter(b=>b.type==='granary'&&isOperational(b)).reduce((n,b)=>n+150*levelOf(b),0);};
 export const housingOf=s=>s.buildings.reduce((n,b)=>n+(b.reedCamp?0:capacityOf(b)),0);
 
 export const citizenName=id=>['Амал','Нин-Ая','Илду','Энлил','Шуба','Тари','Ишме','Нанна','Лугаль','Сила','Уту','Белет'][id%12]+(id>=12?` ${Math.floor(id/12)+1}`:'');

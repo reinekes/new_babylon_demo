@@ -1,6 +1,6 @@
 import {validateStarForecast} from './star-forecast.js';
 import {DAY_SECONDS} from './city-life.js';
-import {buildingKey,isOperational} from './definitions.js';
+import {isResidence,buildingKey,isOperational} from './definitions.js';
 import {usesCatDiscovery} from './scenario-profiles.js';
 import {worldHeight,worldWidth} from './world.js';
 
@@ -15,7 +15,7 @@ export function advanceStarObservations(s){
  if(!journal||journal.nights.length>=STAR_NIGHTS_REQUIRED||!s.revelationEvidence?.opening||s.funeral||!nightAt(s.simTime))return;
  const day=Math.floor(s.simTime/DAY_SECONDS);
  if(journal.nights.at(-1)?.day===day)return;
- const homes=new Map(s.buildings.filter(b=>b.type==='house'&&isOperational(b)&&!b.floodDamage&&b.water>=.25).map(b=>[buildingKey(b),b]));
+ const homes=new Map(s.buildings.filter(b=>isResidence(b)&&isOperational(b)&&!b.floodDamage&&b.water>=.25).map(b=>[buildingKey(b),b]));
  for(const c of s.citizens){
   if(!['home','resting'].includes(c.phase)||c.age<16||c.health<=0||c.floodShelter||
    !professions.includes(c.calling)||!s.godhood.believerIds.includes(c.id))continue;

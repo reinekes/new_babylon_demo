@@ -1,6 +1,6 @@
 import {recordRevelationFact} from './revelation-evidence.js';
 import {recordCompletedCare} from './peace-discovery.js';
-import {buildingKey,isOperational} from './definitions.js';
+import {isResidence,buildingKey,isOperational} from './definitions.js';
 import {isStrictSumer} from './scenario-profiles.js';
 import {homeMealFood} from './households.js';
 import {hourOf,mealRation} from './wellbeing.js';
@@ -23,7 +23,7 @@ export function advanceFamilyCare(s,dt,mourners){
   if(atHome(c)&&!mourners?.has(c.id))family.people.push(c);
  }
  for(const house of s.buildings){
-  if(house.type!=='house'||!isOperational(house)||house.water<CARE_WATER||house.familyCare?.day===day&&house.familyCare.done)continue;
+  if(!isResidence(house)||!isOperational(house)||house.water<CARE_WATER||house.familyCare?.day===day&&house.familyCare.done)continue;
   const family=families.get(buildingKey(house));
   if(!family||family.people.length<2||homeMealFood(house)+1e-7<family.meal)continue;
   const patients=family.people.filter(c=>need(c)>0).sort((a,b)=>need(b)-need(a)||a.health-b.health||a.id-b.id);
@@ -52,7 +52,7 @@ export function advanceFamilyCare(s,dt,mourners){
 export function validateFamilyCare(s){
  return s.buildings.every(b=>{
   const v=b.familyCare;
-  return v===undefined||isStrictSumer(s)&&b.type==='house'&&isOperational(b)&&v&&typeof v==='object'&&Object.keys(v).length===5&&
+  return v===undefined||isStrictSumer(s)&&isResidence(b)&&isOperational(b)&&v&&typeof v==='object'&&Object.keys(v).length===5&&
    Number.isSafeInteger(v.day)&&v.day>=0&&v.day<=careDay(s.simTime)&&
    Number.isSafeInteger(v.helper)&&v.helper>=0&&Number.isSafeInteger(v.target)&&v.target>=0&&v.helper!==v.target&&
    Number.isFinite(v.work)&&v.work>0&&v.work<=CARE_TIME&&v.done===(v.work===CARE_TIME);

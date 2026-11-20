@@ -1,6 +1,6 @@
 import {recordRevelationFact} from './revelation-evidence.js';
 import {DAY_SECONDS} from './city-life.js';
-import {buildingKey} from './definitions.js';
+import {isResidence,buildingKey} from './definitions.js';
 import {supplyHome} from './households.js';
 import {isStrictSumer} from './scenario-profiles.js';
 import {worldWidth,worldHeight} from './world.js';
@@ -63,11 +63,11 @@ export function waterNameEvidence(s){
 
 export function recordProjectWaterWitness(s,station,home,delivery){
  const project=station.humanWaterProject,ledger=s.causalFacts,homeKey=buildingKey(home);
- if(!ledger||!station.waterEntityId||!project.homeId||project.home===homeKey||home.type!=='house')return;
+ if(!ledger||!station.waterEntityId||!project.homeId||project.home===homeKey||!isResidence(home))return;
  const witnessed=project.witnessHomeIds??[];
  if(witnessed.length>=WITNESSES_PER_PROJECT||witnessed.includes(home.waterEntityId))return;
  const places=project.witnessHomePlaces??witnessed.map(uid=>{
-  const house=s.buildings.find(b=>b.waterEntityId===uid&&b.type==='house');
+  const house=s.buildings.find(b=>b.waterEntityId===uid&&isResidence(b));
   return house?buildingKey(house):ledger.waterWitnesses?.find(f=>f.stationId===station.waterEntityId&&f.homeId===uid)?.home??null;
  });
  if(places.includes(homeKey))return;
@@ -101,7 +101,7 @@ export function householdNameEvidence(s,residents){
 export function recordHealingNameEvidence(s,healer,patient){
  if(healer.calling!=='healer'||patient.health<60)return;
  if(s.causalFacts?.healing?.some(f=>f.patientId===patient.id))return;
- const home=s.buildings.find(b=>b.type==='house'&&buildingKey(b)===patient.home);
+ const home=s.buildings.find(b=>isResidence(b)&&buildingKey(b)===patient.home);
  if(!home)return;
  const ledger=causalLedger(s),care=ledger.healing??=[];
  ensureHouseEntityId(s,home);
@@ -130,7 +130,7 @@ export function recordCraftNameEvidence(s,site,{mentor,pupil}){
  }
  const first=s.causalFacts?.craft?.[0];
  if(craftNameEvidence(s)||first?.home===pupil.home||first?.pupilId===pupil.id)return;
- const home=s.buildings.find(b=>b.type==='house'&&buildingKey(b)===pupil.home);
+ const home=s.buildings.find(b=>isResidence(b)&&buildingKey(b)===pupil.home);
  if(!home||first&&first.homeId===home.waterEntityId)return;
  const ledger=causalLedger(s);
  ensureHouseEntityId(s,home);
@@ -142,7 +142,7 @@ export function harvestNameEvidence(s){
 }
 
 export function recordHarvestNameEvidence(s,field,home,part){
- if(!isStrictSumer(s)||!part.inspired||home.type!=='house')return;
+ if(!isStrictSumer(s)||!part.inspired||!isResidence(home))return;
  const key=buildingKey(home);
  const recipient=s.citizens.find(c=>supplyHome(c,{arrived:true})===key);
  if(!recipient)return;
@@ -177,8 +177,8 @@ export function recordNeighborFoodFact(s,c,home,amount){
 
 function recordNeighborAid(s,c,home,amount,kind){
  const target=buildingKey(home);
- if(!isStrictSumer(s)||!(amount>1e-8)||home.type!=='house'||c.home===target||!s.citizens.some(p=>p.home===target))return false;
- const origin=s.buildings.find(b=>b.type==='house'&&buildingKey(b)===c.home);
+ if(!isStrictSumer(s)||!(amount>1e-8)||!isResidence(home)||c.home===target||!s.citizens.some(p=>p.home===target))return false;
+ const origin=s.buildings.find(b=>isResidence(b)&&buildingKey(b)===c.home);
  if(!origin)return false;
  const ledger=causalLedger(s);
  ensureHouseEntityId(s,origin);
@@ -225,7 +225,7 @@ export function validateCausalFacts(s){
    live.set(b.causalEntityId,b);
   }
   if(uid!==undefined){
-   if(!entity(uid)||live.has(uid)||b.type!=='house'&&!(b.type==='waterpoint'&&p))return false;
+   if(!entity(uid)||live.has(uid)||!isResidence(b)&&!(b.type==='waterpoint'&&p))return false;
    live.set(uid,b);
   }
   if(p?.homeId!==undefined&&(!entity(p.homeId)||!entity(uid)||p.homeId===uid))return false;
@@ -236,7 +236,7 @@ export function validateCausalFacts(s){
  const seen=new Set(),kinds=new Map();
  const entityMatches=(uid,type,key)=>{
   const signature=type+':'+key,b=live.get(uid),previous=kinds.get(uid);
-  if(b&&(b.type!==type||buildingKey(b)!==key)||previous&&previous!==signature)return false;
+  if(b&&((type==='house'?!isResidence(b):b.type!==type)||buildingKey(b)!==key)||previous&&previous!==signature)return false;
   kinds.set(uid,signature);return true;
  };
  if(firstCup?.breweryId!==undefined&&(!entity(firstCup.breweryId)||!entityMatches(firstCup.breweryId,'brewery',firstCup.brewery)||firstCup.status==='pending'&&!live.has(firstCup.breweryId)))return false;
@@ -263,7 +263,7 @@ export function validateCausalFacts(s){
   const witnesses=p?.witnessHomeIds;
   if(witnesses!==undefined&&(!p.homeId||b.construction?.kind==='new'||!Array.isArray(witnesses)||
    witnesses.length<1||witnesses.length>WITNESSES_PER_PROJECT||new Set(witnesses).size!==witnesses.length||
-   witnesses.some(uid=>!entity(uid)||uid===p.homeId||uid===b.waterEntityId||live.has(uid)&&live.get(uid).type!=='house')))return false;
+   witnesses.some(uid=>!entity(uid)||uid===p.homeId||uid===b.waterEntityId||live.has(uid)&&!isResidence(live.get(uid)))))return false;
   const places=p?.witnessHomePlaces;
   if(places!==undefined&&(!Array.isArray(places)||!witnesses||places.length!==witnesses.length||
    new Set(places).size!==places.length||places.some((key,i)=>key===null?

@@ -3,7 +3,7 @@ import {cityCommandReason} from './city-command-lock.js';
 import {affectResidents} from './wellbeing.js';
 import {ensureHouseEntityId} from './causal-facts.js';
 import {isStrictSumer,usesCatDiscovery} from './scenario-profiles.js';
-import {buildingKey,capacityOf,isOperational} from './definitions.js';
+import {housingPriority,isResidence,buildingKey,capacityOf,isOperational} from './definitions.js';
 import {foodAvailability,reserveStock} from './inventory.js';
 import {supplyHome} from './households.js';
 import {navigationSegmentClear,nearestWalkingNode,shortestWalkingPath} from './navigation.js';
@@ -42,11 +42,11 @@ const separateShelters=(a,b)=>a.host!==b.host&&a.origin!==b.origin;
 export function recordArrivalShelter(s,house,guest,served){
  const journal=s.arrivalHospitality;
  if(!journal||!(served>1e-9)||journal.shelters?.length>=needed||
-  house.type!=='house'||!isOperational(house)||!guest.floodShelter||guest.routeIndex<guest.route.length)return;
+  !isResidence(house)||!isOperational(house)||!guest.floodShelter||guest.routeIndex<guest.route.length)return;
  const host=buildingKey(house),origin=guest.home;
  if(guest.floodShelter!==host||!differentBanks(s,origin,host)||
   !s.citizens.some(c=>atUnshelteredHome(c,host)))return;
- const source=s.buildings.find(b=>b.type==='house'&&buildingKey(b)===origin);
+ const source=s.buildings.find(b=>isResidence(b)&&buildingKey(b)===origin);
  if(!source)return;
  const first=journal.shelters?.[0],alternate=journal.shelterAlternate;
  const pair={host,origin};
@@ -109,9 +109,10 @@ export function arrivalRoute(s,network,limit=(_port,beds)=>beds){
   if(!reachable)continue;
   const beds=limit(port,vacant);
   if(!beds||best&&beds<best.beds)continue;
+  const priority=housingPriority(port.building);
   for(const entry of reachable){
    const distance=Math.hypot(port.x-entry.x,port.y-entry.y);
-   if(!best||beds>best.beds||distance<best.distance)best={home,beds,entry,port,distance};
+   if(!best||beds>best.beds||priority<housingPriority(best.port.building)||priority===housingPriority(best.port.building)&&distance<best.distance)best={home,beds,entry,port,distance};
   }
  }
  if(!best)return null;
@@ -121,7 +122,7 @@ export function arrivalRoute(s,network,limit=(_port,beds)=>beds){
 
 export function arrivalQuote(s,network,{custom}={}){
  const extra=customWater(custom);
- const homes=new Map(s.buildings.filter(b=>b.type==='house').map(b=>[buildingKey(b),b]));
+ const homes=new Map(s.buildings.filter(b=>isResidence(b)).map(b=>[buildingKey(b),b]));
  const food=foodAvailability(s,{reconcile:false}),storesByComponent=new Map(),waterNeeds=new Map();
  for(const c of s.citizens){
   const home=supplyHome(c);
@@ -219,7 +220,7 @@ export function createArrivalFamily(s,home,count,custom){
   parents:i<2?[]:[first,first+1],partner:i<2&&count>1?first+1-i:null,generation:i<2?1:2,faith:20
  }));
  s.demography.nextId+=count;
- const house=s.buildings.find(b=>b.type==='house'&&buildingKey(b)===home);
+ const house=s.buildings.find(b=>isResidence(b)&&buildingKey(b)===home);
  const homeId=house&&isStrictSumer(s)?ensureHouseEntityId(s,house):undefined;
  const welcomes=s.arrivalHospitality.welcomes??=[];
  welcomes.push({home,...homeId===undefined?{}:{homeId},...custom?{custom}:{},host,members:family.map(c=>c.id),at:s.simTime});
@@ -238,7 +239,7 @@ export function householdWelcomeEvidence(s,residents){
 }
 
 export function arrivalWelcomeHouse(s,welcome){
- return s.buildings.find(b=>b.type==='house'&&buildingKey(b)===welcome.home&&
+ return s.buildings.find(b=>isResidence(b)&&buildingKey(b)===welcome.home&&
   (welcome.homeId===undefined||welcome.homeId===b.waterEntityId));
 }
 
@@ -316,7 +317,7 @@ export function advanceArrivalGroup(s,dt,network){
 }
 
 function matchesArrivalHome(group,house){
- return house.type==='house'&&buildingKey(house)===group.home&&
+ return isResidence(house)&&buildingKey(house)===group.home&&
   (group.homeId===undefined||house.waterEntityId===group.homeId);
 }
 

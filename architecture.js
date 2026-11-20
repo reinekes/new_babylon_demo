@@ -7,7 +7,7 @@ import {fortificationLayout,fortificationWorldPoint} from './fortification-layou
 import {isStrictSumer} from './scenario-profiles.js';
 import {orchardPalms} from './orchard-layout.js';
 import {drawArtisan} from './artisan-art.js';
-import {drawCourtyardHouse,drawBuildingFinish,drawSumerSacred} from './map-art.js';
+import {drawCommunalHouse,drawCourtyardHouse,drawBuildingFinish,drawSumerSacred} from './map-art.js';
 import {drawHarbor} from './waterfront-art.js';
 import {masonryBox} from './masonry-art.js';
 import {cropFor} from './agriculture.js';
@@ -45,6 +45,7 @@ export function drawBuilding(r, b, state, t) {
     }else r.box(workPoint.x,workPoint.y,13*q,7*q,(9+levelOf(b))*q,'#bb9d68','#80623e','#9c794a');
     return;
   }
+  if(b.type==='communalHouse'){drawCommunalHouse(r,b);return;}
   if(b.type==='house'){drawCourtyardHouse(r,b,state);return;}
   if(['pottery','brewery','bakery','dairyStore','coppersmith'].includes(b.type)){drawArtisan(r,b,state,t);return;}
   if(b.type==='harbor'){drawHarbor(r,b,state);return;}

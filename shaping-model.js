@@ -1,5 +1,5 @@
 import {creatorReady} from './creator-materials.js';
-import {buildingKey,isOperational} from './definitions.js';
+import {buildingKey,isResidence,isOperational} from './definitions.js';
 import {reserveStock} from './inventory.js';
 import {shapingProjectView} from './shaping-projects.js';
 import {worldHeight,worldWidth} from './world.js';
@@ -34,7 +34,7 @@ export function advanceShapingModel(s,dt,{reachable=(from,to)=>from===to,busy}={
   }
  }
  if(!workers.length)return [];
- const home=s.buildings.find(b=>b.type==='house'&&buildingKey(b)===workers[0].home&&isOperational(b));
+ const home=s.buildings.find(b=>isResidence(b)&&buildingKey(b)===workers[0].home&&isOperational(b));
  if(!home)return [];
  if(!model||!master&&!model.reed){
   const cost={clay:model?0:CLAY,reed:master?0:REED};

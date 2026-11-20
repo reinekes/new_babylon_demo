@@ -3,7 +3,7 @@ import {waterSummary} from './water.js';
 import {recordArrivalHospitality} from './arrival-hospitality.js';
 import {isVotiveTemple,receiveForeignVotive} from './votive-offerings.js';
 import {stockStores} from './inventory.js';
-import {buildingKey,isOperational} from './definitions.js';
+import {isResidence,buildingKey,isOperational} from './definitions.js';
 import {isStrictSumer} from './scenario-profiles.js';
 import {cityCommandReason} from './city-command-lock.js';
 import {marketStatus} from './trading.js';
@@ -32,7 +32,7 @@ export function externalMasterOffer(s){
  const component=network.components.get(market.key);
  for(const c of s.citizens.filter(learnerEligible).sort((a,b)=>a.id-b.id)){
   const home=portAt(network,c.home);
-  if(!home||home.building.type!=='house'||!isOperational(home.building)||network.components.get(home.key)!==component)continue;
+  if(!home||!isResidence(home.building)||!isOperational(home.building)||network.components.get(home.key)!==component)continue;
   return {...base,learner:c.id,home:c.home,market:caravan.market,
    reason:home.building.water<WATER?'В доме ученика нужно 2 воды':s.resources.food<FOOD?'Нужно 3 еды для пайка':''};
  }

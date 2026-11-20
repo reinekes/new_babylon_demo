@@ -3,7 +3,7 @@ import {orchardMaturity} from './orchard-layout.js';
 import {sickleBlunt} from './agriculture.js';
 import {recordBuildingProduction} from './building-production-history.js';
 import {initializeDairy,dairyNeeds,dairyInputCapacity} from './dairy.js';
-import {BUILDINGS,MATERIALS,buildingKey,isOperational,outputMultiplier} from './definitions.js';
+import {isResidence,BUILDINGS,MATERIALS,buildingKey,isOperational,outputMultiplier} from './definitions.js';
 import {isArtisan,artisanRecipe,artisanNeeds,artisanOutput,collectArtisan} from './artisan.js';
 import {BRICK_RECIPE,brickNeeds,collectBricks} from './bricks.js';
 import {KILN_RECIPE,kilnNeeds,collectFired} from './kilns.js';
@@ -14,7 +14,7 @@ import {ration} from './households.js';
 const eps=1e-7,n=value=>Number.isFinite(value)?Math.max(0,value):0;
 const sum=(target,k,value)=>{if(value>0)target[k]=(target[k]||0)+value;};
 export const isProductionStore=b=>Object.keys(BUILDINGS[b?.type]?.output||{}).some(k=>MATERIALS.includes(k));
-export const isBuildingStore=b=>b?.type==='house'||b?.type==='healer'||isProductionStore(b);
+export const isBuildingStore=b=>isResidence(b)||b?.type==='healer'||isProductionStore(b);
 export function inputRecipe(b){
  if(isArtisan(b))return artisanRecipe(b);
  if(toolResource(b))return {[toolResource(b)]:1,copper:1};
@@ -36,7 +36,7 @@ export function initializeBuildingInventory(s){
  initializeDairy(s);
  for(const b of s.buildings||[]){
   if(isProductionStore(b)||b.type==='healer'){b.workshopStock??={output:{}};b.workshopStock.output??={};if(b.type==='healer')b.workshopStock.input??={food:0,reed:0};}
-  if(b.type==='house')b.householdStock??={clothing:0,pottery:0,beer:0,milk:0};
+  if(isResidence(b))b.householdStock??={clothing:0,pottery:0,beer:0,milk:0};
  }
 }
 export function homeStockCapacity(s,b,k){
@@ -78,25 +78,25 @@ export function collectReadyOutputs(s){
   if(ready>0&&outputRoom(b,k)+eps>=ready)putProductionOutput(s,b,{[k]:collect()},{record:false});
  }
 }
-export function buildingInputStock(b,k){return b?.type==='house'?k==='food'?n(b.pantry):k==='water'?n(b.water):n(b.householdStock?.[k]):n(inputBuffer(b)?.[k]);}
+export function buildingInputStock(b,k){return isResidence(b)?k==='food'?n(b.pantry):k==='water'?n(b.water):n(b.householdStock?.[k]):n(inputBuffer(b)?.[k]);}
 export function buildingInputRoom(s,b,k){
  if(!isOperational(b))return 0;
  if(toolResource(b)&&!isStrictSumer(s))return 0;
- if(b.type==='house')return Math.max(0,homeStockCapacity(s,b,k)-buildingInputStock(b,k));
+ if(isResidence(b))return Math.max(0,homeStockCapacity(s,b,k)-buildingInputStock(b,k));
  if(b.type==='cowshed'&&b.dairy?.shortage!==undefined&&k==='reed')return Math.max(0,dairyInputCapacity(b).reed-b.dairy.reed);
  if(b.type==='sheepfold'&&b.flock?.adults!==undefined&&k==='reed')return Math.max(0,inputRecipe(b).reed-b.flock.reed);
  return Math.max(0,inputNeeds(b)[k]||0);
 }
 export function putBuildingInput(s,b,k,amount){
- const actual=Math.min(n(amount),b.type==='house'&&k==='food'?Infinity:buildingInputRoom(s,b,k));if(actual<=0)return 0;
- if(b.type==='house'){if(k==='food'){b.pantry=n(b.pantry)+actual;b.pantryDelivered=n(b.pantryDelivered)+actual;}else if(k==='water'){b.water=n(b.water)+actual;b.waterDelivered=n(b.waterDelivered)+actual;}else b.householdStock[k]=n(b.householdStock[k])+actual;}
+ const actual=Math.min(n(amount),isResidence(b)&&k==='food'?Infinity:buildingInputRoom(s,b,k));if(actual<=0)return 0;
+ if(isResidence(b)){if(k==='food'){b.pantry=n(b.pantry)+actual;b.pantryDelivered=n(b.pantryDelivered)+actual;}else if(k==='water'){b.water=n(b.water)+actual;b.waterDelivered=n(b.waterDelivered)+actual;}else b.householdStock[k]=n(b.householdStock[k])+actual;}
  else if(toolResource(b))putToolSupply(b,k,actual);
  else inputBuffer(b)[k]=n(inputBuffer(b)[k])+actual;return actual;
 }
 export function takeBuildingOutput(b,k,amount){const actual=Math.min(n(amount),n(b.workshopStock?.output?.[k]));if(actual)b.workshopStock.output[k]-=actual;return actual;}
 export function buildingInventory(s,b){
  const input={},output={...b.workshopStock?.output},storage={...b.stock},inProcess={},incoming={},outgoing={},capacities={input:{},output:{},storage:{}};
- if(b.type==='house')for(const k of ['food','water','clothing','pottery','beer','milk',...isStrictSumer(s)?['mat']:[]]){input[k]=buildingInputStock(b,k);capacities.input[k]=homeStockCapacity(s,b,k);}
+ if(isResidence(b))for(const k of ['food','water','clothing','pottery','beer','milk',...isStrictSumer(s)?['mat']:[]]){input[k]=buildingInputStock(b,k);capacities.input[k]=homeStockCapacity(s,b,k);}
  else if(!toolResource(b)||isStrictSumer(s))for(const [k,v]of Object.entries(inputRecipe(b))){input[k]=n(inputBuffer(b)?.[k]);capacities.input[k]=v;}
  for(const [k,v]of Object.entries(BUILDINGS[b.type]?.output||{}))if(MATERIALS.includes(k)){output[k]??=0;capacities.output[k]=outputCapacity(b);}
  if(b.artisan?.ready)sum(output,artisanOutput(b),b.artisan.ready);
@@ -118,9 +118,9 @@ export function validateBuildingInventory(s){
  for(const b of s.buildings||[]){
   if(!validateWorkTool(s,b))return false;
   if(isProductionStore(b)||b.type==='healer'){if(!b.workshopStock||Object.keys(b.workshopStock).some(k=>!['input','output'].includes(k))||!validMap(b.workshopStock.output,Object.keys(BUILDINGS[b.type]?.output||{}).filter(k=>MATERIALS.includes(k)),outputCapacity(b)+eps))return false;if(b.type==='healer'?!validMap(b.workshopStock.input,['food','reed'],4):b.workshopStock.input!==undefined)return false;}
-  if(b.type!=='house')for(const [k,capacity]of Object.entries(inputRecipe(b))){if(k==='water')continue;const key=buildingKey(b),incoming=(s.citizens||[]).reduce((n,c)=>n+(c.craftSite===key&&(c.craftMaterial===k||!c.craftMaterial&&(k==='wool'&&c.craftWool!==undefined||k==='cloth'&&c.craftCloth!==undefined))?(c.craftAmount||0)+(c.craftWool||0)+(c.craftCloth||0):0)+((s.district?.jobs||[]).some(q=>q.id===c.districtJob&&q.target===key&&q.resource===k&&q.targetKind==='input')?c.cargo?.[k]||0:0),0);if(n(inputBuffer(b)?.[k])+incoming>capacity+eps||isArtisan(b)&&b.artisan?.stage!=='idle'&&incoming>eps)return false;}
+  if(!isResidence(b))for(const [k,capacity]of Object.entries(inputRecipe(b))){if(k==='water')continue;const key=buildingKey(b),incoming=(s.citizens||[]).reduce((n,c)=>n+(c.craftSite===key&&(c.craftMaterial===k||!c.craftMaterial&&(k==='wool'&&c.craftWool!==undefined||k==='cloth'&&c.craftCloth!==undefined))?(c.craftAmount||0)+(c.craftWool||0)+(c.craftCloth||0):0)+((s.district?.jobs||[]).some(q=>q.id===c.districtJob&&q.target===key&&q.resource===k&&q.targetKind==='input')?c.cargo?.[k]||0:0),0);if(n(inputBuffer(b)?.[k])+incoming>capacity+eps||isArtisan(b)&&b.artisan?.stage!=='idle'&&incoming>eps)return false;}
   if(!isProductionStore(b)&&b.type!=='healer'&&b.workshopStock!==undefined)return false;
-  if(b.type==='house'){if(!validMap(b.householdStock,['clothing','pottery','beer','milk','mat'])||b.householdStock.mat!==undefined&&(!isStrictSumer(s)||b.householdStock.mat>2))return false;}else if(b.householdStock!==undefined)return false;
+  if(isResidence(b)){if(!validMap(b.householdStock,['clothing','pottery','beer','milk','mat'])||b.householdStock.mat!==undefined&&(!isStrictSumer(s)||b.householdStock.mat>2))return false;}else if(b.householdStock!==undefined)return false;
  }
  return true;
 }

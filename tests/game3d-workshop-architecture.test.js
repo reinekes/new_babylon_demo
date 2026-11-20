@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
-import {BUILDINGS} from '../definitions.js';
+import {BUILDINGS,isResidence} from '../definitions.js';
 import {createGame} from '../engine.js';
 import {strictScenario} from '../scenario-profiles.js';
 import {applyWorkshopArchitecture} from '../game3d/workshop-architecture.js';
@@ -17,7 +17,7 @@ test('each fixed nonresidential template has identifiable equipment, finite geom
  const state=createGame({seed:137,start:'established',scenario:strictScenario()});
  const finishes=new Map(),signatures=new Set();
  // These three infrastructure models are rebuilt by the field/bridge/canal generators.
- const types=Object.keys(BUILDINGS).filter(type=>!['house','field','bridge','canal'].includes(type));
+ const types=Object.keys(BUILDINGS).filter(type=>!isResidence({type})&&!['field','bridge','canal'].includes(type));
  const before=JSON.stringify(state);
  try{
   for(const type of types){

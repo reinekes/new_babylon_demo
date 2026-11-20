@@ -2,7 +2,7 @@ import {displayName} from './citizen-epithets.js';
 import {cityCommandReason} from './city-command-lock.js';
 import {mealCycle} from './wellbeing.js';
 import {bindWaterProject,ensureHouseEntityId,recordProjectWaterFact,recordProjectWaterWitness} from './causal-facts.js';
-import {BUILDINGS,MATERIALS,RESOURCE_NAMES,buildingKey,isOperational} from './definitions.js';
+import {BUILDINGS,MATERIALS,RESOURCE_NAMES,buildingKey,isResidence,isOperational} from './definitions.js';
 import {isStrictSumer} from './scenario-profiles.js';
 import {build,canBuild} from './engine.js';
 import {canLeadConstruction,isAwakening} from './godhood.js';
@@ -30,7 +30,7 @@ function waterRequest(s,b,requester,demand){
  return {home:buildingKey(b),requesterId:requester.id,shortage,cost:BUILDINGS[projectType]};
 }
 export function householdWaterRequest(s,b){
- if(!isStrictSumer(s)||b.type!=='house'||!isOperational(b))return null;
+ if(!isStrictSumer(s)||!isResidence(b)||!isOperational(b))return null;
  const requester=s.citizens.find(c=>c.home===buildingKey(b)&&c.age>=16&&!c.floodShelter&&!c.fireShelter);
  return waterRequest(s,b,requester,waterSummary(s,b).demand);
 }
@@ -66,7 +66,7 @@ export function cityWaterRequest(s){
  }
  let request=null;
  for(const b of s.buildings){
-  if(b.type!=='house'||!isOperational(b))continue;
+  if(!isResidence(b)||!isOperational(b))continue;
   const home=buildingKey(b),candidate=waterRequest(s,b,requesters.get(home),demand.get(home)||0);
   if(candidate&&(!request||candidate.shortage>request.shortage))request=candidate;
  }
@@ -82,7 +82,7 @@ export function waterProjectOrganizerReason(s,organizer){
  if(organizer.pendingRole)return 'Житель заканчивает дела перед сменой работы';
  if(organizer.hunger>=30)return 'Организатор голоден и пока откладывает стройку';
  if(organizer.health<60||organizer.clinic)return 'Организатор сначала восстанавливает здоровье';
- const organizerHome=s.buildings.find(b=>b.type==='house'&&buildingKey(b)===organizer.home);
+ const organizerHome=s.buildings.find(b=>isResidence(b)&&buildingKey(b)===organizer.home);
  if(!organizerHome)return 'Организатору нужен дом';
  const ownWater=waterSummary(s,organizerHome);
  if(ownWater.stock<ownWater.demand)return 'Организатор сначала снабжает водой свой двор';
@@ -120,7 +120,7 @@ export function waterProjectProposal(s,organizerId,requesterId,x,y,participantId
  if(!Number.isInteger(x)||!Number.isInteger(y))return refuse('Выберите клетку у воды');
  if(s.buildings.some(b=>b.humanWaterProject&&b.construction?.kind==='new'))return refuse('Один водозабор уже строится по инициативе жителей');
  const organizer=s.citizens.find(c=>c.id===organizerId),requester=s.citizens.find(c=>c.id===requesterId);
- const home=s.buildings.find(b=>b.type==='house'&&isOperational(b)&&buildingKey(b)===requester?.home);
+ const home=s.buildings.find(b=>isResidence(b)&&isOperational(b)&&buildingKey(b)===requester?.home);
  if(sourceHome&&!s.buildings.includes(sourceHome))return refuse('Первоначальный двор снесён или заменён');
  if(sourceHome&&home!==sourceHome)return refuse('Проситель больше не живёт в этом дворе');
  if(!home||requester.age<16)return refuse('Нужен населённый двор, которому не хватает воды');
@@ -153,7 +153,7 @@ export function waterProjectProposal(s,organizerId,requesterId,x,y,participantId
  const missing=Object.keys(availableStock).filter(k=>availableStock[k]<cost[k]);
  if(missing.length)return refuse(`На доступных складах не хватает: ${missing.map(k=>RESOURCE_NAMES[k]).join(', ')}`);
  const eligibleStores=new Set(stores.map(buildingKey));
- const reachableHomes=new Set(s.buildings.filter(b=>b.type==='house'&&component(buildingKey(b))===group).map(buildingKey));
+ const reachableHomes=new Set(s.buildings.filter(b=>isResidence(b)&&component(buildingKey(b))===group).map(buildingKey));
  return {ok:true,key:buildingKey(site),eligibleStores,availableStock,reachableHomes,project:{organizerId,requesterId,home:buildingKey(home),startedAt:s.simTime,...participantIds.length?{participantIds:[...participantIds]}:{}},cost};
 }
 
@@ -178,7 +178,7 @@ export function sendWaterProjectDream(s,organizerId,requesterId,x,y,participantI
  if(!offer.ok)return offer;
  if(s.resources.faith<WATER_DREAM_COST)return {ok:false,reason:`Для общего сна нужно ${WATER_DREAM_COST} веры`};
  const {home,startedAt:sentAt}=offer.project;
- const courtyard=s.buildings.find(b=>b.type==='house'&&buildingKey(b)===home);
+ const courtyard=s.buildings.find(b=>isResidence(b)&&buildingKey(b)===home);
  const homeId=ensureHouseEntityId(s,courtyard);
  s.resources.faith-=WATER_DREAM_COST;
  s.waterProjectDream={organizerId,requesterId,participantIds:[...participantIds],home,homeId,x,y,sentAt,readyAt:nextDawn(sentAt)};
@@ -186,7 +186,7 @@ export function sendWaterProjectDream(s,organizerId,requesterId,x,y,participantI
 }
 
 export function waterDreamHomeReason(s,dream){
- if(dream.homeId!==undefined&&!s.buildings.some(b=>b.type==='house'&&isOperational(b)&&buildingKey(b)===dream.home&&b.waterEntityId===dream.homeId))return 'Первоначальный двор снесён или заменён';
+ if(dream.homeId!==undefined&&!s.buildings.some(b=>isResidence(b)&&isOperational(b)&&buildingKey(b)===dream.home&&b.waterEntityId===dream.homeId))return 'Первоначальный двор снесён или заменён';
  if(!s.citizens.some(c=>c.id===dream.requesterId&&c.home===dream.home))return 'Проситель больше не живёт в этом дворе';
  return '';
 }

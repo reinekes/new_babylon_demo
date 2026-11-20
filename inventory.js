@@ -2,7 +2,7 @@ import {appendGrain,takeGrain} from './grain-origin.js';
 import {addGiftFood,takeGiftFood} from './abundance-origin.js';
 import {takeCreatorStock,addCreatorStock,markCreatorCargo} from './creator-materials.js';
 import {appendFish,takeFish} from './fish-provenance.js';
-import {MATERIALS,isOperational,levelOf} from './definitions.js';
+import {isResidence,MATERIALS,isOperational,levelOf} from './definitions.js';
 const keyOf=b=>`${b.x},${b.y}`;
 const empty=()=>Object.fromEntries(MATERIALS.map(k=>[k,0]));
 const amount=n=>Number.isFinite(n)&&n>0?n:0;
@@ -22,7 +22,7 @@ export function stockStores(s){
   if(!isOperational(b))continue;
   if(b.type==='shrine')central.push(b);
   else if(b.type==='granary'||b.type==='depot')others.push(b);
-  else if(b.type==='house'||b.recoveryOnly===true){if(b.type==='house')home??=b;if(b.stock&&(MATERIALS.some(k=>b.stock[k]>0)||(refs??=referencedStores(s)).has(keyOf(b))))ground.push(b);}
+  else if(isResidence(b)||b.recoveryOnly===true){if(isResidence(b))home??=b;if(b.stock&&(MATERIALS.some(k=>b.stock[k]>0)||(refs??=referencedStores(s)).has(keyOf(b))))ground.push(b);}
  }
  const stores=central.concat(others);
  if(!stores.length&&home&&!ground.includes(home))ground.unshift(home);
@@ -33,7 +33,7 @@ export function storeCapacity(b){return b.type==='granary'?150*levelOf(b):b.type
 // Local transfers always update both sides, so reconciliation never redistributes them.
 export function syncInventory(s){
  const stores=stockStores(s),set=new Set(stores);
- for(const b of s.buildings||[])if(!set.has(b)&&b.stock){if(Object.values(b.stock).some(n=>n>0))throw new Error('Cannot abandon stocked building');if(b.type==='house'||b.recoveryOnly===true){if(b.recoveryOnly)for(const c of s.citizens||[])if(c.store===keyOf(b)&&c.districtJob==null)c.store=null;delete b.stock;delete b.recoveryOnly;}}
+ for(const b of s.buildings||[])if(!set.has(b)&&b.stock){if(Object.values(b.stock).some(n=>n>0))throw new Error('Cannot abandon stocked building');if(isResidence(b)||b.recoveryOnly===true){if(b.recoveryOnly)for(const c of s.citizens||[])if(c.store===keyOf(b)&&c.districtJob==null)c.store=null;delete b.stock;delete b.recoveryOnly;}}
  const first=!s.inventory;s.inventory??={version:1};
  for(const b of stores){b.stock??=empty();for(const k of MATERIALS)b.stock[k]??=0;}
  for(const k of MATERIALS){
@@ -56,7 +56,7 @@ export function putStock(s,key,k,n,{overflow=false,gift}={}){
 // depleted home can become ground storage again; another yard is temporary.
 export function putRecoveryStock(s,key,k,n){
  syncInventory(s);const b=s.buildings?.find(b=>keyOf(b)===key&&isOperational(b)),accepted=amount(n);if(!b||!MATERIALS.includes(k)||!accepted)return 0;
- if(!['house','shrine','granary','depot'].includes(b.type))b.recoveryOnly=true;
+ if(!(isResidence(b)||['shrine','granary','depot'].includes(b.type)))b.recoveryOnly=true;
  b.stock??=empty();b.stock[k]+=accepted;s.resources[k]+=accepted;return accepted;
 }
 export function takeStock(s,key,k,n,{fishTo,fishKey='fishCargo',giftTo,giftKey='giftCargo',creatorTo,grainTo,grainKey='grainCargo'}={}){
@@ -116,7 +116,7 @@ export function validateInventory(s){
  if(!s.inventory||s.inventory.version!==1||!s.resources||!Array.isArray(s.buildings))return false;
  const stores=stockStores(s),set=new Set(stores),totals=empty();
  for(const b of s.buildings){
-  if(b.recoveryOnly!==undefined&&(b.recoveryOnly!==true||['house','shrine','granary','depot'].includes(b.type)||!isOperational(b)))return false;
+  if(b.recoveryOnly!==undefined&&(b.recoveryOnly!==true||(isResidence(b)||['shrine','granary','depot'].includes(b.type))||!isOperational(b)))return false;
   if(!set.has(b)){if(b.stock!==undefined)return false;continue;}
   if(!b.stock||typeof b.stock!=='object'||Array.isArray(b.stock))return false;
   if(Object.keys(b.stock).some(k=>!MATERIALS.includes(k)))return false;

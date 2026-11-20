@@ -94,7 +94,8 @@
         if(!words.every(word=>haystack.includes(word)))continue;
         counters[item.status]++;
         if(modelFilter&&item.status!==modelFilter)continue;
-        const previous=item.previous||(group.future?'':`evidence/2026-11-18/building-models/previous/${item.id}.webp`);
+        const firstModel=item.previous===null&&item.reference;
+        const previous=firstModel?item.reference:item.previous||(group.future?'':`evidence/2026-11-18/building-models/previous/${item.id}.webp`);
         const oldModel=item.previousModel||(item.baselineGlb?`https://github.com/reinekes/new_babylon_demo/blob/${item.previousCommit||data.buildingModels.baseline}/assets/3d/sumer-buildings/${item.id}.glb`:'');
         let studio='';
         if(!group.future&&item.status==='ready'){
@@ -105,7 +106,7 @@
         const links=[studio,modelLink(oldModel,'Прежняя GLB'),modelLink(item.model,group.future?'Эскиз · GLB':'Новая GLB',item.modelVersion),modelLink(item.reference,'Исходная иллюстрация'),modelLink(item.checked,'Проверка в игре'),modelLink(item.release,'Выпуск'),modelLink(item.source,'Предложение')].filter(Boolean);
         cards.push(`<article class="model-card" data-model="${escape(item.id)}">
           <header><h3>${escape(item.name)}</h3><span class="model-status model-${escape(item.status)}">${escape(modelStatuses[item.status])}</span></header>
-          <div class="model-pair">${modelPicture(previous,item.name,'Прежняя модель','Предложено для игры')}${modelPicture(item.image,item.name,group.future?'Эскиз модели':'Новая модель',item.status==='working'?'Готовится':'Ожидается')}</div>
+          <div class="model-pair">${modelPicture(previous,item.name,firstModel?'Исходный референс':'Прежняя модель','Предложено для игры')}${modelPicture(item.image,item.name,group.future?'Эскиз модели':'Новая модель',item.status==='working'?'Готовится':'Ожидается')}</div>
           ${item.note?`<p>${escape(item.note)}</p>`:''}${links.length?`<div class="model-links">${links.join('')}</div>`:''}</article>`);
       }
       if(cards.length)sections.push(`<section class="model-section"><h2>${escape(group.name)} <small>${cards.length}</small></h2><div class="model-grid">${cards.join('')}</div></section>`);

@@ -1,5 +1,5 @@
 import {DAY_SECONDS} from './city-life.js';
-import {buildingKey} from './definitions.js';
+import {isResidence,buildingKey} from './definitions.js';
 import {homeMealFood} from './households.js';
 import {isStrictSumer} from './scenario-profiles.js';
 import {cityCommandReason} from './city-command-lock.js';
@@ -32,7 +32,7 @@ export function acceptSupplyVow(s,keys){
  const houses=new Map(supplyOverview(s).houses.map(h=>[h.key,h]));
  const selected=keys.map(key=>houses.get(key));
  if(selected.some(h=>!h?.residents.length||!h.reachable||h.food+EPS>=2*h.demand))return {ok:false,reason:'Выбранному двору нужен запас и доступный путь к складу'};
- const buildings=new Map(s.buildings.filter(b=>b.type==='house'&&b.construction?.kind!=='new').map(b=>[buildingKey(b),b]));
+ const buildings=new Map(s.buildings.filter(b=>isResidence(b)&&b.construction?.kind!=='new').map(b=>[buildingKey(b),b]));
  const targets=selected.map(h=>({home:h.key,homeId:ensureHouseEntityId(s,buildings.get(h.key)),residents:h.residents.map(c=>c.id),initial:h.food,required:2*h.demand,delivery:null}));
  s.supplyVows??={active:null,history:[]};
  s.supplyVows.active={id:s.supplyVows.history.length+1,start:s.simTime,deadline:s.simTime+INITIAL_TERM,previous:null,targets};
@@ -81,7 +81,7 @@ export function advanceSupplyVow(s){
 
 export function recordVowDelivery(s,house,courier,amount){
  const vow=s.supplyVows?.active;
- if(!vow||house?.type!=='house'||amount<=EPS||s.simTime>=vow.deadline)return;
+ if(!vow||!isResidence(house)||amount<=EPS||s.simTime>=vow.deadline)return;
  const target=vow.targets.find(t=>t.home===buildingKey(house)&&!t.delivery&&(t.homeId===undefined||t.homeId===house.waterEntityId));
  if(!target||homeMealFood(house)+EPS<target.required)return;
  const recipient=s.citizens.find(c=>c.home===target.home&&target.residents.includes(c.id));

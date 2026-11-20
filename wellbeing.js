@@ -5,7 +5,7 @@ import {advanceEveningGame} from './household-games.js';
 import {tellWaterStoryAtDinner} from './life-analytics.js';
 import {isStrictSumer} from './scenario-profiles.js';
 import {isAwakening,knowsPresence} from './godhood.js';
-import {buildingKey} from './definitions.js';
+import {COMMUNAL_MOOD_PENALTY,isResidence,buildingKey} from './definitions.js';
 import {ration,supplyHome} from './households.js';
 import {professionMatchesTask} from './professions.js';
 export const COMMON_PORTION=.4;
@@ -30,7 +30,9 @@ export function householdDinner(time,residents,food){
   need,reserve:Math.max(0,food-remaining),remaining};
 }
 export function initializeWellbeing(s){const day=mealCycle(s.simTime||0);for(const c of s.citizens){c.hunger??=0;c.health??=100;c.mood??=75;c.faith??=60;c.mealDay??=day;c.mealEaten??=mealRation(c);c.mealEvaluated??=day;c.missedMeals??=0;c.lastMealQuality??=1;c.familyMeal??=false;c.diningUntil??=0;c.prayerTotal??=0;}}
-export const workRate=(c,task=c.siteDuty||c.role)=>Math.max(.15,Math.min(1.2,(.5+(c.mood??75)/150)*(.4+.6*(c.health??100)/100)*(1-.6*(c.hunger||0)/100)))*(professionMatchesTask(c,task)?1.2:1);
+// Keep event and meal mood as the intrinsic value. Moving homes changes only the housing adjustment.
+export const residentMood=(c,home)=>Math.max(0,(c.mood??75)-(home?.type==='communalHouse'?COMMUNAL_MOOD_PENALTY:0));
+export const workRate=(c,task=c.siteDuty||c.role,home)=>Math.max(.15,Math.min(1.2,(.5+residentMood(c,home)/150)*(.4+.6*(c.health??100)/100)*(1-.6*(c.hunger||0)/100)))*(professionMatchesTask(c,task)?1.2:1);
 export const beliefMultiplier=s=>s.citizens.length?s.citizens.reduce((n,c)=>n+(c.faith??60),0)/(s.citizens.length*60):0;
 export function affectResidents(s,{faith=0,mood=0}={},ids=null){const affected=ids&&new Set(ids);for(const c of s.citizens||[])if(!affected||affected.has(c.id)){c.faith=clamp((c.faith??60)+faith);c.mood=clamp((c.mood??75)+mood);}}
 export function mournResidents(s,ids,natural=false){const dead=new Set(ids);for(const c of s.citizens){if(dead.has(c.id))continue;const family=dead.has(c.partner)||c.parents?.some(id=>dead.has(id));c.mood=clamp((c.mood??75)-(family?20:6));c.faith=clamp((c.faith??60)-(natural?(family?4:1):(family?22:10)));}}
@@ -47,7 +49,7 @@ export function advanceWellbeing(s,dt){
    if(!families.has(home))families.set(home,[]);
    families.get(home).push(c);
   }
-  for(const b of s.buildings){const family=families.get(`${b.x},${b.y}`);if(b.type!=='house'||!family||!((b.pantry||0)+(b.householdStock?.milk||0)*.5>0))continue;const requests=family.map(c=>Math.max(0,Math.min(mealRation(c)-c.mealEaten,mealRation(c)*.4*dt))),total=requests.reduce((a,b)=>a+b,0);if(total<=1e-9)continue;const share=Math.min(1,((b.pantry||0)+(b.householdStock?.milk||0)*.5)/total);for(let i=0;i<family.length;i++){const amount=requests[i]*share;if(amount<=1e-9)continue;const c=family[i];c.mealEaten=Math.min(mealRation(c),c.mealEaten+amount);const milk=Math.min(b.householdStock?.milk||0,amount*2);if(milk)b.householdStock.milk-=milk;if(b.giftHome)takeGiftFood(b,'giftHome',amount-milk*.5,b.pantry);recordGrainDinner(s,b,amount-milk*.5);b.pantry=Math.max(0,(b.pantry||0)-(amount-milk*.5));c.hunger=clamp(c.hunger-45*amount/mealRation(c));c.health=clamp(c.health+2*amount/mealRation(c));c.diningUntil=s.simTime+2;c.familyMeal||=family.length>1;if(c.floodShelter)recordArrivalShelter(s,b,c,amount);}
+  for(const b of s.buildings){const family=families.get(`${b.x},${b.y}`);if(!isResidence(b)||!family||!((b.pantry||0)+(b.householdStock?.milk||0)*.5>0))continue;const requests=family.map(c=>Math.max(0,Math.min(mealRation(c)-c.mealEaten,mealRation(c)*.4*dt))),total=requests.reduce((a,b)=>a+b,0);if(total<=1e-9)continue;const share=Math.min(1,((b.pantry||0)+(b.householdStock?.milk||0)*.5)/total);for(let i=0;i<family.length;i++){const amount=requests[i]*share;if(amount<=1e-9)continue;const c=family[i];c.mealEaten=Math.min(mealRation(c),c.mealEaten+amount);const milk=Math.min(b.householdStock?.milk||0,amount*2);if(milk)b.householdStock.milk-=milk;if(b.giftHome)takeGiftFood(b,'giftHome',amount-milk*.5,b.pantry);recordGrainDinner(s,b,amount-milk*.5);b.pantry=Math.max(0,(b.pantry||0)-(amount-milk*.5));c.hunger=clamp(c.hunger-45*amount/mealRation(c));c.health=clamp(c.health+2*amount/mealRation(c));c.diningUntil=s.simTime+2;c.familyMeal||=family.length>1;if(c.floodShelter)recordArrivalShelter(s,b,c,amount);}
    if(s.godhood?.firstWaterHelp?.deliveredAt!==undefined&&family.length>1){
     storyRecords??=new Map((s.lifeAnalytics?.people||[]).map(p=>[p.id,p]));
     tellWaterStoryAtDinner(s,family.filter((_,i)=>requests[i]*share>1e-9),storyRecords);
@@ -55,7 +57,7 @@ export function advanceWellbeing(s,dt){
   }
   for(const b of s.buildings)advanceEveningGame(s,b,families.get(`${b.x},${b.y}`));
  }else if(evaluating){
-  const furnished=new Map(s.buildings.filter(b=>b.type==='house'&&b.householdStock?.mat>=1&&!b.floodDamage).map(b=>[buildingKey(b),b.householdStock.mat]));
+  const furnished=new Map(s.buildings.filter(b=>isResidence(b)&&b.householdStock?.mat>=1&&!b.floodDamage).map(b=>[buildingKey(b),b.householdStock.mat]));
   const camps=new Set(s.buildings.filter(b=>b.reedCamp).map(buildingKey));
   for(const c of s.citizens){if(c.mealDay!==day||c.mealEvaluated>=day)continue;const quality=Math.min(1,c.mealEaten/mealRation(c)),fed=quality>=.95;const beforeMood=c.mood;c.lastMealQuality=quality;c.mealEvaluated=day;c.missedMeals=fed?0:c.missedMeals+1;c.hunger=clamp(fed?c.hunger-20:Math.max(c.hunger+20*(1-quality),(1-quality)*100));const health=c.health;c.health=clamp(health+5*quality-28*(1-quality)-c.hunger*.04);if(camps.has(c.home))c.health=Math.min(c.health,Math.max(65,health-4));const mats=furnished.get(supplyHome(c,{arrived:true}))||0,comfort=mats>=1?1+Number(mats>=2&&s.season===1):0;c.mood=clamp(c.mood+(fed?3+comfort+(c.familyMeal?2:0)+Math.min(4,gardenJoy*.25):-12*(1-quality)));c.mealImpact={time:s.simTime,health:c.health-health,mood:c.mood-beforeMood};
   c.faith=clamp(c.faith+(fed?1:-8*(1-quality)));const prayer=knowsPresence(s,c)?c.faith/100*.15:0;s.resources.faith+=prayer;c.prayerTotal+=prayer;if(prayer>0&&isStrictSumer(s)&&isAwakening(s))s.godhood.lastPrayerCycle=day;}
