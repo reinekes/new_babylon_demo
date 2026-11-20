@@ -1,0 +1,187 @@
+{
+  "release": "traffic-streets-and-lamplight-20261121",
+  "commit": "2224d9fa4171513be47bdd018c15b6b9949a8646",
+  "workflow": "https://github.com/reinekes/new_babylon_demo/actions/runs/44809209547",
+  "publishedFilesWithMatchingSHA256": 41,
+  "origin": "https://reinekes.github.io/new_babylon_demo/",
+  "webglRoads": {
+    "roads": [
+      {
+        "id": "road-road:10,11|9,11-level-1",
+        "meters": 3.16
+      },
+      {
+        "id": "road-road:10,11|11,11-level-1",
+        "meters": 3.216
+      },
+      {
+        "id": "road-road:11,11|12,11-level-1",
+        "meters": 2.929
+      },
+      {
+        "id": "road-road:12,11|13,11-level-1",
+        "meters": 3.246
+      },
+      {
+        "id": "road-road:11,10|11,11-level-1",
+        "meters": 1.166
+      }
+    ],
+    "busyTrail": 3.015,
+    "quietTrail": 0.643,
+    "glError": 0,
+    "webgl": "WebGL 2.0 (OpenGL ES 3.0 Chromium)"
+  },
+  "canvas": {
+    "renderer": "2d",
+    "roads": 5,
+    "widthsPx": [
+      91.05,
+      89.29,
+      78.97,
+      80.58,
+      29.64
+    ],
+    "people": 12
+  },
+  "courtyard": {
+    "origin": "https://reinekes.github.io/new_babylon_demo",
+    "speed": 4,
+    "totalResidents": 40,
+    "registeredResidents": 24,
+    "webglVersion": 2,
+    "firstObservedHour": 17.61,
+    "lastObservedHour": 23.973,
+    "samples": 124,
+    "webglErrors": 0,
+    "captures": {
+      "dusk": {
+        "hour": 18.323,
+        "bench": 2,
+        "roof": 1,
+        "residentsOnBench": [
+          17,
+          18
+        ],
+        "residentsOnRoof": [
+          19
+        ],
+        "kneeDegrees": [
+          58.416,
+          65.602
+        ],
+        "allVisibleSkinnedMeshes": true
+      },
+      "evening": {
+        "hour": 20.18,
+        "bench": 2,
+        "roof": 1,
+        "residentsOnBench": [
+          17,
+          18
+        ],
+        "residentsOnRoof": [
+          19
+        ],
+        "kneeDegrees": [
+          58.416,
+          65.602
+        ],
+        "allVisibleSkinnedMeshes": true
+      },
+      "overview": {
+        "hour": 21.05,
+        "bench": 2,
+        "roof": 1,
+        "residentsOnBench": [
+          17,
+          18
+        ],
+        "residentsOnRoof": [
+          19
+        ],
+        "kneeDegrees": [
+          58.416,
+          65.602
+        ],
+        "allVisibleSkinnedMeshes": true
+      },
+      "late": {
+        "hour": 22.88,
+        "bench": 2,
+        "roof": 1,
+        "residentsOnBench": [
+          17,
+          18
+        ],
+        "residentsOnRoof": [
+          19
+        ],
+        "kneeDegrees": [
+          58.416,
+          65.602
+        ],
+        "allVisibleSkinnedMeshes": true
+      }
+    },
+    "conversation": {
+      "speakerIds": [
+        17,
+        18
+      ],
+      "alternated": true,
+      "handExcursionMetres": {
+        "17": 0.335,
+        "18": 0.293
+      },
+      "firstObservedPairHour": 17.713,
+      "lastObservedPairHour": 23.566
+    }
+  },
+  "houseLights": {
+    "near": {
+      "radius": 35,
+      "checked": 0,
+      "homesWithLight": 0,
+      "medianWarmPixels": 0,
+      "medianPeak": 0,
+      "batch": [
+        [
+          63,
+          true
+        ]
+      ]
+    },
+    "district": {
+      "radius": 160,
+      "checked": 19,
+      "homesWithLight": 18,
+      "medianWarmPixels": 16,
+      "medianPeak": 81,
+      "batch": [
+        [
+          63,
+          true
+        ]
+      ]
+    },
+    "overview": {
+      "radius": 739.1,
+      "checked": 57,
+      "homesWithLight": 56,
+      "medianWarmPixels": 3,
+      "medianPeak": 43,
+      "batch": [
+        [
+          63,
+          true
+        ]
+      ]
+    }
+  },
+  "glErrors": {
+    "near": 0,
+    "district": 0,
+    "overview": 0
+  }
+}
