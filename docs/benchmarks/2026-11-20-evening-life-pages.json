@@ -1,0 +1,959 @@
+{
+  "release": "evening-life-and-pastures-20261120-r2",
+  "commit": "5c963b0e0f43ea0052e0bb69429dd0dde496dc09",
+  "workflow": "https://github.com/reinekes/new_babylon_demo/actions/runs/44796036437",
+  "sha256Verified": [
+    {
+      "path": "app.js",
+      "bytes": 313450,
+      "sha256": "72777e8ec21e3e6b4337a64929e6314e2d079f2fd41324d8363d7275ca130aa4"
+    },
+    {
+      "path": "architecture.js",
+      "bytes": 23821,
+      "sha256": "ff497dba5948d8a0453a115006ab5f074b1e60d54869f573a0b78b24b4266a74"
+    },
+    {
+      "path": "artisan-art.js",
+      "bytes": 6603,
+      "sha256": "c6578875f78f85a46a739fec6bca7d97afc779b3d7d21b528df50422c003c595"
+    },
+    {
+      "path": "city-life.js",
+      "bytes": 8647,
+      "sha256": "960f699a633cc472c582fef5d6c30e697de10b3601ab1445f6392e17cbfa4dec"
+    },
+    {
+      "path": "courtyard.html",
+      "bytes": 16491,
+      "sha256": "e1ea9a455145a6ad4fa7ce401ea8838bb927c8c28363299b91fc97b00782d31e"
+    },
+    {
+      "path": "crop-studio.html",
+      "bytes": 7043,
+      "sha256": "b988ef25a6b84a736f2223b5740df4c2fa293ed49d58e1f3661ad63b87995b67"
+    },
+    {
+      "path": "desert-funeral.js",
+      "bytes": 36825,
+      "sha256": "7cd9fe987888c33de0d4dee73fcc7b8e6642c82f27c06658291f467493fb28ed"
+    },
+    {
+      "path": "district3d.html",
+      "bytes": 22804,
+      "sha256": "d435908434b27546de292b0271b4bb155ea5ff166bb11db8b197e8de39387c27"
+    },
+    {
+      "path": "docs/benchmarks/2026-11-20-evening-life-and-pastures.json",
+      "bytes": 34555,
+      "sha256": "7f18075cebeaf423b5e92d9229086565bb28d4b7418d7b804bd5e9cd474030ff"
+    },
+    {
+      "path": "docs/benchmarks/2026-11-20-kiln-ignition.json",
+      "bytes": 1671,
+      "sha256": "340da7f2eee3bd1f20fbc1d5ae7b7428c2aec5eed502ed353bbce463fb33644c"
+    },
+    {
+      "path": "docs/benchmarks/2026-11-20-pasture-migration.json",
+      "bytes": 14537,
+      "sha256": "10bfeb410867f09be3c5e5580e8cab33506f215cd9bb2ac678eee127b79692bc"
+    },
+    {
+      "path": "docs/model-index.json",
+      "bytes": 120145,
+      "sha256": "413f926304be8a2856e3abc5bcf99b53bb478d98ed92f6246ad9617507530c3a"
+    },
+    {
+      "path": "docs/versions/2026-11-20-03.md",
+      "bytes": 1536,
+      "sha256": "5a04f930cbe3b381cd169577ed2317e4bf1073587aa09b1974aca0999cead70d"
+    },
+    {
+      "path": "engine.js",
+      "bytes": 85075,
+      "sha256": "ec275665b42c65817ebb46581997cea9afc0dfacacc0379e1e345505204b4958"
+    },
+    {
+      "path": "footpaths.js",
+      "bytes": 9644,
+      "sha256": "b625181cc16fde4d67579048d5635fb2db04439e703865c5278511caaa68aa28"
+    },
+    {
+      "path": "funerals.js",
+      "bytes": 5905,
+      "sha256": "0abaa026796738264b8bca707e2321d2531e8047c2582ba7ee672faf5bf61041"
+    },
+    {
+      "path": "game3d/actors.js",
+      "bytes": 90581,
+      "sha256": "7382e0b0e2cf0ef2b51c1847f02aecb443a8fc7dd5910cfce0cd5666e7930134"
+    },
+    {
+      "path": "game3d/artisan-contacts.js",
+      "bytes": 6981,
+      "sha256": "e9dbd692201d229e1b9739e19a9ce6d3153c225583a52fdb96cfe43e4a4503fa"
+    },
+    {
+      "path": "game3d/buildings.js",
+      "bytes": 31013,
+      "sha256": "5c91a817a964cc48277936f11bf21348c50501a9137ef68a699a92ee3c1daccf"
+    },
+    {
+      "path": "game3d/herd-pastures.js",
+      "bytes": 2390,
+      "sha256": "9968bc1463c06e519363d32bf2424498172e5ac94b929e453596bdcea5985982"
+    },
+    {
+      "path": "game3d/home-visits.js",
+      "bytes": 19263,
+      "sha256": "838a041d0031d55b0cd97815b0652ff0eef8799d18e0f771f37758393ff14599"
+    },
+    {
+      "path": "game3d/house-lights.js",
+      "bytes": 9777,
+      "sha256": "0b2068f58a0ec0b2105286b07e36a67659c3dc0f6f8f2e3542cbb99518f01840"
+    },
+    {
+      "path": "game3d/landscape.js",
+      "bytes": 44959,
+      "sha256": "24068e7b11c102f6b4d8b8e0a61c82c669546a1bc18470aed46069feb2e22893"
+    },
+    {
+      "path": "game3d/oven-fire.js",
+      "bytes": 4776,
+      "sha256": "880254b6189b00aeba83954e9ab522e694e4c44208c7315f2acb1f904f88555b"
+    },
+    {
+      "path": "game3d/reference-workshops.js",
+      "bytes": 19645,
+      "sha256": "96a04c52c70d5caa110725ab17d85d691f5688b114bb0cbba808db0510cac9e4"
+    },
+    {
+      "path": "game3d/renderer.js",
+      "bytes": 31907,
+      "sha256": "e11ed0548ba0047bd13b7b9d4e35463b3b1b50bbaaff397b3065266f3a78a499"
+    },
+    {
+      "path": "game3d/test-livestock.js",
+      "bytes": 24116,
+      "sha256": "91acbbdd844ba2144c9f79230b7ac98d7d8c92d4ba92e9e302b62eb7b7c354b2"
+    },
+    {
+      "path": "game3d/water.js",
+      "bytes": 10663,
+      "sha256": "8dd98db047fef071c42d5a6aa9d515cdd0d590c9dbf5854dfb9659d105ce996d"
+    },
+    {
+      "path": "game3d/work-poses.js",
+      "bytes": 7508,
+      "sha256": "fb42d49deebb5858b62861bae5b35518cfc875d300c33e020540a9294b8e7eca"
+    },
+    {
+      "path": "game3d/workstations.js",
+      "bytes": 12087,
+      "sha256": "610d821eaf881f193fc0e7b2ad5059ce527d7dc4790256697030df6a2bf83eb1"
+    },
+    {
+      "path": "goat-studio.html",
+      "bytes": 23640,
+      "sha256": "33c643b64eb9c33555744a444c10a35e3238cccc3b67db0b05cc2c367dc3b243"
+    },
+    {
+      "path": "index.html",
+      "bytes": 36501,
+      "sha256": "4091cbf8a68d48239d859eaa9850da0750bc31da0a28af40af5773a2c783e7ed"
+    },
+    {
+      "path": "kilns.js",
+      "bytes": 6127,
+      "sha256": "f1ce6305217f3820c6bd3471b2abbd016bde0abe767e3b57623e3f51555be3f8"
+    },
+    {
+      "path": "local-motion.js",
+      "bytes": 2884,
+      "sha256": "de94c5336bfde979f7da42639e50f14f8e31454cf670676ee2fd1825d7be2c07"
+    },
+    {
+      "path": "mallards.html",
+      "bytes": 9790,
+      "sha256": "4cfc0f8cc4b689a51be8364847cf041056c5658c724a8bd60b014cfe4a618bf5"
+    },
+    {
+      "path": "map-art.js",
+      "bytes": 12195,
+      "sha256": "407df3afb780fd7b92a2bda26ebc3a4eddc936d1baefad6bd29832be17bc7f52"
+    },
+    {
+      "path": "model-atlas/index.html",
+      "bytes": 16602,
+      "sha256": "f93aa9c88c99caac1f220dabde52e58fb42397ac1851d498aae0dcd6f12a36dc"
+    },
+    {
+      "path": "renderer.js",
+      "bytes": 54510,
+      "sha256": "db21883a5c924b338ffcfad6b4e9916c1ea4c7d3a4306049ff993634aa3da59c"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-20/evening-life/courtyard.webp",
+      "bytes": 91054,
+      "sha256": "45760dadd8418a0fcd7b404be3eafce16a350806f9044133522a474bf63b4915"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-20/evening-life/kiln.webp",
+      "bytes": 75942,
+      "sha256": "182ca2087d15b59e11cbac9316918f06b09892ff5ea7f6842b0261047fc25b18"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-20/evening-life/neighbours.webp",
+      "bytes": 112176,
+      "sha256": "69357636fdc6944df2ce206bd510e475926a003b4ca801561d66c28e01241e33"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-20/grazing-herds/cattle-at-rock.webp",
+      "bytes": 47720,
+      "sha256": "9aeee033445f8e040f49f791149ef826b58a0641ab15538ce47ed3f21e84a984"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-20/grazing-herds/cattle-past-rock.webp",
+      "bytes": 47124,
+      "sha256": "48bfc9cfc3834696f303f46653a530c7600790f9aefc266ff53f8f1a71423fc9"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-20/kiln-ignition/fired-charge.webp",
+      "bytes": 83722,
+      "sha256": "ac22446e1803de5035a701a28899b16ce427dbcf8ec980b274d433e55b84ff09"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-20/kiln-ignition/tender-at-mouth.webp",
+      "bytes": 70986,
+      "sha256": "8057e0b15dcb16b820e2e66525ffbad90a784ced0228b73cd440d2ef53fe21fc"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-20/street-curves/canvas-after.webp",
+      "bytes": 67062,
+      "sha256": "0c5529f8c161980c976f01f229186fb128ced9fb783cfc5e7f4154b5621ae285"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-20/street-curves/canvas-before.webp",
+      "bytes": 66550,
+      "sha256": "1ee43ef6cb6859b947043fcb6a97004a059e6d79d1ed0cb97baa7d8547fec8f0"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-20/street-curves/streets-after.webp",
+      "bytes": 140070,
+      "sha256": "d53795a8a641f9f80d988d61c01d5f62bd4141da87e464855e0a6a332be66dbe"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-20/street-curves/streets-before.webp",
+      "bytes": 140168,
+      "sha256": "ea5e090e15f157a6511b084842431e76f7623687a8c36f3373a3e7b9a78a802d"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-20/street-curves/trails-after.webp",
+      "bytes": 143434,
+      "sha256": "7f79ec33b44373d5c63bdf3bcda2065166e6ff5926136d948f0dffbcf8e0dea8"
+    },
+    {
+      "path": "roadmap/evidence/2026-11-20/street-curves/trails-before.webp",
+      "bytes": 144040,
+      "sha256": "dc767a3f3ee770f933fb4c96bf32260cf97ad650e3e09c8476fa30482e0ab8bc"
+    },
+    {
+      "path": "roadmap/index.html",
+      "bytes": 5173422,
+      "sha256": "674ba8832f3a6efe8520af7064cace6fff7ebdf78930832402f2b2d88bfd3349"
+    },
+    {
+      "path": "roadmap/manifest.json",
+      "bytes": 18205,
+      "sha256": "d2cfa3c5d6ee865bdf49c234a4352da08b694c1307b01c06c6299ce034b8ceb3"
+    },
+    {
+      "path": "roadmap/reports/2026-11-20-evening-life-and-pastures.md",
+      "bytes": 11837,
+      "sha256": "c3424502387214cbf1b4c676856a4953bdea3d2345262fabf9060076608cef84"
+    },
+    {
+      "path": "roadmap/snapshot.json",
+      "bytes": 5115612,
+      "sha256": "d617e0ad568ac0a3be4d928844c8b98fda4d2c83a84d760a01f3e6fa6bb81bf3"
+    },
+    {
+      "path": "scripts/sumer-building-studio.html",
+      "bytes": 11986,
+      "sha256": "50696f9e9955e426e496a0248708e81dc3b499087fb88110463f728a29fb8bd9"
+    },
+    {
+      "path": "water.js",
+      "bytes": 23733,
+      "sha256": "1bbbf80aaac5349677f4525c6f969acf8b3e578dff6985f6a14e93998c600cb7"
+    },
+    {
+      "path": "work-schedule.js",
+      "bytes": 1826,
+      "sha256": "9bca7f670d91a16039d70273d7efb7aabc884d48b5df34988bcc5a520ccaaa20"
+    },
+    {
+      "path": "workforce.js",
+      "bytes": 111073,
+      "sha256": "4cef9028b3f674646778e1896b4614ac76869a4a0370b61edd7c720c70c0ea29"
+    }
+  ],
+  "streets": {
+    "actorsModule": "https://reinekes.github.io/new_babylon_demo/game3d/actors.js?v=evening-life-and-pastures-20261120-r2",
+    "rg": {
+      "outdoorStreetCenterVertices": 65,
+      "maxWalkingLineErrorMeters": 0,
+      "maximumSidewaysMeters": 0.8101543270585552,
+      "trailVertices": 504,
+      "streets": 5,
+      "gl": 0,
+      "webgl": "WebGL 2.0 (OpenGL ES 3.0 Chromium)"
+    },
+    "exceptions": [],
+    "http": [],
+    "warn": []
+  },
+  "evening": {
+    "courtyard": {
+      "residentCount": 24,
+      "residentsOutside": [
+        {
+          "id": 16,
+          "stage": "bench",
+          "yaw": 0.76,
+          "worldMetres": [
+            52.02,
+            0.065,
+            35.79
+          ]
+        },
+        {
+          "id": 17,
+          "stage": "bench",
+          "yaw": -0.7599999999999998,
+          "worldMetres": [
+            53.21,
+            0.065,
+            35.79
+          ]
+        },
+        {
+          "id": 18,
+          "stage": "roof",
+          "yaw": 1.9707963267948965,
+          "worldMetres": [
+            50.88,
+            2.525,
+            43.12
+          ]
+        }
+      ],
+      "speakerSwaps": [
+        [
+          30.1,
+          16
+        ],
+        [
+          30.2,
+          17
+        ]
+      ],
+      "gestureHandTravelMetres": {
+        "16": {
+          "left": 0.0,
+          "right": 0.0983
+        },
+        "17": {
+          "left": 0.337,
+          "right": 0.0
+        }
+      },
+      "noonOilLamps": 0,
+      "eveningOilLamps": 3,
+      "occupiedHallSlits": [
+        {
+          "name": "8,6-game-home-lamp-0",
+          "p": [
+            48.715,
+            2.92,
+            39.48
+          ],
+          "material": "game-occupied-home",
+          "on": true
+        },
+        {
+          "name": "8,6-game-home-lamp-1",
+          "p": [
+            48.715,
+            2.92,
+            39
+          ],
+          "material": "game-occupied-home",
+          "on": true
+        },
+        {
+          "name": "8,6-game-home-lamp-2",
+          "p": [
+            48.715,
+            2.92,
+            38.52
+          ],
+          "material": "game-occupied-home",
+          "on": true
+        }
+      ],
+      "benchLight": [
+        {
+          "p": [
+            52.04,
+            0.49,
+            36.44
+          ],
+          "intensity": 14
+        }
+      ],
+      "rainStairSampleWorldHeightsMetres": [
+        2.525,
+        2.136,
+        1.49706,
+        0.85812,
+        0.2246,
+        0.065
+      ],
+      "hiddenBySimTime": 33.255,
+      "peopleAfterRain": 0,
+      "emptyHouse": {
+        "occupants": 0,
+        "peopleOutside": 0,
+        "litBowls": 0,
+        "enabledLocalLights": 0
+      }
+    },
+    "kiln": {
+      "charged": {
+        "brick": 4,
+        "reed": 3,
+        "hot": 0,
+        "time": 0,
+        "ready": 0
+      },
+      "ignition": {
+        "brick": 0,
+        "reed": 0,
+        "hot": 4,
+        "time": 0.065,
+        "ready": 0
+      },
+      "warmupFlameScale": 0.1529,
+      "burnFlameScale": 1,
+      "shader": "oven-hot-gas",
+      "compiled": true,
+      "UVBottomTop": [
+        [
+          0.164000004529953,
+          0
+        ],
+        [
+          1.1372558176517487,
+          1
+        ]
+      ],
+      "flameOccludedByBuilding": false,
+      "sparkNumber": 5,
+      "largestObservedSparkMotionMetres": 0.9547,
+      "firePixelTest": {
+        "secondsApartSimulation": 0.24,
+        "cropPixels": 20881,
+        "hotPixels": 4239,
+        "pixelsWithChannelChangeAbove20": 6632
+      },
+      "cooling": {
+        "batchSeconds": 21.58500000000004,
+        "visibleFlames": 0,
+        "coalVisibility": 0.83754
+      },
+      "fireRootEnabledAfterCompletion": false,
+      "producedFiredBricks": 4
+    },
+    "webglErrors": [
+      0,
+      0
+    ],
+    "uncaughtExceptions": [],
+    "publicURL": "https://reinekes.github.io/new_babylon_demo",
+    "network": {
+      "courtyard": {
+        "resources": 383,
+        "loadingFailures": []
+      },
+      "kiln": {
+        "resources": 369,
+        "loadingFailures": [
+          {
+            "url": "https://reinekes.github.io/new_babylon_demo/rich-catch-presentation.css?v=rich-catch-scenes-20261106-1",
+            "error": "net::ERR_SSL_PROTOCOL_ERROR"
+          }
+        ],
+        "separateStylesheetCheck": {
+          "method": "Direct HTTP/1.1 over TLS with curl after a browser TLS error. Optional browser repeat stopped before rendering for the performance run.",
+          "url": "https://reinekes.github.io/new_babylon_demo/rich-catch-presentation.css?v=rich-catch-scenes-20261106-1",
+          "status": 200,
+          "sha256": "8414799ab9377273e929ed2b2df58fa4edb1dd379ab83aa990d51744532d6c36",
+          "matchesReleaseCommit": true
+        }
+      }
+    },
+    "releaseCommit": "5c963b0e0f43ea0052e0bb69429dd0dde496dc09",
+    "loadedActorsModules": {
+      "courtyard": "https://reinekes.github.io/new_babylon_demo/game3d/actors.js?v=evening-life-and-pastures-20261120-r2",
+      "kiln": "https://reinekes.github.io/new_babylon_demo/game3d/actors.js?v=evening-life-and-pastures-20261120-r2",
+      "rainThenDry": "https://reinekes.github.io/new_babylon_demo/game3d/actors.js?v=evening-life-and-pastures-20261120-r2"
+    },
+    "physicalRigAfterRain": {
+      "sameTabAndRootObjects": true,
+      "engineExportsAbstractMesh": false,
+      "before": [
+        {
+          "id": 16,
+          "rootRegistered": true,
+          "rootEnabled": true,
+          "meshCount": 11,
+          "skeletonCount": 1
+        },
+        {
+          "id": 17,
+          "rootRegistered": true,
+          "rootEnabled": true,
+          "meshCount": 11,
+          "skeletonCount": 1
+        },
+        {
+          "id": 18,
+          "rootRegistered": true,
+          "rootEnabled": true,
+          "meshCount": 11,
+          "skeletonCount": 1
+        }
+      ],
+      "indoors": [
+        {
+          "id": 16,
+          "rootRegistered": false,
+          "rootEnabled": false,
+          "meshCount": 0,
+          "skeletonCount": 0
+        },
+        {
+          "id": 17,
+          "rootRegistered": false,
+          "rootEnabled": false,
+          "meshCount": 0,
+          "skeletonCount": 0
+        },
+        {
+          "id": 18,
+          "rootRegistered": false,
+          "rootEnabled": false,
+          "meshCount": 0,
+          "skeletonCount": 0
+        }
+      ],
+      "dryAgain": [
+        {
+          "id": 16,
+          "rootRegistered": true,
+          "rootEnabled": true,
+          "meshCount": 11,
+          "skeletonCount": 1
+        },
+        {
+          "id": 17,
+          "rootRegistered": true,
+          "rootEnabled": true,
+          "meshCount": 11,
+          "skeletonCount": 1
+        },
+        {
+          "id": 18,
+          "rootRegistered": true,
+          "rootEnabled": true,
+          "meshCount": 11,
+          "skeletonCount": 1
+        }
+      ],
+      "detailQueueErrors": []
+    }
+  },
+  "funeralPace": {
+    "ordinary-1": {
+      "bearerMetresPerSecond": 0.784770127410221,
+      "mournerMetresPerSecond": 0.784770127410221,
+      "frames": 70
+    },
+    "ordinary-4": {
+      "bearerMetresPerSecond": 3.1467164699662105,
+      "mournerMetresPerSecond": 3.146716469966198,
+      "frames": 59
+    },
+    "funeral-1": {
+      "bearerMetresPerSecond": 0.791391005841568,
+      "mournerMetresPerSecond": 0.7913910058416453,
+      "frames": 73
+    },
+    "funeral-4": {
+      "bearerMetresPerSecond": 3.216753191489356,
+      "mournerMetresPerSecond": 3.216753191489371,
+      "frames": 70
+    }
+  },
+  "funeralWebGL": 2,
+  "funeralRenderer": "https://reinekes.github.io/new_babylon_demo/game3d/actors.js?v=evening-life-and-pastures-20261120-r2",
+  "fireTender": {
+    "actorsScript": "https://reinekes.github.io/new_babylon_demo/game3d/actors.js?v=evening-life-and-pastures-20261120-r2",
+    "speedControl": "4",
+    "frames": 545,
+    "heldFrames": 235,
+    "maxGrip": 0,
+    "nearestFuelGap": 0.015253804738021173,
+    "final": {
+      "workerId": 0,
+      "work": "8,9",
+      "phase": "working",
+      "simTime": 8.72474999999997,
+      "firing": {
+        "brick": 0,
+        "reed": 0,
+        "hot": 4,
+        "time": 0.3582999999999992,
+        "ready": 0
+      }
+    },
+    "ready": true,
+    "webGL": 2,
+    "glError": 0,
+    "errors": [],
+    "http": []
+  },
+  "pastures": {
+    "one": {
+      "frames": 679,
+      "seconds": 12.017700000047684,
+      "gl": 0,
+      "herds": {
+        "pig": {
+          "count": 7,
+          "furthestCentroidDisplacementMetres": 2.8906092461598627,
+          "backwardDistancePercent": 1.875572287647962
+        },
+        "goat": {
+          "count": 7,
+          "furthestCentroidDisplacementMetres": 2.5651581905563394,
+          "backwardDistancePercent": 4.3620784122507485
+        },
+        "bull": {
+          "count": 7,
+          "furthestCentroidDisplacementMetres": 1.505616965335886,
+          "backwardDistancePercent": 0.12919991490343674
+        },
+        "sheep": {
+          "count": 7,
+          "furthestCentroidDisplacementMetres": 1.3366147362305913,
+          "backwardDistancePercent": 2.0254360158929097
+        }
+      }
+    },
+    "four": {
+      "frames": 2345,
+      "seconds": 42.025,
+      "gl": 0,
+      "herds": {
+        "pig": {
+          "count": 7,
+          "furthestCentroidDisplacementMetres": 54.288276131112035,
+          "backwardDistancePercent": 0.3004900659196444
+        },
+        "goat": {
+          "count": 7,
+          "furthestCentroidDisplacementMetres": 29.938478696486065,
+          "backwardDistancePercent": 0.27840143096851333
+        },
+        "bull": {
+          "count": 7,
+          "furthestCentroidDisplacementMetres": 32.87921135145204,
+          "backwardDistancePercent": 0.39373740341313646
+        },
+        "sheep": {
+          "count": 7,
+          "furthestCentroidDisplacementMetres": 32.81655729839065,
+          "backwardDistancePercent": 0.2406758039758428
+        }
+      }
+    },
+    "pause": {
+      "frames": 121,
+      "seconds": 2.0146999999284745,
+      "gl": 0,
+      "herds": {
+        "sheep": {
+          "count": 7,
+          "furthestCentroidDisplacementMetres": 0,
+          "backwardDistancePercent": 0
+        },
+        "bull": {
+          "count": 7,
+          "furthestCentroidDisplacementMetres": 0,
+          "backwardDistancePercent": 0
+        },
+        "goat": {
+          "count": 7,
+          "furthestCentroidDisplacementMetres": 0,
+          "backwardDistancePercent": 0
+        },
+        "pig": {
+          "count": 7,
+          "furthestCentroidDisplacementMetres": 0,
+          "backwardDistancePercent": 0
+        }
+      }
+    }
+  },
+  "pastureRenderer": {
+    "url": "https://reinekes.github.io/new_babylon_demo/index.html",
+    "actorsScript": "https://reinekes.github.io/new_babylon_demo/game3d/actors.js?v=evening-life-and-pastures-20261120-r2",
+    "webGL": 2
+  },
+  "doorsteps": {
+    "speed": 4,
+    "relativeClockRate": 4.029310851054849,
+    "scheduledStarts": {
+      "min": 5,
+      "max": 8.916666666666666,
+      "unique": 500
+    },
+    "canonical": true,
+    "loadedAt": 7.003219999999963,
+    "frames": 1361,
+    "groupSize": 12,
+    "children": [
+      {
+        "id": 10,
+        "age": 6,
+        "hour": 5.719959999999965,
+        "scheduled": 5.718055555555555,
+        "phase": "playing",
+        "mesh": true,
+        "route": 0,
+        "position": [
+          9.5,
+          9.5
+        ],
+        "work": null
+      },
+      {
+        "id": 11,
+        "age": 12,
+        "hour": 8.149859999999933,
+        "scheduled": 8.149652777777778,
+        "phase": "playing",
+        "mesh": true,
+        "route": 0,
+        "position": [
+          9.5,
+          9.5
+        ],
+        "work": null
+      }
+    ],
+    "yard": [
+      {
+        "id": 7,
+        "age": 40,
+        "role": "auto",
+        "phase": "home",
+        "mesh": "citizen-7",
+        "coordinates": [
+          47.77,
+          0.073,
+          49.24
+        ]
+      },
+      {
+        "id": 9,
+        "age": 34,
+        "role": "auto",
+        "phase": "home",
+        "mesh": "citizen-9",
+        "coordinates": [
+          53.53,
+          0.073,
+          55.24
+        ]
+      },
+      {
+        "id": 6,
+        "age": 33,
+        "role": "auto",
+        "phase": "home",
+        "mesh": "citizen-6",
+        "coordinates": [
+          47.53,
+          0.073,
+          49.24
+        ]
+      }
+    ],
+    "doorWork": [
+      0,
+      5,
+      2,
+      4,
+      1,
+      9,
+      3,
+      8
+    ],
+    "morning": {
+      "out": 87,
+      "courtyard": 126,
+      "in": 75
+    },
+    "trajectories": {
+      "0": [
+        {
+          "stage": "out",
+          "hour": 5.00663999999999,
+          "x": 47.77,
+          "y": 0.07156141137964613,
+          "z": 47.52810450755397
+        }
+      ],
+      "1": [
+        {
+          "stage": "out",
+          "hour": 7.433219999999945,
+          "x": 47.77,
+          "y": 0.072648417222229,
+          "z": 47.423751946666016
+        }
+      ],
+      "2": [
+        {
+          "stage": "out",
+          "hour": 5.9332799999999715,
+          "x": 47.77,
+          "y": 0.07233450832648296,
+          "z": 47.45388720065763
+        }
+      ],
+      "3": [
+        {
+          "stage": "out",
+          "hour": 8.363179999999943,
+          "x": 47.77,
+          "y": 0.07270221985888448,
+          "z": 47.41858689354709
+        }
+      ],
+      "4": [
+        {
+          "stage": "out",
+          "hour": 6.863239999999966,
+          "x": 47.77,
+          "y": 0.0723883109631392,
+          "z": 47.44872214753863
+        }
+      ],
+      "5": [
+        {
+          "stage": "out",
+          "hour": 5.359959999999987,
+          "x": 47.77,
+          "y": 0.07279802947582632,
+          "z": 47.40938917032067
+        }
+      ],
+      "6": [
+        {
+          "stage": "out",
+          "hour": 7.799859999999953,
+          "x": 47.77,
+          "y": 0.07099919188118688,
+          "z": 47.58207757940606
+        },
+        {
+          "stage": "courtyard",
+          "hour": 7.886539999999954,
+          "x": 47.53,
+          "y": 0.073,
+          "z": 49.24
+        },
+        {
+          "stage": "in",
+          "hour": 8.006519999999945,
+          "x": 47.584336849682785,
+          "y": 0.073,
+          "z": 49.199247362737914
+        }
+      ],
+      "7": [
+        {
+          "stage": "out",
+          "hour": 6.2899399999999694,
+          "x": 47.77,
+          "y": 0.07284749901423096,
+          "z": 47.40464009463383
+        },
+        {
+          "stage": "courtyard",
+          "hour": 6.379919999999963,
+          "x": 47.77,
+          "y": 0.073,
+          "z": 49.24
+        },
+        {
+          "stage": "in",
+          "hour": 6.5165799999999585,
+          "x": 47.77,
+          "y": 0.073,
+          "z": 49.17794204900734
+        }
+      ],
+      "8": [
+        {
+          "stage": "out",
+          "hour": 8.726499999999959,
+          "x": 53.769999999999996,
+          "y": 0.07177228882801832,
+          "z": 53.507860272510236
+        }
+      ],
+      "9": [
+        {
+          "stage": "out",
+          "hour": 7.219899999999953,
+          "x": 53.769999999999996,
+          "y": 0.07290130165088932,
+          "z": 53.39947504151463
+        },
+        {
+          "stage": "courtyard",
+          "hour": 7.316559999999946,
+          "x": 53.53,
+          "y": 0.073,
+          "z": 55.24
+        },
+        {
+          "stage": "in",
+          "hour": 7.486539999999945,
+          "x": 53.562714094127244,
+          "y": 0.073,
+          "z": 55.21546442940457
+        }
+      ]
+    },
+    "gl": 0,
+    "webgl": 2,
+    "source": "https://reinekes.github.io/new_babylon_demo/game3d/actors.js?v=evening-life-and-pastures-20261120-r2"
+  }
+}

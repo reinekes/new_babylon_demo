@@ -1,5 +1,6 @@
 {
-  "release": "evening-life-and-pastures-20261120",
+  "release": "evening-life-and-pastures-20261120-r2",
+  "afterCommit": "5c963b0e",
   "beforeCommit": "59e9f045",
   "evensong": {
     "method": "Ordinary index.html in Chrome 158, WebGL 2 on Apple M5 Metal. Saved city loaded via the normal save slot in new browser contexts, HTTP cache disabled. The courtyard fixture starts with its home residents indoors; renderer follows the saved clock, then controlled daylight/rain/empty-house changes. The kiln fixture advances through ordinary engine.advanceTime, tracking the real batch and yearly output. Measurements use world-space skeletal joints and meshes; the second image comparison uses rendered screen pixels.",
@@ -1027,7 +1028,7 @@
     }
   ],
   "performance": {
-    "method": "Chrome requestAnimationFrame in sumer-building-studio.html?stress, warm scene, 18 real seconds at 4x per run. Matched overview and city, revisions run in ABBA order. FPS is rendered frames over actual elapsed wall time.",
+    "method": "Chrome requestAnimationFrame in sumer-building-studio.html?stress, warm scene, 18 real seconds at 4x per run. Matched overview and city, revisions run in previous, updated, updated, previous order after all other browser QA completed. FPS is rendered frames over actual elapsed wall time.",
     "citizens": 500,
     "buildings": 250,
     "privateHouseTiers": [
@@ -1049,164 +1050,168 @@
     "runs": [
       {
         "build": "before",
-        "recorded": "2026-11-20T18:36:53.090Z",
-        "frames": 559,
-        "seconds": 18.0326,
-        "fps": 30.99941217572619,
+        "recorded": "2026-11-20T18:53:40.428Z",
+        "frames": 454,
+        "seconds": 18.065900000000003,
+        "fps": 25.130217702965254,
         "frameMs": {
-          "samples": 558,
-          "p50": 33.29999999999927,
-          "p95": 50
+          "samples": 453,
+          "p50": 33.39999999999782,
+          "p95": 66.59999999999854
         },
         "separateCpuMs": {
           "draw": {
-            "samples": 559,
-            "p50": 26.600000023841858,
-            "p95": 36.10000002384186
+            "samples": 454,
+            "p50": 31.59999990463257,
+            "p95": 48
           },
           "buildings": {
-            "samples": 559,
-            "p50": 0.5,
-            "p95": 0.6999999284744263
+            "samples": 454,
+            "p50": 0.6000000238418579,
+            "p95": 1
           },
           "actors": {
-            "samples": 559,
-            "p50": 4.200000047683716,
-            "p95": 11.299999952316284
+            "samples": 454,
+            "p50": 5.199999928474426,
+            "p95": 15.700000047683716
           },
           "scene": {
-            "samples": 559,
-            "p50": 20,
-            "p95": 23.399999976158142
+            "samples": 454,
+            "p50": 23.600000023841858,
+            "p95": 35
           }
         },
         "residentIdsPreserved": true,
         "cargoAndResourcesPreserved": true,
         "saveRoundTrip": true,
         "webGLError": 0,
-        "uncaughtExceptions": []
+        "uncaughtExceptions": [],
+        "detailQueueErrors": []
       },
       {
         "build": "after",
-        "recorded": "2026-11-20T18:37:26.494Z",
-        "frames": 534,
-        "seconds": 18.016,
-        "fps": 29.64031971580817,
+        "recorded": "2026-11-20T18:54:16.199Z",
+        "frames": 448,
+        "seconds": 18.032600000000002,
+        "fps": 24.843893836717942,
         "frameMs": {
-          "samples": 533,
-          "p50": 33.29999999999927,
-          "p95": 50
+          "samples": 447,
+          "p50": 33.39999999999782,
+          "p95": 66.60000000000218
         },
         "separateCpuMs": {
           "draw": {
-            "samples": 534,
-            "p50": 26.899999976158142,
-            "p95": 40.59999990463257
+            "samples": 448,
+            "p50": 31.600000023841858,
+            "p95": 50.60000002384186
           },
           "buildings": {
-            "samples": 534,
-            "p50": 0.5,
+            "samples": 448,
+            "p50": 0.6000000238418579,
             "p95": 0.7000000476837158
           },
           "actors": {
-            "samples": 534,
-            "p50": 4.200000047683716,
-            "p95": 17.300000071525574
+            "samples": 448,
+            "p50": 5,
+            "p95": 20.200000047683716
           },
           "scene": {
-            "samples": 534,
-            "p50": 20.899999976158142,
-            "p95": 25
+            "samples": 448,
+            "p50": 24.200000047683716,
+            "p95": 30.300000071525574
           }
         },
         "residentIdsPreserved": true,
         "cargoAndResourcesPreserved": true,
         "saveRoundTrip": true,
         "webGLError": 0,
-        "uncaughtExceptions": []
+        "uncaughtExceptions": [],
+        "detailQueueErrors": []
       },
       {
         "build": "after",
-        "recorded": "2026-11-20T18:38:00.036Z",
-        "frames": 529,
-        "seconds": 18.032600000000002,
-        "fps": 29.33575857058882,
+        "recorded": "2026-11-20T18:54:52.290Z",
+        "frames": 450,
+        "seconds": 18.016,
+        "fps": 24.97779751332149,
         "frameMs": {
-          "samples": 528,
-          "p50": 33.29999999999927,
-          "p95": 50
+          "samples": 449,
+          "p50": 33.39999999999418,
+          "p95": 66.60000000000218
         },
         "separateCpuMs": {
           "draw": {
-            "samples": 529,
-            "p50": 27.399999976158142,
-            "p95": 40.5
+            "samples": 450,
+            "p50": 31.100000023841858,
+            "p95": 48.39999997615814
           },
           "buildings": {
-            "samples": 529,
-            "p50": 0.5,
-            "p95": 0.6000000238418579
+            "samples": 450,
+            "p50": 0.6000000238418579,
+            "p95": 0.7000000476837158
           },
           "actors": {
-            "samples": 529,
-            "p50": 4.200000047683716,
-            "p95": 15.600000023841858
+            "samples": 450,
+            "p50": 4.899999976158142,
+            "p95": 19.100000023841858
           },
           "scene": {
-            "samples": 529,
-            "p50": 21.199999928474426,
-            "p95": 25.100000023841858
+            "samples": 450,
+            "p50": 24.199999928474426,
+            "p95": 30.399999976158142
           }
         },
         "residentIdsPreserved": true,
         "cargoAndResourcesPreserved": true,
         "saveRoundTrip": true,
         "webGLError": 0,
-        "uncaughtExceptions": []
+        "uncaughtExceptions": [],
+        "detailQueueErrors": []
       },
       {
         "build": "before",
-        "recorded": "2026-11-20T18:38:33.497Z",
-        "frames": 553,
-        "seconds": 18.015999999999995,
-        "fps": 30.694937833037308,
+        "recorded": "2026-11-20T18:55:27.953Z",
+        "frames": 466,
+        "seconds": 18.0159,
+        "fps": 25.866040553067016,
         "frameMs": {
-          "samples": 552,
-          "p50": 33.29999999999927,
-          "p95": 50
+          "samples": 465,
+          "p50": 33.30000000000291,
+          "p95": 50.099999999998545
         },
         "separateCpuMs": {
           "draw": {
-            "samples": 553,
-            "p50": 26.700000047683716,
-            "p95": 35
+            "samples": 466,
+            "p50": 31.100000023841858,
+            "p95": 43.60000002384186
           },
           "buildings": {
-            "samples": 553,
-            "p50": 0.5,
-            "p95": 0.6999999284744263
+            "samples": 466,
+            "p50": 0.6000000238418579,
+            "p95": 0.7999999523162842
           },
           "actors": {
-            "samples": 553,
-            "p50": 4.299999952316284,
-            "p95": 11
+            "samples": 466,
+            "p50": 5.100000023841858,
+            "p95": 13.5
           },
           "scene": {
-            "samples": 553,
-            "p50": 20.300000071525574,
-            "p95": 24.200000047683716
+            "samples": 466,
+            "p50": 23.59999990463257,
+            "p95": 29
           }
         },
         "residentIdsPreserved": true,
         "cargoAndResourcesPreserved": true,
         "saveRoundTrip": true,
         "webGLError": 0,
-        "uncaughtExceptions": []
+        "uncaughtExceptions": [],
+        "detailQueueErrors": []
       }
     ],
     "meanFPS": {
-      "before": 30.847175004381747,
-      "after": 29.488039143198495
+      "before": 25.498129128016135,
+      "after": 24.910845675019715
     }
   },
   "sleepingResidents": {
