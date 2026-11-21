@@ -19,6 +19,17 @@ function feast(){
  return s;
 }
 const clone=s=>decode(encode(s));
+function assertSeasonResidents(s,originalIds,birthsBefore){
+ const original=new Set(originalIds);
+ assert.deepEqual(s.citizens.filter(c=>original.has(c.id)).map(c=>c.id),originalIds);
+ const newborns=s.citizens.filter(c=>!original.has(c.id));
+ assert.equal(newborns.length,s.demography.births-birthsBefore);
+ for(const c of newborns){
+  assert.equal(c.age,0);
+  assert.equal(c.parents.length,2);
+  assert.ok(c.parents.every(id=>original.has(id)));
+ }
+}
 
 test('the season button crosses one actual season from the middle of a month',()=>{
  const s=testingCity();advanceTime(s,17);
@@ -119,9 +130,9 @@ test('winter jumps to next spring exactly once and preserves the new-year decisi
 
 test('a miracle scene can be skipped while advancing exactly one season and retaining resident identities',()=>{
  const s=testingCity();assert.equal(startMiracleCelebration(s,'fertility'),true);
- const ids=s.citizens.map(c=>c.id),before=s.tick,result=advanceToNextSeason(s);
+ const ids=s.citizens.map(c=>c.id),births=s.demography.births,before=s.tick,result=advanceToNextSeason(s);
  assert.equal(result.ok,true);assert.ok(result.skipped.includes('fertility'));
- assert.equal(s.miracleCelebration,null);assert.equal(s.tick,before+1);assert.deepEqual(s.citizens.map(c=>c.id),ids);
+ assert.equal(s.miracleCelebration,null);assert.equal(s.tick,before+1);assertSeasonResidents(s,ids,births);
  assert.ok(clone(s));
 });
 
@@ -135,10 +146,10 @@ test('pending decisions, funerals and relic possession cannot be silently discar
 });
 
 for(const time of [0,17,35,44.999999])test(`season jump preserves the exact hour from simulation time ${time}`,()=>{
- const s=testingCity();advanceTime(s,time);const before=s.simTime,tick=s.tick,ids=s.citizens.map(c=>c.id);
+ const s=testingCity();advanceTime(s,time);const before=s.simTime,tick=s.tick,ids=s.citizens.map(c=>c.id),births=s.demography.births;
  const result=advanceToNextSeason(s);assert.equal(result.ok,true);assert.equal(s.tick,tick+1);
  assert.ok(Math.abs(s.simTime-before-60)<1e-5);assert.equal(s.seasonElapsed,0);
- assert.deepEqual(s.citizens.map(c=>c.id),ids);assert.ok(clone(s));
+ assertSeasonResidents(s,ids,births);assert.ok(clone(s));
  const after=s.simTime;advanceTime(s,1);assert.ok(Math.abs(s.simTime-after-1)<1e-6);assert.ok(clone(s));
 });
 test('a sliced transition can be saved midway and stops safely at a new decision',()=>{

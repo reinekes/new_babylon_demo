@@ -120,7 +120,7 @@ import {districtSupplyRoute,householdShoreRoute,householdSupplyRoute,supplyOverv
 import {medicalLevel,healingSpeed,healingQuality,healingCost,STUDY_SECONDS} from './education.js';
 import {residentMood,workRate,isDinnerTime,beliefMultiplier,householdDinner} from './wellbeing.js';
 import {household} from './households.js';
-import {lifeStage,canWork,usesCourtyardBirthFood} from './demography.js';
+import {lifeStage,canWork} from './demography.js';
 import {setHTML} from './ui-render.js';
 import {trade,tradeReason,marketStatus,logisticsSummary,salesSummary,cancelSale,tradeContractOffer,acceptTradeContract,tradePartnerTrust,donkeyFodderOffer,feedDonkeyCaravan} from './trading.js';
 import {externalGuestView,externalMasterOffer,inviteExternalMaster,visitorOffer,inviteVisitor,visitorsView} from './external-guest.js';
@@ -129,7 +129,7 @@ import {weatherAt} from './environment.js';
 import {builderConsent,setCitizenRole,assignGuard,assignWorkplace,callHarvestWorkers,callUnloadWorkers,callRepairWorkers,queueCanalCleaning,adoptAutumnCrops,closeFishingGround,closeForestForRest,closeReedBed,setFieldRest,setCanalDrain,setPriority,inspireCitizen,inspirationReason,inspirationSuccessChance,cancelConstruction,demolish,cancellationRefund,demolitionRefund,canDemolish,cancelRoadRoute} from './management.js';
 import {resourceIcon} from './resource-icons.js';
 import {constructionProgress,orderedSites,floodRepairCost,boatRepairCost,boatTenderCost,joineryBoatCost,joineryUpgradeTypes,joineryUpgradeCost} from './construction.js';
-import {BUILDINGS,MIRACLES,SEASONS,build,canPlace,advanceTime,advanceFrame,advanceSeason,miracle,depthCastQuote,resolveEvent,eventReason,refugeeArrivalCount,populationMiracleQuote,encode,decode,terrain,count,storage,workers,goals,upgrade,upgradeCost,canUpgrade,buildingAt,yieldSummary,repairFloodDamage,repairHarborBoat,buildHarborTender} from './engine.js';
+import {BUILDINGS,MIRACLES,SEASONS,build,canPlace,advanceTime,advanceFrame,advanceSeason,miracle,depthCastQuote,resolveEvent,eventReason,getCityEvent,eventAutoPause,setEventAutoPause,eventSecondsLeft,refugeeArrivalCount,populationMiracleQuote,encode,decode,terrain,count,storage,workers,goals,upgrade,upgradeCost,canUpgrade,buildingAt,yieldSummary,repairFloodDamage,repairHarborBoat,buildHarborTender} from './engine.js';
 import {createGameRenderer} from './game3d/renderer.js';
 import {workforceStats,visibleCitizens,isWorkday,networkFor} from './workforce.js';
 import {RESOURCE_NAMES,MATERIALS,buildingKey,guardCapacity,isResidence,COMMUNAL_CAPACITY,COMMUNAL_MOOD_PENALTY,isCityFortification,isOperational,levelOf,outputMultiplier} from './definitions.js';
@@ -137,7 +137,7 @@ import {WATCH_SHIFTS,watchShift,watchOnDuty} from './watch-house.js';
 import {DIVINE_NAMES,DOMAIN_NAMES,MOURNING_NAMES,earnedResultNames,RESULT_NAMES,usesResultNames} from './divinity.js';
 import {DAY_SECONDS,lightingAt} from './city-life.js';
 
-const $=id=>document.getElementById(id),key='new-babylon-v1';
+const $=id=>document.getElementById(id),key='new-babylon-v1',eventPauseDefaultKey='new-babylon-event-auto-pause';
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const foodAmount=n=>Number(n.toFixed(1));
 const rounded=n=>Number(n.toFixed(n<10?1:0));
@@ -154,7 +154,7 @@ const saveLibrary=createSaveLibrary();
 let savesUI=null,switchingCity=false,citySwitchRevision=0;
 let encyclopediaUI=null,encyclopediaRequest=0;
 let seasonJumping=false;
-let urukUI=null;
+let urukUI=null,displayedOffer=null;
 let waterProjectDraft=null;
 let quotedArrivalHome,quotedAbundance,quotedFishingYard,quotedDepthTarget;
 let paused=true,speed=1,last=performance.now(),selection=null,inspected=null,toastTimer,modalKind=null,lastUI=0,lastSave=0,newsSignature='';
@@ -311,7 +311,7 @@ const miracleStories=[
 const photo=createPhotoMode({renderer,canvas:$('city'),getState:()=>state,onEnter:()=>{photoWasPaused=paused;paused=true;renderer.photoMode=true;},onExit:()=>{renderer.photoMode=false;paused=photoWasPaused;update();},onMessage:text=>toast(text)});
 const relicUI=createRelicControls({root:$('city').parentNode,getState:()=>state,renderer,getPaused:()=>paused,onMessage:text=>toast(text),onChange:text=>{toast(text);save();update();checkDialogs();},onPause:()=>{paused=!paused;save();update();},onStart:()=>{if(dialog.open)closeDialog();paused=false;setSpeed(1);selection=null;inspected=null;inspectedPerson=null;inspectedDeposit=null;roadMode=false;renderer.setRoadMode(false);resetRoadDraw();$('tile-detail').hidden=true;const c=state.citizens.find(c=>c.id===relicQuestView(state)?.actorId);if(c)renderer.focusOn(c.x,c.y);}});
 // Capture before all city handlers: only the quest, camera, sound and pause remain.
-document.addEventListener('click',event=>{if(!relicControlActive(state))return;const target=event.target;if(target.closest?.('.relic-hud,.game3d-options,.panel-controls,.uruk-menu-settings > summary,[data-uruk-action="menu"],[data-uruk-close]')||['city','pause','toggle-sound','zoom-out','zoom-in','home','overview'].includes(target.id))return;event.preventDefault();event.stopImmediatePropagation();toast('Ты ведёшь избранного: городские команды закрыты до возвращения.');},true);
+document.addEventListener('click',event=>{if(!relicControlActive(state))return;const target=event.target;if(target.closest?.('.relic-hud,.game3d-options,.panel-controls,.event-pause-setting,.uruk-menu-settings > summary,[data-uruk-action="menu"],[data-uruk-close]')||['city','pause','toggle-sound','zoom-out','zoom-in','home','overview'].includes(target.id))return;event.preventDefault();event.stopImmediatePropagation();toast('Ты ведёшь избранного: городские команды закрыты до возвращения.');},true);
 
 createPanelControls({onResize:()=>renderer.resize()});
 const modeBadge=document.createElement('span');modeBadge.className='game-mode-label';document.querySelector('.game3d-options,.panel-dock')?.append(modeBadge);
@@ -1176,7 +1176,7 @@ function renderHousehold(b){const panel=$('household-panel');if(!panel)return;co
  const mealSummary=meal?.need?`<p>Прошлый ужин · <b>${meal.lastPercent===null?'пока нет данных':meal.lastPercent===0?'0% порции · пропущен':`${meal.lastPercent}% порции`}</b><br>
  На следующий ужин${isDinnerTime(state.simTime)?' после текущего':''} · <b>${foodAmount(meal.reserve)} из ${foodAmount(meal.need)}</b> ед. дома
  ${meal.remaining>1e-7?`<br>На текущий ужин ещё нужно ${foodAmount(meal.remaining)} ед.`:''}</p>`:'';
- const content=householdTab==='water'?`<div class="house-food"><b>Вода дома: ${foodAmount(w.stock)} / ${foodAmount(w.capacity)}</b><p>В пути: ${foodAmount(w.inTransit)} · принесено: ${foodAmount(w.delivered)}<br>Потребность за день: ${foodAmount(w.demand)} · страдают от жажды: ${w.thirsty}</p><small>Водонос снабжает квартал; при задержке взрослые сами идут к доступному берегу. Вода не заменяет полив полей.</small>${waterDreamPanel(b)}${waterProjectHousehold(b)}</div>`:householdTab==='family'?`<p class="house-occupancy">Живут ${h.residents.length} / ${h.capacity} · свободно ${h.free}</p><p class="house-gathering">Дома ${h.atHome} / ${h.residents.length}${h.dining?` · ужинают ${h.dining}`:''}${h.hungry?` · недоедают ${h.hungry}`:''}<br>Семейный ужин с 20:00, после возвращения домой.</p>${(b.type==='communalHouse'||usesCourtyardBirthFood(state))?birthFoodHTML(state,b):''}${furnishing}${careText}${welcomeText}${arrivalDisputeHTML(b,welcome,h.residents)}${householdNamesHTML(h.residents)}${memoryText}${civicNotes}<button type="button" data-house-shore-route>${shownSupplyRoute?.resource==='shore'&&shownSupplyRoute.key===buildingKey(b)?'Скрыть путь к берегу':'Показать переулок к берегу'}</button>${blessingCup}${householdInitiativePanel(b,h)}${eveningGamePanel(b)}${h.residents.length?`${adult.length?`<h4>Взрослые и родители · ${adult.length}</h4>${adult.map(row).join('')}`:''}${h.children.length?`<h4>Дети · ${h.children.length}</h4>${h.children.map(row).join('')}`:''}`:'<p>Дом пока пуст. Здесь может поселиться новая семья.</p>'}`:`<div class="house-food"><p>${esc(diagnostic?.reason||'')}</p><b>${rounded(h.food)} еды в доме</b><p>Принесено со склада за всё время: ${rounded(h.delivered)}<br>Несут домой: ${rounded(h.inTransit)}<br>Дома ${h.atHome} / ${h.residents.length} · недоедают ${h.hungry}</p>${mealSummary}<small>В 20:00 семья ест только домашние продукты. Еду со склада нужно принести: запас на складе не заменяет ужин. Дети получают половину взрослой порции. Вверху показаны общие запасы, без еды в домах.</small></div>`;
+ const content=householdTab==='water'?`<div class="house-food"><b>Вода дома: ${foodAmount(w.stock)} / ${foodAmount(w.capacity)}</b><p>В пути: ${foodAmount(w.inTransit)} · принесено: ${foodAmount(w.delivered)}<br>Потребность за день: ${foodAmount(w.demand)} · страдают от жажды: ${w.thirsty}</p><small>Водонос снабжает квартал; при задержке взрослые сами идут к доступному берегу. Вода не заменяет полив полей.</small>${waterDreamPanel(b)}${waterProjectHousehold(b)}</div>`:householdTab==='family'?`<p class="house-occupancy">Живут ${h.residents.length} / ${h.capacity} · свободно ${h.free}</p><p class="house-gathering">Дома ${h.atHome} / ${h.residents.length}${h.dining?` · ужинают ${h.dining}`:''}${h.hungry?` · недоедают ${h.hungry}`:''}<br>Семейный ужин с 20:00, после возвращения домой.</p>${birthFoodHTML(state,b)}${furnishing}${careText}${welcomeText}${arrivalDisputeHTML(b,welcome,h.residents)}${householdNamesHTML(h.residents)}${memoryText}${civicNotes}<button type="button" data-house-shore-route>${shownSupplyRoute?.resource==='shore'&&shownSupplyRoute.key===buildingKey(b)?'Скрыть путь к берегу':'Показать переулок к берегу'}</button>${blessingCup}${householdInitiativePanel(b,h)}${eveningGamePanel(b)}${h.residents.length?`${adult.length?`<h4>Взрослые и родители · ${adult.length}</h4>${adult.map(row).join('')}`:''}${h.children.length?`<h4>Дети · ${h.children.length}</h4>${h.children.map(row).join('')}`:''}`:'<p>Дом пока пуст. Здесь может поселиться новая семья.</p>'}`:`<div class="house-food"><p>${esc(diagnostic?.reason||'')}</p><b>${rounded(h.food)} еды в доме</b><p>Принесено со склада за всё время: ${rounded(h.delivered)}<br>Несут домой: ${rounded(h.inTransit)}<br>Дома ${h.atHome} / ${h.residents.length} · недоедают ${h.hungry}</p>${mealSummary}<small>В 20:00 семья ест только домашние продукты. Еду со склада нужно принести: запас на складе не заменяет ужин. Дети получают половину взрослой порции. Вверху показаны общие запасы, без еды в домах.</small></div>`;
  const selectedOrganizer=panel.querySelector('[data-water-organizer]')?.value;
  const resource=householdTab==='food'||householdTab==='water'?householdTab:null;
  const shown=shownSupplyRoute?.key===buildingKey(b)&&shownSupplyRoute.resource===resource?shownSupplyRoute:null;
@@ -1776,7 +1776,7 @@ function update(){
    yearReview.title=lastYear.title;
   }
  }
- urukUI?.refresh(state);
+ urukUI?.refresh(state);refreshEventOffer();
  const civicMenu=$('open-civic-order'),civicStory=$('civic-story');
  if(civicMenu&&civicStory){
   civicMenu.hidden=civicStory.hidden=!state.civicOrder;
@@ -1918,7 +1918,7 @@ function intro(){
   :'Ячмень сеют весной, летом поливают, осенью жнут.';
  const wood=isStrictSumer(state)&&!state.world.deposits.some(deposit=>deposit.kind==='forest')?'Дерево привозят купцы.':'Дерево добывай в лесах.';
  const stone=isStrictSumer(state)&&!state.world.deposits.some(deposit=>deposit.kind==='stone')?'Камень привозят купцы.':'Камень добывай в карьерах.';
- openDialog('help',`<button type="button" class="management-close" id="close-guide" aria-label="Закрыть справку">×</button><img class="intro-art" src="${CITY_ART.day}" alt="Художественный образ шумерского города"><span class="eyebrow">НОВЫЙ ВАВИЛОН · ЖИВОЙ ГОРОД</span><span class="dialog-emblem">✺</span><h2>У каждого города есть жизнь.</h2><p class="mode-intro">${gameMode(state)==='awakening'?'Пробуждение: подай первый знак у источника или выбери доставку воды соседям. Дождись поступка жителя. Первой веры хватит, чтобы вдохновить его строителем. Два завершённых проекта откроют мастерство II уровня, пять — III.':gameMode(state)==='mature'?'Взрослый бог: все здания и обычные способности открыты. Синие дары требуют завершённого монумента или доставленной реликвии. Для чудес нужна вера, для строительства — материалы и работа людей.':'Прежняя история: правила и запасы этого города сохранены.'}</p><details class="guide-section"><summary>Жители, работа и семья</summary><p>Теперь жители действительно работают: выходят из дома, собирают материалы и несут их на склад. Дом лекаря принимает заболевших за еду и тростник. Лекарей нужно отдельно вдохновить и обучить в храме; каждый год с практикой они повышают мастерство, до 5 уровня. Призвание ускоряет свою работу на 20%; дети легче вдохновляются, но трудятся только с 16 лет. Ночью они возвращаются домой и с 20:00 ужинают из домашнего запаса. Голод, здоровье, настроение и вера индивидуальны: самочувствие меняет темп труда, вера жителей усиливает храмовые подношения и даёт ежедневные молитвы. Семьи растят детей: они начинают работать с 16 лет, стареют и оставляют следующее поколение. Один год города равен двум годам возраста. Семье нужны свободные кровати; для рождения в городе нужен достаточный запас еды. При смерти от старости близкие проводят небольшой обряд; календарь и хозяйство ждут завершения церемонии. При длительном голоде жители умирают: город прерывает работу и провожает умерших к границе долины.</p></details><details class="guide-section"><summary>Вода, запасы и ремёсла</summary><p>Вода хранится в домах: семьи приносят её с берега. Построй береговой водозабор и вдохнови водоносов, чтобы они снабжали квартал. Кирпичный двор получает 4 глины, 1 тростник и 2 воды, формует 4 сырца и сушит на воздухе. Сырец нужен для крупных улучшений и зиккурата; Печь превращает 4 сырца и 3 тростника-топлива в 4 обожжённых кирпича: обжиг 20 с, остывание 8 с. Обожжённый кирпич нужен для III уровня крупных зданий и зиккурата.</p><p>Гончары доставляют глину, воду и топливо, формуют сосуды, сушат и обжигают их. Пивоварне нужны еда, вода и керамическая тара. За престиж можно подготовить общинный праздник: жители сами принесут угощение и соберутся вечером. Обзор города помогает найти проблемы кварталов; фоторежим сохраняет кадр без хода времени.</p><p>Шерстяные ткани производили в Шумере в III тысячелетии до н. э. В игре прядение объединено с ткачеством: овчарня → шерсть → мастерская → ткань для торговли.</p></details><details class="guide-section"><summary>Первые постройки и календарь</summary><div class="instructions"><b>01.</b> Заложи двор или поле: строители принесут материалы и возведут здание.<br><b>02.</b> ${barley} В карточке здания закрепи до двух работников; в карточке жителя можно вернуть «Авто». Вне полевых работ закреплённые земледельцы остаются на своих местах. Рыбалка, сады и охота дают еду круглый год.<br><b>03.</b> ${isStrictSumer(state)?'На старте запасы лежат в жилых дворах. Для расширения хранения построй амбар.':'Храм и амбары хранят все материалы.'}<br><b>04.</b> Улучшения до III уровня тоже требуют доставки и работы. Ночью строители отдыхают.<br><b>05.</b> Поставь мост на воду и осваивай другой берег.<br><b>06.</b> Развивай дороги; вдохновляй жителей. Глину и тростник добывай на отмеченных местах. ${wood} ${stone} Рыбалка и охота дают общую еду. Построй рынок: караваны придут к нему по дорогам и разгрузят товары. Купленные материалы жители отнесут на склад.</div><p>Цель — зиккурат, 30 жителей и десятый год. Год — 12 месяцев и 4 сезона. Месяц длится три полных игровых дня. На 1× сутки занимают около 8 минут, месяц — около 24 минут; темп можно ускорить. Кнопка «Следующий сезон» перематывает календарь за одни прожитые сутки и сохраняет час. У ячменя конечный годовой урожай; другие производственные числа указаны за рейс работника.</p></details><div class="dialog-actions"><button class="primary" id="start-game">${loaded||state.tick?'Вернуться в город':'Да будет город'}</button></div><p class="keyboard-note">1–9 — постройки · пробел — пауза · Escape — отмена<br>Перетаскивание — карта · колесо — масштаб · ◫ — вся долина</p>`);
+ openDialog('help',`<button type="button" class="management-close" id="close-guide" aria-label="Закрыть справку">×</button><img class="intro-art" src="${CITY_ART.day}" alt="Художественный образ шумерского города"><span class="eyebrow">НОВЫЙ ВАВИЛОН · ЖИВОЙ ГОРОД</span><span class="dialog-emblem">✺</span><h2>У каждого города есть жизнь.</h2><p class="mode-intro">${gameMode(state)==='awakening'?'Пробуждение: подай первый знак у источника или выбери доставку воды соседям. Дождись поступка жителя. Первой веры хватит, чтобы вдохновить его строителем. Два завершённых проекта откроют мастерство II уровня, пять — III.':gameMode(state)==='mature'?'Взрослый бог: все здания и обычные способности открыты. Синие дары требуют завершённого монумента или доставленной реликвии. Для чудес нужна вера, для строительства — материалы и работа людей.':'Прежняя история: правила и запасы этого города сохранены.'}</p><details class="guide-section"><summary>Жители, работа и семья</summary><p>Теперь жители действительно работают: выходят из дома, собирают материалы и несут их на склад. Дом лекаря принимает заболевших за еду и тростник. Лекарей нужно отдельно вдохновить и обучить в храме; каждый год с практикой они повышают мастерство, до 5 уровня. Призвание ускоряет свою работу на 20%; дети легче вдохновляются, но трудятся только с 16 лет. Ночью они возвращаются домой и с 20:00 ужинают из домашнего запаса. Голод, здоровье, настроение и вера индивидуальны: самочувствие меняет темп труда, вера жителей усиливает храмовые подношения и даёт ежедневные молитвы. Семьи растят детей: они начинают работать с 16 лет, стареют и оставляют следующее поколение. Один год города равен двум годам возраста. Семье нужны свободная кровать и еда. В отдельном доме у сытых и здоровых семей дети рождаются чаще. Проверить запас для рождения можно во вкладке «Семья». При смерти от старости близкие проводят небольшой обряд; календарь и хозяйство ждут завершения церемонии. При длительном голоде жители умирают: город прерывает работу и провожает умерших к границе долины.</p></details><details class="guide-section"><summary>Вода, запасы и ремёсла</summary><p>Вода хранится в домах: семьи приносят её с берега. Построй береговой водозабор и вдохнови водоносов, чтобы они снабжали квартал. Кирпичный двор получает 4 глины, 1 тростник и 2 воды, формует 4 сырца и сушит на воздухе. Сырец нужен для крупных улучшений и зиккурата; Печь превращает 4 сырца и 3 тростника-топлива в 4 обожжённых кирпича: обжиг 20 с, остывание 8 с. Обожжённый кирпич нужен для III уровня крупных зданий и зиккурата.</p><p>Гончары доставляют глину, воду и топливо, формуют сосуды, сушат и обжигают их. Пивоварне нужны еда, вода и керамическая тара. За престиж можно подготовить общинный праздник: жители сами принесут угощение и соберутся вечером. Обзор города помогает найти проблемы кварталов; фоторежим сохраняет кадр без хода времени.</p><p>Шерстяные ткани производили в Шумере в III тысячелетии до н. э. В игре прядение объединено с ткачеством: овчарня → шерсть → мастерская → ткань для торговли.</p></details><details class="guide-section"><summary>Первые постройки и календарь</summary><div class="instructions"><b>01.</b> Заложи двор или поле: строители принесут материалы и возведут здание.<br><b>02.</b> ${barley} В карточке здания закрепи до двух работников; в карточке жителя можно вернуть «Авто». Вне полевых работ закреплённые земледельцы остаются на своих местах. Рыбалка, сады и охота дают еду круглый год.<br><b>03.</b> ${isStrictSumer(state)?'На старте запасы лежат в жилых дворах. Для расширения хранения построй амбар.':'Храм и амбары хранят все материалы.'}<br><b>04.</b> Улучшения до III уровня тоже требуют доставки и работы. Ночью строители отдыхают.<br><b>05.</b> Поставь мост на воду и осваивай другой берег.<br><b>06.</b> Развивай дороги; вдохновляй жителей. Глину и тростник добывай на отмеченных местах. ${wood} ${stone} Рыбалка и охота дают общую еду. Построй рынок: караваны придут к нему по дорогам и разгрузят товары. Купленные материалы жители отнесут на склад.</div><p>Цель — зиккурат, 30 жителей и десятый год. Год — 12 месяцев и 4 сезона. Месяц длится три полных игровых дня. На 1× сутки занимают около 8 минут, месяц — около 24 минут; темп можно ускорить. Кнопка «Следующий сезон» перематывает календарь за одни прожитые сутки и сохраняет час. У ячменя конечный годовой урожай; другие производственные числа указаны за рейс работника.</p></details><div class="dialog-actions"><button class="primary" id="start-game">${loaded||state.tick?'Вернуться в город':'Да будет город'}</button></div><p class="keyboard-note">1–9 — постройки · пробел — пауза · Escape — отмена<br>Перетаскивание — карта · колесо — масштаб · ◫ — вся долина</p>`);
  $('close-guide').onclick=closeDialog;
  const introTitle=$('dialog-content').querySelector('h2');introTitle.tabIndex=-1;introTitle.focus({preventScroll:true});dialog.scrollTop=0;
  $('start-game').onclick=()=>{closeDialog();paused=false;save();update();checkDialogs();};
@@ -1991,20 +1991,64 @@ function checkDialogs(){
   openDialog('end',`<span class="eyebrow">${state.lost?'ИСТОРИЯ ОСТАЛАСЬ В ГЛИНЕ':'ТВОЯ ПЕРВАЯ ЛЕГЕНДА'}</span><span class="dialog-emblem">${state.lost?'☾':'▲'}</span><h2>${state.lost?'В долине погасли огни.':'Город коснулся неба.'}</h2><p>${state.lost?'Люди покинули город. У новой истории может быть другое начало.':`Долина знает тебя как «${esc(state.name)}». Через руки твоих жителей прошло ${state.deliveries} доставок.`}</p><div class="dialog-stats"><div><strong>${state.year}</strong><small>ГОД ИСТОРИИ</small></div><div><strong>${state.population}</strong><small>ЖИТЕЛЕЙ</small></div><div><strong>${state.miracleCount}</strong><small>ЧУДЕС</small></div></div><div class="dialog-actions">${state.lost?'':'<button class="primary" id="continue-game">Продолжить историю</button>'}<button class="secondary" id="end-new">Новая долина</button></div>`);
   if($('continue-game'))$('continue-game').onclick=()=>{state.continued=true;closeDialog();save();update();checkDialogs();};$('end-new').onclick=askReset;return;
  }
- if(state.event&&state.godhood?.namelessEndingAt===undefined){
-  const ev=state.event,definition=cityEventDefinition(ev.id),reason=eventReason(state),festival=ev.id==='festival';
-  const threat=cityThreatQuote(state);
-  const threatDetails=threat?`<p class="warning-note" data-water-threat-details>${esc([threat.text,threat.reason].filter(Boolean).join(' '))}</p>`:'';
-  const reconciliation=threat?.people&&fearTension(state)>0?'<p data-water-reconciliation>Поддержка общины снижает напряжение на 1 и даёт бригаде +4 личной веры.</p>':'';
-  const threatButton=threat?`<button class="secondary" id="event-threat" ${threat.reason?'disabled':''}>Принудить бригаду</button>`:'';
-  const arrivals=ev.id==='refugees'?refugeeArrivalCount(state):null;
-  const description=festival?'Жители доставят угощение к храму и соберутся после вечернего ужина.':
+ if(state.event&&state.godhood?.namelessEndingAt===undefined)showBlockingEvent(state.event);
+}
+function eventDecisionHTML(ev,timed){
+ const prefix=timed?'event-offer':'event';
+ const definition=cityEventDefinition(ev.id),reason=eventReason(state),festival=ev.id==='festival';
+ const threat=cityThreatQuote(state);
+ const threatDetails=threat?`<p class="warning-note" data-water-threat-details>${esc([threat.text,threat.reason].filter(Boolean).join(' '))}</p>`:'';
+ const reconciliation=threat?.people&&fearTension(state)>0?'<p data-water-reconciliation>Поддержка общины снижает напряжение на 1 и даёт бригаде +4 личной веры.</p>':'';
+ const threatButton=threat?`<button class="secondary" id="${prefix}-threat" ${threat.reason?'disabled':''}>Принудить бригаду</button>`:'';
+ const arrivals=ev.id==='refugees'?refugeeArrivalCount(state):null;
+ const description=festival?'Жители доставят угощение к храму и соберутся после вечернего ужина.':
    arrivals===null?ev.text:arrivals?`Можно принять жителей: ${arrivals}. Приём стоит 20 еды.`:'Сейчас нет свободных мест для новых жителей.';
-  const eventCost=festival?`<div class="event-costs" role="group" aria-label="Цена праздника">${[['prestige','престижа'],['food','еды'],['beer','пива']].map(([kind,name])=>`<span>${resourceIcon(kind)}<span><b>${FESTIVAL_COST[kind]}</b> ${name}</span></span>`).join('')}</div>`:'';
-  openDialog('event',`${ev.id==='festival'?`<img class="intro-art festival-art" src="${CITY_ART.evening}" alt="Иллюстрация праздника общины">`:''}<span class="eyebrow">ГОД ${state.year} · РЕШЕНИЕ ПОКРОВИТЕЛЯ</span><span class="dialog-emblem">${ev.id==='caravan'?'⛵':ev.id==='refugees'?'⌂':'✺'}</span><h2>${esc(ev.title)}</h2><p>${esc(description)}</p>${eventCost}${threatDetails}${reconciliation}${reason?`<p class="warning-note">${reason}</p>`:''}<div class="dialog-actions"><button class="primary" id="event-accept" ${reason?'disabled':''}>${esc(definition?.acceptLabel||'Принять решение')}</button><button class="secondary" id="event-skip">${esc(definition?.skipLabel||'Отказаться')}</button>${threatButton}</div><p class="keyboard-note">Время на паузе. Ресурсы сверху остаются видны.</p>`);
-  for(const choice of threat?['accept','skip','threat']:['accept','skip'])$(`event-${choice}`).onclick=()=>{const result=resolveEvent(state,choice);if(result.ok){closeDialog();if(choice==='accept'&&ev.id==='festival'){paused=false;showFestival();}save();update();checkDialogs();}else toast(result.reason);};
+ const eventCost=festival?`<div class="event-costs" role="group" aria-label="Цена праздника">${[['prestige','престижа'],['food','еды'],['beer','пива']].map(([kind,name])=>`<span>${resourceIcon(kind)}<span><b>${FESTIVAL_COST[kind]}</b> ${name}</span></span>`).join('')}</div>`:'';
+ const heading=timed?'h3':'h2';
+ const art=timed?'':(festival?`<img class="intro-art festival-art" src="${CITY_ART.evening}" alt="Иллюстрация праздника общины">`:'')+`<span class="eyebrow">ГОД ${state.year} · РЕШЕНИЕ ПОКРОВИТЕЛЯ</span><span class="dialog-emblem">${ev.id==='caravan'?'⛵':ev.id==='refugees'?'⌂':'✺'}</span>`;
+ return `${art}<${heading} id="${prefix}-title">${esc(ev.title)}</${heading}><p>${esc(description)}</p>${eventCost}${threatDetails}${reconciliation}${reason?`<p class="warning-note">${esc(reason)}</p>`:''}<div class="dialog-actions"><button type="button" class="primary" id="${prefix}-accept" ${reason?'disabled':''}>${esc(definition?.acceptLabel||'Принять решение')}</button><button type="button" class="secondary" id="${prefix}-skip">${esc(definition?.skipLabel||'Отказаться')}</button>${threatButton}</div>`;
+}
+function bindEventDecisions(ev,timed){
+ const prefix=timed?'event-offer':'event';
+ for(const choice of ['accept','skip','threat']){
+  const button=$(`${prefix}-${choice}`);
+  if(!button)continue;
+  button.onclick=()=>{
+   // A click from an already expired or replaced offer must stay with that offer.
+   if(getCityEvent(state)!==ev||eventAutoPause(state)===timed)return;
+   const result=resolveEvent(state,choice,ev);
+   if(!result.ok){toast(result.reason);update();return;}
+   if(!timed)closeDialog();
+   if(choice==='accept'&&ev.id==='festival')showFestival();
+   save();update();checkDialogs();
+  };
  }
 }
+function changeEventAutoPause(enabled){
+ setEventAutoPause(state,enabled);
+ try{localStorage.setItem(eventPauseDefaultKey,String(enabled));}catch{}
+ if(modalKind==='event'&&!enabled)closeDialog();
+ save();update();checkDialogs();
+}
+function showBlockingEvent(ev){
+ openDialog('event',eventDecisionHTML(ev,false)+'<label class="event-pause-setting"><input id="event-modal-auto-pause" type="checkbox" checked><span>Останавливать игру при событиях</span></label>');
+ $('event-modal-auto-pause').onchange=e=>changeEventAutoPause(e.currentTarget.checked);
+ bindEventDecisions(ev,false);
+}
+function refreshEventOffer(){
+ const card=$('event-offer'),ev=getCityEvent(state);
+ const timed=ev&&!eventAutoPause(state)&&!state.lost&&!relicControlActive(state)&&state.godhood?.namelessEndingAt===undefined;
+ if(!timed){if(!card.hidden)card.hidden=true;displayedOffer=null;return;}
+ const different=displayedOffer!==ev,content=$('event-offer-content'),html=eventDecisionHTML(ev,true);
+ if(different)content.replaceChildren();
+ if(setHTML(content,html))bindEventDecisions(ev,true);
+ displayedOffer=ev;
+ const minutes=Math.ceil(eventSecondsLeft(state)*24*60/DAY_SECONDS);
+ const remaining=`Осталось ${Math.floor(minutes/60)} ч ${minutes%60} мин игрового времени`;
+ const timer=$('event-offer-time');if(timer.textContent!==remaining)timer.textContent=remaining;
+ if(card.hidden)card.hidden=false;
+}
+
 function canalSpecializationHTML(){
  const risks=canalSiltingForecast(state);
  if(!risks.length)return '<p data-canal-specialization>На действующих каналах ближайшее заиление не уменьшит пропускную способность.</p>';
@@ -2114,7 +2158,9 @@ async function newGame(mode){
   const fixedSeed=mode==='awakening'&&playtestSeed!==null&&/^\d{1,10}$/.test(playtestSeed)&&Number(playtestSeed)<=0xffffffff;
   let seed=fixedSeed?Number(playtestSeed):(globalThis.crypto?.getRandomValues(new Uint32Array(1))[0]??(Date.now()>>>0));
   if(!fixedSeed&&seed===state.world?.seed)seed=(seed+1)>>>0;
-  await replaceCity(createNewCity({mode,seed,centeredStart:true}),{fresh:true});
+  const next=createNewCity({mode,seed,centeredStart:true});
+  try{if(localStorage.getItem(eventPauseDefaultKey)==='false')setEventAutoPause(next,false);}catch{}
+  await replaceCity(next,{fresh:true});
  }
  catch(error){toast(`Новая игра не начата: ${error.message}`);for(const button of buttons)button.disabled=false;}
 }
@@ -2178,7 +2224,8 @@ skipCatScene.onclick=()=>{
 };
 function ceremonyPresentation(){
  const miracleScene=state.miracleCelebration;if(miracleScene&&shownMiracle!==miracleScene){shownMiracle=miracleScene;if(miracleScene.kind!=='cat'||!usesCatDiscovery(state))renderer.focusOn(miracleScene.center.x,miracleScene.center.y);toast(miracleScene.kind==='cat'?(miracleScene.duration===8?'Кошка идёт к новому хранилищу.':'Неожиданный гость: жители встречают кошку!'):'Дыхание земли: жители собираются у чудесного сада!');}if(!miracleScene)shownMiracle=null;
- if(state.event!==shownEvent){shownEvent=state.event;if(shownEvent)renderer.addEffect(cityEventDefinition(shownEvent.id)?.effectId||'blessing');}
+ const currentEvent=getCityEvent(state);
+ if(currentEvent!==shownEvent){shownEvent=currentEvent;if(shownEvent)renderer.addEffect(cityEventDefinition(shownEvent.id)?.effectId||'blessing');}
  const q=state.festival;if(q?.stage==='celebrating'&&q!==shownFeast){shownFeast=q;const view=festivalView(state),p=view?.court||view;if(p){renderer.addEffect('festival',{x:p.x,y:p.y});renderer.focusOn(p.x,p.y);}toast(q.occasion==='firstBeer'?'Первая партия пива выпущена! Начался пир у пивоварни.':'Ночь огней началась: жители пируют и танцуют.');}
  if(!q)shownFeast=null;
  if(lastBeerStatus!==state.firstBeerFeast?.status){lastBeerStatus=state.firstBeerFeast?.status;if(lastBeerStatus==='pending')toast('Первая партия пива выпущена! Жители готовят малый пир у пивоварни.');}
@@ -2197,7 +2244,7 @@ function frame(now){
  if(shownSupplyRoute&&($('tile-detail').hidden||inspectedPerson!==null||!inspected||inspected.x!==shownSupplyRoute.route.home.x||inspected.y!==shownSupplyRoute.route.home.y))clearSupplyRoute();
  const dt=Math.min(250,Math.max(0,now-last));last=now;syncCeremonySpeed();
  const windowBlocks=dialog.open&&modalKind!=='festival'&&!ceremonyActive(state),presentationPaused=seasonJumping||document.hidden||photo.active||paused||windowBlocks||!!state.event&&state.godhood?.namelessEndingAt===undefined;
- if(!presentationPaused&&(!state.lost||state.funeral)){const oldTick=state.tick,inannaMeeting=state.miracleCelebration?.kind==='inanna';advanceFrame(state,dt/1000,relicControlActive(state)?1:speed);if(state.tick!==oldTick||inannaMeeting&&!state.miracleCelebration||state.event||state.lost||state.won&&!state.continued){save();update();checkDialogs();}if(now-lastSave>3000){save();lastSave=now;}}
+ if(!presentationPaused&&(!state.lost||state.funeral)){const oldTick=state.tick,oldEvent=getCityEvent(state),inannaMeeting=state.miracleCelebration?.kind==='inanna';advanceFrame(state,dt/1000,relicControlActive(state)?1:speed);if(state.tick!==oldTick||inannaMeeting&&!state.miracleCelebration||oldEvent!==getCityEvent(state)||state.event||state.lost||state.won&&!state.continued){save();update();checkDialogs();}if(now-lastSave>3000){save();lastSave=now;}}
  syncCeremonySpeed();ceremonyPresentation();
  const currentStory=miracleStories.find(scene=>scene.active);
  const openingAllowed=!presentationPaused&&!ceremonyActive(state);
@@ -2242,7 +2289,7 @@ function frame(now){
  inannaPresentation.tick(state,dt,{allowOpening:canShowOpening(inannaPresentation)&&!depthPresentation.active&&!landPresentation.active,visible:inannaVisible&&!depthPresentation.active&&!landPresentation.active});
  requestAnimationFrame(frame);
 }
-urukUI=createUrukInterface({getState:()=>state,onResize:()=>renderer.resize()});
+urukUI=createUrukInterface({getState:()=>state,getEventAutoPause:eventAutoPause,onEventAutoPause:changeEventAutoPause,onResize:()=>renderer.resize()});
 const resourceBar=createResourceBar($('resources'));
 update();requestAnimationFrame(frame);
 if(!loaded)chooseNewMode();else{toast(legacyRaw?'Город обновлён: дворы, ремёсла, обзор кварталов и фоторежим. Прежние запасы, семьи, грузы и оплаченные стройки сохранены.':'Город и грузы восстановлены. Нажми ▶, когда будешь готов.');checkDialogs();}

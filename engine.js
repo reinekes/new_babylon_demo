@@ -62,7 +62,7 @@ import {legacyScenario,validateScenario,isStrictSumer} from './scenario-profiles
 import {validateManualGathering} from './manual-gathering.js';
 import {startMiracleCelebration,advanceMiracleCelebration,validateMiracleCelebration,miracleCelebrationReason,miracleCelebrationTargetReason} from './miracle-celebration.js';
 import {ceremonyActive} from './ceremony-time.js';
-import {cityEventDefinition,createCityEvent,isAdditionalCityEvent,cityEventReason,applyCityEvent,applyCityThreat,validateFearCrisis} from './city-events.js';
+import {getCityEvent,eventAutoPause,eventSecondsLeft,presentCityEvent,validEventWindow,createCityEvent,isAdditionalCityEvent,cityEventReason,applyCityEvent,applyCityThreat,validateFearCrisis} from './city-events.js';
 import {initializeGodhood,validateGodhood,buildingKnowledgeReason,miracleKnowledgeReason} from './godhood.js';
 import {initializeRelicQuest,validateRelicQuest,relicControlActive,relicCommandReason,deferRelicEvent,relicSiteReserved,interruptRelicForFuneral} from './relic-quest.js';
 import {initializeSacredUnlocks,syncSacredUnlocks,validateSacredUnlocks,miracleLockReason,applySacredMiracle} from './sacred-unlocks.js';
@@ -347,7 +347,7 @@ export function miracle(s,id,target,confirmation){
 }
 function check(s){
  s.capacity=housingOf(s);
- if(s.population<=0){s.population=0;s.lost=true;s.event=null;syncCitizens(s);return;}
+ if(s.population<=0){s.population=0;s.lost=true;s.event=null;delete s.eventOffer;syncCitizens(s);return;}
  advanceCreatorEvidence(s);
  if(advanceFieldGrain(s))log(s,'Три поля дали зерно','Склад принял урожай с трёх действующих полей. Открылось чудо «Дыхание земли».','good');
  if(advanceBlessingDiscovery(s))log(s,'Соседи поддержали друг друга','Три двора обеспечены едой и водой, две доставки помощи подтверждены. Условия истории «Благословение» выполнены.','good');
@@ -428,11 +428,11 @@ function settleSeason(s){
   if(rememberedYear)log(s,rememberedYear,`Так жители запомнили ${s.year-1}-й год.`,'year');
   log(s,`Начался ${s.year}-й год`,`В городе ${s.population} жителей. В амбарах ${Math.floor(s.resources.food)} еды.`,'year');
   if(s.year===3||(!s.droughtSeen&&s.year>=4)){s.drought=3;s.droughtSeen=true;affectResidents(s,{faith:-8,mood:-7});log(s,'На долину опустилась засуха','Нужен полив ячменя: соедини поля с рекой каналами или призови Небесный дождь.','bad');}
-  else if(!s.funeral&&s.year%5===0)s.event={id:'refugees',title:'Люди у городских ворот',text:'Три семьи покинули истощённые земли. Прими до шести жителей за 20 еды — если для них найдётся жильё.'};
+  else if(!s.funeral&&s.year%5===0)presentCityEvent(s,{id:'refugees',title:'Люди у городских ворот',text:'Три семьи покинули истощённые земли. Прими до шести жителей за 20 еды — если для них найдётся жильё.'});
   else if(s.year%3===1){s.resources.food+=Math.max(0,Math.min(30,storage(s)-s.resources.food));log(s,'Щедрый разлив','Река принесла плодородный ил. Общие амбары получили 30 еды.','good');}
-  else if(!s.funeral)s.event={id:'festival',title:'Ночь тысячи огней',text:festivalInvitation()};
+  else if(!s.funeral)presentCityEvent(s,{id:'festival',title:'Ночь тысячи огней',text:festivalInvitation()});
  }
- if(!s.event&&!s.funeral&&!s.festival&&s.tick>=6&&s.season===2){const events=['riverGift','potterVisit','wellRepair','harvestThanks','storyteller'];s.event=createCityEvent(s,events[(s.year-2)%events.length]);}
+ if(!getCityEvent(s)&&!s.funeral&&!s.festival&&s.tick>=6&&s.season===2){const events=['riverGift','potterVisit','wellRepair','harvestThanks','storyteller'];presentCityEvent(s,createCityEvent(s,events[(s.year-2)%events.length]));}
  syncCitizens(s);snapshotLifeAnalytics(s);check(s);
 }
 function recordCivicDeath(s,citizen){
@@ -455,7 +455,8 @@ export function advanceFrame(s,realSeconds,speed=1){
 export function advanceTime(s,seconds,{calendarRate=calendarRateFor(s),funeralTimerRate=1,fishingTimerRate=1/BASE_TIME_RATE,frameRate=null}={}){
  if(!Number.isFinite(calendarRate)||calendarRate<=0||calendarRate>1)throw new RangeError('Invalid calendar rate');
  deferRelicEvent(s);
- if(s.godhood?.namelessEndingAt!==undefined&&s.event)resolveEvent(s,'skip');
+ expireCityEvent(s);
+ if(s.godhood?.namelessEndingAt!==undefined&&getCityEvent(s))resolveEvent(s,'skip');
  if(s.lost&&!s.funeral||s.event||!Number.isFinite(seconds)||seconds<=0)return 0;
  initializeProductionAccounting(s);syncInventory(s);let remaining=Math.min(seconds,3600),advanced=0;
  while(remaining>1e-7&&(!s.lost||s.funeral)&&!s.event){
@@ -482,6 +483,7 @@ export function advanceTime(s,seconds,{calendarRate=calendarRateFor(s),funeralTi
    if(!s.citizens.some(c=>c.home===source)&&!s.district.jobs.some(q=>q.campSalvage&&q.source===source&&q.remaining+transferCarried(s,q)>1e-7))
     demolish(s,camp.x,camp.y,undefined,{salvagedCamp:true});
   }
+  expireCityEvent(s);
   advanceRiverStores(s,worked);
   advanceCivicOrder(s,citizen=>recordCivicDeath(s,citizen));
   if(s.waterCrises)reviewWaterCrisisNeeds(s);
@@ -491,25 +493,48 @@ export function advanceTime(s,seconds,{calendarRate=calendarRateFor(s),funeralTi
    remaining*=BASE_TIME_RATE/frameRate;frameRate=BASE_TIME_RATE;fishingTimerRate=1/frameRate;
   }
  }
- if(s.godhood?.namelessEndingAt!==undefined&&s.event)resolveEvent(s,'skip');
+ if(s.godhood?.namelessEndingAt!==undefined&&getCityEvent(s))resolveEvent(s,'skip');
  advanceEcology(s);syncInventory(s);check(s);return advanced;
 }
 export function advanceSeason(s){return advanceTime(s,(45-s.seasonElapsed)/calendarRateFor(s))>0;}
 export const refugeeArrivalCount=s=>Math.min(6,freeArrivalBeds(s));
-export function eventReason(s){if(!s.event)return 'Нет события';if(isAdditionalCityEvent(s.event.id))return cityEventReason(s);if(s.event.id==='festival')return festivalReason(s,{ignoreEvent:true});const price={caravan:35,refugees:20,festival:20}[s.event.id];if(availableFood(s)<price)return `Нужно ${price} еды`;if(s.event.id==='refugees'&&!refugeeArrivalCount(s))return 'Нет свободного жилья';return '';}
-export function resolveEvent(s,choice){
+export {getCityEvent,eventAutoPause,eventSecondsLeft};
+function expireCityEvent(s){
+ if(!s.eventOffer||eventSecondsLeft(s)>1e-7)return false;
+ const title=s.eventOffer.title;delete s.eventOffer;
+ log(s,title+' · срок истёк','Время для решения прошло.','info');
+ return true;
+}
+export function setEventAutoPause(s,enabled){
+ if(typeof enabled!=='boolean')return {ok:false,reason:'Неизвестная настройка событий'};
+ expireCityEvent(s);
+ if(eventAutoPause(s)===enabled)return {ok:true};
+ const pending=getCityEvent(s);
+ if(enabled)delete s.autoPauseEvents;else s.autoPauseEvents=false;
+ if(pending){
+  s.event=null;delete s.eventOffer;
+  presentCityEvent(s,pending);
+  deferRelicEvent(s);
+ }
+ return {ok:true};
+}
+export function eventReason(s){const event=getCityEvent(s);if(!event)return 'Нет события';if(isAdditionalCityEvent(event.id))return cityEventReason(s,event.id);if(event.id==='festival')return festivalReason(s,{ignoreEvent:true});const price={caravan:35,refugees:20,festival:20}[event.id];if(availableFood(s)<price)return `Нужно ${price} еды`;if(event.id==='refugees'&&!refugeeArrivalCount(s))return 'Нет свободного жилья';return '';}
+export function resolveEvent(s,choice,expectedEvent){
+ expireCityEvent(s);
+ const event=getCityEvent(s);
+ if(!event||expectedEvent!==undefined&&event!==expectedEvent)return {ok:false,reason:'Это событие уже завершилось'};
  if(choice!=='skip'&&s.godhood?.namelessEndingAt!==undefined)return {ok:false,reason:'История завершена: доступно наблюдение'};
  if(s.miracleCelebration)return {ok:false,reason:miracleCelebrationReason(s)};
  if(relicControlActive(s))return {ok:false,reason:relicCommandReason(s)};
- if(!s.event||!['accept','skip','threat'].includes(choice))return {ok:false,reason:'Нет такого решения'};
- if(choice==='accept'&&s.event.id==='festival'){const event=s.event;s.event=null;const result=orderFestival(s);if(!result.ok){s.event=event;return result;}log(s,event.title,'Жители готовят угощение и вечерний сбор у храма.','good');syncCitizens(s);check(s);return result;}
+ if(!['accept','skip','threat'].includes(choice))return {ok:false,reason:'Нет такого решения'};
+ if(choice==='accept'&&event.id==='festival'){const modal=s.event===event;if(modal)s.event=null;const result=orderFestival(s);if(!result.ok){if(modal)s.event=event;return result;}delete s.eventOffer;log(s,event.title,'Жители готовят угощение и вечерний сбор у храма.','good');syncCitizens(s);check(s);return result;}
  if(choice==='threat'){const result=applyCityThreat(s);if(!result.ok)return result;}
- else if(isAdditionalCityEvent(s.event.id)){const result=applyCityEvent(s,s.event.id,choice);if(!result.ok)return result;}
+ else if(isAdditionalCityEvent(event.id)){const result=applyCityEvent(s,event.id,choice);if(!result.ok)return result;}
  else if(choice==='accept'){
-  const reason=eventReason(s);if(reason)return {ok:false,reason};const id=s.event.id;s.resources.food-=id==='caravan'?35:20;
+  const reason=eventReason(s);if(reason)return {ok:false,reason};const id=event.id;s.resources.food-=id==='caravan'?35:20;
   if(id==='caravan'){s.resources.clay+=25;s.resources.reed+=20;}if(id==='refugees')s.population+=refugeeArrivalCount(s);
  }
- log(s,s.event.title,choice==='threat'?'Бригада подчинилась угрозе. Её настроение и личная вера снизились.':choice==='accept'?'Город принял твоё решение.':'Город сохранил запасы и продолжил свой путь.',choice==='accept'?'good':'info');s.event=null;syncCitizens(s);syncLifeAnalytics(s);check(s);return {ok:true};
+ log(s,event.title,choice==='threat'?'Бригада подчинилась угрозе. Её настроение и личная вера снизились.':choice==='accept'?'Город принял твоё решение.':'Город сохранил запасы и продолжил свой путь.',choice==='accept'?'good':'info');s.event=null;delete s.eventOffer;syncCitizens(s);syncLifeAnalytics(s);check(s);return {ok:true};
 }
 export function goals(s){
  const list=[
@@ -655,7 +680,7 @@ export function decode(raw){
   for(const k of ['rating','inspirationAttempts','inspirationSuccesses'])if(!integer(s.divinity[k]))return null;
   if(s.divinity.inspirationSuccesses>s.divinity.inspirationAttempts)return null;
   if(!Array.isArray(s.news)||s.news.length>80||s.news.some(n=>typeof n.title!=='string'||typeof n.text!=='string'||!integer(n.year,1)||!integer(n.season,0,3)||typeof n.kind!=='string'))return null;
-  if(s.event!==null&&(!s.event||!cityEventDefinition(s.event.id)||typeof s.event.title!=='string'||typeof s.event.text!=='string'))return null;
+  if(!validEventWindow(s))return null;
   if(legacy)syncCitizens(s);
   if(!Array.isArray(s.citizens)||s.citizens.length!==s.population||!validateCareerRules(s))return null;
   const ids=new Set(),buildings=new Map(constructionEntities(s).map(b=>[buildingKey(b),b]));
@@ -749,7 +774,8 @@ export function decode(raw){
   if(!validateBuildingChronology(s)||!validateOrchards(s)||!validateCitizenEpithets(s)||!validateProductionHistory(s)||!validateStockAccounts(s)||!validateCityLabor(s)||!validateCanalMaintenance(s)||!validateDairy(s)||!validateBuildingInventory(s)||!validateInventory(s)||!validateDistricts(s)||!validateVotiveOfferings(s)||!validateTrade(s))return null;
   for(const b of constructionEntities(s)){const q=b.construction;if(q&&!validSources(s,q.sources,q.remaining)||q&&!validSources(s,q.allocations,q.required))return null;}
 
-  if(s.event?.id==='festival')s.event.text=festivalInvitation();
+  if(getCityEvent(s)?.id==='festival')getCityEvent(s).text=festivalInvitation();
+  expireCityEvent(s);
   if(oldLifeAnalytics)initializeLifeAnalytics(s);
   if(!validateFishRacks(s)||!validateRiverStores(s)||!validateCivicOrder(s)||!validateLifeAnalytics(s)||!validateSupplyVows(s)||!validateHumanProjects(s)||!validateHouseholdInitiatives(s)||!validateCausalFacts(s)||!validateRevelationEvidence(s)||!validateStarObservations(s)||!validateDepthSupply(s)||!validateLandMemory(s)||!validateInannaDiscovery(s)||!validateBlessingDiscovery(s)||!validatePeaceDiscovery(s)||!validateResidentReactions(s)||!validateWaterCrises(s)||!validateGrainOrigin(s)||!validateFieldGrain(s)||!validateFishProvenance(s)||!validateRichCatch(s)||!validateCreatorMaterials(s)||!validateShapingProjects(s)||!validateShapingModel(s)||!validateShapingBatches(s)||!validateWindDelivery(s)||!validateAbundanceGift(s)||!validateAbundanceOrigin(s)||!validateAbundanceDiscovery(s))return null;
   initializeRelicQuest(s,{reconcileUnusedSite:true});initializeSacredUnlocks(s);if(!validateCampaignChapter(s)||!validateHearthEnding(s)||!validateWaterEnding(s)||!validateCraftEnding(s)||!validateCityEnding(s)||!validateMonumentLife(s)||!validateForeignName(s)||!validateGodhood(s)||!validateExternalGuest(s)||!validateArrivalHospitality(s)||!validateRelicQuest(s)||!validateSacredUnlocks(s)||!validateMusic(s)||!validateCatFishing(s)||!validateCatDiscovery(s))return null;

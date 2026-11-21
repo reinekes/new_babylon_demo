@@ -1,7 +1,7 @@
 import {usesCatDiscovery} from './scenario-profiles.js';
 import {createWorkAudio} from './work-audio.js';
 import {createLyreVoice,musicSoundSources,playStoneNote,STONE_NOTES} from './music-audio.js';
-import {cityEventDefinition} from './city-events.js';
+import {cityEventDefinition,getCityEvent} from './city-events.js';
 import {EVENT_MUSIC_TRACKS,musicTrackURL} from './music-tracks.js';
 export {EVENT_MUSIC_TRACKS} from './music-tracks.js';
 function miracleCues(work,canPlay){
@@ -44,7 +44,7 @@ export function eventMusicTheme(s,funeralVariant=1){
  if(celebration&&!(celebration.kind==='cat'&&usesCatDiscovery(s)))return celebration.kind==='cat'?'catArrival':'earthBreath';
  if(s.lost)return 'extinction';
  if(activeFestival(s))return s.festival.occasion==='firstBeer'?'firstBeer':'nightLights';
- const eventTheme=cityEventDefinition(s.event?.id)?.music;
+ const eventTheme=cityEventDefinition(getCityEvent(s)?.id)?.music;
  if(eventTheme&&eventTheme!=='lithophone'&&Object.hasOwn(EVENT_MUSIC_TRACKS,eventTheme))return eventTheme;
  const hour=((8+(s.simTime||0)*.4)%24+24)%24;
  if(hour<6||hour>=19)return 'night';
@@ -91,7 +91,7 @@ export function createCityAudio(onMessage,options={}){
   if(funeral){const key=(s.funeral.deceased||[]).map(d=>d.id).join(',')||'ceremony';if(!funeralWasActive||key!==lastFuneral){lastFuneral=key;funeralCount++;}afterFuneralPending=false;}
   else if(funeralWasActive&&enabled&&!s.lost){afterFuneralPending=true;const old=cache.get('afterFuneral');if(old){stop(old);old.element.currentTime=0;}}
   funeralWasActive=funeral;
-  if(s.lost||activeFestival(s)||s.miracleCelebration||s.event)afterFuneralPending=false;
+  if(s.lost||activeFestival(s)||s.miracleCelebration||getCityEvent(s))afterFuneralPending=false;
   if(!enabled||previewing||doc?.hidden){silence();return;}
   if(catCue)work.cueCat(catCue);
   work.tick(s,paused,listener);

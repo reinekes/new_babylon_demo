@@ -3,7 +3,7 @@ import {reservedArrivalBeds,shelterHome} from './arrival-hospitality.js';
 import {prepareMemorialMove} from './life-analytics.js';
 import {mealRation,mournResidents} from './wellbeing.js';
 import {homeMealFood,supplyHome,totalFood} from './households.js';
-import {networkFor} from './workforce.js';
+import {networkFor,syncCitizens} from './workforce.js';
 import {buildingKey,capacityOf,citizenName} from './definitions.js';
 export const lifeStage=c=>c.age<16?'child':c.age<55?'adult':'elder';
 export const canWork=c=>c.age===undefined||c.age>=16;
@@ -26,6 +26,13 @@ export function initializeDemography(s,{mixed=false}={}){
 }
 function random(s){const d=s.demography;d.rngState=(Math.imul(d.rngState,1664525)+1013904223)>>>0;return d.rngState/4294967296;}
 function news(s,title,text,kind='good'){s.news.unshift({title,text,kind,tick:s.tick,year:s.year,season:s.season});s.news=s.news.slice(0,80);}
+function thrivingFamily(residents,mother,father){
+ return residents.every(c=>{
+  if((c.hunger??0)>=30||(c.health??100)<70||(c.lastMealQuality??1)<.95||c.clinic)return false;
+  if(c===mother||c===father)return (c.mood??75)>=65;
+  return c.partner==null&&(c.parents.includes(mother.id)||c.parents.includes(father.id)||mother.parents.includes(c.id)||father.parents.includes(c.id));
+ });
+}
 export function advanceGenerations(s,recover=()=>{}){
  initializeDemography(s);const d=s.demography,deceased=[],grown=[];
  for(const c of s.citizens){const previous=c.age;c.age+=.5;if(previous<16&&c.age>=16){grown.push(c.id);news(s,'Новое поколение работников',`${citizenName(c.id)} исполнилось 16 лет. Теперь житель может работать.`);}if(!s.funeral&&c.age>=65&&(c.age>=85||random(s)<Math.min(.3,.008+(c.age-65)*.006)))deceased.push({id:c.id,name:citizenName(c.id),x:c.x,y:c.y});}
@@ -41,27 +48,43 @@ export function advanceGenerations(s,recover=()=>{}){
  for(const a of singles){if(a.partner!==null)continue;const partner=singles.find(c=>c!==a&&c.partner===null&&c.sex!==a.sex&&!a.parents.includes(c.id)&&!c.parents.includes(a.id)&&!a.parents.some(id=>c.parents.includes(id)));if(partner){a.partner=partner.id;partner.partner=a.id;}}
  // Housing needs reachability, not a route. Topology is stable throughout this pass.
  let housingNetwork,housingPorts;
- const reservedHomes=new Map(),communalHomes=new Set();
+ const reservedHomes=new Map(),communalHomes=new Set(),privateHomes=new Map();
  for(const b of s.buildings){
   if(b.type==='communalHouse')communalHomes.add(buildingKey(b));
+  if(b.type==='house'&&!b.reedCamp)privateHomes.set(buildingKey(b),b);
   const project=b.householdInitiative,first=project?.members[0];
   if(!reservedHomes.has(first)&&householdInitiativeReserved(project,living.get(first)))reservedHomes.set(first,b);
  }
  if(!s.funeral)for(const a of s.citizens.filter(c=>c.sex==='f'&&c.partner!==null)){
   const partner=living.get(a.partner);if(!partner)continue;
-  const family=householdMovingFamily(s,a,partner),current=homes.get(a.home)||[];
+  const current=homes.get(a.home)||[];
   const awaiting=b=>householdInitiativeReserved(b.householdInitiative,living.get(b.householdInitiative?.members[0]));
   const reserved=reservedHomes.get(a.id)||reservedHomes.get(partner.id);
   if(!reserved&&!communalHomes.has(a.home)&&a.home===partner.home&&!current.some(c=>c.sex==='f'&&c.partner!==null&&c.id!==a.id))continue;
+  const family=householdMovingFamily(s,a,partner);
   if(!housingNetwork){housingNetwork=networkFor(s);housingPorts=new Map(housingNetwork.ports.map(p=>[buildingKey(p.building),p.key]));}
   const districtAt=home=>housingNetwork.components.get(housingPorts.get(home));
   const component=districtAt(a.home);
   if(!reserved&&(component===undefined||family.some(c=>districtAt(c.home)!==component)))continue;
   const available=b=>b.type==='house'&&!b.reedCamp&&!(homes.get(buildingKey(b))||[]).length&&buildingKey(b)!==a.home&&capacityOf(b)-reservedArrivalBeds(s,buildingKey(b))>=family.length&&districtAt(buildingKey(b))===component;
   if(reserved&&householdMoveSiteReason(s,reserved,family,districtAt))continue;
-  const house=reserved||s.buildings.find(b=>available(b)&&!awaiting(b));
-  if(!house||householdMoveActivityReason(s,family))continue;
+  let house=reserved||s.buildings.find(b=>available(b)&&!awaiting(b));
+  if(!house&&a.home!==partner.home){
+   // In a populated town every house may already have residents. A split
+   // couple can reunite in a spouse's own house without displacing anyone.
+   for(const key of [a.home,partner.home]){
+    const dwelling=privateHomes.get(key),occupants=homes.get(key)||[];
+    if(!dwelling||dwelling.floodDamage||awaiting(dwelling))continue;
+    if(occupants.some(c=>!family.includes(c)&&living.get(c.partner)?.home===key))continue;
+    const moving=family.filter(c=>c.home!==key);
+    if(moving.some(c=>c.districtJob||c.saleJob||c.tradeJob||c.freightCart))continue;
+    if(occupants.length+moving.length>capacityOf(dwelling)-reservedArrivalBeds(s,key))continue;
+    house=dwelling;break;
+   }
+  }
+  if(!house||householdMoveActivityReason(s,family,buildingKey(house)))continue;
   const destination=buildingKey(house);for(const c of family){
+   if(c.home===destination)continue;
    const source=housingNetwork.ports.find(p=>p.key===housingPorts.get(c.home));
    if(source&&Math.hypot(c.x-source.x,c.y-source.y)<.05)prepareMemorialMove(s,c,house);
    homes.set(c.home,(homes.get(c.home)||[]).filter(p=>p.id!==c.id));c.home=destination;c.rehousing=true;if(!homes.has(destination))homes.set(destination,[]);homes.get(destination).push(c);}
@@ -72,12 +95,22 @@ export function advanceGenerations(s,recover=()=>{}){
  for(const b of s.buildings.filter(b=>b.type==='house'&&!b.reedCamp&&b.construction?.kind!=='new')){
   const home=buildingKey(b),residents=homes.get(home)||[],adults=residents.filter(c=>c.age>=16&&c.age<50&&!shelterHome(c));
   for(const a of adults){if(a.partner!==null)continue;const partner=adults.find(c=>c!==a&&c.sex!==a.sex&&c.partner===null&&!a.parents.includes(c.id)&&!c.parents.includes(a.id)&&!a.parents.some(id=>c.parents.includes(id)));if(partner){a.partner=partner.id;partner.partner=a.id;}}
-  const pair=adults.find(c=>{const partner=living.get(c.partner);return c.sex==='f'&&c.age<45&&partner?.home===home&&!shelterHome(partner);});
-  if(!pair||residents.length>=capacityOf(b)-reservedArrivalBeds(s,home)||s.happiness<65||s.hungry||!birthFoodStatus(s,b).enough||s.tick-(d.lastBirth[home]??-8)<8||random(s)>=.25)continue;
-  const father=living.get(pair.partner),id=d.nextId++,baby={id,home,age:0,sex:id%2?'f':'m',parents:[pair.id,father.id],partner:null,generation:1+Math.max(pair.generation,father.generation)};
+  const pair=adults.find(c=>{const partner=living.get(c.partner);return c.sex==='f'&&c.age<45&&partner?.home===home&&canWork(partner)&&!shelterHome(partner);});
+  if(!pair||s.happiness<65)continue;
+  const reserved=reservedArrivalBeds(s,home);
+  if(residents.length>=capacityOf(b)-reserved||!birthFoodStatus(s,b).enough)continue;
+  const father=living.get(pair.partner),thriving=!reserved&&!b.floodDamage&&thrivingFamily(residents,pair,father);
+  // A missed meal elsewhere in town does not take a delivered dinner away
+  // from a healthy private household. Legacy towns retain their city food gate.
+  if(s.hungry&&!(thriving&&usesCourtyardBirthFood(s)))continue;
+  const cooldown=thriving?4:8,chance=thriving?.6:.25;
+  if(s.tick-(d.lastBirth[home]??-8)<cooldown||random(s)>=chance)continue;
+  const id=d.nextId++,baby={id,home,age:0,sex:id%2?'f':'m',parents:[pair.id,father.id],partner:null,generation:1+Math.max(pair.generation,father.generation)};
   newborns.push(baby);residents.push(baby);d.lastBirth[home]=s.tick;d.births++;news(s,'В семье родился ребёнок',`${citizenName(id)} · родители: ${citizenName(pair.id)} и ${citizenName(father.id)}. Поколение ${baby.generation}.`);
  }
- s.citizens.push(...newborns);s.population=s.citizens.length;return {deceased,grown,newborns};
+ s.citizens.push(...newborns);s.population=s.citizens.length;
+ if(newborns.length)syncCitizens(s);
+ return {deceased,grown,newborns};
 }
 export function validateDemography(s){const d=s.demography,int=(n,max=1e9)=>Number.isSafeInteger(n)&&n>=0&&n<=max;if(!d||d.birthFoodRule!==undefined&&!usesCourtyardBirthFood(s)||!int(d.nextId,1e6)||!int(d.rngState,4294967295)||!int(d.births)||!int(d.naturalDeaths)||d.naturalDeaths>s.deaths||!d.lastBirth||typeof d.lastBirth!=='object'||Array.isArray(d.lastBirth)||Object.entries(d.lastBirth).some(([k,v])=>!/^\d+,\d+$/.test(k)||!int(v,s.tick)))return false;
  const ids=new Map(s.citizens.map(c=>[c.id,c]));return s.citizens.every(c=>int(c.id)&&c.id<d.nextId&&Number.isFinite(c.age)&&c.age>=0&&c.age<=100&&['m','f'].includes(c.sex)&&int(c.generation)&&c.generation>=1&&Array.isArray(c.parents)&&[0,2].includes(c.parents.length)&&new Set(c.parents).size===c.parents.length&&c.parents.every(id=>int(id)&&id<c.id)&& (c.partner===null||int(c.partner)&&c.partner!==c.id&&ids.get(c.partner)?.partner===c.id)&& (canWork(c)||!c.work&&!c.site&&!c.tradeJob&&!c.saleJob&&!Object.values(c.cargo).some(n=>n>0)&&!Object.values(c.buildCargo||{}).some(n=>n>0)));}

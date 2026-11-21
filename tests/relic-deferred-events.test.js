@@ -1,14 +1,17 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createGame,advanceTime,encode,decode} from '../engine.js';
+import {createGame,advanceTime,encode,decode,getCityEvent,eventSecondsLeft,setEventAutoPause} from '../engine.js';
 import {syncCitizens} from '../workforce.js';
-import {CITY_EVENTS,createCityEvent} from '../city-events.js';
+import {CITY_EVENTS,createCityEvent,presentCityEvent} from '../city-events.js';
 import {startRelicQuest,cancelRelicQuest} from '../relic-quest.js';
 
-function possessed(kind){
+function prepared(){
  const s=createGame({start:'established'});s.resources.faith=1000;
  for(const c of s.citizens){Object.assign(c,{age:25,role:'builder',work:null,site:null,phase:'home',cargo:{},buildCargo:{}});delete c.pantryTrip;delete c.waterTrip;}
- syncCitizens(s);assert.equal(startRelicQuest(s,s.citizens[0].id,kind).ok,true);return s;
+ syncCitizens(s);return s;
+}
+function possessed(kind){
+ const s=prepared();assert.equal(startRelicQuest(s,s.citizens[0].id,kind).ok,true);return s;
 }
 for(const kind of ['oasis','land'])test(`${kind} possession defers every city event and preserves the saved actor, cargo and pending decision`,()=>{
  for(const definition of CITY_EVENTS){
@@ -21,4 +24,20 @@ for(const kind of ['oasis','land'])test(`${kind} possession defers every city ev
 test('deferred city decisions reject unknown IDs, extra payload, wrong types and unbounded prose',()=>{
  const s=possessed('oasis');s.event=createCityEvent(s,'potterVisit');advanceTime(s,.1);
  for(const mutate of [e=>e.id='unknown',e=>e.title=3,e=>e.text=null,e=>e.extra=true,e=>e.title='x'.repeat(201),e=>e.text='x'.repeat(5001)]){const bad=structuredClone(s);mutate(bad.relicQuest.deferredEvent);assert.equal(decode(JSON.stringify(bad)),null);}
+});
+
+test('an invitation held for a relic returns in the selected event mode with its saved time',()=>{
+ let s=prepared();
+ setEventAutoPause(s,false);
+ presentCityEvent(s,{...createCityEvent(s,'potterVisit'),expiresAt:s.simTime+24});
+ assert.ok(s.eventOffer);
+ assert.ok(startRelicQuest(s,s.citizens[0].id,'oasis').ok);
+ assert.equal(getCityEvent(s),null);
+ assert.equal(s.relicQuest.deferredEvent.remainingSeconds,24);
+ s=decode(encode(s));assert.ok(s);
+ advanceTime(s,1);
+ assert.ok(cancelRelicQuest(s).ok);
+ assert.equal(s.event,null);assert.equal(getCityEvent(s).id,'potterVisit');
+ assert.equal(eventSecondsLeft(s),24);
+ assert.ok(decode(encode(s)));
 });

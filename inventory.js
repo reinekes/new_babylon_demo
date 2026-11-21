@@ -41,8 +41,18 @@ export function syncInventory(s){
   if(!stores.length){if(target>0)throw new Error('No operational inventory store');continue;}
   if(first){if(total===0)stores[0].stock[k]+=target;else if(target>total)stores[0].stock[k]+=target-total;}
   else if(target>total)stores[0].stock[k]+=target-total;
-  else if(target<total){let remaining=total-target;for(const b of stores){const taken=Math.min(b.stock[k],remaining);if(k==='food'){takeGrain(b,'grainStock',taken,b.stock[k]);if(b.fishStock)takeFish(b,'fishStock',taken,b.stock[k]);if(b.giftStock)takeGiftFood(b,'giftStock',taken,b.stock[k]);}if(b.creatorStock)takeCreatorStock(b,k,taken);b.stock[k]-=taken;remaining-=taken;if(remaining<=0)break;}}
-  s.resources[k]=first?Math.max(total,target):target;
+  else if(target<total){
+   let remaining=target===0?Infinity:total-target;
+   for(const b of stores){
+    const taken=Math.min(b.stock[k],remaining);
+    if(k==='food'){takeGrain(b,'grainStock',taken,b.stock[k]);if(b.fishStock)takeFish(b,'fishStock',taken,b.stock[k]);if(b.giftStock)takeGiftFood(b,'giftStock',taken,b.stock[k]);}
+    if(b.creatorStock)takeCreatorStock(b,k,taken);
+    b.stock[k]-=taken;remaining-=taken;if(remaining<=0)break;
+   }
+  }
+  // Rounding across several stores can leave the physical sum one ULP away
+  // from the request. A second sync must not move that difference again.
+  s.resources[k]=total===target?total:stores.reduce((sum,b)=>sum+b.stock[k],0);
  }
  return s;
 }

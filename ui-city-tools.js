@@ -80,11 +80,13 @@ export function sortedCityCitizens(s,filter={}){
  });
 }
 export function birthFoodHTML(s,home){
+ if(home?.reedCamp)return '<p class="city-tools-muted" data-birth-food>Для рождения ребёнка семье нужен собственный дом.</p>';
  if(home?.type==='communalHouse')return `<p class="city-tools-muted" data-birth-food>В общинном доме у семей не рождаются дети. Довольство жильцов ниже на ${COMMUNAL_MOOD_PENALTY} пунктов. После переселения в семейный двор действуют обычные условия.</p>`;
  const local=usesCourtyardBirthFood(s);
  if(local&&!home)return '<p class="city-tools-muted" data-birth-food>Еда для рождения проверяется в каждом дворе. Запас и порог видны в карточке дома.</p>';
  const {available,needed,enough}=birthFoodStatus(s,home),amount=n=>Number(n.toFixed(2));
- return `<p class="city-tools-muted" data-birth-food>Еда для рождения · ${local?'запас двора':'городской запас'} ≈ ${amount(available)} ед. · порог ≈ ${amount(needed)} ед. · ${enough?'порог достигнут':'еды меньше порога'}</p>`;
+ const familyNote=home?' В отдельном доме у сытых и здоровых семей дети рождаются чаще.':'';
+ return `<p class="city-tools-muted" data-birth-food>Еда для рождения · ${local?'запас двора':'городской запас'} ≈ ${amount(available)} ед. · порог ≈ ${amount(needed)} ед. · ${enough?'порог достигнут':'еды меньше порога'}.${familyNote}</p>`;
 }
 const workKey=c=>c.workplace||c.work||c.site||c.guardPost;
 const searchMatch=(query,fields)=>query.trim().toLocaleLowerCase('ru').split(/\s+/).every(word=>fields.join(' ').toLocaleLowerCase('ru').includes(word));

@@ -87,3 +87,12 @@ test('playable pending events select their declared recording without starting t
   s.funeral={stage:'procession',deceased:[{id:2}]};assert.equal(eventMusicTheme(s,2),'funeral2');
  }
 });
+
+test('a timed decision keeps its musical theme until the decision expires',()=>{
+ const s=town(),ordinary=eventMusicTheme(s);
+ s.autoPauseEvents=false;
+ s.eventOffer={id:'festival',expiresAt:60};
+ assert.equal(eventMusicTheme(s),'nightLights');
+ delete s.eventOffer;
+ assert.equal(eventMusicTheme(s),ordinary);
+});

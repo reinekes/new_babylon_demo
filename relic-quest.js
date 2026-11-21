@@ -12,7 +12,8 @@ import {affectResidents} from './wellbeing.js';
 import {validateFuneral} from './funerals.js';
 import {startDesertFuneral} from './desert-funeral.js';
 import {relicPathTo,relicSegmentClear,relicExitRoute,relicSwimming} from './relic-navigation.js';
-import {cityEventDefinition} from './city-events.js';
+import {cityEventDefinition,presentCityEvent,getCityEvent} from './city-events.js';
+import {DAY_SECONDS} from './city-life.js';
 export const RELIC_FAITH_COST=250;
 export const RELIC_DIVINE_NAME='Пробуждающий глубины';
 export const LAND_RELIC_DIVINE_NAME='Хранящий память земли';
@@ -26,7 +27,16 @@ const eligible=c=>c&&c.age>=16&&c.age<55&&c.health>=60&&!c.recovering&&!busy(c)&
 const eligibleGuest=c=>c&&c.age>=16&&c.health>=60&&!c.recovering&&!busy(c)&&['home','resting','blocked','working'].includes(c.phase);
 const entries=s=>Object.entries(CONFIG).map(([id,config])=>({id,config,q:s[config.stateKey]}));
 export function activeRelicQuest(s){return entries(s).find(v=>isActive(v.q))?.q||null;}
-export function deferRelicEvent(s){const q=activeRelicQuest(s);if(q&&s.event){q.deferredEvent??=s.event;s.event=null;return true;}return false;}
+export function deferRelicEvent(s){
+ const q=activeRelicQuest(s),pending=getCityEvent(s);
+ if(!q||!pending)return false;
+ if(!q.deferredEvent){
+  const {expiresAt,...event}=pending;
+  if(expiresAt!==undefined)event.remainingSeconds=Math.max(0,expiresAt-s.simTime);
+  q.deferredEvent=event;
+ }
+ s.event=null;delete s.eventOffer;return true;
+}
 function selected(s,id){return id?entries(s).find(v=>v.id===id)||null:entries(s).find(v=>isActive(v.q))||entries(s)[0];}
 function news(s,title,text,kind='good'){s.news??=[];s.news.unshift({title,text,kind,year:s.year,season:s.season,tick:s.tick});s.news=s.news.slice(0,80);}
 function templePort(s,key){return networkFor(s).ports.find(p=>!p.building.siteKey&&buildingKey(p.building)===key&&readyTemple(p.building));}
@@ -77,6 +87,7 @@ export function relicStartReason(s,id,questId='oasis'){
 export function startRelicQuest(s,id,questId='oasis'){
  const reason=relicStartReason(s,id,questId);if(reason)return {ok:false,reason};const {q}=selected(s,questId),c=s.citizens.find(c=>c.id===id);
  s.resources.faith-=RELIC_FAITH_COST;Object.assign(q,{phase:'controlled',actorId:id,spentFaith:q.spentFaith+RELIC_FAITH_COST,attempts:q.attempts+1,startedAt:s.simTime||0,elapsed:0,temple:null,celebrants:[],lastPosition:{x:c.x,y:c.y},returnReason:null,deferredFuneral:null,rejoicingReady:false});
+ if(s.eventOffer)deferRelicEvent(s);
  c.work=null;c.site=null;c.sitePort=null;c.siteDuty=null;c.phase='relic';c.route=[];c.routeIndex=0;c.workElapsed=0;invalidateAssignments(s);news(s,'Воля бога в человеке',`Город живёт своим чередом. Веди избранного ${questId==='land'?'к древней печати на суше':'в воду оазиса'}, найди артефакт и донеси его в храм.`);return {ok:true};
 }
 export function orderRelicMove(s,target){
@@ -102,7 +113,12 @@ export function deliverRelic(s,templeKey){
  const c=s.citizens.find(c=>c.id===q.actorId),p=templePort(s,templeKey);if(!c||!p)return {ok:false,reason:'Нужен готовый храм или зиккурат'};
  const route=relicPathTo(s,q,c,p);if(!route)return {ok:false,reason:'До этого храма нет доступного пути'};c.route=route;c.routeIndex=1;q.temple=templeKey;return {ok:true};
 }
-function restoreEvent(s,q){if(q.deferredEvent&&!s.event&&!s.lost){s.event=q.deferredEvent;q.deferredEvent=null;}}
+function restoreEvent(s,q){
+ if(!q.deferredEvent||getCityEvent(s)||s.lost)return;
+ const {remainingSeconds,...event}=q.deferredEvent;q.deferredEvent=null;
+ if(remainingSeconds!==undefined)event.expiresAt=s.simTime+remainingSeconds;
+ presentCityEvent(s,event);
+}
 function restoreFuneral(s,q){const f=q.deferredFuneral;if(!f||s.funeral)return;q.deferredFuneral=null;if(f.style==='desert')startDesertFuneral(s,f.deceased,{family:f.scope==='family'});else s.funeral=f;}
 function safeArtifactDrop(s,q,p){
  if(isDryPoint(s,p.x,p.y))return {x:p.x,y:p.y};
@@ -168,7 +184,7 @@ function validateQuest(s,q,id,config){
  if(q.celebrants.length&&!['rejoicing','celebrating'].includes(q.phase))return false;
  if(q.temple!==null&&(!['carrying','celebrating','completed','returning'].includes(q.phase)||!s.buildings.some(b=>buildingKey(b)===q.temple&&['shrine','ziggurat'].includes(b.type)&&isOperational(b))))return false;
  if(q.lastPosition!==null&&!point(q.lastPosition,s))return false;
- if(q.deferredEvent!==null){const e=q.deferredEvent;if(!e||typeof e!=='object'||Array.isArray(e)||Object.keys(e).length!==3||!['id','title','text'].every(key=>Object.hasOwn(e,key))||!cityEventDefinition(e.id)||typeof e.title!=='string'||e.title.length>200||typeof e.text!=='string'||e.text.length>5000)return false;}
+ if(q.deferredEvent!==null){const e=q.deferredEvent;if(!e||typeof e!=='object'||Array.isArray(e)||Object.keys(e).length!==3+Number(e.remainingSeconds!==undefined)||e.remainingSeconds!==undefined&&(!Number.isFinite(e.remainingSeconds)||e.remainingSeconds<0||e.remainingSeconds>DAY_SECONDS+1e-7)||!['id','title','text'].every(key=>Object.hasOwn(e,key))||!cityEventDefinition(e.id)||typeof e.title!=='string'||e.title.length>200||typeof e.text!=='string'||e.text.length>5000)return false;}
  if(q.returnReason!==undefined&&q.returnReason!==null&&!['cancel','funeral'].includes(q.returnReason)||q.phase==='returning'&&!['cancel','funeral'].includes(q.returnReason))return false;
  if(q.rejoicingReady!==undefined&&typeof q.rejoicingReady!=='boolean')return false;
  if(q.deferredFuneral!==undefined&&q.deferredFuneral!==null&&(q.phase!=='returning'||q.returnReason!=='funeral'||!validateFuneral({...s,funeral:q.deferredFuneral})))return false;

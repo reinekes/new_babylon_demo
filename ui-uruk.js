@@ -1,6 +1,6 @@
 // Presentation only: existing controls, listeners and authoritative game fields survive.
 const icon=name=>`<img src="assets/ui/icons/${name}.svg" alt="" aria-hidden="true">`;
-export function createUrukInterface({document=globalThis.document,onResize=()=>{},getState=()=>({})}={}){
+export function createUrukInterface({document=globalThis.document,onResize=()=>{},getState=()=>({}),getEventAutoPause=()=>true,onEventAutoPause=()=>{}}={}){
  const d=document,body=d.body,$=id=>d.getElementById(id),listeners=[];
  const listen=(target,type,fn)=>{target.addEventListener(type,fn);listeners.push(()=>target.removeEventListener(type,fn));};
  body.classList.add('uruk-ui');body.dataset.urukPanel='';
@@ -32,7 +32,12 @@ export function createUrukInterface({document=globalThis.document,onResize=()=>{
  menu.querySelector('.uruk-drawer-heading').append(sound);
  const settings=d.createElement('details');settings.className='uruk-menu-settings';
  const settingsLabel=d.createElement('summary');settingsLabel.innerHTML=icon('gear')+'<span>Настройки и камера</span>';
- settings.append(settingsLabel);
+ const eventSetting=d.createElement('label');
+ eventSetting.className='event-pause-setting';
+ eventSetting.innerHTML='<input id="event-auto-pause" type="checkbox" aria-describedby="event-pause-hint"><span>Останавливать игру при событиях<small id="event-pause-hint">Без паузы решение можно принять в течение игровых суток.</small></span>';
+ const eventToggle=eventSetting.querySelector('input');
+ listen(eventToggle,'change',()=>onEventAutoPause(eventToggle.checked));
+ settings.append(settingsLabel,eventSetting);
  const viewOptions=d.querySelector('.game3d-options,.panel-dock-2d');
  const qualityLabel=viewOptions?.querySelector(':scope > span:first-child');
  if(qualityLabel&&viewOptions.classList.contains('game3d-options'))qualityLabel.textContent='Качество 3D';
@@ -61,7 +66,7 @@ export function createUrukInterface({document=globalThis.document,onResize=()=>{
  let opener=null,dialogReturnTarget=null;
  function close({restoreFocus=false}={}){body.dataset.urukPanel='';body.classList.remove('uruk-resources-open');resources.setAttribute('aria-expanded','false');resources.setAttribute('aria-label','Все ресурсы');for(const button of dock.querySelectorAll('[aria-expanded]'))button.setAttribute('aria-expanded','false');badge.setAttribute('aria-expanded','false');if(restoreFocus)opener?.focus();onResize();}
  function open(key,source){const current=body.dataset.urukPanel;close();if(current===key)return;opener=source||dock.querySelector(`[data-uruk-action="${key}"]`)||badge;body.dataset.urukPanel=key;opener?.setAttribute('aria-expanded','true');d.querySelector(`[data-uruk-drawer="${key}"] [data-uruk-close]`)?.focus();onResize();}
- function refresh(state=getState()){const name=state.name||'Безымянный дух',el=badge.querySelector('.uruk-god-name');if(el.textContent!==name)el.textContent=name;}
+ function refresh(state=getState()){eventToggle.checked=getEventAutoPause(state);const name=state.name||'Безымянный дух',el=badge.querySelector('.uruk-god-name');if(el.textContent!==name)el.textContent=name;}
  listen(dock,'click',event=>{const button=event.target.closest('[data-uruk-action]');if(!button)return;const key=button.dataset.urukAction;if(key==='people'||key==='city'){close();$(key==='people'?'open-residents':'open-city-tools').click();if(d.querySelector('dialog[open]'))dialogReturnTarget=button;}else open(key,button);});
  for(const button of d.querySelectorAll('[data-uruk-close]'))listen(button,'click',()=>close({restoreFocus:true}));
  listen(resources,'click',()=>{const expanded=!body.classList.contains('uruk-resources-open');close();opener=resources;body.classList.toggle('uruk-resources-open',expanded);resources.setAttribute('aria-expanded',String(expanded));resources.setAttribute('aria-label',expanded?'Закрыть запасы города':'Все ресурсы');});

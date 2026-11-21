@@ -15,3 +15,23 @@ test('building information closes the drawer so its detail stays visible and rec
  const {dom,document:d,ui}=setup(),info=d.createElement('button'),detail=d.querySelector('#tile-detail');info.className='building-info';info.textContent='?';d.querySelector('#buildings').append(info);detail.hidden=true;info.onclick=()=>{detail.hidden=false;detail.innerHTML='<button class="detail-close">Закрыть описание</button><h3>Врата Инанны</h3>';};
  ui.open('build');info.click();assert.equal(d.body.dataset.urukPanel,'');assert.equal(detail.hidden,false);assert.equal(d.activeElement,detail.querySelector('.detail-close'));ui.dispose();dom.window.close();
 });
+
+test('event auto-pause follows the active city and can be changed in an open settings drawer',()=>{
+ const dom=new JSDOM(readFileSync(new URL('../index.html',import.meta.url),'utf8')),{document}=dom.window;
+ let city={},changes=0;
+ const ui=createUrukInterface({document,getState:()=>city,getEventAutoPause:s=>s.autoPauseEvents!==false,
+  onEventAutoPause:enabled=>{changes++;city.autoPauseEvents=enabled;}});
+ try{
+  ui.open('menu');
+  const settings=document.querySelector('.uruk-menu-settings'),toggle=settings.querySelector('#event-auto-pause');
+  settings.open=true;
+  assert.equal(toggle.checked,true);
+  assert.ok(toggle.labels[0].textContent.includes('Останавливать игру при событиях'));
+  toggle.click();assert.equal(changes,1);assert.equal(city.autoPauseEvents,false);
+  assert.equal(document.body.dataset.urukPanel,'menu');
+  city={autoPauseEvents:true};ui.refresh();
+  assert.equal(toggle.checked,true);
+  assert.equal(changes,1);
+  assert.ok(document.getElementById('event-offer').hidden);
+ }finally{ui.dispose();dom.window.close();}
+});

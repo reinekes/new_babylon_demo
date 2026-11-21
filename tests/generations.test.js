@@ -139,3 +139,93 @@ test('new cities use delivered courtyard food for births and older towns use the
  delete old.demography.birthFoodRule;
  assert.ok(advanceGenerations(old).newborns.length>0);
 });
+
+test('a prosperous private household can have another child after four seasons, including with hunger in another house',()=>{
+ const make=()=>{
+  const s=createGame({start:'established'}),home=s.buildings.find(b=>b.type==='house'&&b.x===9);
+  s.demography.birthFoodRule='courtyard-v1';
+  s.demography.rngState=500; // first draw is ~0.43
+  s.demography.lastBirth['9,9']=0;s.tick=4;
+  home.pantry=home.pantryDelivered=5;
+  const father=s.citizens.find(c=>c.id===8);father.hunger=0;
+  return {s,home,father};
+ };
+ const attempt=edit=>{const h=make();edit(h);return advanceGenerations(h.s).newborns;};
+ assert.equal(attempt(()=>{}).length,1);
+ assert.equal(attempt(({s})=>{s.tick=3;}).length,0);
+ assert.equal(attempt(({s})=>{s.citizens[0].hunger=70;s.citizens[0].missedMeals=2;s.hungry=2;}).length,1);
+ for(const edit of [
+  ({s})=>{s.happiness=64;},({home})=>{home.pantry=0;},({father})=>{father.health=60;},
+  ({father})=>{father.lastMealQuality=.5;},({father})=>{father.mood=60;},
+  ({s})=>{s.citizens.find(c=>c.id===10).hunger=50;},
+  ({s})=>{const other=s.citizens[2];other.home='9,9';other.partner=null;s.citizens[3].partner=null;other.age=60;},
+ ])assert.equal(attempt(edit).length,0);
+ const normal=make();normal.father.health=60;normal.s.tick=8;normal.s.demography.rngState=1;
+ assert.equal(advanceGenerations(normal.s).newborns.length,1,'a household without the bonus still has the ordinary opportunity');
+});
+
+test('a mature town reunites split couples and dependent children in already occupied private homes',async()=>{
+ const {createNewCity}=await import('../new-game.js');
+ const s=createNewCity({mode:'mature',seed:137,centeredStart:true});
+ const pairs=s.citizens.filter(c=>c.sex==='f'&&c.partner!==null).map(c=>[c,s.citizens.find(p=>p.id===c.partner)]);
+ assert.equal(pairs.length,5);assert.ok(pairs.every(([a,b])=>a.home!==b.home));
+ for(const h of s.buildings.filter(b=>b.type==='house'))h.pantry=h.pantryDelivered=4;
+ s.demography.rngState=500;
+ const food=s.resources.food;const first=advanceGenerations(s);
+ assert.ok(pairs.every(([a,b])=>a.home===b.home));assert.equal(new Set(pairs.map(([c])=>c.home)).size,5);
+ assert.ok(s.citizens.filter(c=>c.age<16).every(c=>c.parents.every(id=>s.citizens.find(p=>p.id===id)?.home===c.home)));
+ assert.ok(first.newborns.length);assert.equal(s.resources.food,food);
+ syncCitizens(s);assert.deepEqual(decode(encode(s)),s);
+});
+
+test('reuniting a split couple respects a settled family, incoming beds and an unfinished delivery',()=>{
+ const s=createGame({start:'established'}),[a,b,x,y]=s.citizens;
+ s.citizens=[a,b,x,y];s.population=4;s.happiness=60;
+ for(const c of s.citizens){c.age=24;c.parents=[];}
+ a.home=x.home=y.home='8,8';b.home='9,9';
+ s.arrivalGroup={home:b.home,count:7};
+ advanceGenerations(s);
+ assert.equal(a.home,'8,8');assert.equal(b.home,'9,9','does not move into the home of the second married couple');
+ delete s.arrivalGroup;
+ a.districtJob=7;a.cargo={wood:3};const route=a.route;
+ advanceGenerations(s);
+ assert.equal(a.home,'8,8');assert.equal(a.districtJob,7);assert.deepEqual(a.cargo,{wood:3});assert.equal(a.route,route);
+ delete a.districtJob;a.cargo={};
+ advanceGenerations(s);
+ assert.equal(a.home,b.home);assert.equal(x.home,y.home);assert.notEqual(a.home,x.home);
+});
+
+test('a child of a previous union stays with their resident parent through remarriage',async()=>{
+ const {householdMovingFamily}=await import('../household-initiative.js');
+ function remarried(){
+  const s=createGame({start:'established'}),wife=s.citizens[1],husband=s.citizens[8],child=s.citizens[10];
+  s.citizens=[wife,husband,child];s.population=3;s.happiness=60;
+  wife.partner=husband.id;husband.partner=wife.id;
+  assert.deepEqual(child.parents,[husband.id,9]);assert.equal(child.home,husband.home);
+  return {s,wife,husband,child};
+ }
+ const {s,wife,husband,child}=remarried(),destination=wife.home;
+ assert.deepEqual(householdMovingFamily(s,wife,husband).map(c=>c.id),[1,8,10]);
+ assert.deepEqual(householdMovingFamily(s,husband,wife).map(c=>c.id),[8,1,10]);
+ const elsewhere={...child,id:11,parents:[husband.id,9],home:'10,9'};s.citizens.push(elsewhere);
+ assert.ok(!householdMovingFamily(s,wife,husband).includes(elsewhere),'a stepchild living in another household stays there');
+ s.citizens.pop();
+ husband.districtJob=5;husband.cargo={reed:1.25};const route=husband.route;
+ advanceGenerations(s);
+ assert.notEqual(wife.home,husband.home);assert.equal(child.home,husband.home);
+ assert.equal(husband.districtJob,5);assert.deepEqual(husband.cargo,{reed:1.25});assert.equal(husband.route,route);
+ delete husband.districtJob;husband.cargo={};
+ advanceGenerations(s);
+ assert.deepEqual(s.citizens.map(c=>c.home),[destination,destination,destination]);
+ assert.deepEqual(child.parents,[8,9]);
+ const busy=remarried();
+ busy.s.buildings.push({type:'house',level:1,x:10,y:9});
+ busy.husband.districtJob=5; // Empty hands on the way to the pickup.
+ advanceGenerations(busy.s);
+ assert.notEqual(busy.wife.home,busy.husband.home);
+ assert.equal(busy.child.home,busy.husband.home);assert.equal(busy.husband.districtJob,5);
+ const tight=remarried(),fathersHouse=tight.husband.home;
+ tight.s.arrivalGroup={home:tight.wife.home,count:6}; // Only one incoming bed; father and child need two.
+ advanceGenerations(tight.s);
+ assert.ok(tight.s.citizens.every(c=>c.home===fathersHouse));
+});

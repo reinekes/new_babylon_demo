@@ -9,17 +9,23 @@ import {lifeAnalyticsHTML} from '../ui-life-analytics.js';
 test('a child hears the first water story at dinner and keeps the source after the teller dies',async()=>{
  const {hearthEndingOffer,recordHearthEnding}=await import('../campaign.js');
  let s=createNewCity({mode:'awakening',seed:137});
- const choice=firstWaterHelpChoices(s)[0],child=s.citizens.find(c=>c.age<16&&c.home===s.citizens.find(p=>p.id===choice.helperId).home);
+ const choice=firstWaterHelpChoices(s)[0],helper=s.citizens.find(c=>c.id===choice.helperId);
+ const spouse=s.citizens.find(c=>c.id===helper.partner),child=s.citizens.find(c=>c.age<16&&c.home===helper.home);
+ assert.ok(spouse);
  assert.ok(child);
- const family=s.citizens.filter(c=>c.home===child.home&&c.age>=16);
- child.parents=family.map(c=>c.id).sort((a,b)=>a-b);
+ child.parents=[helper.id,spouse.id].sort((a,b)=>a-b);
  assert.ok(beginFirstWaterHelp(s,choice.helperId,choice.recipientId).ok);
- for(const b of s.buildings.filter(b=>b.type==='house')){b.pantry=40;b.pantryDelivered=40;}
+ for(const b of s.buildings.filter(b=>b.type==='house')){
+  b.pantry=b.pantryDelivered=40;
+  // Either spouse can host the family after reunification. Keep both ready for dinner.
+  if([helper.home,spouse.home].includes(b.x+','+b.y))b.water=b.waterDelivered=40;
+ }
  for(let i=0;i<1400&&!personalMemory(s,child.id);i++){
   if(s.godhood.stage!=='recognized')assert.equal(personalMemory(s,child.id),null);
   advanceTime(s,.1);
  }
  const heard=personalMemory(s,child.id);
+ assert.ok(heard,'the child must hear the family story at a shared dinner');
  assert.equal(heard.role,'listener');
  assert.equal(heard.tellerId,choice.helperId);
  assert.deepEqual(heard.fact,personalMemory(s,choice.helperId).fact);

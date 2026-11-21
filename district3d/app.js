@@ -3,10 +3,10 @@ import {fieldBorderSignature} from '../game3d/field-shore.js';
 import {buildingDefinition} from '../building-presentation.js';
 import {displayName} from '../citizen-epithets.js';
 import {residentLinkHTML,bindResidentLinks} from '../ui-resident-links.js';
-import {advanceTime,resolveEvent,eventReason,yieldSummary} from '../engine.js';
+import {advanceTime,resolveEvent,eventReason,getCityEvent,eventSecondsLeft,yieldSummary} from '../engine.js';
 import {RESOURCE_NAMES,buildingKey} from '../definitions.js';
 import {constructionProgress} from '../construction.js';
-import {lightingAt} from '../city-life.js';
+import {DAY_SECONDS,lightingAt} from '../city-life.js';
 import {artisanSummary} from '../artisan.js';
 import {createDistrictMaterials} from './materials.js';
 import {createDistrictTerrain} from './terrain.js';
@@ -31,7 +31,7 @@ function refreshBuildings(){
 }
 function load(source){
  let next;if(source==='city'){let result;try{result=readCityCopy(localStorage);}catch{result={ok:false,reason:'Браузер не разрешил прочитать сохранение.'};}if(!result.ok){notice(result.reason);$('source').value=activeSource;return;}next=result.state;}else next=source==='stress'?makeStressDistrict():makeDemoDistrict();
- if(actors)actors.dispose();if(terrain)terrain.dispose();for(const v of views.values())v.dispose();views.clear();for(const l of homeLights.values())l.dispose();homeLights.clear();selected=null;following=null;$('detail').hidden=true;state=next;activeSource=source;terrain=createDistrictTerrain(B,scene,state,materials);walkways=shoreWalkways();actors=createDistrictActors(B,scene,materials,(x,y,ground)=>walkways.heightAt(x,y,terrain.mineralHeightAt(x,y,ground)));refreshBuildings();actors.update(state,state.simTime);lastShadowCount=-1;paused=!!state.event;home();last=performance.now();refreshUI();
+ if(actors)actors.dispose();if(terrain)terrain.dispose();for(const v of views.values())v.dispose();views.clear();for(const l of homeLights.values())l.dispose();homeLights.clear();selected=null;following=null;$('detail').hidden=true;state=next;activeSource=source;terrain=createDistrictTerrain(B,scene,state,materials);walkways=shoreWalkways();actors=createDistrictActors(B,scene,materials,(x,y,ground)=>walkways.heightAt(x,y,terrain.mineralHeightAt(x,y,ground)));refreshBuildings();actors.update(state,state.simTime);lastShadowCount=-1;paused=false;home();last=performance.now();refreshUI();
 }
 function lightScene(){
  const l=lightingAt(light==='auto'?state.simTime:({day:10,sunset:22.5,night:37.5}[light]));const n=l.night||0,warm=light==='sunset'?1:l.warm||0;
@@ -54,7 +54,19 @@ function detail(){if(!selected)return;let title,body,label;
 bindResidentLinks(document,{getState:()=>state,onLiving:c=>{following=null;selected={citizenId:c.id};camera.setTarget(new B.Vector3(c.x*6,.8,c.y*6));detail();}});
 function refreshUI(){
  $('pause').textContent=paused?'Продолжить':'Пауза';$('pause').setAttribute('aria-pressed',String(paused));const seasons=['Весна','Лето','Осень','Зима'];$('city-stats').textContent=`Год ${state.year} · ${seasons[state.season]} · ${state.population} жителей · ${state.buildings.length} построек · еда ${Math.floor(state.resources.food)} · ${activeSource==='demo'?'демонстрационный квартал':activeSource==='stress'?'нагрузочная сцена 4×':'копия вашего города'}`;
- $('event').hidden=!state.event;if(state.event){$('event-title').textContent=state.event.title;$('event-text').textContent=state.event.text+' '+eventReason(state);$('event-accept').disabled=!!eventReason(state);}detail();
+ const ev=getCityEvent(state);$('event').hidden=!ev;
+ if(ev){
+  const reason=eventReason(state),remaining=eventSecondsLeft(state);
+  $('event-title').textContent=ev.title;
+  $('event-text').textContent=[ev.text,reason,remaining===null?'':`Осталось игровых часов: ${Math.ceil(remaining*24/DAY_SECONDS)}.`].filter(Boolean).join(' ');
+  $('event-accept').disabled=!!reason;
+  for(const choice of ['accept','skip'])$(`event-${choice}`).onclick=()=>{
+   const result=resolveEvent(state,choice,ev);
+   if(!result.ok)notice(result.reason);
+   refreshUI();
+  };
+ }
+ detail();
 }
 function quality(){const low=$('quality').value==='low';scene.shadowsEnabled=!low;glow.isEnabled=!low;engine.setHardwareScalingLevel(1/Math.min(devicePixelRatio||1,low?1:1.5));engine.resize();}
 function animate(now){const start=performance.now(),dt=Math.min(.15,Math.max(0,(now-(last||now))/1000));last=now;if(document.hidden)return;if(activeSource==='stress')state.event=null;
@@ -72,7 +84,6 @@ async function main(){
  materials=createDistrictMaterials(B,scene);const benchmark=new URLSearchParams(location.search).has('benchmark');if(benchmark){$('source').insertAdjacentHTML('beforeend','<option value="stress">Нагрузка · 200 жителей</option>');$('source').value='stress';speed=4;document.querySelector('[data-speed="1"]').classList.remove('active');document.querySelector('[data-speed="4"]').classList.add('active');}load(benchmark?'stress':'demo');quality();
  scene.onPointerObservable.add(info=>{if(info.type!==B.PointerEventTypes.POINTERPICK||!info.pickInfo?.hit)return;let m=info.pickInfo.pickedMesh;while(m&&!m.metadata)m=m.parent;if(m?.metadata){following=null;selected={...m.metadata};detail();}});
  $('pause').onclick=()=>{paused=!paused;refreshUI();};for(const b of document.querySelectorAll('[data-speed]'))b.onclick=()=>{speed=Number(b.dataset.speed);for(const el of document.querySelectorAll('[data-speed]'))el.classList.toggle('active',el===b);};$('source').onchange=e=>load(e.target.value);$('light').onchange=e=>light=e.target.value;$('quality').onchange=quality;$('home').onclick=home;$('zoom-in').onclick=()=>camera.radius=Math.max(12,camera.radius*.82);$('zoom-out').onclick=()=>camera.radius=Math.min(270,camera.radius/ .82);$('toggle-ui').onclick=()=>{document.body.classList.toggle('clean-view');$('toggle-ui').textContent=document.body.classList.contains('clean-view')?'Показать панели':'Скрыть панели';};$('overview').onclick=overview;
- for(const choice of ['accept','skip'])$(`event-${choice}`).onclick=()=>{const result=resolveEvent(state,choice);if(!result.ok)notice(result.reason);else{paused=false;refreshUI();}};
  $('photo').onclick=()=>{scene.render();$('district').toBlob(blob=>{if(!blob){notice('Не удалось сохранить кадр');return;}const a=document.createElement('a'),url=URL.createObjectURL(blob);a.href=url;a.download=`new-babylon-3d-y${state.year}.png`;a.click();setTimeout(()=>URL.revokeObjectURL(url),10000);notice('Снимок сохранён');},'image/png');};
  document.addEventListener('keydown',e=>{if(['INPUT','SELECT','BUTTON'].includes(e.target.tagName))return;if(e.code==='Space'){e.preventDefault();paused=!paused;refreshUI();}if(e.key==='Escape'){document.body.classList.remove('clean-view');$('toggle-ui').textContent='Скрыть панели';selected=null;$('detail').hidden=true;}});window.addEventListener('resize',()=>engine.resize());document.addEventListener('visibilitychange',()=>{last=performance.now();windowStart=0;frames=0;cpuSamples=[];frameSamples=[];});
  await scene.whenReadyAsync();$('loading').hidden=true;last=performance.now();engine.runRenderLoop(()=>animate(performance.now()));

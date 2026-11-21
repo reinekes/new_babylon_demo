@@ -9,7 +9,7 @@ import {mournResidents} from './wellbeing.js';
 import {recordLifeDeath,snapshotLifeAnalytics} from './life-analytics.js';
 import {displayName} from './citizen-epithets.js';
 import {startFuneral} from './funerals.js';
-import {CITY_EVENTS,createCityEvent} from './city-events.js';
+import {CITY_EVENTS,createCityEvent,getCityEvent,presentCityEvent} from './city-events.js';
 import {startMiracleCelebration,miracleCelebrationTargetReason} from './miracle-celebration.js';
 import {isPestStore,pestActors} from './pests.js';
 import {arrivalHousing} from './arrival-hospitality.js';
@@ -20,7 +20,7 @@ export const TEST_EVENTS=CITY_EVENTS;
 export function testToolsReason(state){
  const controlled=relicCommandReason(state);if(controlled)return controlled;
  if(state.lost)return 'Поселение покинуто';
- if(state.event)return 'Сначала заверши текущее событие';
+ if(getCityEvent(state))return 'Сначала заверши текущее событие';
  if(state.funeral)return 'Дождись возвращения траурной процессии';
  if(state.festival)return 'Сначала заверши или отмени праздник';
  return '';
@@ -31,7 +31,7 @@ function note(state,text){state.news??=[];state.news.unshift({title:'Тести�
 export function triggerTestEvent(state,id){
  const reason=testToolsReason(state);if(reason)return denied(reason);
  const event=createCityEvent(state,id);if(!event)return denied('Неизвестное событие');
- state.event=event;return {ok:true,id};
+ presentCityEvent(state,event);return {ok:true,id};
 }
 
 // Scene previews skip only miracle unlocks, payment and cooldown. They keep the

@@ -1,3 +1,5 @@
+import {DAY_SECONDS} from './city-life.js';
+import {relicControlActive} from './city-command-lock.js';
 import {rememberResidentReaction} from './resident-reactions.js';
 import {affectResidents} from './wellbeing.js';
 import {availableFood} from './food-planning.js';
@@ -19,8 +21,35 @@ export const CITY_EVENTS=Object.freeze([
 ]);
 export const cityEventDefinition=id=>CITY_EVENTS.find(e=>e.id===id)||null;
 export const createCityEvent=(_s,id)=>{const d=cityEventDefinition(id);return d?{id:d.id,title:d.title,text:d.text}:null;};
+// Only the modal decision occupies s.event. Existing city commands and work
+// continue normally while an optional offer waits in s.eventOffer.
+export const eventAutoPause=s=>s.autoPauseEvents!==false;
+export const getCityEvent=s=>s.event||s.eventOffer||null;
+export const eventSecondsLeft=s=>s.eventOffer?Math.max(0,s.eventOffer.expiresAt-s.simTime):null;
+
+export function presentCityEvent(s,event){
+ if(!event||getCityEvent(s)||s.lost)return false;
+ if(eventAutoPause(s)||relicControlActive(s))s.event=event;
+ else{
+  event.expiresAt??=s.simTime+DAY_SECONDS;
+  s.eventOffer=event;
+ }
+ return true;
+}
+
+export function validEventWindow(s){
+ if(s.autoPauseEvents!==undefined&&typeof s.autoPauseEvents!=='boolean')return false;
+ if(s.event!==null&&(!s.event||typeof s.event!=='object'||Array.isArray(s.event)))return false;
+ const offer=s.eventOffer,active=getCityEvent(s);
+ if(s.event&&!eventAutoPause(s)&&!relicControlActive(s))return false;
+ if(offer!==undefined&&(!offer||eventAutoPause(s)||s.event||s.lost||!Number.isFinite(offer.expiresAt)))return false;
+ if(!active)return s.event===null;
+ if(!cityEventDefinition(active.id)||typeof active.title!=='string'||typeof active.text!=='string')return false;
+ return active.expiresAt===undefined||Number.isFinite(active.expiresAt)&&active.expiresAt>=0&&active.expiresAt<=s.simTime+DAY_SECONDS+1e-7;
+}
+
 export const isAdditionalCityEvent=id=>!!cityEventDefinition(id)?.cost;
-export function cityEventReason(s,id=s.event?.id){
+export function cityEventReason(s,id=getCityEvent(s)?.id){
  const d=cityEventDefinition(id);if(!d?.cost)return '';
  syncInventory(s);
  for(const [key,amount]of Object.entries(d.cost))if((key==='food'?availableFood(s):s.resources[key]||0)<amount)return `Нужно ${amount} ${RESOURCE_NAMES[key]||key}`;
@@ -54,7 +83,7 @@ const THREAT_CHOICES=Object.freeze({
 
 export const threatSiteLabel=kind=>kind==='harvestThanks'?'поле':'водозабор';
 export function cityThreatQuote(s){
- const kind=s.event?.id;
+ const kind=getCityEvent(s)?.id;
  const choice=Object.hasOwn(THREAT_CHOICES,kind)?THREAT_CHOICES[kind]:null;
  if(!s.fearCrisis||!choice)return null;
  for(const site of s.buildings){
