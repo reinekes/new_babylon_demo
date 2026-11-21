@@ -538,7 +538,231 @@
     "selection2d": {
       "mode": "2d",
       "base": "https://reinekes.github.io/new_babylon_demo",
-      "checks": []
+      "checks": [
+        {
+          "label": "single-selection",
+          "mode": true,
+          "selected": "road:11,9|12,9",
+          "route": 0,
+          "planned": 0,
+          "open": true,
+          "queued": 0,
+          "finished": 0,
+          "meshes": null,
+          "picked": {
+            "x": 11,
+            "y": 8.5
+          },
+          "card": "Участок дороги"
+        },
+        {
+          "label": "single-ordered",
+          "mode": false,
+          "selected": null,
+          "route": 0,
+          "planned": 0,
+          "open": true,
+          "queued": 1,
+          "finished": 0,
+          "meshes": null,
+          "picked": {
+            "x": 11,
+            "y": 8.5
+          },
+          "card": "Участок дороги"
+        },
+        {
+          "label": "single-complete",
+          "mode": false,
+          "selected": null,
+          "route": 0,
+          "planned": 0,
+          "open": true,
+          "queued": 0,
+          "finished": 1,
+          "meshes": null,
+          "picked": {
+            "x": 11,
+            "y": 8.5
+          },
+          "card": "Участок дороги"
+        },
+        {
+          "label": "route-preview",
+          "mode": true,
+          "selected": null,
+          "route": 2,
+          "planned": 0,
+          "open": true,
+          "queued": 0,
+          "finished": 1,
+          "meshes": null,
+          "picked": {},
+          "card": "Улучшить путь"
+        },
+        {
+          "label": "route-ordered",
+          "mode": false,
+          "selected": null,
+          "route": 0,
+          "planned": 0,
+          "open": false,
+          "queued": 2,
+          "finished": 1,
+          "meshes": null,
+          "picked": {},
+          "card": "Улучшить путь"
+        },
+        {
+          "label": "route-complete",
+          "mode": false,
+          "selected": null,
+          "route": 0,
+          "planned": 0,
+          "open": false,
+          "queued": 0,
+          "finished": 3,
+          "meshes": null,
+          "picked": {},
+          "card": "Улучшить путь"
+        },
+        {
+          "label": "canceled",
+          "mode": false,
+          "selected": null,
+          "route": 0,
+          "planned": 0,
+          "open": false,
+          "queued": 0,
+          "finished": 3,
+          "meshes": null,
+          "picked": {},
+          "card": "Участок дороги"
+        },
+        {
+          "label": "dismissed",
+          "mode": false,
+          "selected": null,
+          "route": 0,
+          "planned": 0,
+          "open": false,
+          "queued": 0,
+          "finished": 3,
+          "meshes": null,
+          "picked": {},
+          "card": "Участок дороги"
+        },
+        {
+          "label": "closed-escaped",
+          "mode": false,
+          "selected": null,
+          "route": 0,
+          "planned": 0,
+          "open": false,
+          "queued": 0,
+          "finished": 3,
+          "meshes": null,
+          "picked": {},
+          "card": "Участок дороги"
+        }
+      ],
+      "ticks": [
+        9.75,
+        9.75
+      ],
+      "edges": {
+        "one": {
+          "x": 709.8449008181038,
+          "y": 436.0960490392798,
+          "id": "road:11,9|12,9",
+          "level": 1,
+          "built": false,
+          "bendM": 0.5334288800538403,
+          "errM": 0,
+          "t": 0.6,
+          "world": {
+            "x": 10.943615224685072,
+            "y": 8.411095186657693
+          },
+          "pick": {
+            "x": 10.943615224685072,
+            "y": 8.411095186657693
+          }
+        },
+        "start": {
+          "x": 676.6943885472037,
+          "y": 419.8847436799132,
+          "id": "road:10,9|11,9",
+          "level": 1,
+          "built": false,
+          "bendM": 0.48034653556930706,
+          "errM": 1.0658141036401503e-14,
+          "t": 0.4,
+          "world": {
+            "x": 10.146626700366625,
+            "y": 8.419942244071782
+          },
+          "pick": {
+            "x": 10.146626700366625,
+            "y": 8.419942244071784
+          }
+        },
+        "end": {
+          "x": 626.2309701492536,
+          "y": 397.9464552238806,
+          "id": "road:10,9|9,9",
+          "level": 1,
+          "built": false,
+          "bendM": 0,
+          "errM": 0,
+          "t": 0.5,
+          "world": {
+            "x": 9,
+            "y": 8.5
+          },
+          "pick": {
+            "x": 9,
+            "y": 8.5
+          }
+        },
+        "cancelEdge": {
+          "x": 626.2309701492536,
+          "y": 418.5154850746269,
+          "id": "road:10,10|10,9",
+          "level": 1,
+          "built": false,
+          "bendM": 0,
+          "errM": 0,
+          "t": 0.5,
+          "world": {
+            "x": 9.5,
+            "y": 9
+          },
+          "pick": {
+            "x": 9.5,
+            "y": 9
+          }
+        },
+        "closedEdge": {
+          "x": 626.2309701492536,
+          "y": 418.5154850746269,
+          "id": "road:10,10|10,9",
+          "level": 1,
+          "built": false,
+          "bendM": 0,
+          "errM": 0,
+          "t": 0.5,
+          "world": {
+            "x": 9.5,
+            "y": 9
+          },
+          "pick": {
+            "x": 9.5,
+            "y": 9
+          }
+        }
+      },
+      "success": true
     },
     "obstacles": {
       "origin": "https://reinekes.github.io/new_babylon_demo",
