@@ -1,0 +1,637 @@
+{
+  "release": "earthen-streets-20261121",
+  "commit": "86b7417e6da73039f5eeef4e604b14bec315db9d",
+  "workflow": "https://github.com/reinekes/new_babylon_demo/actions/runs/44880901813",
+  "publishedFilesWithMatchingSHA256": 38,
+  "webgl": {
+    "origin": "https://reinekes.github.io/new_babylon_demo",
+    "tag": "public",
+    "city": {
+      "junction": {
+        "renderer": "3d",
+        "webglVersion": 2,
+        "gl": 0,
+        "visuals": {
+          "builtSources": 5,
+          "builtVisibleDraws": 1,
+          "footpathVertices": 343
+        },
+        "materials": [
+          {
+            "name": "game-footpath-trodden-soil",
+            "color": "assets/3d/textures/street-silt-color.webp",
+            "colorReady": true,
+            "normal": "assets/3d/textures/street-silt-normal.webp",
+            "normalReady": true
+          },
+          {
+            "name": "game-road-compacted-earth",
+            "color": "assets/3d/textures/street-silt-color.webp",
+            "colorReady": true,
+            "normal": "assets/3d/textures/street-silt-normal.webp",
+            "normalReady": true
+          },
+          {
+            "name": "game-road-clay-gravel",
+            "color": null,
+            "colorReady": false,
+            "normal": null,
+            "normalReady": false
+          },
+          {
+            "name": "game-road-bedded-stone",
+            "color": null,
+            "colorReady": false,
+            "normal": null,
+            "normalReady": false
+          }
+        ],
+        "roadPasses": 238,
+        "builtEdges": 5,
+        "population": 12,
+        "buildings": 5,
+        "sim": 65,
+        "paused": "Продолжить время",
+        "ordinaryUI": true,
+        "saveSHA256": "b742008876b9f63a8aea0c47bb858b48856629ef6ce4fe9d5978c48ea374dd71",
+        "errors": [],
+        "publicGetRetries": [
+          {
+            "path": "/new_babylon_demo/assets/ui/fonts/lora-cyrillic.woff2",
+            "initial": "Failed",
+            "received": 21232
+          },
+          {
+            "path": "/new_babylon_demo/assets/ui/fonts/golos-latin.woff2",
+            "initial": "Failed",
+            "received": 37916
+          },
+          {
+            "path": "/new_babylon_demo/assets/ui/fonts/lora-latin.woff2",
+            "initial": "Failed",
+            "received": 37788
+          },
+          {
+            "path": "/new_babylon_demo/assets/ui/fonts/golos-cyrillic.woff2",
+            "initial": "Failed",
+            "received": 22032
+          }
+        ],
+        "cameras": [
+          {
+            "label": "main-junction",
+            "x": 10.45,
+            "z": 10,
+            "alpha": 0.79,
+            "beta": 0.86,
+            "radius": 24,
+            "anchors": [
+              {
+                "x": 10,
+                "y": 10.5,
+                "px": 773.5,
+                "py": 343.5
+              },
+              {
+                "x": 10.5,
+                "y": 10.5,
+                "px": 707.4,
+                "py": 393.02
+              },
+              {
+                "x": 10.5,
+                "y": 10,
+                "px": 632.94,
+                "py": 343.07
+              },
+              {
+                "x": 10.5,
+                "y": 8.5,
+                "px": 459.71,
+                "py": 226.86
+              },
+              {
+                "x": 12,
+                "y": 8.5,
+                "px": 212.33,
+                "py": 341.8
+              },
+              {
+                "x": 12.9,
+                "y": 8.5,
+                "px": 9.86,
+                "py": 435.86
+              }
+            ],
+            "activeSurfaces": {
+              "game-road-compacted-earth": 1,
+              "game-footpath-trodden-soil": 1
+            },
+            "file": "/tmp/nb-earth-public-shots/main-junction-public.webp"
+          },
+          {
+            "label": "field-trail",
+            "x": 11.48,
+            "z": 8.43,
+            "alpha": 1.18,
+            "beta": 0.7,
+            "radius": 18,
+            "anchors": [
+              {
+                "x": 10,
+                "y": 10.5,
+                "px": 1435.63,
+                "py": 721.46
+              },
+              {
+                "x": 10.5,
+                "y": 10.5,
+                "px": 1302.97,
+                "py": 801.87
+              },
+              {
+                "x": 10.5,
+                "y": 10,
+                "px": 1153.02,
+                "py": 621.42
+              },
+              {
+                "x": 10.5,
+                "y": 8.5,
+                "px": 869.77,
+                "py": 280.56
+              },
+              {
+                "x": 12,
+                "y": 8.5,
+                "px": 513.68,
+                "py": 395.09
+              },
+              {
+                "x": 12.9,
+                "y": 8.5,
+                "px": 252.14,
+                "py": 479.21
+              }
+            ],
+            "activeSurfaces": {
+              "game-road-compacted-earth": 1,
+              "game-footpath-trodden-soil": 1
+            },
+            "file": "/tmp/nb-earth-public-shots/field-trail-public.webp"
+          }
+        ]
+      },
+      "village": {
+        "renderer": "3d",
+        "webglVersion": 2,
+        "gl": 0,
+        "visuals": {
+          "builtSources": 0,
+          "builtVisibleDraws": 0,
+          "footpathVertices": 2184
+        },
+        "materials": [
+          {
+            "name": "game-footpath-trodden-soil",
+            "color": "assets/3d/textures/street-silt-color.webp",
+            "colorReady": true,
+            "normal": "assets/3d/textures/street-silt-normal.webp",
+            "normalReady": true
+          },
+          {
+            "name": "game-road-compacted-earth",
+            "color": null,
+            "colorReady": false,
+            "normal": null,
+            "normalReady": false
+          },
+          {
+            "name": "game-road-clay-gravel",
+            "color": null,
+            "colorReady": false,
+            "normal": null,
+            "normalReady": false
+          },
+          {
+            "name": "game-road-bedded-stone",
+            "color": null,
+            "colorReady": false,
+            "normal": null,
+            "normalReady": false
+          }
+        ],
+        "roadPasses": 518.1402845799893,
+        "builtEdges": 0,
+        "population": 50,
+        "buildings": 15,
+        "sim": 73.49999999999838,
+        "paused": "Продолжить время",
+        "ordinaryUI": true,
+        "saveSHA256": "1779addb59102d4fba57547f75e5fe3b977312e6b57c0b2da943425ba6a811a9",
+        "errors": [],
+        "publicGetRetries": [
+          {
+            "path": "/new_babylon_demo/assets/ui/fonts/lora-cyrillic.woff2",
+            "initial": "Failed",
+            "received": 21232
+          },
+          {
+            "path": "/new_babylon_demo/assets/ui/fonts/golos-latin.woff2",
+            "initial": "Failed",
+            "received": 37916
+          },
+          {
+            "path": "/new_babylon_demo/assets/ui/fonts/lora-latin.woff2",
+            "initial": "Failed",
+            "received": 37788
+          },
+          {
+            "path": "/new_babylon_demo/assets/ui/fonts/golos-cyrillic.woff2",
+            "initial": "Failed",
+            "received": 22032
+          }
+        ],
+        "cameras": [
+          {
+            "label": "village",
+            "x": 6.48,
+            "z": 5.55,
+            "alpha": 1.25,
+            "beta": 0.86,
+            "radius": 31,
+            "anchors": [
+              {
+                "x": 4.5,
+                "y": 4.5,
+                "px": 831.33,
+                "py": 206.48
+              },
+              {
+                "x": 5.5,
+                "y": 5.5,
+                "px": 772.87,
+                "py": 303.77
+              },
+              {
+                "x": 6.5,
+                "y": 5.5,
+                "px": 634.72,
+                "py": 333.61
+              },
+              {
+                "x": 7.5,
+                "y": 5.5,
+                "px": 483.3,
+                "py": 366.31
+              },
+              {
+                "x": 7.5,
+                "y": 6.5,
+                "px": 515.53,
+                "py": 486.9
+              },
+              {
+                "x": 8.5,
+                "y": 6.5,
+                "px": 320.89,
+                "py": 536.53
+              }
+            ],
+            "activeSurfaces": {
+              "game-footpath-trodden-soil": 1
+            },
+            "file": "/tmp/nb-earth-public-shots/village-public.webp"
+          },
+          {
+            "label": "village-turn",
+            "x": 6.95,
+            "z": 5.65,
+            "alpha": 1.73,
+            "beta": 0.66,
+            "radius": 18.1,
+            "anchors": [
+              {
+                "x": 4.5,
+                "y": 4.5,
+                "px": 1230.06,
+                "py": 204.38
+              },
+              {
+                "x": 5.5,
+                "y": 5.5,
+                "px": 1026.34,
+                "py": 355.94
+              },
+              {
+                "x": 6.5,
+                "y": 5.5,
+                "px": 760.33,
+                "py": 323.09
+              },
+              {
+                "x": 7.5,
+                "y": 5.5,
+                "px": 510.59,
+                "py": 292.24
+              },
+              {
+                "x": 7.5,
+                "y": 6.5,
+                "px": 431.36,
+                "py": 522.29
+              },
+              {
+                "x": 8.5,
+                "y": 6.5,
+                "px": 146.07,
+                "py": 478.33
+              }
+            ],
+            "activeSurfaces": {
+              "game-footpath-trodden-soil": 1
+            },
+            "file": "/tmp/nb-earth-public-shots/village-turn-public.webp"
+          }
+        ]
+      },
+      "levels": {
+        "renderer": "3d",
+        "webglVersion": 2,
+        "gl": 0,
+        "visuals": {
+          "builtSources": 5,
+          "builtVisibleDraws": 3,
+          "footpathVertices": 343
+        },
+        "materials": [
+          {
+            "name": "game-footpath-trodden-soil",
+            "color": "assets/3d/textures/street-silt-color.webp",
+            "colorReady": true,
+            "normal": "assets/3d/textures/street-silt-normal.webp",
+            "normalReady": true
+          },
+          {
+            "name": "game-road-compacted-earth",
+            "color": "assets/3d/textures/street-silt-color.webp",
+            "colorReady": true,
+            "normal": "assets/3d/textures/street-silt-normal.webp",
+            "normalReady": true
+          },
+          {
+            "name": "game-road-clay-gravel",
+            "color": "assets/3d/textures/street-aggregate-color.webp",
+            "colorReady": true,
+            "normal": "assets/3d/textures/street-aggregate-normal.webp",
+            "normalReady": true
+          },
+          {
+            "name": "game-road-bedded-stone",
+            "color": "assets/3d/textures/street-paving-color.webp",
+            "colorReady": true,
+            "normal": "assets/3d/textures/street-paving-normal.webp",
+            "normalReady": true
+          }
+        ],
+        "roadPasses": 238,
+        "builtEdges": 5,
+        "population": 12,
+        "buildings": 5,
+        "sim": 65,
+        "paused": "Продолжить время",
+        "ordinaryUI": true,
+        "saveSHA256": "c5f1625221f560ad78d7dd7ab6c005376a680318408dc2e42b5d481f1a127737",
+        "errors": [],
+        "publicGetRetries": [
+          {
+            "path": "/new_babylon_demo/assets/ui/fonts/lora-latin.woff2",
+            "initial": "Failed",
+            "received": 37788
+          },
+          {
+            "path": "/new_babylon_demo/assets/ui/fonts/golos-latin.woff2",
+            "initial": "Failed",
+            "received": 37916
+          },
+          {
+            "path": "/new_babylon_demo/assets/ui/fonts/golos-cyrillic.woff2",
+            "initial": "Failed",
+            "received": 22032
+          }
+        ],
+        "cameras": [
+          {
+            "label": "graded-streets",
+            "x": 10.54,
+            "z": 10.38,
+            "alpha": 1.52,
+            "beta": 0.66,
+            "radius": 24.3,
+            "anchors": [
+              {
+                "x": 10,
+                "y": 10.5,
+                "px": 747.72,
+                "py": 352.25
+              },
+              {
+                "x": 10.5,
+                "y": 10.5,
+                "px": 649.13,
+                "py": 356.29
+              },
+              {
+                "x": 10.5,
+                "y": 10,
+                "px": 643.8,
+                "py": 282.12
+              },
+              {
+                "x": 10.5,
+                "y": 8.5,
+                "px": 631.58,
+                "py": 111.82
+              },
+              {
+                "x": 12,
+                "y": 8.5,
+                "px": 402.09,
+                "py": 119.02
+              },
+              {
+                "x": 12.9,
+                "y": 8.5,
+                "px": 262.4,
+                "py": 123.4
+              }
+            ],
+            "activeSurfaces": {
+              "game-road-bedded-stone": 1,
+              "game-road-compacted-earth": 1,
+              "game-road-clay-gravel": 1,
+              "game-footpath-trodden-soil": 1
+            },
+            "file": "/tmp/nb-earth-public-shots/graded-streets-public.webp"
+          },
+          {
+            "label": "aggregate-and-paving",
+            "x": 11.52,
+            "z": 10.48,
+            "alpha": 1.31,
+            "beta": 0.79,
+            "radius": 9.8,
+            "anchors": [
+              {
+                "x": 10,
+                "y": 10.5,
+                "px": 1249.96,
+                "py": 233.32
+              },
+              {
+                "x": 10.5,
+                "y": 10.5,
+                "px": 1070.62,
+                "py": 267.65
+              },
+              {
+                "x": 10.5,
+                "y": 10,
+                "px": 955.23,
+                "py": 153.94
+              },
+              {
+                "x": 10.5,
+                "y": 8.5,
+                "px": 757.77,
+                "py": -40.66
+              },
+              {
+                "x": 12,
+                "y": 8.5,
+                "px": 375.69,
+                "py": -2.15
+              },
+              {
+                "x": 12.9,
+                "y": 8.5,
+                "px": 109.87,
+                "py": 24.65
+              }
+            ],
+            "activeSurfaces": {
+              "game-road-bedded-stone": 1,
+              "game-road-compacted-earth": 1,
+              "game-road-clay-gravel": 1,
+              "game-footpath-trodden-soil": 1
+            },
+            "file": "/tmp/nb-earth-public-shots/aggregate-and-paving-public.webp"
+          }
+        ],
+        "method": "Controlled material fixture. Four built edges in the same saved street carry levels 1, 2, 2 and 3 for simultaneous comparison; save validated by engine.decode."
+      }
+    }
+  },
+  "pixels": {
+    "sample": "Unobstructed portion of the main-junction capture, 91 scanlines; luminance 0–255",
+    "centreLuma": 108,
+    "leftShoulderLuma": 108.0,
+    "rightShoulderLuma": 120.0,
+    "referenceGroundLuma": 125,
+    "bothShouldersDarkerBy": -12.0,
+    "centreMeanAbsoluteHighpass2px": 2.862,
+    "naturalTrail": {
+      "sample": "Empty diagonal path between the houses and the watch-house, 76 fixed scanlines in village-turn.",
+      "centreLuma": 118.0,
+      "adjacentGroundLuma": 133.0
+    },
+    "fieldTransitionMaxFivePixelJump": 7
+  },
+  "canvas": {
+    "site": "https://reinekes.github.io/new_babylon_demo",
+    "releaseCommit": "86b7417e6da73039f5eeef4e604b14bec315db9d",
+    "matchesLocal": true,
+    "camera": {
+      "zoom": 3.8,
+      "pan": {
+        "x": -9.481999999999971,
+        "y": -78.44599999999991
+      },
+      "s": 3.4136666666666664,
+      "ox": 427.10800000000006,
+      "oy": -609.3409999999999,
+      "cx": 10.7,
+      "cy": 9.5,
+      "w": 1100,
+      "h": 850
+    },
+    "checks": {
+      "surfaceCount": 12,
+      "people": 12,
+      "simTime": 65,
+      "junction": {
+        "point": {
+          "x": 10.575039690901615,
+          "y": 10.469758640850696
+        },
+        "mainAndBranch": [
+          235,
+          221,
+          202
+        ],
+        "mainAlone": [
+          235,
+          221,
+          202
+        ]
+      },
+      "fieldJoin": {
+        "farBusy": [
+          236,
+          222,
+          204
+        ],
+        "nearBusy": [
+          238,
+          224,
+          208
+        ],
+        "nearQuiet": [
+          238,
+          225,
+          209
+        ],
+        "farQuiet": [
+          244,
+          236,
+          226
+        ],
+        "maxChannelStep": 1
+      },
+      "warmPaintCache": true,
+      "mediumZoom": {
+        "zoom": 2.4,
+        "roadWidthPx": 40.563382253538094,
+        "tint": [
+          233,
+          217,
+          196
+        ],
+        "framePixel": [
+          183,
+          163,
+          119
+        ],
+        "terrainPixel": [
+          216,
+          201,
+          158
+        ]
+      }
+    },
+    "exceptions": [],
+    "http": [],
+    "warn": [],
+    "saveSHA256": "b742008876b9f63a8aea0c47bb858b48856629ef6ce4fe9d5978c48ea374dd71"
+  }
+}
