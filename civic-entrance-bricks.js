@@ -62,15 +62,16 @@ export function civicEntranceBricks(s){
 
 // One opaque mesh for every threshold in town. The inset tops and shallow
 // chipped shoulders catch the light without adding a draw call for each brick.
-export function civicBrickGeometry(bricks,s){
+export function civicBrickGeometry(bricks,s,ground=null){
  const positions=[],colors=[],indices=[];
  for(const {polygon,at,shade,wear,rough} of bricks){
   const start=positions.length/3,n=polygon.length,pigment=pigments[shade];
-  const base=Math.max(0,surfaceElevation(at.x,at.y,s))+.082;
+  const base=ground?0:Math.max(0,surfaceElevation(at.x,at.y,s));
   for(const top of [false,true]){
    const inset=top?.92:1,light=(top?1:.83)*(1-.12*wear);
    for(const p of polygon){
-    positions.push((at.x+(p.x-at.x)*inset)*6,base+(top?.009+.007*rough-.006*wear:0),(at.y+(p.y-at.y)*inset)*6);
+    const x=(at.x+(p.x-at.x)*inset)*6,z=(at.y+(p.y-at.y)*inset)*6;
+    positions.push(x,(ground?ground.heightAt(x,z):base)+.082+(top?.009+.007*rough-.006*wear:0),z);
     colors.push(pigment[0]*light,pigment[1]*light,pigment[2]*light,1);
    }
   }

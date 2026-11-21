@@ -2,6 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {worldCell,pickedEntity,roadNear,previewFor,createGameRenderer} from '../game3d/renderer.js';
 import {createGame} from '../engine.js';
+import {createRoadGround} from '../district3d/road-ground.js';
+import {alluvialTerrainGeometry} from '../district3d/terrain.js';
 test('3D world picking agrees with logical tile centers and rejects map exterior',()=>{
  for(let y=0;y<32;y++)for(let x=0;x<40;x++)assert.deepEqual(worldCell({x:x*6,z:y*6}),{x,y});
  assert.equal(worldCell({x:-4,z:0}),null);assert.equal(worldCell({x:240,z:0}),null);assert.equal(worldCell({x:NaN,z:2}),null);
@@ -9,6 +11,32 @@ test('3D world picking agrees with logical tile centers and rejects map exterior
 test('picking retrieves actual citizen ID through mesh parents and selects only nearby roads',()=>{
  const root={metadata:{citizenId:17}},child={parent:root};assert.deepEqual(pickedEntity(child),{citizenId:17});
  const road={id:'a',a:{x:3,y:4},b:{x:4,y:4}},state={roads:[road]};assert.equal(roadNear(state,{x:3.4,y:4.1}),road);assert.equal(roadNear(state,{x:8,y:8}),null);
+});
+test('the road editing guide and selected route stay above the rendered hill and refresh when the ground changes',async()=>{
+ const {GameRenderer3D}=await import('../game3d/renderer.js');
+ const road={id:'crest',a:{x:29.5,y:15.5},b:{x:29.5,y:16.5}};
+ const state={buildings:[{type:'watchHouse',x:29,y:18}],roads:[road],world:{generationVersion:2,width:64,height:64,seed:137,lakes:[],river:{axis:'y',offset:15.757,slope:-.167,amplitude:.751,frequency:.239,phase:.884}}};
+ const terrain=createRoadGround(alluvialTerrainGeometry(state)),guides=[],selections=[];
+ const mesh=()=>({dispose(){},setEnabled(){}});
+ const r=Object.assign(Object.create(GameRenderer3D.prototype),{
+  state,selectedRoad:'crest',roadMode:true,landscape:{roadGround:terrain},
+  B:{Vector3:class {constructor(x,y,z){Object.assign(this,{x,y,z});}},Color3:{FromHexString:v=>v},MeshBuilder:{
+   CreateLineSystem(_,options){guides.push(options.lines[0]);return mesh();},
+   CreateLines(_,options){selections.push(options.points);return mesh();}
+  }},
+  marker:{setEnabled(){},isEnabled:()=>false},buildings:{highlight(){},clearPreview(){}},reach:{update:()=>''},reachNote:{}
+ });
+ r.updateSelection();r.updateSelection();
+ assert.equal(guides.length,1);assert.equal(selections.length,1);
+ for(const line of [guides[0],selections[0]]){
+  for(let j=1;j<line.length;j++)for(let t=0;t<=1;t+=.05){
+   const a=line[j-1],b=line[j],at=k=>a[k]+t*(b[k]-a[k]);
+   assert.ok(at('y')-terrain.heightAt(at('x'),at('z'))>.10,'a visible line over the crest');
+  }
+ }
+ r.landscape.roadGround={heightAt:()=>2};r.updateSelection();
+ assert.equal(guides.length,2);assert.equal(selections.length,2);
+ assert.ok(guides[1].every(p=>p.y>2));assert.ok(selections[1].every(p=>p.y>2));
 });
 test('building preview reports actual placement rules and never modifies state',()=>{
  const s=createGame({start:'established'}),before=JSON.stringify(s),at=s.buildings[0];const p=previewFor(s,'house',{x:at.x,y:at.y});assert.equal(p.allowed,false);

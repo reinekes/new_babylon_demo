@@ -1,3 +1,4 @@
+import {createRoadGround} from './road-ground.js';
 import {roadIsBuilt} from '../roads.js';
 import {footprintSize} from '../footprints.js';
 import {isStrictSumer} from '../scenario-profiles.js';
@@ -213,6 +214,8 @@ export function createDistrictTerrain(B,scene,initialState,materials,{renderRoad
   // Extra columns follow the exact water cross-section, so coarse land triangles
   // cannot poke through the separate transparent river as angular dry patches.
   const ground=alluvialTerrainGeometry(state),background=alluvialSceneryGeometry(state);
+  let roadGround;
+  const streetGround=()=>roadGround??=createRoadGround(ground);
   let bed=ground;
   if(curvedLakeBeds&&state.world?.lakes?.length){
     // Only the detailed soil is carved to the organic contour. Grass retains
@@ -412,12 +415,12 @@ export function createDistrictTerrain(B,scene,initialState,materials,{renderRoad
       const k=pos.length/3;
       for(const [t,side]of [[0,-1],[0,1],[1,-1],[1,1]]){
         const x=(a.x+dx*t)*TILE+nx*side,y=(a.y+dy*t)*TILE+nz*side;
-        pos.push(x,Math.max(.026,surfaceElevation(x/TILE,y/TILE,s)+.026),y);
+        pos.push(x,.026,y);
       }
       inds.push(k,k+2,k+1,k+1,k+2,k+3);
     }
-    if(inds.length)roadMeshes.push(geometry('connected-earth-streets',pos,inds,roadMaterial));
+    if(inds.length){const g=streetGround().fit({positions:pos,indices:inds});roadMeshes.push(geometry('connected-earth-streets',g.positions,g.indices,roadMaterial));}
   }
   updateRoads(state);
-  return {meshes,refreshRoadMask,mineralHeightAt:mineralView.heightAt,light(n){water.setFloat('night',n);},update(s,t){state=s;mineralView.update(s);updateRoads(s);waterTime=Number.isFinite(t)?t:waterTime+.016;surface.update(s,waterTime);},dispose(){surface.dispose();for(const m of meshes)m.dispose();for(const m of ownedMaterials)m.dispose(false,false);for(const t of textures)t.dispose();meshes.length=0;}};
+  return {meshes,get roadGround(){return streetGround();},refreshRoadMask,mineralHeightAt:mineralView.heightAt,light(n){water.setFloat('night',n);},update(s,t){state=s;mineralView.update(s);updateRoads(s);waterTime=Number.isFinite(t)?t:waterTime+.016;surface.update(s,waterTime);},dispose(){surface.dispose();for(const m of meshes)m.dispose();for(const m of ownedMaterials)m.dispose(false,false);for(const t of textures)t.dispose();meshes.length=0;}};
 }

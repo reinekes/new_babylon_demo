@@ -144,6 +144,11 @@ test('Canvas joins one soil tint before compositing into the ground, caches it a
  assert.deepEqual(images,['source-over','source-over']);assert.equal(lines.length,1);
  assert.deepEqual(lines[0].at(-1),r.point(points[4].x,points[4].y));
  r.ox+=40;r.streetsLayer();assert.equal(gradients.length,count*2,'panning repaints with soil grain anchored in the world');
+ gradients.length=0;
+ r.state={roads:[],footpaths:[{a:points[0],b:points[1],wear:32,at:0}]};
+ r.streetsLayer();
+ const peak=Math.max(...gradients.flat().map(([,rgba])=>Number(rgba.split(',').at(-1).slice(0,-1))));
+ assert.ok(peak>.025&&peak<.21,'even sustained walking leaves the Canvas ground texture visible');
 });
 test('supply focus puts a distant house visibly to the right of the desktop detail card',()=>{const r=Object.create(Renderer.prototype);Object.assign(r,{w:945,h:715,zoom:1.45,pan:{x:0,y:0}});r.layout();r.focusOn(35,27);const p=r.point(35,27);assert.ok(p.x>400&&p.x<r.w-80);assert.ok(p.y>90&&p.y<r.h-90);});
 

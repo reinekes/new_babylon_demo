@@ -1,0 +1,289 @@
+{
+  "baseline": "063af5b9",
+  "renderer": "Babylon / WebGL 2, Chrome, gameplay photo mode, paused simulation, unchanged camera and save for each pair.",
+  "viewport": [
+    1120,
+    680
+  ],
+  "hill": {
+    "save": "hill-save.json",
+    "buildings": 8,
+    "population": 12,
+    "worldSeed": 137,
+    "terrainMesh": "alluvial-valley",
+    "minimumAndMaximumUnit": "metres above visible terrain triangles",
+    "comparison": "For each rendered road triangle, samples at all vertices, centroid and edge midpoints with interpolated opacity >= .035. Each sample is compared with the barycentric elevation of the visible terrain mesh at the same X/Z. In a road split the denser geometry naturally generates more samples. Buried when clearance < -0.0001 m.",
+    "before": {
+      "built": {
+        "total": 7597,
+        "buried": 1203,
+        "min": -0.16838101666961747,
+        "max": 0.2006247465375257
+      },
+      "tracks": {
+        "total": 3319,
+        "buried": 922,
+        "min": -0.15434148019240232,
+        "max": 0.08495467759227271
+      }
+    },
+    "after": {
+      "built": {
+        "total": 16397,
+        "buried": 0,
+        "min": 0.037999951726112036,
+        "max": 0.042000028063093
+      },
+      "tracks": {
+        "total": 9629,
+        "buried": 0,
+        "min": 0.01063574999564347,
+        "max": 0.049187729967644485
+      }
+    },
+    "cameras": {
+      "near": {
+        "x": 29.35,
+        "y": 16.87,
+        "radius": 20,
+        "alpha": -0.88,
+        "beta": 0.84,
+        "light": "day"
+      },
+      "far": {
+        "x": 29.22,
+        "y": 16.95,
+        "radius": 49,
+        "alpha": -0.88,
+        "beta": 0.84,
+        "light": "day"
+      },
+      "bend": {
+        "x": 29.52,
+        "y": 16.46,
+        "radius": 13.4,
+        "alpha": -0.84,
+        "beta": 0.53,
+        "light": "day"
+      },
+      "dusk": {
+        "x": 29.35,
+        "y": 16.87,
+        "radius": 20,
+        "alpha": -0.88,
+        "beta": 0.84,
+        "light": "sunset"
+      }
+    }
+  },
+  "pedestrian": {
+    "save": "footpath-save.json",
+    "buildingCount": 12,
+    "population": 33,
+    "cameras": {
+      "near": {
+        "x": 6.35,
+        "y": 5.2,
+        "radius": 19,
+        "alpha": 1.21,
+        "beta": 0.8,
+        "light": "day"
+      },
+      "far": {
+        "x": 6.92,
+        "y": 5.4,
+        "radius": 70,
+        "alpha": 1.21,
+        "beta": 0.77,
+        "light": "day"
+      },
+      "dusk": {
+        "x": 6.35,
+        "y": 5.2,
+        "radius": 19,
+        "alpha": 1.21,
+        "beta": 0.8,
+        "light": "sunset"
+      },
+      "far-dusk": {
+        "x": 6.92,
+        "y": 5.4,
+        "radius": 70,
+        "alpha": 1.21,
+        "beta": 0.77,
+        "light": "sunset"
+      }
+    },
+    "luma": {
+      "metric": "Absolute sRGB luma difference on gameplay frame with pedestrian road layer enabled vs hidden, on old footprint pixels exceeding 2/255 within six fixed projected sample regions (same mask before and after). Values in order p50/p90/p95, 0..255.",
+      "views": {
+        "near": {
+          "pixels": 17692,
+          "before": [
+            14.72,
+            19.65,
+            20.65
+          ],
+          "after": [
+            2.0,
+            3.79,
+            4.0
+          ],
+          "screenSamples": [
+            {
+              "x": 648.9542565812476,
+              "y": 271.11278136858675
+            },
+            {
+              "x": 600.2130850905061,
+              "y": 364.4147788686553
+            },
+            {
+              "x": 439.4610177960586,
+              "y": 307.7672967350306
+            },
+            {
+              "x": 355.08182306159756,
+              "y": 408.479382212206
+            },
+            {
+              "x": 473.15775179193747,
+              "y": 521.7682517099156
+            },
+            {
+              "x": 418.6088517988859,
+              "y": 627.4642458735003
+            }
+          ],
+          "radiusPx": 34
+        },
+        "far": {
+          "pixels": 1479,
+          "before": [
+            13.86,
+            17.93,
+            18.86
+          ],
+          "after": [
+            2.0,
+            3.07,
+            3.79
+          ],
+          "screenSamples": [
+            {
+              "x": 615.8084470186855,
+              "y": 301.29065114716275
+            },
+            {
+              "x": 601.8356584458987,
+              "y": 327.642309387205
+            },
+            {
+              "x": 557.3543610292404,
+              "y": 312.2160481524506
+            },
+            {
+              "x": 540.0976120358667,
+              "y": 338.56711323094993
+            },
+            {
+              "x": 572.7797930503033,
+              "y": 363.08337218261397
+            },
+            {
+              "x": 563.576788804086,
+              "y": 382.2277359560676
+            }
+          ],
+          "radiusPx": 10
+        },
+        "dusk": {
+          "pixels": 17284,
+          "before": [
+            9.5,
+            12.71,
+            13.57
+          ],
+          "after": [
+            1.28,
+            2.21,
+            2.28
+          ],
+          "screenSamples": [
+            {
+              "x": 648.9542565812476,
+              "y": 271.11278136858675
+            },
+            {
+              "x": 600.2130850905061,
+              "y": 364.4147788686553
+            },
+            {
+              "x": 439.4610177960586,
+              "y": 307.7672967350306
+            },
+            {
+              "x": 355.08182306159756,
+              "y": 408.479382212206
+            },
+            {
+              "x": 473.15775179193747,
+              "y": 521.7682517099156
+            },
+            {
+              "x": 418.6088517988859,
+              "y": 627.4642458735003
+            }
+          ],
+          "radiusPx": 34
+        },
+        "far-dusk": {
+          "pixels": 1422,
+          "before": [
+            9.28,
+            11.78,
+            12.71
+          ],
+          "after": [
+            1.21,
+            2.21,
+            2.28
+          ],
+          "screenSamples": [
+            {
+              "x": 615.8084470186855,
+              "y": 301.29065114716275
+            },
+            {
+              "x": 601.8356584458987,
+              "y": 327.642309387205
+            },
+            {
+              "x": 557.3543610292404,
+              "y": 312.2160481524506
+            },
+            {
+              "x": 540.0976120358667,
+              "y": 338.56711323094993
+            },
+            {
+              "x": 572.7797930503033,
+              "y": 363.08337218261397
+            },
+            {
+              "x": 563.576788804086,
+              "y": 382.2277359560676
+            }
+          ],
+          "radiusPx": 10
+        }
+      }
+    }
+  },
+  "canvas": {
+    "renderer": "Canvas 2D",
+    "shapes": 33,
+    "pedestrianShapesWithTraffic": 30,
+    "image": "canvas-comparison.webp"
+  }
+}

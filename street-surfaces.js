@@ -59,8 +59,9 @@ export function streetSurfaceLayout(s,paved){
   const wornWidth=built ? .65+(edge.level||1)*.08+traffic*1.50 : .24+traffic*1.67;
   const width=cartTraffic?Math.max(wornWidth,1.54+.90*cartTraffic):wornWidth;
   const control=built?curve(a,b,id):edge.control;
-  const cartCover=cartTraffic>0 ? .70+.24*cartTraffic : 0;
-  const cover=built?1:Math.max(.30+.67*traffic,cartCover);
+  // Even sustained walking compacts patches of the existing silt. A laid
+  // surface or a wheel track exposes a much more continuous strip of earth.
+  const cover=built?1:cartTraffic?Math.max(.30+.67*traffic,.70+.24*cartTraffic):.10+.14*traffic;
   const profile={id,a,b,built,control,traffic,width,length,start:width,end:width,
    cartTraffic,startCart:0,endCart:0,startTraffic:traffic,endTraffic:traffic,cover,startCover:cover,endCover:cover};
   surfaces.set(id,profile);
@@ -201,17 +202,20 @@ function shoulderPoint(row,side,t){
 // A grid lane can run only 18 cm from a legal building boundary. Its visible
 // pressure falls off in metres, even where collision clipping pinches a whole
 // shoulder into a few centimetres. Both renderers use the same sample.
-export function streetSoilCoverage(row,side,x,z){
+export function streetSoilCoverage(row,side,x,z,cover=1){
  const radius=Math.abs(side);
  if(radius>=1)return 0;
  const fleck=Math.sin(x*.83+z*.46)*Math.sin(z*.69-x*.27);
  const shoulder=1-smooth((radius-.08-.065*fleck)/.92);
+ // World-space patches meet across segment and camera boundaries. The
+ // mottling fades away where feet merge into a denser cart or paving finish.
+ const packed=cover>=.70?1:1-(1-smooth(cover/.70))*(.55-.43*fleck);
  let distanceSquared=1;
  for(const box of row.plots){
   const dx=Math.max(box.minX-x,0,x-box.maxX),dz=Math.max(box.minZ-z,0,z-box.maxZ);
   distanceSquared=Math.min(distanceSquared,dx*dx+dz*dz);
  }
- return (.85+.045*fleck)*shoulder*smooth((Math.sqrt(distanceSquared)-.22)/.78);
+ return packed*(.85+.045*fleck)*shoulder*smooth((Math.sqrt(distanceSquared)-.22)/.78);
 }
 
 // Both views trim the very same cross-sections against real plots and shores.

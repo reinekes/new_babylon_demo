@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {footpathId,footpathRibbonPoint} from '../footpaths.js';
 import {obstacleIndex} from '../navigation.js';
-import {streetCrossSections,streetEndFade,streetSurfaceLayout,streetTrafficAt,streetCoverAt,streetWidthAt} from '../street-surfaces.js';
+import {streetCrossSections,streetEndFade,streetSurfaceLayout,streetTrafficAt,streetCoverAt,streetWidthAt,streetSoilCoverage} from '../street-surfaces.js';
 
 const point=(x,y)=>({x,y});
 const road=(a,b)=>({a,b,id:footpathId(a,b),level:1,built:true});
@@ -104,4 +104,18 @@ test('open ground distinguishes a light footpath, residential street and metre-g
  assert.ok(home.width>.75&&home.width<.90);
  assert.ok(busy.width>2&&busy.width<2.30);
  assert.ok(walking.width<2&&freight.width>busy.width+.15&&freight.width<2.50);
+});
+
+test('even full pedestrian wear leaves most of the underlying soil exposed while wagons and laid streets keep their surface',()=>{
+ const row={plots:[]},laid=road(a,b);
+ const samples=(wear,cartWear,built)=>{
+  const town={...state,footpaths:[{a,b,wear,cartWear,at:0,cartAt:0}]};
+  const profile=streetSurfaceLayout(town,built?[laid]:[]).get(laid.id);
+  const cover=streetCoverAt(profile,.5);
+  return Array.from({length:65},(_,i)=>cover*streetSoilCoverage(row,0,i*.3,15,cover));
+ };
+ const quiet=samples(2,0,false),busy=samples(32,0,false);
+ assert.ok(Math.max(...quiet)<.10&&Math.max(...busy)<.21);
+ assert.ok(Math.min(...busy)>.025&&Math.max(...busy)>2*Math.min(...busy),'broken patches visible up close');
+ assert.ok(Math.min(...samples(32,6,false))>.65&&Math.min(...samples(2,0,true))>.70);
 });

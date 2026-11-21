@@ -68,7 +68,7 @@ function paintStreetSoil(renderer,ctx,shapes){
   const {a,b}=profile;
   if(rows.length<2||!renderer.inView((a.x+b.x)/2,(a.y+b.y)/2,60))continue;
   const rgb=palettes[Math.max(0,level-1)];
-  const pressure=t=>.12+.33*Math.sqrt(streetTrafficAt(profile,t))+.55*streetCoverAt(profile,t);
+  const pressure=(t,cover)=>.55*cover+(.12+.33*Math.sqrt(streetTrafficAt(profile,t)))*Math.min(1,cover/.70);
   const shade=(opacity,tone=1)=>'rgba('+rgb.map(v=>Math.min(255,Math.round(v*tone))).join(',')+','+Math.min(1,opacity)+')';
   let left=mapped(rows[0],-1),right=mapped(rows[0],1),previousLeft=left,previousRight=right;
   for(let i=1;i<rows.length;i++){
@@ -77,7 +77,7 @@ function paintStreetSoil(renderer,ctx,shapes){
    const rx=(right.x+endRight.x)/2,ry=(right.y+endRight.y)/2;
    if(Math.hypot(rx-lx,ry-ly)>.0001){
     const gradient=ctx.createLinearGradient(lx,ly,rx,ry);
-    const t=(prev.t+row.t)/2,wear=pressure(t)*(.88+.09*Math.sin(lx*2.9-ly*1.8)+.03*Math.cos(rx*6.1+ry*2.8))*Math.sqrt(streetEndFade(profile,t));
+    const t=(prev.t+row.t)/2,cover=streetCoverAt(profile,t),wear=pressure(t,cover)*(.88+.09*Math.sin(lx*2.9-ly*1.8)+.03*Math.cos(rx*6.1+ry*2.8))*Math.sqrt(streetEndFade(profile,t));
     const wheel=level<=2&&streetWheelSection(profile,{...row,t,x:(prev.x+row.x)/2,z:(prev.z+row.z)/2,half:(prev.half+row.half)/2});
     const stops=[[-1,1],[-.82,1],[0,1],[.82,1],[1,1]];
     if(wheel){
@@ -94,7 +94,7 @@ function paintStreetSoil(renderer,ctx,shapes){
     const middle=Math.max(0,Math.min(1,((midX-lx)*dx+(midY-ly)*dy)/(dx*dx+dy*dy)));
     for(const [side,tone] of stops){
      const u=middle+side*(side<0?middle:1-middle);
-     const strength=streetSoilCoverage(row,side,(lx+u*dx)*TILE,(ly+u*dy)*TILE);
+     const strength=streetSoilCoverage(row,side,(lx+u*dx)*TILE,(ly+u*dy)*TILE,cover);
      gradient.addColorStop(u,shade(wear*strength,tone));
     }
     // Slight overlap at internal samples prevents antialiasing hairlines.
@@ -113,7 +113,7 @@ function paintStreetSoil(renderer,ctx,shapes){
    const x=r.p.x+(next.p.x-r.p.x)*u+r.nx*d,y=r.p.y+(next.p.y-r.p.y)*u+r.nz*d;
    const long=(level===3?.029:level===2?.018:.011)*(.7+noise(3)),short=long*(.35+.25*noise(4));
    const dx=r.nz*long,dy=-r.nx*long,sx=r.nx*short,sy=r.nz*short;
-   ctx.fillStyle=shade(pressure(t),.78+noise(5)*.16);ctx.beginPath();ctx.moveTo(x-dx,y-dy);ctx.lineTo(x+sx,y+sy);ctx.lineTo(x+dx,y+dy);ctx.lineTo(x+dx*.48-sx,y+dy*.48-sy);ctx.closePath();ctx.fill();
+   ctx.fillStyle=shade(pressure(t,streetCoverAt(profile,t)),.78+noise(5)*.16);ctx.beginPath();ctx.moveTo(x-dx,y-dy);ctx.lineTo(x+sx,y+sy);ctx.lineTo(x+dx,y+dy);ctx.lineTo(x+dx*.48-sx,y+dy*.48-sy);ctx.closePath();ctx.fill();
   }
  }
  ctx.restore();

@@ -193,17 +193,27 @@ export class GameRenderer3D{
   this.supplyLine=B.MeshBuilder.CreateLines('household-supply-route',{points:points.map(p=>new B.Vector3(p.x*6,visualSurfaceElevation(p.x,p.y,this.state)+.42,p.y*6))},this.scene);
   this.supplyLine.isPickable=false;this.supplyLine.color=new B.Color3(.48,.96,.94);
  }
+ roadLinePoints({a,b},clearance){
+  const ground=this.landscape?.roadGround,dx=(b.x-a.x)*6,dz=(b.y-a.y)*6;
+  const steps=ground?Math.max(1,Math.ceil(Math.hypot(dx,dz)/.30)):1,points=[];
+  for(let i=0;i<=steps;i++){
+   const t=i/steps,x=a.x*6+dx*t,z=a.y*6+dz*t;
+   const h=ground?ground.heightAt(x,z):visualSurfaceElevation(x/6,z/6,this.state);
+   points.push(new this.B.Vector3(x,h+clearance,z));
+  }
+  return points;
+ }
  updateRoadGuide(){
   const enabled=this.roadMode&&!this.photoMode,roads=this.state.roads||[];
   this.roadGuide?.setEnabled(enabled);
   if(!enabled)return;
-  const revision=roadTopologyRevision(this.state);
-  if(this.roadGuideState===this.state&&this.roadGuideRoads===roads&&this.roadGuideCount===roads.length&&this.roadGuideRevision===revision)return;
-  this.roadGuideState=this.state;this.roadGuideRoads=roads;this.roadGuideCount=roads.length;this.roadGuideRevision=revision;
+  const revision=roadTopologyRevision(this.state),ground=this.landscape?.roadGround;
+  if(this.roadGuideState===this.state&&this.roadGuideRoads===roads&&this.roadGuideCount===roads.length&&this.roadGuideRevision===revision&&this.roadGuideGround===ground)return;
+  this.roadGuideState=this.state;this.roadGuideRoads=roads;this.roadGuideCount=roads.length;this.roadGuideRevision=revision;this.roadGuideGround=ground;
   this.roadGuide?.dispose();this.roadGuide=null;
   if(!roads.length)return;
-  const B=this.B,point=p=>new B.Vector3(p.x*6,visualSurfaceElevation(p.x,p.y,this.state)+.18,p.y*6);
-  this.roadGuide=B.MeshBuilder.CreateLineSystem('road-editing-network',{lines:roads.map(r=>[point(r.a),point(r.b)])},this.scene);
+  const B=this.B;
+  this.roadGuide=B.MeshBuilder.CreateLineSystem('road-editing-network',{lines:roads.map(r=>this.roadLinePoints(r,.18))},this.scene);
   this.roadGuide.color=B.Color3.FromHexString('#e9d891');this.roadGuide.alpha=.55;this.roadGuide.isPickable=false;
  }
  updateSelection(){
@@ -214,7 +224,19 @@ export class GameRenderer3D{
   if(p)this.buildings.preview({type:this.selection,x:p.x,y:p.y,deposit:p.deposit,level:1,rotation:this.placementRotation||0,...(size>1?{footprint:size}:{})},this.state,{allowed:p.allowed});else this.buildings.clearPreview();
   const selected=this.selection&&this.hover?{type:this.selection,...this.hover,...(size>1?{footprint:size}:{})}:this.inspected&&this.state.buildings.find(b=>b.x===this.inspected.x&&b.y===this.inspected.y);
   this.buildings.highlight(this.selection&&selected?nearbySimilar(this.state,selected):[]);this.reachNote.textContent=this.reach.update(this.state,selected);this.reachNote.hidden=!this.reachNote.textContent;
-  const ids=this.routeRoads||new Set();const signature=[...ids].join('|')+'|'+(this.selectedRoad||'')+'|'+(this.plannedRoads||[]).map(r=>r.id).join('|');if(signature!==this.routeSignature){for(const m of this.routeMarkers||[])m.dispose();this.routeMarkers=[];for(const r of [...this.state.roads||[],...this.plannedRoads||[]])if(ids.has(r.id)||r.id===this.selectedRoad||this.plannedRoads?.includes(r)){const a=new B.Vector3(r.a.x*6,visualSurfaceElevation(r.a.x,r.a.y,this.state)+.24,r.a.y*6),b=new B.Vector3(r.b.x*6,visualSurfaceElevation(r.b.x,r.b.y,this.state)+.24,r.b.y*6),line=B.MeshBuilder.CreateLines('road-route',{points:[a,b]},this.scene);line.color=B.Color3.FromHexString('#e9d891');line.isPickable=false;this.routeMarkers.push(line);}this.routeSignature=signature;}
+  const ids=this.routeRoads,planned=this.plannedRoads||[],showRoute=ids?.size||this.selectedRoad||planned.length;
+  const ground=showRoute?this.landscape?.roadGround:null;
+  const signature=[...(ids||[])].join('|')+'|'+(this.selectedRoad||'')+'|'+planned.map(r=>r.id).join('|');
+  if(signature!==this.routeSignature||ground!==this.routeGround){
+   for(const m of this.routeMarkers||[])m.dispose();
+   this.routeMarkers=[];
+   if(showRoute)for(const r of [...this.state.roads||[],...planned]){
+    if(!ids?.has(r.id)&&r.id!==this.selectedRoad&&!planned.includes(r))continue;
+    const line=B.MeshBuilder.CreateLines('road-route',{points:this.roadLinePoints(r,.24)},this.scene);
+    line.color=B.Color3.FromHexString('#e9d891');line.isPickable=false;this.routeMarkers.push(line);
+   }
+   this.routeSignature=signature;this.routeGround=ground;
+  }
  }
  draw(state,selection,now,options={}){
   if(!this.layersReady)return;
