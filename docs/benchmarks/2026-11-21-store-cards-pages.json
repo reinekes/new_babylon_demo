@@ -1,0 +1,105 @@
+{
+  "release": "6c1d333af53b4365ab1b145c92349a33dbd29aa3",
+  "site": "https://reinekes.github.io/new_babylon_demo/",
+  "matched": {
+    "city-tools.css": "14a88ef10dc381cb342255097580fe3f8c7c5b266c4b2b10ab92e5cd66129db8",
+    "courtyard.html": "498e82c01eeda9e762a21adc96e95ae66c2df42b14b651a922808f76856e11a2",
+    "crop-studio.html": "48af4b43218021bb120ed4eac7fe4c2cd6ca72693784b14282a4265e6792903c",
+    "district3d.html": "6237649e47e8410a788ae771dfcd1c815150ff4c0ab11855547309ebd9c4ad82",
+    "docs/benchmarks/2026-11-21-store-cards-4x.json": "3cf204b179d37402eae86c0155203b184069b4d696fe55ba4f2e549ee66e4d81",
+    "docs/benchmarks/2026-11-21-store-cards-city.json.gz": "136cd034a22eab7098e96335d4bc4f9651cea9012ea9aa5022626aea31a87864",
+    "index.html": "3f3c5d648881a617d7f490f032efc25098e7304395a900a51ca256370a4f08cf",
+    "roadmap/evidence/2026-11-21/store-cards/detail.webp": "5d7ad493968700ed18ad2aac4752e766e155d2f83e243b40dcce2f0dea888d3a",
+    "roadmap/evidence/2026-11-21/store-cards/filled.json": "7f156ea9cd8cc32443d77944a4f75845494a7c1eed83df3731707f8bd6fe55c4",
+    "roadmap/evidence/2026-11-21/store-cards/filled.webp": "cce32543c7e43265f956ce363b9d6420d3d7ccacb88840fb8feeec4d7c310bd0",
+    "roadmap/evidence/2026-11-21/store-cards/mobile.webp": "355f1e6d003d5bfd46a36bef0d5534d9520ec5b9dc54ea03cd92b0a625378dd6",
+    "roadmap/index.html": "9c507064548a76ccb0d506b66eb1bbc506fdbc0c98172751281acac12ebf2a21",
+    "roadmap/manifest.json": "c5d067856cac7779069b8c728bf7826dd00ad570eb436ff4d9b86d42fcfdf2dc",
+    "roadmap/plan.md": "5889d48a8350446a0fdec76338364d8d9c05b416486883f785900c18d107dd1e",
+    "roadmap/reports/2026-11-21-store-cards.md": "39b0c103015dfae900465ce6522f59e5bc47b2a5af699de8efef2d1d3e7d1290",
+    "roadmap/snapshot.json": "095da894150ae6f01e1cd1055cfe9ccae454d7b06ee48f3ffd6486e92fb50bfa",
+    "scripts/sumer-building-studio.html": "51de5719a2579890488875fa61e55933f58433f88ce25cd516e17ec4763305b3",
+    "ui-city-tools.js": "3ca2dcf314ba617a13ed45c5e286b4a4eb08ff46030a752dc591ce9850c5702a",
+    "GAME_DESIGN.md": "da0a733f2485200a77ef3b88bbff493d43ed6ce120ece4461149de79ad8d994d",
+    "building-inventory.js": "5ed41202c6f94ad8ec859001474c3ade6bc072565a6b75e9356860c9dd3a95c0",
+    "goat-studio.html": "4d8307b732297af3bfc019836b616ddbf0e7d311bd7d9ded5098ff829df8acbb",
+    "mallards.html": "96ff0ab7d0201b9f1c83b8b2c079704e16783415cc3a7bc4262d128a5cb47a1c",
+    "roadmap/reports/2026-11-21-streets-quarries-pelican.md": "90bb55d87eebce5e59513e83d0106a832bf04830d673ca83ec1fe6a7f2eb7641",
+    "ui-building-inventory.js": "0d860b5a19e3bc6244e40c8c36620f07cd878948fa8a0610c33d15cd2b883f2e",
+    "model-atlas/index.html": "2690a84f20f2f8b8278311acf0bb03e1322b14ae55863ae79d2473a3a3fa7216",
+    "app.js": "088a73185db5761ceaa5bfc64d51fd3674c85ba013466f3154f8ef25daeb292d"
+  },
+  "deployment": "https://github.com/reinekes/new_babylon_demo/actions/runs/44916273045",
+  "publicScene": {
+    "population": 33,
+    "buildings": 12,
+    "webgl": 2,
+    "glError": 0,
+    "origin": "https://reinekes.github.io"
+  },
+  "openedOnMap": {
+    "granary": "4,6",
+    "depot": "8,6",
+    "shrine": "9,8"
+  },
+  "screens": {
+    "granary": {
+      "items": 23,
+      "columns": "93.25px 93.25px 93.25px 93.25px",
+      "overflowPx": 0
+    },
+    "depot": {
+      "items": 8,
+      "columns": "93.25px 93.25px 93.25px 93.25px",
+      "overflowPx": 0
+    },
+    "temple": {
+      "items": 4,
+      "columns": "93.25px 93.25px 93.25px 93.25px",
+      "overflowPx": 0
+    },
+    "supplyGranary": {
+      "items": 23,
+      "columns": "99.25px 99.25px 99.25px 99.25px",
+      "overflowPx": 0
+    },
+    "supplyDepot": {
+      "items": 8,
+      "columns": "99.25px 99.25px 99.25px 99.25px",
+      "overflowPx": 0
+    },
+    "register": {
+      "items": 23,
+      "columns": "77.5781px 77.5781px 77.5781px 77.5781px",
+      "overflowPx": 0
+    },
+    "mobile": {
+      "items": 23,
+      "columns": "81.75px 81.75px 81.75px 81.75px",
+      "overflowPx": 0
+    }
+  },
+  "districtStore": {
+    "heading": "city-tools-row-head",
+    "values": [
+      [
+        "food",
+        "10"
+      ],
+      [
+        "clay",
+        "16"
+      ],
+      [
+        "brick",
+        "9"
+      ],
+      [
+        "firedBrick",
+        "3"
+      ]
+    ],
+    "grid": "78.75px 78.75px 78.75px 78.75px",
+    "overflow": 0
+  }
+}

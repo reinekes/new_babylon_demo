@@ -26,3 +26,14 @@
 | После | 47,02 / 45,16 / 42,09 | 44,76 | 33,4 мс |
 
 [Интервалы кадров и условия измерения](../../docs/benchmarks/2026-11-21-store-cards-4x.json) · [Контрольный город](../../docs/benchmarks/2026-11-21-store-cards-city.json.gz)
+
+## store-stock-cards-20261121 | Запасы вверху складских карточек
+
+date: 2026-11-21
+type: release
+release: store-stock-cards-20261121
+commit: 6c1d333af53b4365ab1b145c92349a33dbd29aa3
+publication: verified
+groups: ux; economy
+completed: store-resource-summary
+source: docs/versions/2026-11-21-06.md
