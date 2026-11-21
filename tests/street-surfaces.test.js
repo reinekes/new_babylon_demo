@@ -64,6 +64,16 @@ test('opposing diagonals merge at the actual crossing without adding a walking j
  assert.equal(streetEndFade(main,.5),1);
 });
 
+test('wheel contacts follow the turning freight route through a busy pedestrian junction',()=>{
+ const paved=[road(a,b),road(b,c),road(b,d)];
+ const town={...state,footpaths:paved.map(({a,b},i)=>({a,b,wear:24,at:0,...i<2?{cartWear:6,cartAt:0}:{}}))};
+ const layout=streetSurfaceLayout(town,paved),inbound=layout.get(paved[0].id),outbound=layout.get(paved[1].id),pedestrian=layout.get(paved[2].id);
+ assert.ok(inbound.cartTraffic>0);
+ assert.equal(inbound.endCart,outbound.startCart);
+ assert.ok(inbound.endCart>0&&inbound.endTurn&&outbound.startTurn);
+ assert.equal(pedestrian.cartTraffic,0);
+});
+
 test('compaction and opacity fade continuously from busy bare ground onto a quieter laid lane',()=>{
  const laid=road(b,d),trail=road(a,b);
  const town={...state,footpaths:[{a,b,wear:32,at:0},{a:b,b:d,wear:3,at:0}]};

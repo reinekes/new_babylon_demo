@@ -55,8 +55,27 @@ test('earthen streets preserve world-aligned sediment grain without painting two
  // would leave a pale central stripe when the camera moves out.
  for(let row=0;row<rowCount;row++)for(const col of [2,3,4]){
   const i=(row*7+col)*4;
-  assert.ok(busy.colors[i]<barely.colors[i]*.87);
+  assert.ok(busy.colors[i]>barely.colors[i]*1.13,'dry well-trodden clay is visibly lighter');
  }
+});
+
+test('repeated cart traffic leaves two recessed contacts about one metre apart, fading out before an unused foot branch',()=>{
+ const a={x:2.5,y:5.5},b={x:3.5,y:5.5};
+ const profile={a,b,start:2.5,width:2.5,end:2.5,traffic:.8,cartTraffic:1,startCart:1,endCart:0};
+ const shape=wornRoadGeometry(state,a,b,profile,.038),cols=11;
+ const at=(row,col,channel)=>shape.positions[(row*cols+col)*3+channel];
+ let strongest=0;
+ for(let row=0;row<shape.centers.length;row++){
+  const gauge=Math.abs(at(row,7,2)-at(row,3,2));
+  assert.ok(gauge>.90&&gauge<1.1);
+  const leftCut=at(row,2,1)-at(row,3,1),rightCut=at(row,8,1)-at(row,7,1);
+  strongest=Math.max(strongest,Math.min(leftCut,rightCut));
+ }
+ assert.ok(strongest>.025);
+ const last=shape.centers.length-1;
+ assert.ok(Math.abs(at(last,3,1)-at(last,2,1))<.003);
+ const paved=wornRoadGeometry(state,a,b,profile,.038,3);
+ assert.equal(paved.positions.length,paved.centers.length*7*3,'a hard paved street retains its own finish');
 });
 
 test('curved paving keeps both verges joined, and upgrades cover the same centre as the resident route',()=>{

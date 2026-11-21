@@ -48,18 +48,21 @@ function blendCrossedDiagonals(a,b){
 
 // Width is measured across the worn area and both shoulders, in metres.
 export function streetSurfaceLayout(s,paved){
- const tracks=visibleFootpaths(s),wear=new Map(tracks.map(p=>[p.id,p.traffic]));
+ const tracks=visibleFootpaths(s),wear=new Map(tracks.map(p=>[p.id,p]));
  const builtIds=new Set(paved.map(p=>p.id)),curve=streetCurveLookup(s),surfaces=new Map(),junctions=new Map(),diagonals=new Map(),crossings=[];
  let obstacles;
  function add(edge,built){
   const {id,a,b}=edge,length=Math.hypot(b.x-a.x,b.y-a.y);
   if(!length)return;
-  const traffic=Math.round((wear.get(id)||0)*16)/16;
-  const width=built ? .90+(edge.level||1)*.10+traffic*2.22 : .32+traffic*2.66;
+  const track=wear.get(id),traffic=Math.round((track?.traffic||0)*16)/16;
+  const cartTraffic=built&&edge.level>=3?0:Math.round((track?.cartTraffic||0)*8)/8;
+  const wornWidth=built ? .90+(edge.level||1)*.10+traffic*2.22 : .32+traffic*2.66;
+  const width=cartTraffic?Math.max(wornWidth,1.52+.92*cartTraffic):wornWidth;
   const control=built?curve(a,b,id):edge.control;
-  const cover=built?1:.30+.67*traffic;
+  const cartCover=cartTraffic>0 ? .70+.24*cartTraffic : 0;
+  const cover=built?1:Math.max(.30+.67*traffic,cartCover);
   const profile={id,a,b,built,control,traffic,width,length,start:width,end:width,
-   startTraffic:traffic,endTraffic:traffic,cover,startCover:cover,endCover:cover};
+   cartTraffic,startCart:0,endCart:0,startTraffic:traffic,endTraffic:traffic,cover,startCover:cover,endCover:cover};
   surfaces.set(id,profile);
   if(Math.abs(a.x-b.x)===1&&Math.abs(a.y-b.y)===1){
    const cell=Math.min(a.x,b.x)+','+Math.min(a.y,b.y);
@@ -83,13 +86,17 @@ export function streetSurfaceLayout(s,paved){
   let best=-Infinity,pair;
   for(let i=0;i<arms.length;i++)for(let j=i+1;j<arms.length;j++){
    const a=arms[i],b=arms[j],dot=a.direction.x*b.direction.x+a.direction.y*b.direction.y;
-   const score=-dot+.32*Math.min(a.profile.width,b.profile.width);
+   const wheelTurn=Math.min(a.profile.cartTraffic,b.profile.cartTraffic);
+   const score=-dot+.32*Math.min(a.profile.width,b.profile.width)+(wheelTurn?1.25+.3*wheelTurn:0);
    if(score>best){best=score;pair=[a,b];}
   }
   const [a,b]=pair,jointWidth=(a.profile.width+b.profile.width)/2;
   a.profile[a.side]=b.profile[b.side]=jointWidth;
   a.profile[a.side+'Traffic']=b.profile[b.side+'Traffic']=(a.profile.traffic+b.profile.traffic)/2;
   a.profile[a.side+'Cover']=b.profile[b.side+'Cover']=(a.profile.cover+b.profile.cover)/2;
+  if(a.profile.cartTraffic&&b.profile.cartTraffic){
+   a.profile[a.side+'Cart']=b.profile[b.side+'Cart']=(a.profile.cartTraffic+b.profile.cartTraffic)/2;
+  }
   if(arms.length>2){
    for(const arm of arms)if(arm!==a&&arm!==b){
     // The main street already covers the ground at the meeting point.
@@ -118,7 +125,7 @@ export function streetSurfaceLayout(s,paved){
  }
  for(const [a,b] of crossings)blendCrossedDiagonals(a,b);
  for(const p of surfaces.values()){
-  p.shapeKey=['start','end'].map(side=>{
+  p.shapeKey=[p.cartTraffic,p.startCart,p.endCart].join(',')+'/'+['start','end'].map(side=>{
    const turn=p[side+'Turn'];return [p[side],p[side+'Traffic'],p[side+'Cover'],p[side+'Tip']?1:0,p[side+'Blend']||0,turn?.x,turn?.y,turn?.span,turn?.speed].join(',');
   }).join('/')+(p.crossing?'/'+p.crossing.t+','+p.crossing.span:'');
  }
@@ -148,6 +155,19 @@ export function streetTrafficAt(profile,t){
 }
 export function streetCoverAt(profile,t){
  return typeof profile==='number'?1:blendAlongStreet(profile.cover??1,profile.startCover??1,profile.endCover??1,t);
+}
+
+// One metre between wheel centres, in world metres. The grooves shallow and
+// disappear on harder patches. Their position and pressure agree across joins
+// even when neighbouring edges were saved in opposite directions.
+export function streetWheelSection(profile,row){
+ if(!profile.cartTraffic)return null;
+ const {x,z,half,t}=row;
+ const cart=blendAlongStreet(profile.cartTraffic,profile.startCart,profile.endCart,t);
+ const softness=smooth(.66+.45*Math.sin(.49*x+.33*z)+.23*Math.sin(.73*z-.19*x));
+ const gauge=Math.min(.505+.018*Math.sin(.24*x-.32*z),half*.55)/half;
+ const rim=Math.min(.13,half*.145)/half;
+ return {gauge,rim,depth:(.45+.55*cart)*softness*smooth(cart/.18)};
 }
 
 export function streetWidthAt(profile,t){

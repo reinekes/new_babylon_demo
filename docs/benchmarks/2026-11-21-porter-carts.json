@@ -1,0 +1,272 @@
+{
+  "release": "porter-carts-and-streets-20261121",
+  "baseline": "3f7b4583998da45bb32410eb351da90782842a2a",
+  "method": "Production WebGL 2, same serialized 500/250 city, 4x, 1440x780, Apple M5 Metal. Alternating builds before/after/after/before. An eight-second warm-up per visit then reload the same starting city, 18 real seconds per sample. FPS from animation-frame intervals. No other tests during timed comparison.",
+  "paired": {
+    "sha256": "018910fd6415e1177e7996d7780f7088c1daf1ea74a9098c2c1755cd9373c475",
+    "samples": [
+      {
+        "name": "before",
+        "fps": 15.845402063226476,
+        "seconds": 18.049400000000002,
+        "frames": 286,
+        "frameP95": 100,
+        "simP95": 24.59999999962747,
+        "drawP95": 80.90000000037253,
+        "people": 500,
+        "buildings": 250,
+        "footpaths": 364,
+        "errors": [],
+        "webgl": 2
+      },
+      {
+        "name": "after",
+        "fps": 19.7048163011562,
+        "seconds": 18.015900000000002,
+        "frames": 355,
+        "frameP95": 83.39999999999418,
+        "simP95": 19.09999999962747,
+        "drawP95": 64,
+        "people": 500,
+        "buildings": 250,
+        "footpaths": 363,
+        "errors": [],
+        "webgl": 2
+      },
+      {
+        "name": "after",
+        "fps": 16.439812021543347,
+        "seconds": 18.065900000000003,
+        "frames": 297,
+        "frameP95": 99.90000000000146,
+        "simP95": 22.59999999962747,
+        "drawP95": 70,
+        "people": 500,
+        "buildings": 250,
+        "footpaths": 364,
+        "errors": [],
+        "webgl": 2
+      },
+      {
+        "name": "before",
+        "fps": 17.13572715929572,
+        "seconds": 18.032499999999995,
+        "frames": 309,
+        "frameP95": 100.09999999999854,
+        "simP95": 27.200000000186265,
+        "drawP95": 84.20000000018626,
+        "people": 500,
+        "buildings": 250,
+        "footpaths": 364,
+        "errors": [],
+        "webgl": 2
+      }
+    ]
+  },
+  "beforeRenderOptimization": {
+    "sha256": "018910fd6415e1177e7996d7780f7088c1daf1ea74a9098c2c1755cd9373c475",
+    "samples": [
+      {
+        "name": "before",
+        "fps": 18.705595026642985,
+        "seconds": 18.016,
+        "frames": 337,
+        "frameP95": 83.40000000000146,
+        "simP95": 24,
+        "drawP95": 62.5,
+        "people": 500,
+        "buildings": 250,
+        "footpaths": 364,
+        "errors": [],
+        "webgl": 2
+      },
+      {
+        "name": "after",
+        "fps": 13.782796413151774,
+        "seconds": 18.066000000000003,
+        "frames": 249,
+        "frameP95": 116.79999999999927,
+        "simP95": 31.899999999441206,
+        "drawP95": 91.70000000018626,
+        "people": 500,
+        "buildings": 250,
+        "footpaths": 365,
+        "errors": [],
+        "webgl": 2
+      },
+      {
+        "name": "after",
+        "fps": 20.759440272203996,
+        "seconds": 18.015900000000002,
+        "frames": 374,
+        "frameP95": 66.70000000000437,
+        "simP95": 17.90000000037253,
+        "drawP95": 55,
+        "people": 500,
+        "buildings": 250,
+        "footpaths": 363,
+        "errors": [],
+        "webgl": 2
+      },
+      {
+        "name": "before",
+        "fps": 18.24473453633974,
+        "seconds": 18.0326,
+        "frames": 329,
+        "frameP95": 83.30000000000291,
+        "simP95": 22.100000000558794,
+        "drawP95": 65.09999999962747,
+        "people": 500,
+        "buildings": 250,
+        "footpaths": 364,
+        "errors": [],
+        "webgl": 2
+      }
+    ]
+  },
+  "fpsBefore": 16.49,
+  "fpsAfter": 18.07,
+  "initialSequentialStudioRuns": {
+    "before": {
+      "start": [
+        500,
+        250
+      ],
+      "webgl": 2,
+      "viewport": [
+        1440,
+        780
+      ],
+      "samples": [
+        {
+          "fps": 25.61083504626581,
+          "frames": 385,
+          "seconds": 15.032699999999998,
+          "population": 500,
+          "buildings": 250,
+          "simulationP95": 15.5,
+          "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+          "errors": []
+        },
+        {
+          "fps": 22.816925768491355,
+          "frames": 343,
+          "seconds": 15.0327,
+          "population": 500,
+          "buildings": 250,
+          "simulationP95": 15.600000000093132,
+          "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+          "errors": []
+        }
+      ]
+    },
+    "after": {
+      "start": [
+        500,
+        250
+      ],
+      "webgl": 2,
+      "viewport": [
+        1440,
+        780
+      ],
+      "samples": [
+        {
+          "fps": 16.382416206604912,
+          "frames": 246,
+          "seconds": 15.016099999999998,
+          "population": 500,
+          "buildings": 250,
+          "simulationP95": 27,
+          "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+          "errors": []
+        },
+        {
+          "fps": 15.730784547988849,
+          "frames": 237,
+          "seconds": 15.066,
+          "population": 500,
+          "buildings": 250,
+          "simulationP95": 27.300000000745058,
+          "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+          "errors": []
+        }
+      ]
+    }
+  },
+  "simulationFixedStep": {
+    "steps": 870,
+    "simDt": 0.02,
+    "samples": [
+      {
+        "mean": 29.586265375324814,
+        "median": 18.323958000000857,
+        "p95": 87.700791999996
+      },
+      {
+        "mean": 29.688844368831237,
+        "median": 19.26220900000044,
+        "p95": 88.28712499999892
+      }
+    ],
+    "processCPU": [
+      {
+        "mean": 18.886825974025967,
+        "median": 10.857,
+        "p95": 53.896
+      },
+      {
+        "mean": 19.523754545454555,
+        "median": 10.972,
+        "p95": 57.759
+      }
+    ],
+    "simTime": [
+      17.399999999999718,
+      17.399999999999718
+    ],
+    "maxLoans": 0,
+    "borrowers": 0,
+    "cartEdges": 0
+  },
+  "webglCart": {
+    "info": {
+      "webgl": 2,
+      "phase": "toDistrictStore",
+      "cart": "10,9",
+      "cargo": {
+        "wood": 24
+      },
+      "root": [
+        44.18862402437011,
+        0,
+        56.75073029189133
+      ],
+      "rotation": -1.522791653282361,
+      "route": {
+        "x": 6.5,
+        "y": 9.5
+      },
+      "wheels": 2,
+      "ready": [],
+      "motion": {
+        "start": {
+          "x": 7.323734611932601,
+          "y": 9.5,
+          "spin": 0
+        },
+        "end": {
+          "x": 7.270072611932602,
+          "y": 9.5,
+          "spin": 0.8003793241395315
+        }
+      }
+    },
+    "errors": []
+  },
+  "archives": {
+    "count": 20,
+    "versions": "1–27",
+    "loadThenAdvanceThenReload": true
+  }
+}

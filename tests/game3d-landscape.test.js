@@ -49,6 +49,25 @@ test('resource extraction and seasonal replenishment do not invalidate landscape
  s.world.deposits[0].kind='stone';s.world.deposits[0].x+=1;
  assert.notEqual(landscapeSignature(s),signature);
 });
+test('landscape detects in-place road, order and endpoint edits and can switch to a separately loaded map',()=>{
+ const s=createGame({start:'established'}),road={id:'edge',a:{x:2.5,y:4.5,key:'3,5'},b:{x:3.5,y:4.5,key:'4,5'},level:1,built:true};
+ s.roads=[road];
+ let last=landscapeSignature(s);
+ const changed=edit=>{edit();const next=landscapeSignature(s);assert.notEqual(next,last);assert.equal(landscapeSignature(s),next);last=next;};
+ changed(()=>road.a.x+=1);
+ changed(()=>road.b.key='5,5');
+ changed(()=>road.built=false);
+ changed(()=>road.construction={kind:'upgrade',target:2,required:{clay:4},delivered:{clay:0},remaining:{clay:4},work:0});
+ changed(()=>road.construction.delivered.clay++);
+ changed(()=>road.construction.work++);
+ changed(()=>road.construction.target=3);
+ changed(()=>delete road.construction);
+ // Loading a different city can replace every object at once.
+ const loaded=structuredClone(s);loaded.roads[0].b.y++;
+ assert.notEqual(landscapeSignature(loaded),last);
+ changed(()=>s.roads=[]);
+ changed(()=>s.roads.push(road));
+});
 test('palms are deterministic dry cells clear of buildings; caravan follows its actual coordinates and stocks',()=>{
  const s=createGame({start:'established'}),before=JSON.stringify(s),a=landscapePlan(s),b=landscapePlan(s);assert.deepEqual(a.palms,b.palms);assert.ok(a.palms.length);
  for(const p of a.palms){assert.notEqual(terrain(Math.round(p.x),Math.round(p.y),s),'water');assert.ok(!s.buildings.some(b=>Math.abs(b.x-p.x)<.7&&Math.abs(b.y-p.y)<.7));}

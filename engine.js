@@ -106,6 +106,7 @@ import {startFuneral,advanceFuneral,validateFuneral} from './funerals.js';
 import {marketAccess,initializeTrade,advanceTrade,validateTrade} from './trading.js';
 import {classifyLegacyRoads,roadUpgradeCost,roadKey} from './roads.js';
 import {validateFootpaths} from './footpaths.js';
+import {validateFreightCarts} from './freight-carts.js';
 import {createOrder,isComplete,nextOrder,MAX_CONSTRUCTION_ORDER,constructionEntities,workRequired,finishConstruction,floodRepairCost,boatRepairCost,boatTenderCost,joineryBoatCost,joineryUpgradeTypes,joineryUpgradeCost} from './construction.js';
 import {WIDTH,HEIGHT,worldWidth,worldHeight,bridgeSpanAt,riverLocal,signedRiverDistance,terrain,river,bridgeSpan,initializeWorld,initializeGeneratedWorld,depositAt,isShore,validateWorld,isDryPoint,ensureResourceSites} from './world.js';
 import {isResidence,BUILDINGS,MIRACLES,RESOURCE_NAMES,MATERIALS,levelOf,capacityOf,outputMultiplier,buildingKey,storageOf,housingOf,citizenName,guardCapacity,isCityFortification} from './definitions.js';
@@ -641,9 +642,10 @@ export function decode(raw){
   if(legacy)syncCitizens(s);
   if(!Array.isArray(s.citizens)||s.citizens.length!==s.population||!validateCareerRules(s))return null;
   const ids=new Set(),buildings=new Map(constructionEntities(s).map(b=>[buildingKey(b),b]));
+  if(!validateFreightCarts(s,buildings))return null;
   const point=p=>p&&finite(p.x,-.5,worldWidth(s)-.5)&&finite(p.y,-.5,worldHeight(s)-.5);
   for(const c of s.citizens){
-   if(!integer(c.id)||ids.has(c.id)||!point(c)||(!isResidence(buildings.get(c.home))||!isComplete(buildings.get(c.home)))||!['toEveningGame','eveningGuest','toManualGathering','manualGathering','toCommonMeal','commonMeal','home','toWork','toWorkshop','working','toStore','returnWork','toHome','blocked','toSupply','toSite','constructing','waiting','unloading','toMarket','toSaleSupply','toSaleMarket','toPantrySupply','toPantryHome','toRest','resting','toHealer','treatment','toSchool','studying','toDistrictSupply','toDistrictStore','waterTrip','toCraftSupply','toClothesSupply','toClothesHome','festival','relic','relicGuest','awakening'].includes(c.phase))return null;
+   if(!integer(c.id)||ids.has(c.id)||!point(c)||(!isResidence(buildings.get(c.home))||!isComplete(buildings.get(c.home)))||!['toCollectCart','toReturnCart','toEveningGame','eveningGuest','toManualGathering','manualGathering','toCommonMeal','commonMeal','home','toWork','toWorkshop','working','toStore','returnWork','toHome','blocked','toSupply','toSite','constructing','waiting','unloading','toMarket','toSaleSupply','toSaleMarket','toPantrySupply','toPantryHome','toRest','resting','toHealer','treatment','toSchool','studying','toDistrictSupply','toDistrictStore','waterTrip','toCraftSupply','toClothesSupply','toClothesHome','festival','relic','relicGuest','awakening'].includes(c.phase))return null;
    if(c.basketCondition!==undefined&&(!isStrictSumer(s)||c.age<16||!integer(c.basketCondition,0,6)))return null;
    if(['toEveningGame','eveningGuest'].includes(c.phase)&&(!isStrictSumer(s)||c.age<16))return null;
    if(c.floodShelter!==undefined&&(typeof c.floodShelter!=='string'||!/^\d+,\d+$/.test(c.floodShelter)||c.phase!=='blocked'||!isStrictSumer(s)))return null;
@@ -672,7 +674,7 @@ export function decode(raw){
    if(c.phase==='home'&&Object.values(c.cargo).some(v=>v>0)||c.phase==='working'&&!c.work)return null;
    if(c.site!=null&&(!buildings.get(c.site)?.construction||typeof c.sitePort!=='string'||!c.store))return null;
    if(['toSupply','toSite','constructing','waiting'].includes(c.phase)&&!c.site)return null;
-   if(c.buildCargo!==undefined&&(!c.buildCargo||typeof c.buildCargo!=='object'||Array.isArray(c.buildCargo)||Object.entries(c.buildCargo).some(([k,v])=>!MATERIALS.includes(k)||!finite(v,0,6))))return null;
+   if(c.buildCargo!==undefined&&(!c.buildCargo||typeof c.buildCargo!=='object'||Array.isArray(c.buildCargo)||Object.entries(c.buildCargo).some(([k,v])=>!MATERIALS.includes(k)||!finite(v,0,c.freightCart?12:6))))return null;
    if(Object.values(c.buildCargo||{}).some(v=>v>0)&&(!c.site||!['toSite','blocked'].includes(c.phase)))return null;
 
   }

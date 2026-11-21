@@ -5,6 +5,8 @@ import {floodFootprint,floodPhase,floodProtectionRevision,floodedSegment} from '
 const EPSILON=1e-6;
 const MAX_WEAR=32;
 const DECAY_SECONDS=36;
+const MAX_CART_WEAR=6;
+const CART_DECAY_SECONDS=90;
 const LEVEL_THRESHOLD=[1.6,2.8,4.4,6.2];
 const cache=new WeakMap(),terrainCache=new WeakMap();
 const residentEdges=new WeakMap();
@@ -15,6 +17,7 @@ export function footpathId(a,b){
  return `road:${from<to?`${from}|${to}`:`${to}|${from}`}`;
 }
 function wearAt(path,time){return Math.max(0,path.wear-Math.max(0,time-path.at)/DECAY_SECONDS);}
+function cartWearAt(path,time){return path.cartWear?Math.max(0,path.cartWear-Math.max(0,time-path.cartAt)/CART_DECAY_SECONDS):0;}
 // Distance is accumulated in full-edge traversals. The displayed width is
 // continuous; planning uses eight bands so a single footstep cannot churn
 // every cached trip in the city.
@@ -92,7 +95,7 @@ function pathIndex(s,time){
   index.nextCleanup=cleanupAt+DECAY_SECONDS;
   for(let i=index.paths.length-1;i>=0;i--){
    const path=index.paths[i];
-   if(wearAt(path,cleanupAt)>0)continue;
+   if(wearAt(path,cleanupAt)>0||cartWearAt(path,cleanupAt)>0)continue;
    index.byId.delete(footpathId(path.a,path.b));
    index.paths.splice(i,1);
   }
@@ -102,7 +105,7 @@ function pathIndex(s,time){
 
 // A complete diagonal and a complete cardinal passage each contribute one
 // unit. Earth tracks form without spending materials or creating paving orders.
-export function recordFootsteps(s,from,to,distance,navigation){
+export function recordFootsteps(s,from,to,distance,navigation,wheeled=false){
  if(distance<=EPSILON)return;
  const origin=routeStart(from,to);
  if(!origin)return;
@@ -118,6 +121,10 @@ export function recordFootsteps(s,from,to,distance,navigation){
   index.paths.push(path);
  }
  const before=wearAt(path,time),length=Math.hypot(to.x-origin.x,to.y-origin.y);
+ if(wheeled){
+  path.cartWear=Math.min(MAX_CART_WEAR,cartWearAt(path,time)+distance/length);
+  path.cartAt=time;
+ }
  path.wear=Math.min(MAX_WEAR,before+distance/length);
  if(routeBand(before)!==routeBand(path.wear))trafficSnapshots.delete(s);
  path.at=time;
@@ -128,12 +135,12 @@ export function visibleFootpaths(s,finishedIds=null){
  if(!s.footpaths?.length)return result;
  const view=terrainAccess(s),access=cachedFootpathAccess(s,view);
  for(const path of s.footpaths||[]){
-  const wear=wearAt(path,s.simTime||0);
-  if(wear<LEVEL_THRESHOLD[0])continue;
+  const time=s.simTime||0,wear=wearAt(path,time),cartWear=cartWearAt(path,time);
+  if(wear<LEVEL_THRESHOLD[0]&&cartWear<.35)continue;
   const id=footpathId(path.a,path.b);
   if(finishedIds?.has(id)||!access(id,path.a,path.b))continue;
-  const level=LEVEL_THRESHOLD.filter(threshold=>wear>=threshold).length;
-  result.push({id,a:path.a,b:path.b,level,traffic:wear/MAX_WEAR,control:footpathControl(s,view,id,path.a,path.b)});
+  const level=Math.max(1,LEVEL_THRESHOLD.filter(threshold=>wear>=threshold).length);
+  result.push({id,a:path.a,b:path.b,level,traffic:wear/MAX_WEAR,cartTraffic:Math.sqrt(cartWear/MAX_CART_WEAR),control:footpathControl(s,view,id,path.a,path.b)});
  }
  return result;
 }
@@ -225,6 +232,10 @@ export function validateFootpaths(s){
   if(!path||!validPoint(path.a)||!validPoint(path.b)||!routeStart(path.a,path.b)||
     !Number.isFinite(path.wear)||path.wear<=0||path.wear>MAX_WEAR||!Number.isFinite(path.at)||path.at<0||path.at>s.simTime+EPSILON)return false;
   const id=footpathId(path.a,path.b);
+  if(path.cartWear!==undefined||path.cartAt!==undefined){
+   if(!Number.isFinite(path.cartWear)||path.cartWear<=0||path.cartWear>MAX_CART_WEAR||
+    !Number.isFinite(path.cartAt)||path.cartAt<0||path.cartAt>path.at+EPSILON)return false;
+  }
   if(seen.has(id))return false;
   seen.add(id);
  }

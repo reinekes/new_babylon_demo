@@ -132,12 +132,12 @@ export function districtPickup(s,c){
  q.remaining=0;c.cargo={pottery:1};c.store=q.target;invalidateAssignments(s);return 1;
 }
  const source=store(s,q.source,pass),fromStock=central(s,source,pass);
- const eligible=isStrictSumer(s)&&c.role==='carrier'&&['food','clay','reed'].includes(q.resource);
+ const eligible=!c.freightCart&&isStrictSumer(s)&&c.role==='carrier'&&['food','clay','reed'].includes(q.resource);
  const surplus=k=>exportable(s,q.source,k,pass)-(pass.queued.get(entry(q.source,k))||0);
  const issue=eligible&&fromStock&&c.basketCondition===undefined&&surplus('basket')>=1;
  const repair=eligible&&fromStock&&c.basketCondition===0&&surplus('reed')>=2;
  const basket=eligible&&(c.basketCondition>0||issue||repair);
- const key=entry(q.target,q.resource),n=Math.min(basket?16:12,q.remaining,districtExportable(s,q,pass),Math.max(0,logisticsRoom(s,target,q.resource,q.targetKind,pass)-(pass.carriedTo.get(key)||0)-(pass.extra.get(key)||0)));if(n<=eps)return 0;const beforeOutput=source?.workshopStock?.output?.food||0,actual=q.campSalvage?n:q.shapingBatch?loadShapingBatch(s,c,q.shapingBatch,q.resource,n):fromStock?takeStock(s,q.source,q.resource,n,{fishTo:c,giftTo:c,creatorTo:c,grainTo:c}):takeBuildingOutput(source,q.resource,n);if(basket&&actual>12+eps){
+ const key=entry(q.target,q.resource),n=Math.min(c.freightCart?24:basket?16:12,q.remaining,districtExportable(s,q,pass),Math.max(0,logisticsRoom(s,target,q.resource,q.targetKind,pass)-(pass.carriedTo.get(key)||0)-(pass.extra.get(key)||0)));if(n<=eps)return 0;const beforeOutput=source?.workshopStock?.output?.food||0,actual=q.campSalvage?n:q.shapingBatch?loadShapingBatch(s,c,q.shapingBatch,q.resource,n):fromStock?takeStock(s,q.source,q.resource,n,{fishTo:c,giftTo:c,creatorTo:c,grainTo:c}):takeBuildingOutput(source,q.resource,n);if(basket&&actual>12+eps){
   if(issue)takeStock(s,q.source,'basket',1);
   if(repair)takeStock(s,q.source,'reed',2);
   c.basketCondition=(issue||repair?6:c.basketCondition)-1;
@@ -161,6 +161,6 @@ export function validateDistricts(s){
     q.remaining>batch.remaining[q.resource]+eps)return false;
   }
   if(q.remaining+transferCarried(s,q,pass)>eps&&(!q.shapingBatch&&!store(s,q.source,pass)||!store(s,q.target,pass)))return false;}
- for(const c of s.citizens){if(c.districtJob==null){if(c.shapingLoad||['toDistrictSupply','toDistrictStore'].includes(c.phase))return false;continue;}const q=index.jobsById.get(c.districtJob);if(!q||c.shapingLoad&&(c.shapingLoad.batchId!==q.shapingBatch||c.shapingLoad.resource!==q.resource)||q.shapingBatch&&(c.cargo?.[q.resource]||0)>eps&&!c.shapingLoad||['toDistrictStore','unloading'].includes(c.phase)&&c.store!==q.target||c.phase==='toDistrictSupply'&&c.store!==q.source||c.pantryTrip||c.seedField||c.saleJob||c.tradeJob||c.clinic||c.school||c.site||c.work||Object.values(c.buildCargo||{}).some(n=>n>0)||!['home','toHome','toDistrictSupply','toDistrictStore','unloading','blocked'].includes(c.phase)||Object.entries(c.cargo||{}).some(([k,n])=>n>0&&k!==q.resource)||c.age<16)return false;}
+ for(const c of s.citizens){if(c.districtJob==null){if(c.shapingLoad||['toCollectCart','toDistrictSupply','toDistrictStore'].includes(c.phase))return false;continue;}const q=index.jobsById.get(c.districtJob);if(!q||c.shapingLoad&&(c.shapingLoad.batchId!==q.shapingBatch||c.shapingLoad.resource!==q.resource)||q.shapingBatch&&(c.cargo?.[q.resource]||0)>eps&&!c.shapingLoad||['toDistrictStore','unloading'].includes(c.phase)&&c.store!==q.target||c.phase==='toDistrictSupply'&&c.store!==q.source||c.pantryTrip||c.seedField||c.saleJob||c.tradeJob||c.clinic||c.school||c.site||c.work||Object.values(c.buildCargo||{}).some(n=>n>0)||!['home','toHome','toCollectCart','toDistrictSupply','toDistrictStore','unloading','blocked'].includes(c.phase)||Object.entries(c.cargo||{}).some(([k,n])=>n>0&&k!==q.resource)||c.age<16)return false;}
  return true;
 }

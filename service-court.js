@@ -50,6 +50,7 @@ export function serviceMode(b,phase,c){
  if((b.type==='shrine'||b.type==='ziggurat')&&['toWork','returnWork','working'].includes(phase)&&c.work===`${b.x},${b.y}`&&!c.guarding&&!c.guardPost)return 'service';
  if(freightCourts.has(b.type)){
   if(receivingPhases.has(phase))return 'receive';
+  if(phase==='toCollectCart'||phase==='toReturnCart')return 'collect';
   if(collectingPhases.has(phase))return 'collect';
  }
  return null;

@@ -1,3 +1,4 @@
+import {hasCivicApron,civicEntranceBricks,civicBrickGeometry} from '../civic-entrance-bricks.js';
 import {workshopSurfaces} from './workshop-surfaces.js';
 import {extractionKinds,extractionOwner} from '../extraction-courts.js';
 import {extractionStockFraction} from '../extraction-stock.js';
@@ -62,7 +63,32 @@ const pointDistance=(p,a,b)=>{const dx=b.x-a.x,dy=b.y-a.y,t=clamp(((p.x-a.x)*dx+
 // coordinates affect these static meshes (resourceDisplayLayout uses the same data).
 const depositGeometry=s=>s.world?.deposits?.map(d=>[d.kind,d.x,d.y]);
 const datePalmGround=(s,p)=>vegetationBankDistance(p.x,p.y,s)>.22;
-export function landscapeSignature(s){return JSON.stringify([isStrictSumer(s),worldWidth(s),worldHeight(s),s.world?.seed,s.world?.river,s.world?.lakes,depositGeometry(s),s.gathering?.features?.map(f=>[f.id,f.kind,f.x,f.y]),s.buildings?.map(b=>[b.type,b.x,b.y,b.footprint||1,b.construction?.kind,progress(b),b.type==='garden'?[b.rotation||0,orchardMaturity(s,b).growth]:b.type==='cityGate'?b.rotation||0:0]),s.roadAnchors,s.roads?.map(r=>[r.id,r.a,r.b,r.level,r.built,r.construction])]);}
+// Orders and endpoints can change in place, including in an imported save.
+// Check the fields that feed the mesh plan. Idle roads allocate nothing each frame.
+const roadSnapshots=new WeakMap();
+let nextRoadRevision=0;
+function landscapeRoadRevision(s){
+ const roads=s.roads;
+ if(!roads?.length)return 0;
+ let previous=roadSnapshots.get(s);
+ if(!previous){previous={rows:[],revision:0};roadSnapshots.set(s,previous);}
+ const rows=previous.rows;
+ let changed=rows.length!==roads.length;
+ for(let i=0;i<roads.length;i++){
+  const road=roads[i],a=road.a,b=road.b,order=road.construction,row=rows[i];
+  const ratio=order?progress(road):1;
+  if(row&&row.id===road.id&&row.ax===a?.x&&row.ay===a?.y&&row.ak===a?.key&&
+    row.bx===b?.x&&row.by===b?.y&&row.bk===b?.key&&row.level===road.level&&row.built===road.built&&
+    row.kind===order?.kind&&row.target===order?.target&&row.ratio===ratio)continue;
+  rows[i]={id:road.id,ax:a?.x,ay:a?.y,ak:a?.key,bx:b?.x,by:b?.y,bk:b?.key,
+   level:road.level,built:road.built,kind:order?.kind,target:order?.target,ratio};
+  changed=true;
+ }
+ rows.length=roads.length;
+ if(changed)previous.revision=++nextRoadRevision;
+ return previous.revision;
+}
+export function landscapeSignature(s){return JSON.stringify([isStrictSumer(s),worldWidth(s),worldHeight(s),s.world?.seed,s.world?.river,s.world?.lakes,depositGeometry(s),s.gathering?.features?.map(f=>[f.id,f.kind,f.x,f.y]),s.buildings?.map(b=>[b.type,b.x,b.y,b.footprint||1,b.construction?.kind,progress(b),b.type==='garden'?[b.rotation||0,orchardMaturity(s,b).growth]:hasCivicApron(b)?[b.rotation||0,b.level||1]:b.type==='cityGate'?b.rotation||0:0]),s.roadAnchors,landscapeRoadRevision(s)]);}
 export function landscapeFallbackTufts(s,roads=[],sources={}){
  if(sources.grass?.length&&sources.reed?.length)return [];
  return floodplainTufts(s,roads).filter(p=>!sources[p.kind]?.length);
@@ -134,6 +160,7 @@ export async function createGameLandscape(B,scene,initialState,materials,options
  const updateRoadGroups=()=>roadRenderGroups.update(batchRoads?[...roadBatches.values()].map(r=>r.road):[]);
  const color=(r,g,b)=>new B.Color3(r,g,b);
  const material=(name,hex)=>{const m=new B.PBRMaterial(name,scene);m.albedoColor=B.Color3.FromHexString(hex).toLinearSpace();m.roughness=1;m.metallic=0;ownedMaterials.push(m);return m;};
+ const apronMaterial=material('dusty-mudbrick-paving','#ffffff');
  const catGroundHeights=new Map();
  const catDiscovery=createCatDiscoveryScenery(B,scene,{tileSize:TILE,groundHeight:(x,y,s)=>{const key=`${x},${y}`;if(!catGroundHeights.has(key))catGroundHeights.set(key,catDiscoverySurfaceHeight(B,scene,x,y,(x,y)=>visualSurfaceElevation(x,y,s),TILE));return catGroundHeights.get(key);}});
  const waterView=createGameWater(B,scene,materials);
@@ -150,16 +177,19 @@ export async function createGameLandscape(B,scene,initialState,materials,options
   if(typeof Image!=='undefined'&&!mat.albedoTexture){
    let maps=streetTextures.get(kind);
    if(!maps){
-    const load=slot=>new B.Texture(`assets/3d/textures/street-${kind}-${slot}.webp`,scene,false,true);
-    maps={color:load('color'),normal:load('normal')};maps.normal.gammaSpace=false;maps.normal.level=kind==='paving'?.53:.28;streetTextures.set(kind,maps);
+    // The trodden surface is the same local alluvium as the ground. Its fine
+    // normal is flattened by footfall; grit remains visible on upgraded roads.
+    const load=slot=>new B.Texture(kind==='silt'?`assets/3d/textures/floodplain-alluvium_${slot}.webp?v=fines-1`:`assets/3d/textures/street-${kind}-${slot}.webp`,scene,false,true);
+    maps={color:load('color'),normal:load('normal')};maps.normal.gammaSpace=false;maps.normal.level=kind==='silt'?.09:kind==='paving'?.53:.28;streetTextures.set(kind,maps);
    }
    mat.albedoTexture=maps.color;mat.bumpTexture=maps.normal;
   }
   return mat;
  }
- earth.albedoColor=color(.68,.61,.515);trail.albedoColor=earth.albedoColor;
+ earth.roughness=trail.roughness=.94;
  gravel.albedoColor=color(.87,.77,.66);paving.albedoColor=color(.92,.87,.75);
  const groundMaps=workshopSurfaces(B,scene).textures('earth');
+ apronMaterial.albedoTexture=groundMaps.color||null;apronMaterial.bumpTexture=groundMaps.normal||null;
  for(const mat of [bank,wetMud]){
   mat.albedoTexture=groundMaps.color||materials.soil?.albedoTexture||null;
   mat.bumpTexture=groundMaps.normal||materials.soil?.bumpTexture||null;
@@ -359,8 +389,10 @@ export async function createGameLandscape(B,scene,initialState,materials,options
   const channels=canalNetworkGeometry(s,plan.canals),arms=channels.arms;
   // Road work changes paving only. Static scenery uses footprints/endpoints,
   // while canal progress remains part of its exact geometry dependency key.
-  const nextScenery=JSON.stringify([worldWidth(s),worldHeight(s),s.world?.river,s.world?.lakes,s.buildings.map(b=>[b.type,b.x,b.y,b.footprint||1]),plan.canals,plan.roads.map(r=>[r.a,r.b])]);
+  const nextScenery=JSON.stringify([isStrictSumer(s),worldWidth(s),worldHeight(s),s.world?.river,s.world?.lakes,s.buildings.map(b=>[b.type,b.x,b.y,b.footprint||1,hasCivicApron(b)?[b.rotation||0,b.construction?.kind==='new',b.level||1]:0]),plan.canals,plan.roads.map(r=>[r.a,r.b])]);
   if(nextScenery!==staticScenerySignature){remove(staticMeshes);
+  const bricks=civicEntranceBricks(s);
+  if(bricks.length){const mesh=meshData('civic-entrance-bricks',civicBrickGeometry(bricks,s),apronMaterial);mesh.freezeWorldMatrix();}
   for(const [name,g,mat]of [['actual-canal-bank',channels.wetBed,wetMud],['actual-dry-canal-bank',channels.dryBed,bank],['actual-canal-water',channels.water,waterView.material]]){const m=meshData(name,g,mat);if(m){m.metadata={canalArms:arms,canalArm:arms[0]};m.receiveShadows=name!=='actual-canal-water';m.freezeWorldMatrix();}}
   for(const c of plan.canals)for(const [dx,dy]of c.arms.length?c.arms:[[1,0],[-1,0]]){const mid={x:c.x+dx*.5,y:c.y+dy*.5};if(plan.roads.some(r=>pointDistance(mid,r.a,r.b)<.09))for(const offset of [-.22,0,.22]){const center={x:mid.x+dx*offset/TILE,y:mid.y+dy*offset/TILE};strip('canal-road-crossing',{x:center.x-dy*.13,y:center.y+dx*.13},{x:center.x+dy*.13,y:center.y-dx*.13},.19,.18,materials.wood);}}
   const tufts=landscapeFallbackTufts(s,plan.roads,valleyVegetation.sources),grass=meshData('volumetric-riparian-colonies',tuftGeometry(s,tufts),meadow);if(grass){grass.metadata={natureTufts:tufts};grass.freezeWorldMatrix();}
@@ -429,6 +461,7 @@ export async function createGameLandscape(B,scene,initialState,materials,options
     if(src.metadata.valleyVariant>=3)src.material.albedoColor=dry?color(1,.85,.61):summer?color(1,.94,.78):color(.95,1,.95);
    }
    soil.albedoColor=color(rain?.82:.94,rain?.76:.86,rain?.62:.71);grass.albedoColor=dry?color(.83,.72,.42):summer?color(.8,.79,.5):color(.71,.87,.52);
+   earth.albedoColor=trail.albedoColor=rain?color(.95,.83,.67):color(1.09,.98,.79);
    for(const m of base?.meshes||[])if(m.name==='soft-riparian-grass'&&m.material)m.material.albedoColor=grass.albedoColor.clone();
    meadow.albedoColor=dry?color(.57,.43,.21):summer?color(.48,.47,.25):rain?color(.32,.43,.19):color(.40,.48,.24);
   }

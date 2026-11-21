@@ -1,3 +1,5 @@
+import {cartHeading} from '../porter-cart-art.js';
+import {createPorterCarts,cartGrip} from './porter-cart.js';
 import {workRate} from '../wellbeing.js';
 import {freightGesture} from '../service-court.js';
 import {fishingHands,updateFishingTackle} from './harvest-gear.js';
@@ -116,6 +118,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
  let disposed=false,poseTime=0,poseClock=0,bier=null,riteState=null,riteView=null,presentedState=null;
  const reducedMotion=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches||false;
  const ritual=createFuneralRitual(B,scene,meshes),festivalCourt=createFestivalCourt(B,scene,meshes);
+ const carts=createPorterCarts(B,scene,surfaceElevation,register,prune);
  const containers=[];
  try{
   // Keep source containers outside the scene: only their independent clones render.
@@ -430,9 +433,35 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   const source=c.carrying&&c.cargo?.food>0&&c.districtJob&&state.district?.jobs.find(j=>j.id===c.districtJob)?.source;
   const fromHunt=!!source&&buildingTypes.get(source)==='hunting';
   const activity=c.activity?.task;
-  const goods=c.carrying?Object.entries(c.cargo||{}).filter(([,n])=>n>0):[],key=goods.map(([k,n])=>`${k}:${n}`).sort().join('|')+`:${a.look?.work||''}:${!!c.relic}:${c.relicId||''}:${activity==='haul-game'||activity==='dress-game'?activity:''}:${!!fromHunt}`;
+  const goods=c.carrying?Object.entries(c.cargo||{}).filter(([,n])=>n>0):[],key=goods.map(([k,n])=>`${k}:${n}`).sort().join('|')+`:${a.look?.work||''}:${!!c.relic}:${c.relicId||''}:${activity==='haul-game'||activity==='dress-game'?activity:''}:${!!fromHunt}:${c.freightCart||''}`;
   if(a.cargoKey===key)return;a.cargoKey=key;prune(a.load);for(const m of a.load.getChildMeshes())m.dispose();
   a.towLine=null;
+  if(c.freightCart){
+   const resource=goods[0]?.[0];
+   a.load.position.set(0,.63,1.23);
+   if(!resource)return;
+   for(let i=0;i<3;i++){
+    const x=(i===1?.18:-.17),z=i===2?.25:-.22;
+    if(['clay','brick','firedBrick','stone'].includes(resource)){
+     for(let j=0;j<2;j++)box('cart-load-block',a.load,resource==='stone'?stone:clay,x,.063+j*.128,z,.30,.122,.34);
+    }else if(carriedKind(resource)==='bundle'){
+     const logX=(i-1)*.209,logY=.128+(i===1?.128:0);
+     const log=B.MeshBuilder.CreateCylinder('cart-load-timber',{height:1.21+i*.035,diameterTop:.184,diameterBottom:.216,tessellation:10},scene);
+     log.parent=a.load;log.material=['wood','timber'].includes(resource)?wood:reed;log.position.set(logX,logY,0);log.rotation.x=Math.PI/2;meshes.push(log);
+     for(const end of [-1,1]){
+      const cut=B.MeshBuilder.CreateCylinder('cart-timber-end',{height:.008,diameter:end===1?.161:.190,tessellation:10},scene);
+      cut.parent=log;cut.material=reed;cut.position.y=end*(.605+i*.0175);meshes.push(cut);
+     }
+     if(i===1)for(const z of [-.34,.34])box('cart-timber-lashing',a.load,reed,0,.326,z,.51,.025,.037);
+    }else if(carriedKind(resource)==='vessel'){
+     sphere('cart-load-vessel',a.load,clay,x,.16,z,.31,.35,.31);sphere('cart-load-jar-lip',a.load,clay,x,.33,z,.14,.053,.14);
+    }else{
+     sphere('cart-load-sack',a.load,linen,x,.145,z,.32,.30,.40);sphere('cart-load-sack-knot',a.load,reed,x,.286,z+.022,.09,.06,.09);
+    }
+   }
+   return;
+  }
+  a.load.position.set(0,1,.37);
   if(activity==='haul-game'||activity==='dress-game'){
    if(activity==='haul-game'){
     const line=B.MeshBuilder.CreateLines('hunter-hauling-rope',{points:[vec(),vec(0,-1,0)],updatable:true},scene);
@@ -591,6 +620,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    // path smoothing must not rotate them apart or snap the root when paused.
    if(!paused||a.yaw===null){a.yaw=(c.miracleContact||c.funeralContact||c.eventContact).yaw;a.root.rotation.y=a.yaw;}
   }else{
+   if(c.freightCart&&a.yaw===null){a.yaw=cartHeading(c);a.root.rotation.y=a.yaw;}
    if(c.clinicPlace&&!aisle){a.yaw=c.clinicPlace.yaw;a.root.rotation.y=a.yaw;}
    if(c.festivalContact&&!paused){const center=c.festivalContact.center,dx=center.x-shownX,dy=center.y-shownY;a.yaw=Math.hypot(dx,dy)>.001?Math.atan2(dx,dy):c.festivalContact.yaw;}
    if(c.activity?.target&&distance<.001&&(!paused||a.yaw===null)&&(!c.activity.stage||['working','strike'].includes(c.activity.stage))){
@@ -602,10 +632,15 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    if(distance>.00001&&!paused&&!c.festivalContact){if(!c.freightHandoff)a.yaw=Math.atan2(dx,dz);const angle=Math.atan2(Math.sin(a.yaw-a.root.rotation.y),Math.cos(a.yaw-a.root.rotation.y));a.root.rotation.y+=angle*(1-Math.exp(-dt*10));}
    else if(a.yaw!==null&&!paused){const angle=Math.atan2(Math.sin(a.yaw-a.root.rotation.y),Math.cos(a.yaw-a.root.rotation.y));a.root.rotation.y+=angle*(1-Math.exp(-dt*10));}
   }
+  a.cartChanged=!!c.freightCart!==!!a.cart;
+  if(c.freightCart){
+   if(!a.cart){a.cart=carts.create('rolling-freight-cart-'+c.id,a.root);register(a.cart.root);}
+   if(!paused&&distance<3)carts.roll(a.cart,distance,a.root.scaling.z);
+  }else if(a.cart){prune(a.cart.root);a.cart.root.dispose();a.cart=null;}
   a.lastX=shownX;a.lastY=shownY;
   const decision=c.homeVisit?{clip:c.walking?'Walk_Loop':'Idle_Loop',pose:c.carrying?'carry':'idle'}:plough?{clip:'Walk_Loop',pose:'idle'}:actorAnimation(c,['dairy','lithophone','lyre'].includes(a.workContact?.kind)&&!c.walking?0:distance<3?distance:0);
   // Changing UI modes on pause must not restart clips or alter their sampled pose.
-  if(!paused||!a.clip||a.ploughPoseChanged||a.homePoseChanged){a.pose=decision.pose;a.c=c;if(a.clip!==decision.clip){
+  if(!paused||!a.clip||a.ploughPoseChanged||a.homePoseChanged||a.cartChanged){a.pose=decision.pose;a.c=c;if(a.clip!==decision.clip){
    attachClock(a);
    a.groups.get(a.clip)?.stop();
    const g=a.groups.get(decision.clip);if(!g)throw Error(`Missing actor animation: ${decision.clip}`);g.start(true,1,g.from,g.to,false);
@@ -623,7 +658,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    a.playAnimal?.setEnabled(!!(playing||keepsake));
   }
   if(a.tool&&carryingTaper)workerTool(a,'kiln-taper');
-  else if(a.tool&&plough)workerTool(a,null);
+  else if(a.tool&&(plough||a.cart))workerTool(a,null);
   else if(a.tool&&(!paused||a.toolKind===null||a.ploughPoseChanged)){const active=WORK_POSES.has(a.pose),builder=c.role==='builder'||c.siteDuty==='builder'||c.phase==='constructing';
    const kind=c.activity?(a.workContact?workstationHands(a.workContact,a.time):workPose(c.activity.kind,a.time,c.activity.task)).tool??(['logging','quarry','hunting','fishing'].includes(c.activity.kind)?c.activity.kind:null):builder?'building':null;workerTool(a,c.herding?'herd-staff':!c.carrying&&(active||c.activity?.kind==='fishing'&&c.activity.stage==='approach')?kind:null);}
   for(const [name,g]of a.groups)g.speedRatio=paused||name==='Walk_Loop'?0:speed;
@@ -662,7 +697,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    // Apply the distance sample once, before task IK and skeleton upload.
    if(!a.paused&&a.clip==='Walk_Loop'&&a.walkFrame!==undefined)a.groups.get(a.clip).goToFrame(a.walkFrame);
    if(a.head&&a.look){const i=a.look.identity;a.head.scaling.set(a.headBase.x*(a.nativeResident?Math.max(.98,Math.min(1.03,i.headWidth)):i.headWidth),a.headBase.y*(a.nativeResident?Math.max(.98,Math.min(1.03,i.headHeight)):i.headHeight),a.headBase.z);}
-   if(a.paused&&!a.homePoseChanged&&!a.ploughPoseChanged&&!a.rainChanged&&!a.rainReaction&&a.armNodes.some(arm=>arm.last)){for(const arm of a.armNodes)if(arm.last)arm.node.rotationQuaternion=arm.last.clone();for(const leg of Object.values(a.legs)){if(leg.lastPosition)leg.upper.position.copyFrom(leg.lastPosition);for(const [i,n]of [leg.upper,leg.lower,leg.foot].entries())if(leg.lastRotations?.[i])n.rotationQuaternion=leg.lastRotations[i].clone();}if(a.lastPelvis)a.pelvis.position.copyFrom(a.lastPelvis);if(a.lastPelvisRotation)a.pelvis.rotationQuaternion=a.lastPelvisRotation.clone();for(const side of ['l','r'])if(a.lastHands?.[side])a.hands[side].rotationQuaternion=a.lastHands[side].clone();if(a.lastSpine)a.spine.rotationQuaternion=a.lastSpine.clone();continue;}
+   if(a.paused&&!a.cartChanged&&!a.homePoseChanged&&!a.ploughPoseChanged&&!a.rainChanged&&!a.rainReaction&&a.armNodes.some(arm=>arm.last)){for(const arm of a.armNodes)if(arm.last)arm.node.rotationQuaternion=arm.last.clone();for(const leg of Object.values(a.legs)){if(leg.lastPosition)leg.upper.position.copyFrom(leg.lastPosition);for(const [i,n]of [leg.upper,leg.lower,leg.foot].entries())if(leg.lastRotations?.[i])n.rotationQuaternion=leg.lastRotations[i].clone();}if(a.lastPelvis)a.pelvis.position.copyFrom(a.lastPelvis);if(a.lastPelvisRotation)a.pelvis.rotationQuaternion=a.lastPelvisRotation.clone();for(const side of ['l','r'])if(a.lastHands?.[side])a.hands[side].rotationQuaternion=a.lastHands[side].clone();if(a.lastSpine)a.spine.rotationQuaternion=a.lastSpine.clone();continue;}
    const targets=a.clipTargets.get(a.clip);authoredStance(a,targets);
    const carry=['carry','unload'].includes(a.pose),work=WORK_POSES.has(a.pose),play=['play','dance'].includes(a.pose),taskPose=a.workContact?workstationPose(a.workContact,a.time):workPose(a.pose,a.time,a.c.activity?.task);
    const railHeight=a.c.funeralContact?.hands?.left.height;
@@ -722,6 +757,8 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    }else if(a.c.activity?.task==='dress-game'||a.c.activity?.task==='lift-game'){
     const dressing=a.c.activity.task==='dress-game',h=dressing?.83:.40,wave=Math.sin(a.time*3.7)*.065;
     poseArm(a,'r',vec(.13,h+wave,.46));poseArm(a,'l',vec(-.15,h,.46));
+   }else if(a.cart){
+    for(const [side,x]of [['l',-cartGrip.width],['r',cartGrip.width]])poseArm(a,side,vec(x,cartGrip.height,cartGrip.reach));
    }else if(a.towLine&&carry){
     a.load.position.set(0,0,0);
     poseArm(a,'l',vec(-.17,.77,.22));poseArm(a,'r',vec(.08,.8,.20));
@@ -928,6 +965,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   // Presentation seconds use the real frame delta and selected UI multiplier.
   // Calendar simTime intentionally advances more slowly and must not drive poses.
   if(!paused){poseTime+=dt*speed;poseClock+=dt;}
+  carts.syncParking(state);
   const frame=actorViewFrame(state),visible=homeVisits(state,showBlessingApproach(showRainObserver(frame.citizens,state,rainReaction),state,blessingApproach),weather),positions=residentViewPositions(state,visible),pettingCats=new Set(frame.pettingPairs.map(p=>p.catId)),seen=new Set();
   for(const c of visible)if(c.homeVisit)positions.set(c.id,{x:c.x,y:c.y,homeVisit:c.homeVisit});
   const teams=ambient?.hasPloughTeams?ploughTeams(state,visible):[];
@@ -1004,6 +1042,6 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   }
   wildlife.update(state,[...shore.filter(c=>c.kind!=='common-quail'&&!supplied?.supports(c)&&!['white-pelican','onager','egret','otter','glossy-ibis','marsh-harrier','pied-kingfisher','pygmy-cormorant','turtle'].includes(c.kind)&&(c.kind!=='pig'||!ambient?.hasYardPig)),...fauna.filter(c=>c.kind!=='fish'&&cityAnimalVisible(c,huntedMice)&&c.kind!=='mouse'&&c.kind!=='sheep'&&!(goats&&c.kind==='goat')&&!(jackals&&c.kind==='jackal')&&!imported?.supports(c.kind)),...jackals?[]:riteJackals],dt,{paused,speed});riteState=state;riteView=frame.funeral;funeralProps(state,riteView);festivalCourt.update(festivalView(state),state,poseTime);
  }
- function dispose(){if(disposed)return;disposed=true;scene.onAfterAnimationsObservable.remove(observer);for(const a of people.values())remove(a);for(const a of sheep.values())remove(a);if(bier)remove(bier);ritual.dispose();festivalCourt.dispose();people.clear();sheep.clear();geometryLOD.dispose();residentTextile?.dispose();shadowShape.dispose();goats?.dispose();imported?.dispose();ambient?.dispose();jackals?.dispose();supplied?.dispose();wildlife.dispose();for(const c of containers)c?.dispose();for(const m of ownedMaterials)m.dispose();meshes.length=0;}
+ function dispose(){if(disposed)return;disposed=true;scene.onAfterAnimationsObservable.remove(observer);for(const a of people.values())remove(a);for(const a of sheep.values())remove(a);if(bier)remove(bier);ritual.dispose();festivalCourt.dispose();carts.dispose();people.clear();sheep.clear();geometryLOD.dispose();residentTextile?.dispose();shadowShape.dispose();goats?.dispose();imported?.dispose();ambient?.dispose();jackals?.dispose();supplied?.dispose();wildlife.dispose();for(const c of containers)c?.dispose();for(const m of ownedMaterials)m.dispose();meshes.length=0;}
  return {update,resetPresentation,dispose,meshes,shadowMeshes:()=>meshes.filter(shadowFilter),faunaReady,residentDetailsReady:()=>historicalPromise||Promise.resolve(),rootFor(selection){return selection.citizenId!==undefined?people.get(selection.citizenId)?.root:sheep.get(selection.animalId)?.root||ambient?.rootForSheep(selection.animalId)||goats?.rootFor(selection)||imported?.rootFor(selection)||jackals?.rootFor(selection)||supplied?.rootFor(selection)||wildlife.rootFor(selection);}};
 }

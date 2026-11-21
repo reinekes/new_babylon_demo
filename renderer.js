@@ -1,3 +1,6 @@
+import {cartParking,cartHeading,drawFreightCart} from './porter-cart-art.js';
+import {availableFreightCarts} from './freight-carts.js';
+import {hasCivicApron,civicEntranceBricks,civicBrickCanvasLayer} from './civic-entrance-bricks.js';
 import {createHomeVisits} from './game3d/home-visits.js';
 import {ovenHeat} from './kilns.js';
 import {extractionStockFraction} from './extraction-stock.js';
@@ -18,7 +21,7 @@ import {miracleGardenPlan} from './miracle-garden-plan.js';
 import {footprintCells,footprintSize,newFootprint,occupiesCell} from './footprints.js';
 import {roadIsBuilt,roadTopologyRevision} from './roads.js';
 import {footpathRibbonPoint} from './footpaths.js';
-import {streetSurfaceLayout,streetCrossSections,streetEndFade,streetTrafficAt,streetCoverAt} from './street-surfaces.js';
+import {streetSurfaceLayout,streetCrossSections,streetEndFade,streetTrafficAt,streetCoverAt,streetWheelSection} from './street-surfaces.js';
 import {obstacleIndex} from './navigation.js';
 import {festivalView} from './festival.js';
 import {drawFestivalCourt,drawFestivalBuildingLights,drawFestivalBlessing} from './festival-art.js';
@@ -50,48 +53,20 @@ const hash=(x,y)=>{const n=Math.sin(x*127.1+y*311.7)*43758.5453;return n-Math.fl
 export function miraclePlantClear(s,p){
  return isDryPoint(s,p.x,p.y)&&!(s.buildings||[]).some(b=>{const size=footprintSize(b),center=(size-1)/2,half=size/2+.16;return Math.abs(b.x+center-p.x)<half&&Math.abs(b.y+center-p.y)<half;});
 }
-// A repeating tile of silt and grit breaks up compacted areas. White dust
-// lifts the tint back towards the local ground colour, including at the verge.
-function streetGrain(renderer,ctx){
- if(!renderer.streetGrain){
-  const tile=renderer.createLayerCanvas?.()||(typeof document!=='undefined'?document.createElement('canvas'):null);
-  if(!tile)return null;
-  const n=192;tile.width=tile.height=n;
-  const brush=tile.getContext('2d');
-  if(!brush?.createImageData)return null;
-  const pixels=brush.createImageData(n,n);
-  const lattice=size=>Array.from({length:size*size},(_,i)=>hash(i%size+size*2,Math.floor(i/size)-size));
-  const broad=lattice(11),fine=lattice(37);
-  const field=(grid,size,x,y)=>{
-   const px=x*size/n,py=y*size/n,ix=Math.floor(px),iy=Math.floor(py);
-   const t=px-ix,u=py-iy,v=t*t*(3-2*t),w=u*u*(3-2*u);
-   const at=(i,j)=>grid[i%size+(j%size)*size];
-   return ((1-v)*at(ix,iy)+v*at(ix+1,iy))*(1-w)+((1-v)*at(ix,iy+1)+v*at(ix+1,iy+1))*w;
-  };
-  for(let y=0;y<n;y++)for(let x=0;x<n;x++){
-   const grain=hash(x,y),patch=field(broad,11,x,y),silt=field(fine,37,x,y);
-   const k=4*(x+n*y);pixels.data[k]=pixels.data[k+1]=pixels.data[k+2]=255;
-   pixels.data[k+3]=255*(.03+.52*Math.max(0,patch-.30)+.17*silt+.13*grain+(grain>.98?.27:0));
-  }
-  brush.putImageData(pixels,0,0);renderer.streetGrain=tile;
- }
- return ctx.createPattern(renderer.streetGrain,'repeat');
-}
-// Paint the soil tint onto a white map. Darken takes the strongest footprint
-// at a crossing. Multiplying the finished map into the terrain preserves its
-// own silt, vegetation colour and cracks under every material.
+// Stamp colour into a transparent, camera-cached layer. Bare lanes show the
+// lighter compressed clay; light traffic leaves much of the local soil visible.
 function paintStreetSoil(renderer,ctx,shapes){
- const palettes=[[222,197,166],[208,205,181],[221,176,142]];
+ const palettes=[[239,213,163],[190,185,155],[209,159,126]];
  const mapped=(row,side)=>{const d=row.reach/1.045*side*(side<0?row.left*row.trimLeft:row.right*row.trimRight);return {x:row.p.x+row.nx*d,y:row.p.y+row.nz*d};};
  ctx.save();
  ctx.transform(renderer.tw/2,renderer.th/2,-renderer.tw/2,renderer.th/2,renderer.ox,renderer.oy);
- ctx.globalCompositeOperation='darken';
+ ctx.globalCompositeOperation='source-over';
  for(const {profile,rows,level} of shapes.values()){
   const {a,b}=profile;
   if(rows.length<2||!renderer.inView((a.x+b.x)/2,(a.y+b.y)/2,60))continue;
   const rgb=palettes[Math.max(0,level-1)];
   const pressure=t=>.12+.33*Math.sqrt(streetTrafficAt(profile,t))+.55*streetCoverAt(profile,t);
-  const shade=amount=>'rgb('+rgb.map(v=>Math.round(255-(255-v)*amount)).join(',')+')';
+  const shade=(opacity,tone=1)=>'rgba('+rgb.map(v=>Math.min(255,Math.round(v*tone))).join(',')+','+Math.min(1,opacity)+')';
   let left=mapped(rows[0],-1),right=mapped(rows[0],1),previousLeft=left,previousRight=right;
   for(let i=1;i<rows.length;i++){
    const row=rows[i],prev=rows[i-1],endLeft=mapped(row,-1),endRight=mapped(row,1);
@@ -104,15 +79,25 @@ function paintStreetSoil(renderer,ctx,shapes){
     const gradient=ctx.createLinearGradient(lx,ly,rx,ry);
     const t=(prev.t+row.t)/2,wear=pressure(t)*(.88+.09*Math.sin(lx*2.9-ly*1.8)+.03*Math.cos(rx*6.1+ry*2.8))*Math.sqrt(streetEndFade(profile,t));
     const drift=.035*Math.sin(lx*4.1+ly*2.3);
-    for(const [u,strength] of [[0,0],[.065,.28],[.17+drift,.87],[.44+drift,1],[.80+drift,.91],[.94,.27],[1,0]])gradient.addColorStop(u,shade(wear*strength));
+    const wheel=level<=2&&streetWheelSection(profile,{...row,t,x:(prev.x+row.x)/2,z:(prev.z+row.z)/2,half:(prev.half+row.half)/2});
+    const stops=wheel?[[0,0],[.065,.28],[.5,1],[.94,.27],[1,0]]:[[0,0],[.065,.28],[.17+drift,.87],[.44+drift,1],[.80+drift,.91],[.94,.27],[1,0]];
+    if(wheel){
+     const depth=wheel.depth*(level===2?.58:1);
+     for(const sign of [-1,1]){
+      const centre=.5+sign*wheel.gauge*.5,rim=wheel.rim*.5;
+      stops.push([centre+sign*rim,.95,1+.05*depth],[centre,1,1-.32*depth],[centre-sign*rim,.98,1]);
+     }
+     stops.sort((a,b)=>a[0]-b[0]);
+    }
+    for(const [u,strength,tone] of stops)gradient.addColorStop(u,shade(wear*strength,tone));
     // Slight overlap at internal samples prevents antialiasing hairlines.
     const back=(start,previous)=>start+(previous-start)*.035;
     ctx.fillStyle=gradient;ctx.beginPath();ctx.moveTo(back(left.x,previousLeft.x),back(left.y,previousLeft.y));ctx.lineTo(back(right.x,previousRight.x),back(right.y,previousRight.y));ctx.lineTo(endRight.x,endRight.y);ctx.lineTo(endLeft.x,endLeft.y);ctx.closePath();ctx.fill();
    }
    previousLeft=left;previousRight=right;left=endLeft;right=endRight;
   }
-  if(renderer.s<.65)continue;
-  const count=level===3?15:level===2?13:7;
+  if(level<2||renderer.s<.65)continue;
+  const count=level===3?15:13;
   for(let j=0;j<count;j++){
    const seed=j*3.83,noise=k=>hash(a.x*5.7+b.x*.29+seed+k,a.y*8.3+b.y*2.7-j*.71+k);
    const t=.04+noise(1)*.92,f=t*(rows.length-1),i=Math.floor(f),r=rows[i],next=rows[i+1],u=f-i;
@@ -121,7 +106,7 @@ function paintStreetSoil(renderer,ctx,shapes){
    const x=r.p.x+(next.p.x-r.p.x)*u+r.nx*d,y=r.p.y+(next.p.y-r.p.y)*u+r.nz*d;
    const long=(level===3?.029:level===2?.018:.011)*(.7+noise(3)),short=long*(.35+.25*noise(4));
    const dx=r.nz*long,dy=-r.nx*long,sx=r.nx*short,sy=r.nz*short;
-   ctx.fillStyle=shade(pressure(t)*(1.02+noise(5)*.34));ctx.beginPath();ctx.moveTo(x-dx,y-dy);ctx.lineTo(x+sx,y+sy);ctx.lineTo(x+dx,y+dy);ctx.lineTo(x+dx*.48-sx,y+dy*.48-sy);ctx.closePath();ctx.fill();
+   ctx.fillStyle=shade(pressure(t),.78+noise(5)*.16);ctx.beginPath();ctx.moveTo(x-dx,y-dy);ctx.lineTo(x+sx,y+sy);ctx.lineTo(x+dx,y+dy);ctx.lineTo(x+dx*.48-sx,y+dy*.48-sy);ctx.closePath();ctx.fill();
   }
  }
  ctx.restore();
@@ -172,7 +157,7 @@ export class Renderer{
  }
  refreshCity(state) {
   this.state=state;this.professionByWork=new Map(state.buildings.map(b=>[b.id||`${b.x},${b.y}`,b.type]));this.houseOccupancy=new Map();for(const c of state.citizens||[])this.houseOccupancy.set(c.home,(this.houseOccupancy.get(c.home)||0)+1);
-  const signature=[...state.buildings,...state.roadAnchors||[]].map(b=>`${b.type}:${b.x},${b.y}:${b.construction?.kind||'ready'}:${b.footprint||1}`).join('|')+`|roads:${roadTopologyRevision(state)}|world:${JSON.stringify(state.world)}`;
+  const signature=[...state.buildings,...state.roadAnchors||[]].map(b=>`${b.type}:${b.x},${b.y}:${b.construction?.kind||'ready'}:${b.footprint||1}${hasCivicApron(b)?'/'+(b.rotation||0)+'/'+(b.level||1):''}`).join('|')+`|roads:${roadTopologyRevision(state)}|world:${JSON.stringify(state.world)}`;
   if(signature!==this.citySignature){this.citySignature=signature;this.streets=generateStreets([...state.buildings,...state.roadAnchors||[]],state);}
   const vegetationKey=signature+'|'+state.season+'|'+!!state.drought+'|'+weatherAt(state).type+'|'+Math.floor((state.simTime||0)/10);
   if(this.vegetationKey!==vegetationKey){this.vegetationKey=vegetationKey;this.scenery=vegetationFor(state,this.streets);for(const d of state.world?.deposits||[])if(['forest','dates'].includes(d.kind)&&!state.buildings.some(b=>b.x===d.x&&b.y===d.y))for(let k=0;k<3;k++)this.scenery.push({x:d.x+(k-1)*.17,y:d.y+(k%2)*.14,kind:'palm',size:.44});}
@@ -370,7 +355,7 @@ export class Renderer{
   else if(['weave','mould','harvest','carry','unload','stir','dance','chat','play','elder','peaceRelief'].includes(pose.kind))drawActorGesture(this,p,q,person,pose);
   else if(look.craft&&person.phase==='working'){const swing=this.reduce?0:Math.sin(person.step||0);this.line([[p.x+2*q,p.y-6*q],[p.x+(4+swing)*q,p.y-7*q]],'#a3835e',q);}
   else if(['working','manualGathering','constructing'].includes(person.phase)){const swing=this.reduce?0:Math.sin(person.step||0)*2;this.line([[p.x+3*q,p.y-5*q],[p.x+(7+swing)*q,p.y-11*q]],'#7b6548',1.2*q);this.line([[p.x+(5+swing)*q,p.y-12*q],[p.x+(10+swing)*q,p.y-10*q]],'#aaa17c',1.8*q);}
-  if(person.waterTrip?.load>0){for(const side of [-1,1]){const x=p.x+side*4*q,y=p.y-4*q;c.fillStyle='#b4784f';c.beginPath();c.ellipse(x,y,2.4*q,3.1*q,0,0,7);c.fill();this.line([[x-1.4*q,y-2.7*q],[x+1.4*q,y-2.7*q]],'#78aaa6',1.2*q);this.line([[p.x+side*1.5*q,p.y-7*q],[x,y-3*q]],'#a3835e',1.2*q);}}else if(person.carrying){const cargo=typeof person.cargo==='string'?person.cargo:Object.keys(person.cargo||{})[0];const color={firedBrick:'#bd7550',brick:'#cba373',food:'#dfbf62',wood:'#9b7850',stone:'#aeb5a6',hides:'#b38a61',wool:'#e7dec0',cloth:'#91a58b',grain:'#dfbf62',clay:'#bd8059',reed:'#8eaa6a',faith:'#7bb6b3',prestige:'#dec47b'}[cargo]||'#d4b77d';this.box(p.x+3*q,p.y-3*q,2.6*q,1.3*q,3.5*q,color,'#9b7f51','#b99b65');this.line([[p.x+1.5*q,p.y-7*q],[p.x+4*q,p.y-8*q]],'#c5b085',.8*q);}
+  if(person.waterTrip?.load>0){for(const side of [-1,1]){const x=p.x+side*4*q,y=p.y-4*q;c.fillStyle='#b4784f';c.beginPath();c.ellipse(x,y,2.4*q,3.1*q,0,0,7);c.fill();this.line([[x-1.4*q,y-2.7*q],[x+1.4*q,y-2.7*q]],'#78aaa6',1.2*q);this.line([[p.x+side*1.5*q,p.y-7*q],[x,y-3*q]],'#a3835e',1.2*q);}}else if(person.freightCart){drawFreightCart(this,person.x,person.y,cartHeading(person),Object.keys(person.cargo||{}).find(k=>person.cargo[k]>0),person.onBridge?5:0);}else if(person.carrying){const cargo=typeof person.cargo==='string'?person.cargo:Object.keys(person.cargo||{})[0];const color={firedBrick:'#bd7550',brick:'#cba373',food:'#dfbf62',wood:'#9b7850',stone:'#aeb5a6',hides:'#b38a61',wool:'#e7dec0',cloth:'#91a58b',grain:'#dfbf62',clay:'#bd8059',reed:'#8eaa6a',faith:'#7bb6b3',prestige:'#dec47b'}[cargo]||'#d4b77d';this.box(p.x+3*q,p.y-3*q,2.6*q,1.3*q,3.5*q,color,'#9b7f51','#b99b65');this.line([[p.x+1.5*q,p.y-7*q],[p.x+4*q,p.y-8*q]],'#c5b085',.8*q);}
   c.restore();
  }
  riverScreen(across,along,z=0){const p=worldFromRiver(across,along,this.state);return this.point(p.x,p.y,z);}
@@ -390,7 +375,7 @@ export class Renderer{
   const pavedKey=paved.map(r=>r.id+'/'+r.level).join('|');
   let cache=this.streetPaint;
   if(!cache||cache.state!==state||cache.city!==this.citySignature){
-   cache=this.streetPaint={state,city:this.citySignature,obstacles:obstacleIndex(state.buildings||[]),shapes:new Map()};
+   cache=this.streetPaint={state,city:this.citySignature,obstacles:obstacleIndex(state.buildings||[]),shapes:new Map(),aprons:civicBrickCanvasLayer(civicEntranceBricks(state))};
   }
   if(cache.bucket!==bucket||cache.pavedKey!==pavedKey){
    const shapes=new Map(),levels=new Map(paved.map(r=>[r.id,r.level||1]));
@@ -424,19 +409,12 @@ export class Renderer{
      cache.layer=layer;layer.width=this.canvas.width;layer.height=this.canvas.height;
      const ctx=layer.getContext('2d');
      ctx.setTransform(layer.width/this.w,0,0,layer.height/this.h,0,0);
-     ctx.fillStyle='white';ctx.fillRect(0,0,this.w,this.h);
      paintStreetSoil(this,ctx,cache.shapes);
-     const grain=streetGrain(this,ctx);
-     if(grain){
-      // Keep grains registered to the same ground as the camera pans or zooms.
-      grain.setTransform({a:this.s*.43,d:this.s*.31,e:this.ox,f:this.oy});
-      ctx.fillStyle=grain;ctx.fillRect(0,0,this.w,this.h);
-     }
      cache.paintKey=key;
     }
    }
    if(cache.layer&&cache.paintKey===key){
-    c.save();c.globalCompositeOperation='multiply';c.drawImage(cache.layer,0,0,this.w,this.h);c.restore();
+    c.save();c.globalCompositeOperation='source-over';c.drawImage(cache.layer,0,0,this.w,this.h);c.restore();
    }
   }
   const points=r=>{
@@ -567,7 +545,7 @@ export class Renderer{
  for(let k=0;k<42;k++){const length=riverLength(s)-.3,along=((k*.47+t*.13*riverFlowSign(s))%length+length)%length-.4,offset=(hash(k,9)-.5)*1.45,at=riverPoint(along,s,offset),to=riverPoint(along+.13+hash(k,8)*.4,s,offset+.06),p=this.point(at.x,at.y),p2=this.point(to.x,to.y);this.line([p,p2],'#c3d9bd70',this.s);}
  const irrigation=irrigationFor(s);
  for(const b of s.buildings)if(b.type==='canal'&&!b.construction)drawCanal(this,b,s,{network:irrigation});
- this.streetsLayer(streets);
+ this.streetsLayer(streets);streets.aprons(this);
  const flood=floodMapView(s);
  if(flood)for(const {x,y} of flood.tiles)if(this.inView(x,y,50))this.tile(x,y,flood.phase==='active'?'#4b9fa5a6':'#4b9fa54a','#28737d75');
  for(const b of s.buildings)if(b.type==='canal'&&!b.construction)drawCanal(this,b,s,{crossings:true,network:irrigation});
@@ -623,6 +601,7 @@ export class Renderer{
      this.line([[x,y],[x+.27*this.s,y-.85*this.s]],'#ffbc56',this.s*.65*heat.flame);
     }
    }
+   if(availableFreightCarts(s,e)){const p=cartParking(e);drawFreightCart(this,p.x,p.y,p.angle,null);}
    drawCultSign(this,e,s);drawFestivalBuildingLights(this,e,s);}
   else if(e.kind==='catOffering')drawCatOffering(this,e);
   else if(e.kind==='person')this.person(e);

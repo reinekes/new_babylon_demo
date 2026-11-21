@@ -1,4 +1,4 @@
-import {streetCrossSections,streetEndFade,streetTrafficAt,streetCoverAt} from '../street-surfaces.js';
+import {streetCrossSections,streetEndFade,streetTrafficAt,streetCoverAt,streetWheelSection} from '../street-surfaces.js';
 import {obstacleIndex} from '../navigation.js';
 import {createAlluvialWaterMaterial} from './alluvial-water.js';
 import {worldWidth,worldHeight,riverLength,riverPoint,riverAxis,terrain} from '../world.js';
@@ -60,14 +60,16 @@ export function submergedPebbles(s){
 }
 
 export function wornRoadGeometry(s,a,b,width=1.12,height=.04,level=1,segmentsPerMeter=2,control=null,obstacles=obstacleIndex(s.buildings||[]),progress=1){
- const dx=(b.x-a.x)*TILE,dz=(b.y-a.y)*TILE,len=Math.hypot(dx,dz),steps=Math.max(6,Math.ceil(len*segmentsPerMeter*progress)),fractions=[-1,-.82,-.48,0,.48,.82,1],origin={x:(a.x+b.x)*TILE/2,z:(a.y+b.y)*TILE/2};
+ const dx=(b.x-a.x)*TILE,dz=(b.y-a.y)*TILE,len=Math.hypot(dx,dz),steps=Math.max(6,Math.ceil(len*segmentsPerMeter*progress)),plain=[-1,-.82,-.48,0,.48,.82,1],origin={x:(a.x+b.x)*TILE/2,z:(a.y+b.y)*TILE/2};
  const g={positions:[],indices:[],uvs:[],colors:[],centers:[],widths:[],origin};
  const rows=streetCrossSections(s,a,b,width,control,obstacles,steps,progress);
  for(let j=0;j<rows.length;j++){
   const row=rows[j],{t,x,z,nx,nz,half}=row;
   // Sample wear along the street, including the shared value at the join.
   // Bedded stone retains its mineral colour as the soil between stones compacts.
-  const traffic=streetTrafficAt(width,t),compacted=1-(level===1?.20:.08)*traffic;
+  const traffic=streetTrafficAt(width,t),compacted=level===1?1+.17*traffic:1-.08*traffic;
+  const wheel=level<=2&&streetWheelSection(width,row),gauge=wheel?.gauge,rim=wheel?.rim;
+  const fractions=wheel?[-1,-.82,-gauge-rim,-gauge,-gauge+rim,0,gauge-rim,gauge,gauge+rim,.82,1]:plain;
   g.centers.push({x,y:z});
   const opacity=streetEndFade(width,t)*streetCoverAt(width,t),crownHeight=Math.sin(Math.PI*t)*(level>=3?.012:.004);
   const left=row.left*row.trimLeft,right=row.right*row.trimRight;
@@ -80,14 +82,19 @@ export function wornRoadGeometry(s,a,b,width=1.12,height=.04,level=1,segmentsPer
    // Gently crowned paving and shoulders of compacted earth meet the original
    // elevation at every endpoint, including at street and footpath junctions.
    const crown=crownHeight*(1-Math.abs(side));
-   g.positions.push(X-origin.x,Math.max(height,surfaceElevation(X/TILE,Z/TILE,s)+height)+crown,Z-origin.z);
+   const floor=wheel&&(k===3||k===7),lip=wheel&&(k===2||k===8);
+   const imprint=wheel?wheel.depth*(level===2?.58:1):0;
+   // Recess the wheel contact and push a little dry clay to the outside.
+   // Keep its lowest point above the underlying terrain to avoid z-fighting.
+   const relief=imprint*(floor?-height*.68:lip?.021:0);
+   g.positions.push(X-origin.x,Math.max(height,surfaceElevation(X/TILE,Z/TILE,s)+height)+crown+relief,Z-origin.z);
    // Orient the grain with the alluvial plain, including across junctions and
    // when a block was built from the opposite end.
    g.uvs.push((.93*X+.37*Z)/3.4,(.93*Z-.37*X)/3.4);
    const grain=noise(X*.91,Z*.91),patch=Math.sin(X*.65+Z*.38)*Math.sin(Z*.77-X*.18);
    const margin=Math.abs(side);
    const alpha=margin===1?0:margin>.8?.50+.40*(grain-.5)+.12*patch:.92+.06*grain;
-   const v=(.96+.015*patch+.032*(grain-.5)+.02*traffic)*compacted;
+   const v=(.96+.019*patch+.018*(grain-.5))*compacted*(1+imprint*(floor?-.38:lip?.08:0));
    g.colors.push(v,v*.99,v*.967,alpha*opacity);
    if(j<steps&&k<fractions.length-1){const i=j*fractions.length+k;g.indices.push(i,i+fractions.length,i+1,i+1,i+fractions.length,i+fractions.length+1);}
   }
