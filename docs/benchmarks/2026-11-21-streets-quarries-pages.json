@@ -1,0 +1,114 @@
+{
+  "release": "ef838026db6afc1e572b94024088a05e6a11dc13",
+  "site": "https://reinekes.github.io/new_babylon_demo/",
+  "matched": {
+    "architecture.js": "6f94a4bcfe823c00763ad5813ca04855e6df8476656fec58da84b04824bfa10e",
+    "assets/3d/sumer-buildings/clay.glb": "5c3e87b16ccdb4949a5183a04a257452ffd4da7037a146ccf9eb218cc7f7a559",
+    "assets/3d/sumer-buildings/quarry.glb": "a5a586412dff77b9bc0e8c5b951aa24976ded4a43a6d38e6f152bec23e37bef8",
+    "courtyard.html": "736a553746dae477aced782a33d37dba9558f715b1f952cc7424d92f873e471b",
+    "crop-studio.html": "97c9154058794fba1b6c7c34ee0704c9f43abc2a02a34e3c94caa44c4d78daa2",
+    "district3d.html": "b3b1df74167c8d68e0b51101e06762765cf6297aa9467dece7c2346c615c275d",
+    "docs/PRODUCTION_AND_MIRACLES_2026-11-21.md": "8703e36f30ff85594632604672a194b0fcd46dc5eb0f4012f3d63ddedeae1201",
+    "docs/benchmarks/2026-11-21-streets-quarries-4x.json": "fd93e4afebbf127f3e24b091b56a164f50207847052a010de14cf76d2f106f69",
+    "docs/model-index.json": "d1fa24fa29cd5bfc1a1028a12bac5801e41f817f65e02a489188fa2506e3d73d",
+    "game3d/buildings.js": "47b0f34a32ba3e10b23afa05b5fdea0ebd36e0ad73f9ef235b77cc06bd1ada4a",
+    "game3d/landscape.js": "c3da82ed76da9bac0ca17261a22decb898a8a0b4b9441b685635e92df33dc5b3",
+    "game3d/mineral-excavation.js": "16770cb1902ef4c245a4360bbe3706effedfced2aaefe7aa880513de7a0e9ade",
+    "game3d/quarry-fence.js": "6edd65f9752240e9d9f6187f6310beb1218144a68442c1fec956163103efa200",
+    "game3d/supplied-fauna.js": "931893ab96ffc4ad8a97a26031be72d79df87b0ce3092fa08598b26252237f84",
+    "game3d/workstations.js": "8222ec73783ab5cb6aaac558da34e92b3a2a92c5e77a7a3f0eed733fb54e0698",
+    "goat-studio.html": "7acfc768763689ff5ff024d95b3ccce3559c5ee385da8b8b9f095d2a4883883b",
+    "index.html": "8240218fc6e4ebcc4f2ce4da96cbfcf423b1dabe16c5932ebf8ff7c7e4a7180d",
+    "mallards.html": "9306c978bb23d7c47914be8d9bf0f3ba0fe50c43a3aba9ab89b21044acecb116",
+    "mineral-map-art.js": "5d36dffb42b25de2259db02830db01cbf2e481503fed8d207a97e69e329da01c",
+    "model-atlas/index.html": "ec6b4658590482feb27495f7b56a543477c499d068e07c969870c1c553bb0893",
+    "renderer.js": "1ba8f2e26e029d3bec642a90236c9be0a08baff594856bbb2cdfb2f1791b4276",
+    "roadmap/assets/pelican-swim-2026-11-21.mp4": "46f665b703f2da4b4409d6e98f44e82ee22d2df678e017aef397ce155f84b984",
+    "roadmap/assets/three-miracle-concepts-2026-11-21.webp": "8b36fac6d05868dc90157687ec05846665c436d60edc2d13f371a0bd88d92c1b",
+    "roadmap/building-models.json": "869fc9b2eff11094f14f420564b9d314bd1f985a7e6a1c008b6ab66f3ca5efcc",
+    "roadmap/evidence/2026-11-21/lanes-and-quarries/clay-before.webp": "e05ddc55ab48d65c728f88d5676eec43ac74b17c3c095bf1c29e88fdafef54c2",
+    "roadmap/evidence/2026-11-21/lanes-and-quarries/clay-working.webp": "e3707012c320cabb6d48e05e9e82175d4bbce81b0d4bb1b0a0a81e9435110860",
+    "roadmap/evidence/2026-11-21/lanes-and-quarries/lane-detail.webp": "272bbbd060a52188020ca5bf59fbeeb3c35c78028deee2b3543e292eac0a5214",
+    "roadmap/evidence/2026-11-21/lanes-and-quarries/passage-save.json": "2ec09d4ed2580411f30b9c80f06ca2f5ed67f0011106f289598b3286888ac5e7",
+    "roadmap/evidence/2026-11-21/lanes-and-quarries/quarry-after.webp": "d5904225fb852132e1acf2433d6352de99252d1a600a26c09b231b894fd18cee",
+    "roadmap/evidence/2026-11-21/lanes-and-quarries/quarry-before.webp": "84b41fd85afbad3334e32878795ca13ef6ac7c119a0d4aa066bc2adad4f5063d",
+    "roadmap/evidence/2026-11-21/lanes-and-quarries/quarry-trips.json": "6fc50298557a4790f9b59ef176d0d33e7ae36edb655e2c134cc69b42f3e85393",
+    "roadmap/evidence/2026-11-21/lanes-and-quarries/quarry-working.webp": "b156b25c91971e1363749e7bc65b44e33516eb158f3def30c580db0ebb30b2bf",
+    "roadmap/evidence/2026-11-21/lanes-and-quarries/street-after.webp": "a6ad842726740cb8b73fc43ace50476fc75831f319591b8a8d33f2513c54e6b8",
+    "roadmap/evidence/2026-11-21/lanes-and-quarries/street-before.webp": "27e1e9e6537646d5f00f92da208e8cf449d4bd4f6d506670d743b88c5a8c4dfa",
+    "roadmap/evidence/2026-11-21/lanes-and-quarries/streets-comparison.webp": "8beeb34f955c12fa35cd1a471f78c36a36711faa554118da5dd27bc24d6519be",
+    "roadmap/index.html": "b8c9886dfb9140ac74092ef9ebe0bbed5f48d7ca09c930de3747114e17de8a75",
+    "roadmap/manifest.json": "5d79667c12ec08d5d6622a226b8137208d9302edd429a6e6a4b8356b96267b32",
+    "roadmap/plan.md": "7a2bab510201f717b4d1dfffa3ae65b7db7421b97e73318777236af9d2eb0890",
+    "roadmap/reports/2026-11-21-streets-quarries-pelican.md": "fd4a873a5dc783ed2d3136bf1f4ff08598d22dc7597704359979d614de68160b",
+    "roadmap/snapshot.json": "9f7d34e4ebba4748d307e89a0b93ebeac82ed9d19d6f3e4640dc02a6267dac6d",
+    "scripts/sumer-building-studio.html": "46a2fcfa688ad9944f5a94fa9a95f57c566d413e37d90e9795aa665439a5f80a",
+    "scripts/sumer-building-studio.js": "b45e0c884c4fd258b8f1b4941bb5b8c011ebb52ad014c326542ebc42d526ef56",
+    "street-surfaces.js": "c072ef76714cdcfaf3a1d0a1a1f9279d3856daf11a5a6706ed6420efef369a26",
+    "GAME_DESIGN.md": "60c2deb80f2c9f2ea7abd8b854ac0743175e08dbea16ad684c6ea974aab1487a",
+    "game3d/actors.js": "bea670fc38c357dfb77b10972003ddf1db9fc9ad86d9be6df25bdad738fb4fa7",
+    "game3d/water.js": "b7b8b3e4a814b1e7471523f593279ee8cd273515426f0811a8645dba30ccf0d7",
+    "roadmap/evidence/2026-11-21/lanes-and-quarries/street-sunset.webp": "2f22741f9d17f490a1b8187aab83b0760d5eb533af441f3c3c7b33dd5e85acae",
+    "roadmap/evidence/2026-11-21/lanes-and-quarries/clay-after.webp": "36ca44c15447fe4bd3e94af58d9c0631256420f785247e58dd131ee6f6c46449"
+  },
+  "deployRun": "https://github.com/reinekes/new_babylon_demo/actions/runs/44914380162",
+  "publicWebGL": {
+    "pelicanAndQuarry": {
+      "samples": 189,
+      "min": 0.9998467839388268,
+      "maxWake": -0.9999686770848426,
+      "error": 0,
+      "webgl": 2,
+      "streetVertices": 0,
+      "quarryFenceMeshes": 1,
+      "versionedRoad": true,
+      "origin": "https://reinekes.github.io"
+    },
+    "streetViews": {
+      "lane": {
+        "webgl": 2,
+        "vertices": 2123,
+        "err": 0,
+        "errors": [],
+        "camera": [
+          38.94,
+          0.24,
+          24.78
+        ]
+      },
+      "dusk": {
+        "webgl": 2,
+        "vertices": 2123,
+        "err": 0,
+        "errors": [],
+        "camera": [
+          39.36,
+          0.24,
+          27
+        ]
+      },
+      "junction": {
+        "webgl": 2,
+        "vertices": 2123,
+        "err": 0,
+        "errors": [],
+        "camera": [
+          37.68,
+          0.24,
+          31.380000000000003
+        ]
+      },
+      "rear": {
+        "webgl": 2,
+        "vertices": 2123,
+        "err": 0,
+        "errors": [],
+        "camera": [
+          39,
+          0.24,
+          25.32
+        ]
+      }
+    }
+  }
+}

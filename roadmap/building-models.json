@@ -192,7 +192,7 @@
           "previous": "evidence/2026-11-21/lanes-and-quarries/clay-before.webp",
           "note": "Глиняная выемка с оградой из связанных стеблей. Забор заканчивается у воды. Открыты рабочий вход и подход к лестнице. На вкладке доступны оба вида двора и прежняя GLB.",
           "reference": "../docs/model-prototypes/sumer-building-set/clay.webp",
-          "release": "../docs/versions/2026-11-18-13.md",
+          "release": "../docs/versions/2026-11-21-05.md",
           "previousCommit": "e22e1d939ee3faeb2dec179b0a76aac2eb6f7c54",
           "modelVersion": "bound-reed-quarries-20261121"
         },
@@ -233,7 +233,7 @@
           "previous": "evidence/2026-11-21/lanes-and-quarries/quarry-before.webp",
           "note": "Каменные уступы обнесены невысокой тростниковой оградой. Открыты рабочий вход и подход к лестнице. На вкладке доступны оба вида двора и прежняя GLB.",
           "reference": "../docs/model-prototypes/sumer-building-set/quarry.webp",
-          "release": "../docs/versions/2026-11-18-13.md",
+          "release": "../docs/versions/2026-11-21-05.md",
           "previousCommit": "e22e1d939ee3faeb2dec179b0a76aac2eb6f7c54",
           "modelVersion": "bound-reed-quarries-20261121"
         }
