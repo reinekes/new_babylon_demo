@@ -58,3 +58,15 @@ test('new monument selection reserves and previews all nine gate cells, centred 
  Object.assign(r,{state:s,selection:'ishtarGate',hover:{x:2,y:2},B:{Color3:{FromHexString:v=>v}},canvas:{},marker:{material:{},setEnabled:v=>enabled=v,isEnabled:()=>enabled,scaling:{set:(...v)=>shown.scale=v},position:{set:(...v)=>shown.position=v}},buildings:{preview:b=>shown.preview=b,clearPreview(){},highlight(){}},reach:{update:()=>''},reachNote:{},routeSignature:'||'});
  r.updateSelection();assert.deepEqual(shown.scale,[3,1,3]);assert.deepEqual(shown.position,[18,.1,18]);assert.equal(shown.preview.footprint,3);assert.equal(JSON.stringify(s),before);
 });
+
+test('road picking uses the street visible around a stone, including subcell pointer coordinates',async()=>{
+ const {streetCurveLookup,footpathRibbonPoint}=await import('../footpaths.js');
+ const a={x:9.5,y:9.5},b={x:10.5,y:10.5},road={id:'main',a,b},c={x:9.5,y:10.5};
+ const town={buildings:[],world:{seed:73129,lakes:[],deposits:[{kind:'stone',x:10,y:10}]}};
+ const lookup=streetCurveLookup(town),middle=footpathRibbonPoint(a,b,lookup(a,b,road.id),.5);
+ const side=Math.sign(middle.x-10);
+ const neighbour={id:'beside',a:side>0?{x:10.5,y:9.5}:c,b:side>0?b:a};
+ town.roads=[neighbour,road];
+ assert.ok(Math.hypot(middle.x-10,middle.y-10)>.5);
+ assert.equal(roadNear(town,{x:Math.round(middle.x),y:Math.round(middle.y),roadPoint:middle}),road);
+});

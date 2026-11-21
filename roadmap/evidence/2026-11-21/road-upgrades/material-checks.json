@@ -1,0 +1,103 @@
+{
+  "fixture": "roads-save.json",
+  "levels": {
+    "1": 5,
+    "2": 5,
+    "3": 5
+  },
+  "surfaces": [
+    {
+      "name": "game-road-compacted-earth",
+      "texture": "assets/3d/textures/street-silt-color.webp?v=laid-streets-2",
+      "ready": true,
+      "normal": "assets/3d/textures/street-silt-normal.webp?v=laid-streets-2",
+      "normalReady": true,
+      "tint": [
+        0.61,
+        0.51,
+        0.41
+      ]
+    },
+    {
+      "name": "game-road-clay-gravel",
+      "texture": "assets/3d/textures/street-aggregate-color.webp?v=laid-streets-2",
+      "ready": true,
+      "normal": "assets/3d/textures/street-aggregate-normal.webp?v=laid-streets-2",
+      "normalReady": true,
+      "tint": [
+        0.91,
+        0.88,
+        0.81
+      ]
+    },
+    {
+      "name": "game-road-bedded-stone",
+      "texture": "assets/3d/textures/street-paving-color.webp?v=laid-streets-2",
+      "ready": true,
+      "normal": "assets/3d/textures/street-paving-normal.webp?v=laid-streets-2",
+      "normalReady": true,
+      "tint": [
+        0.99,
+        0.93,
+        0.86
+      ]
+    }
+  ],
+  "viewports": {
+    "game": [
+      1260,
+      800
+    ]
+  },
+  "cameras": {
+    "district": {
+      "x": 6.68,
+      "y": 4.85,
+      "alpha": -1.43,
+      "beta": 0.74,
+      "radius": 39
+    },
+    "three": {
+      "x": 6.83,
+      "y": 4.5,
+      "alpha": -1.5,
+      "beta": 0.6,
+      "radius": 22.2
+    },
+    "detail": {
+      "x": 6.69,
+      "y": 4.53,
+      "alpha": -1.52,
+      "beta": 0.52,
+      "radius": 16
+    }
+  },
+  "twoD": {
+    "levels": {
+      "1": 5,
+      "2": 5,
+      "3": 5
+    },
+    "markers": [
+      [
+        739.5232835820896,
+        352.4034328358209
+      ],
+      [
+        637.1650746268657,
+        403.5825373134329
+      ],
+      [
+        534.8068656716418,
+        454.7616417910448
+      ]
+    ],
+    "camera": {
+      "x": 6.55,
+      "y": 4.5,
+      "zoom": 3.6
+    }
+  },
+  "webgl": 2,
+  "browserErrors": []
+}

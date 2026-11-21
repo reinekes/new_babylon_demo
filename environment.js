@@ -9,6 +9,20 @@ export function weatherAt(s){
  const override=t=>s.rain>0||s.buffs?.rain?'rain':s.drought>0&&t==='rain'?'cloudy':t;
  return {type:override(type),previous:override(previous),blend:Math.min(1,(time-start)/3),start,duration,index};
 }
+// Palm placement is a fixed property of a dry cell. Road traffic can bend
+// around that trunk without changing its position or the surrounding grasses.
+const palmCells=new Map();
+export function naturalPalmCells(s){
+ const width=worldWidth(s),height=worldHeight(s),key=width+','+height;
+ if(!palmCells.has(key)){
+  const cells=[];
+  for(let y=0;y<height;y++)for(let x=0;x<width;x++)if(seed(x+731,y+29)<.035){
+   cells.push({id:y*width+x,kind:'palm',cellX:x,cellY:y,x:x+(seed(x,y)-.5)*.36,y:y+(seed(y,x+2)-.5)*.36});
+  }
+  palmCells.set(key,cells);
+ }
+ return palmCells.get(key);
+}
 export function vegetationFor(s,network){
  const result=[],weather=weatherAt(s),vigor=s.drought>0?.25:weather.type==='rain'?1:(s.season===1?.65:.85);
  for(let y=0;y<worldHeight(s);y++)for(let x=0;x<worldWidth(s);x++){

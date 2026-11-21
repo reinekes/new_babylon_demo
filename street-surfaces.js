@@ -1,3 +1,4 @@
+import {solidClearance} from './street-obstacles.js';
 import {footpathRibbonPoint,footpathRibbonTangent,streetCurveLookup,visibleFootpaths} from './footpaths.js';
 import {navigationSegmentClear,obstacleIndex} from './navigation.js';
 import {isDryPoint,onBridge} from './world.js';
@@ -50,19 +51,23 @@ function blendCrossedDiagonals(a,b){
 export function streetSurfaceLayout(s,paved){
  const tracks=visibleFootpaths(s),wear=new Map(tracks.map(p=>[p.id,p]));
  const builtIds=new Set(paved.map(p=>p.id)),curve=streetCurveLookup(s),surfaces=new Map(),junctions=new Map(),diagonals=new Map(),crossings=[];
+ const bridges=curve.bridges;
  let obstacles;
  function add(edge,built){
   const {id,a,b}=edge,length=Math.hypot(b.x-a.x,b.y-a.y);
   if(!length)return;
   const track=wear.get(id),traffic=Math.round((track?.traffic||0)*16)/16;
   const cartTraffic=built&&edge.level>=3?0:Math.round((track?.cartTraffic||0)*8)/8;
-  const wornWidth=built ? .65+(edge.level||1)*.08+traffic*1.50 : .24+traffic*1.67;
+  const level=built?(edge.level||1):0;
+  const wornWidth=level===3?1.76+.78*traffic:level===2?1.42+traffic:
+   built?.73+traffic*1.50:.24+traffic*1.67;
   const width=cartTraffic?Math.max(wornWidth,1.54+.90*cartTraffic):wornWidth;
   const control=built?curve(a,b,id):edge.control;
   // Even sustained walking compacts patches of the existing silt. A laid
   // surface or a wheel track exposes a much more continuous strip of earth.
   const cover=built?1:cartTraffic?Math.max(.30+.67*traffic,.70+.24*cartTraffic):.10+.14*traffic;
-  const profile={id,a,b,built,control,traffic,width,length,start:width,end:width,
+  const solids=control?.solids||curve.obstacles(a,b,id);
+  const profile={id,a,b,built,level,control,solids,traffic,width,length,bridges,start:width,end:width,
    cartTraffic,startCart:0,endCart:0,startTraffic:traffic,endTraffic:traffic,cover,startCover:cover,endCover:cover};
   surfaces.set(id,profile);
   if(Math.abs(a.x-b.x)===1&&Math.abs(a.y-b.y)===1){
@@ -104,6 +109,7 @@ export function streetSurfaceLayout(s,paved){
     arm.profile[arm.side+'Blend']=Math.min(.38,.80*jointWidth/(TILE*arm.profile.length));
    }
   }
+  if(a.profile.control?.bump||b.profile.control?.bump)continue;
   const x=a.direction.x+b.direction.x,y=a.direction.y+b.direction.y,magnitude=Math.hypot(x,y);
   if(magnitude<.14)continue;
   const turn={x,y,span:Math.min(.39*Math.min(a.direction.speed,b.direction.speed),
@@ -117,7 +123,7 @@ export function streetSurfaceLayout(s,paved){
    for(let i=0;i<=4;i++){
     const d=turn.span/direction.speed*i/4,t=side==='start'?d:1-d;
     const {p}=pointOnStreet(profile,t);
-    if(!dryClearance(s,last||p,p,obstacles)||onBridge(s.buildings||[],p.x,p.y,s))return false;
+    if(!dryClearance(s,last||p,p,obstacles,profile.solids)||onBridge(bridges,p.x,p.y,s))return false;
     last=p;
    }
    return true;
@@ -185,7 +191,8 @@ export function streetWidthAt(profile,t){
  return profile[side+'Tip']?width*(.35+.65*smooth(distance/.23)):width;
 }
 
-function dryClearance(s,a,b,index){
+function dryClearance(s,a,b,index,solids){
+ if(solids?.some(o=>solidClearance(o,a,b)<.022))return false;
  return isDryPoint(s,a.x,a.y)&&isDryPoint(s,b.x,b.y)&&navigationSegmentClear(s,a,b,index);
 }
 function safeFraction(clear){
@@ -202,11 +209,14 @@ function shoulderPoint(row,side,t){
 // A grid lane can run only 18 cm from a legal building boundary. Its visible
 // pressure falls off in metres, even where collision clipping pinches a whole
 // shoulder into a few centimetres. Both renderers use the same sample.
-export function streetSoilCoverage(row,side,x,z,cover=1){
+export function streetSoilCoverage(row,side,x,z,cover=1,laidLevel=0){
  const radius=Math.abs(side);
  if(radius>=1)return 0;
  const fleck=Math.sin(x*.83+z*.46)*Math.sin(z*.69-x*.27);
- const shoulder=1-smooth((radius-.08-.065*fleck)/.92);
+ // A laid bed carries its finish right to the verge. The loose margins
+ // soften into local earth, including where walls shorten a cross-section.
+ const core=laidLevel===3?.63:laidLevel===2?.48:.08;
+ const shoulder=1-smooth((radius-core-.065*fleck)/(1-core));
  // World-space patches meet across segment and camera boundaries. The
  // mottling fades away where feet merge into a denser cart or paving finish.
  const packed=cover>=.70?1:1-(1-smooth(cover/.70))*(.55-.43*fleck);
@@ -215,7 +225,7 @@ export function streetSoilCoverage(row,side,x,z,cover=1){
   const dx=Math.max(box.minX-x,0,x-box.maxX),dz=Math.max(box.minZ-z,0,z-box.maxZ);
   distanceSquared=Math.min(distanceSquared,dx*dx+dz*dz);
  }
- return packed*(.85+.045*fleck)*shoulder*smooth((Math.sqrt(distanceSquared)-.22)/.78);
+ return packed*Math.min(1,(laidLevel>=2?.98:.85)+.045*fleck)*shoulder*smooth((Math.sqrt(distanceSquared)-.22)/.78);
 }
 
 // Both views trim the very same cross-sections against real plots and shores.
@@ -223,7 +233,7 @@ export function streetSoilCoverage(row,side,x,z,cover=1){
 export function streetCrossSections(s,a,b,width,control,obstacles=obstacleIndex(s.buildings||[]),steps,progress=1){
  const origin={x:(a.x+b.x)*TILE/2,z:(a.y+b.y)*TILE/2},len=Math.hypot(a.x-b.x,a.y-b.y);
  const rows=[];
- if(!len||progress<=0||!isDryPoint(s,a.x,a.y)||!isDryPoint(s,b.x,b.y)||onBridge(s.buildings||[],origin.x/TILE,origin.z/TILE,s)||!navigationSegmentClear(s,a,b,obstacles))return [];
+ if(!len||progress<=0||!isDryPoint(s,a.x,a.y)||!isDryPoint(s,b.x,b.y)||onBridge(width.bridges||s.buildings||[],origin.x/TILE,origin.z/TILE,s)||!navigationSegmentClear(s,a,b,obstacles))return [];
  const nearby=new Set();
  for(let y=Math.floor(Math.min(a.y,b.y)-1);y<=Math.ceil(Math.max(a.y,b.y)+1);y++){
   for(let x=Math.floor(Math.min(a.x,b.x)-1);x<=Math.ceil(Math.max(a.x,b.x)+1);x++){
@@ -243,7 +253,7 @@ export function streetCrossSections(s,a,b,width,control,obstacles=obstacleIndex(
    const key=side<0?'left':'right';
    const X=x+side*nx*half,Z=z+side*nz*half;
    const verge=typeof width==='number'?1:.966+.033*Math.sin(.59*X+.28*Z+1.3*Math.sin(.25*Z))+.022*Math.sin(1.03*Z-.39*X);
-   row[key]=verge*safeFraction(k=>dryClearance(s,p,shoulderPoint(row,side,k*verge),obstacles));
+   row[key]=verge*safeFraction(k=>dryClearance(s,p,shoulderPoint(row,side,k*verge),obstacles,width.solids||control?.solids));
   }
   rows.push(row);
  }
@@ -253,7 +263,7 @@ export function streetCrossSections(s,a,b,width,control,obstacles=obstacleIndex(
   const a=rows[j-1],b=rows[j];
   // On a very tight turn neighbouring inward normals can meet before the
   // full shoulder width. End both cross-sections short of that intersection.
-  if(width.startTurn||width.endTurn){
+  if(width.startTurn||width.endTurn||control?.bump){
    const det=a.nx*b.nz-a.nz*b.nx;
    if(Math.abs(det)>1e-6){
     const dx=b.p.x-a.p.x,dy=b.p.y-a.p.y;
@@ -267,7 +277,7 @@ export function streetCrossSections(s,a,b,width,control,obstacles=obstacleIndex(
   }
   for(const side of [-1,1]){
    const key=side<0?'left':'right';
-   const scale=safeFraction(k=>dryClearance(s,shoulderPoint(a,side,a[key]*k),shoulderPoint(b,side,b[key]*k),obstacles));
+   const scale=safeFraction(k=>dryClearance(s,shoulderPoint(a,side,a[key]*k),shoulderPoint(b,side,b[key]*k),obstacles,width.solids||control?.solids));
    const trim=side<0?'trimLeft':'trimRight';
    a[trim]=Math.min(a[trim],scale);b[trim]=Math.min(b[trim],scale);
   }

@@ -65,7 +65,7 @@
     },
     {
       "file": "game3d/landscape.js",
-      "sha256": "b8bf756f2730a9f4809f36159d3634788de6551069fdcd132435be306ea5f2ff"
+      "sha256": "dfc6f1c37c55872045eb805198d9f10166be4f64f81fa80ccf46057ba4752f03"
     },
     {
       "file": "game3d/miracle-garden.js",
@@ -73,7 +73,7 @@
     },
     {
       "file": "game3d/nature-details.js",
-      "sha256": "e762aaa6845728859b736ed4bfc105d7add54cea45609722af3b0ef2a0bf3ebc"
+      "sha256": "f060f319c2fcddfc2392052a97a45f8456489a293f476383bc4c8361855131e2"
     },
     {
       "file": "game3d/plough-teams.js",
@@ -678,7 +678,7 @@
         {
           "model": "date-palm.glb",
           "file": "game3d/landscape.js",
-          "line": 237,
+          "line": 230,
           "kind": "literal"
         }
       ]

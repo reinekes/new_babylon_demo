@@ -25,13 +25,15 @@ import {createRelicScene} from './relic-scene.js';
 import {createSacredEffects} from './sacred-effects.js';
 import {newFootprint} from '../footprints.js';
 import {roadTopologyRevision} from '../road-revisions.js';
+import {footpathRibbonPoint,streetCurveLookup} from '../footpaths.js';
+import {roadNear} from '../street-picking.js';
+export {roadNear};
 
 export const GAME3D_RELEASE='city-render-lod-bundle-20261109-1';
 // Keep atmospheric visibility comparable when viewing an enlarged valley.
 export const valleyFogDensity=radius=>.0018*Math.min(1,240/Math.max(1,radius));
 export function worldCell(point,state){if(!Number.isFinite(point?.x)||!Number.isFinite(point?.z))return null;const x=Math.floor(point.x/6+.5),y=Math.floor(point.z/6+.5);return x>=0&&y>=0&&x<worldWidth(state)&&y<worldHeight(state)?{x,y}:null;}
 export function pickedEntity(mesh){for(let n=mesh;n;n=n.parent)if(n.metadata&&(n.metadata.tile||n.metadata.citizenId!==undefined||n.metadata.animalId))return n.metadata;return null;}
-export function roadNear(state,point){let best=null,distance=.85;for(const road of state?.roads||[]){const {a,b}=road;if(!a||!b)continue;const dx=b.x-a.x,dy=b.y-a.y,t=Math.max(0,Math.min(1,((point.x-a.x)*dx+(point.y-a.y)*dy)/(dx*dx+dy*dy||1))),d=Math.hypot(point.x-a.x-t*dx,point.y-a.y-t*dy);if(d<distance){best=road;distance=d;}}return best;}
 export function previewFor(state,type,cell,rotation=0){if(!type||!cell)return null;const placement=buildingPlacement(state,type,cell.x,cell.y,false,rotation);return {...placement,allowed:!placement.reason};}
 export async function createGameRenderer(canvas,onSelect,options={}){
  const injected=Object.hasOwn(options,'BABYLON');let B=injected?options.BABYLON:globalThis.BABYLON;
@@ -124,6 +126,10 @@ export class GameRenderer3D{
     touch&&!meta&&!this.roadDrawMode?this.nearbyTouchCitizen(x,y,rect,identity,rayAt,hitAt):null;
    if(citizen)return {...worldCell({x:citizen.x*6,z:citizen.y*6},this.state),citizenId:citizen.id};
   }
+  if(this.roadMode&&!this.roadDrawMode){
+   const hit=this.scene.getMeshByName('alluvial-valley')?.intersects(ray);
+   if(hit?.hit){const p=hit.pickedPoint,cell=worldCell(p,this.state);return cell?{...cell,roadPoint:{x:p.x/6,y:p.z/6}}:null;}
+  }
   const d=ray.intersectsPlane(new B.Plane(0,1,0,0));return d!==null&&d>=0?worldCell(ray.origin.add(ray.direction.scale(d)),this.state):null;
  }
  nearbyTouchCitizen(x,y,rect,identity,rayAt,hitAt){
@@ -193,11 +199,11 @@ export class GameRenderer3D{
   this.supplyLine=B.MeshBuilder.CreateLines('household-supply-route',{points:points.map(p=>new B.Vector3(p.x*6,visualSurfaceElevation(p.x,p.y,this.state)+.42,p.y*6))},this.scene);
   this.supplyLine.isPickable=false;this.supplyLine.color=new B.Color3(.48,.96,.94);
  }
- roadLinePoints({a,b},clearance){
+ roadLinePoints({a,b,id},clearance,curve){
   const ground=this.landscape?.roadGround,dx=(b.x-a.x)*6,dz=(b.y-a.y)*6;
-  const steps=ground?Math.max(1,Math.ceil(Math.hypot(dx,dz)/.30)):1,points=[];
+  const control=curve(a,b,id),steps=Math.max(1,Math.ceil(Math.hypot(dx,dz)/.30)),points=[];
   for(let i=0;i<=steps;i++){
-   const t=i/steps,x=a.x*6+dx*t,z=a.y*6+dz*t;
+   const p=footpathRibbonPoint(a,b,control,i/steps),x=p.x*6,z=p.y*6;
    const h=ground?ground.heightAt(x,z):visualSurfaceElevation(x/6,z/6,this.state);
    points.push(new this.B.Vector3(x,h+clearance,z));
   }
@@ -207,13 +213,13 @@ export class GameRenderer3D{
   const enabled=this.roadMode&&!this.photoMode,roads=this.state.roads||[];
   this.roadGuide?.setEnabled(enabled);
   if(!enabled)return;
-  const revision=roadTopologyRevision(this.state),ground=this.landscape?.roadGround;
-  if(this.roadGuideState===this.state&&this.roadGuideRoads===roads&&this.roadGuideCount===roads.length&&this.roadGuideRevision===revision&&this.roadGuideGround===ground)return;
-  this.roadGuideState=this.state;this.roadGuideRoads=roads;this.roadGuideCount=roads.length;this.roadGuideRevision=revision;this.roadGuideGround=ground;
+  const revision=roadTopologyRevision(this.state),ground=this.landscape?.roadGround,curve=streetCurveLookup(this.state);
+  if(this.roadGuideState===this.state&&this.roadGuideRoads===roads&&this.roadGuideCount===roads.length&&this.roadGuideRevision===revision&&this.roadGuideGround===ground&&this.guideCurveRevision===curve.revision)return;
+  this.roadGuideState=this.state;this.roadGuideRoads=roads;this.roadGuideCount=roads.length;this.roadGuideRevision=revision;this.roadGuideGround=ground;this.guideCurveRevision=curve.revision;
   this.roadGuide?.dispose();this.roadGuide=null;
   if(!roads.length)return;
   const B=this.B;
-  this.roadGuide=B.MeshBuilder.CreateLineSystem('road-editing-network',{lines:roads.map(r=>this.roadLinePoints(r,.18))},this.scene);
+  this.roadGuide=B.MeshBuilder.CreateLineSystem('road-editing-network',{lines:roads.map(r=>this.roadLinePoints(r,.18,curve))},this.scene);
   this.roadGuide.color=B.Color3.FromHexString('#e9d891');this.roadGuide.alpha=.55;this.roadGuide.isPickable=false;
  }
  updateSelection(){
@@ -225,17 +231,17 @@ export class GameRenderer3D{
   const selected=this.selection&&this.hover?{type:this.selection,...this.hover,...(size>1?{footprint:size}:{})}:this.inspected&&this.state.buildings.find(b=>b.x===this.inspected.x&&b.y===this.inspected.y);
   this.buildings.highlight(this.selection&&selected?nearbySimilar(this.state,selected):[]);this.reachNote.textContent=this.reach.update(this.state,selected);this.reachNote.hidden=!this.reachNote.textContent;
   const ids=this.routeRoads,planned=this.plannedRoads||[],showRoute=ids?.size||this.selectedRoad||planned.length;
-  const ground=showRoute?this.landscape?.roadGround:null;
+  const ground=showRoute?this.landscape?.roadGround:null,curve=showRoute?streetCurveLookup(this.state):null;
   const signature=[...(ids||[])].join('|')+'|'+(this.selectedRoad||'')+'|'+planned.map(r=>r.id).join('|');
-  if(signature!==this.routeSignature||ground!==this.routeGround){
+  if(signature!==this.routeSignature||ground!==this.routeGround||curve?.revision!==this.routeCurveRevision){
    for(const m of this.routeMarkers||[])m.dispose();
    this.routeMarkers=[];
    if(showRoute)for(const r of [...this.state.roads||[],...planned]){
     if(!ids?.has(r.id)&&r.id!==this.selectedRoad&&!planned.includes(r))continue;
-    const line=B.MeshBuilder.CreateLines('road-route',{points:this.roadLinePoints(r,.24)},this.scene);
+    const line=B.MeshBuilder.CreateLines('road-route',{points:this.roadLinePoints(r,.24,curve)},this.scene);
     line.color=B.Color3.FromHexString('#e9d891');line.isPickable=false;this.routeMarkers.push(line);
    }
-   this.routeSignature=signature;this.routeGround=ground;
+   this.routeSignature=signature;this.routeGround=ground;this.routeCurveRevision=curve?.revision;
   }
  }
  draw(state,selection,now,options={}){

@@ -1,3 +1,4 @@
+import {roadsideNature,sceneryObstacleKey,solidIndex,solidClearance} from './street-obstacles.js';
 import {isDryPoint,onBridge,worldWidth,worldHeight} from './world.js';
 import {navigationSegmentClear,obstacleIndex} from './navigation.js';
 import {floodFootprint,floodPhase,floodProtectionRevision,floodedSegment} from './river-flood.js';
@@ -58,9 +59,10 @@ function routeStart(from,to){
 function terrainAccess(s){
  const flood=floodPhase(s)==='active'?s.riverFlood:null;
  const buildings=s.buildings||[],key=buildings.map(b=>`${b.type}:${b.x},${b.y}:${b.footprint||1}:${b.construction?.kind||''}:${b.type==='cityGate'?b.rotation||0:''}`).join('|')+(flood?`/flood:${flood.along}:${flood.bank}:${floodProtectionRevision(s)}`:'');
+ const natureKey=sceneryObstacleKey(s);
  let view=terrainCache.get(s);
- if(view?.key!==key||view.river!==s.world?.river||view.lakes!==s.world?.lakes||view.lakeCount!==s.world?.lakes?.length){
-  view={key,river:s.world?.river,lakes:s.world?.lakes,lakeCount:s.world?.lakes?.length,obstacles:obstacleIndex(buildings),flooded:flood&&floodFootprint(s,flood),controls:new Map(),offsets:new Map(),bridges:buildings.filter(b=>b.type==='bridge')};
+ if(view?.natureKey!==natureKey||view?.key!==key||view.river!==s.world?.river||view.lakes!==s.world?.lakes||view.lakeCount!==s.world?.lakes?.length){
+  view={key,natureKey,river:s.world?.river,lakes:s.world?.lakes,lakeCount:s.world?.lakes?.length,obstacles:obstacleIndex(buildings),flooded:flood&&floodFootprint(s,flood),controls:new Map(),edgeSolids:new Map(),offsets:new Map(),bridges:buildings.filter(b=>b.type==='bridge')};
   terrainCache.set(s,view);
  }
  return view;
@@ -147,8 +149,26 @@ export function visibleFootpaths(s,finishedIds=null){
 
 // All streets crossing a point share a ground offset. Coordinates vary over
 // several plots, so a long street keeps its sweep through grid junctions.
-function groundOffset(s,view,x,y){
- const key=x+','+y;
+function nearbySolids(s,view,a,b){
+ view.solids??=solidIndex(roadsideNature(s).solids);
+ return view.solids(a,b);
+}
+const walkerMargin=.13;
+function placeJunction(s,view,p,offset){
+ const near=nearbySolids(s,view,p);
+ const clear=q=>near.every(o=>solidClearance(o,q,q)>=walkerMargin+.025);
+ const start={x:p.x+offset.x,y:p.y+offset.y};if(clear(start))return offset;
+ // A tree can stand on a saved node. Every incident edge must use the same
+ // adjusted junction regardless of its own orientation or traversal order.
+ for(let step=1;step<=12;step++)for(let i=0;i<16;i++){
+  const angle=(i+.5)*Math.PI/8,distance=step*.055;
+  const q={x:start.x+Math.cos(angle)*distance,y:start.y+Math.sin(angle)*distance};
+  if(clear(q)&&isDryPoint(s,q.x,q.y)&&!onBridge(view.bridges,q.x,q.y,s)&&navigationSegmentClear(s,p,q,view.obstacles))return {x:q.x-p.x,y:q.y-p.y};
+ }
+ return offset;
+}
+function groundOffset(s,view,x,y,junction=false){
+ const key=(junction?'node:':'')+x+','+y;
  if(view.offsets.has(key))return view.offsets.get(key);
  const phase=(s.world?.seed||0)*.013;
  // Slow shifts in direction give adjoining lanes different lengths of bend.
@@ -166,7 +186,9 @@ function groundOffset(s,view,x,y){
   if(!isDryPoint(s,x+ox,y+oy)||onBridge(view.bridges,x+ox,y+oy,s)){room=0;break;}
  }
  room=room*room*(3-2*room);
- const offset={x:dx*room,y:dy*room};view.offsets.set(key,offset);return offset;
+ let offset={x:dx*room,y:dy*room};
+ if(junction)offset=placeJunction(s,view,{x,y},offset);
+ view.offsets.set(key,offset);return offset;
 }
 
 function footpathControl(s,view,id,from,to){
@@ -174,7 +196,7 @@ function footpathControl(s,view,id,from,to){
  const [a,b]=from.x<to.x||from.x===to.x&&from.y<to.y?[from,to]:[to,from];
  let control=null;
  if(!onBridge(view.bridges,(a.x+b.x)/2,(a.y+b.y)/2,s)&&navigationSegmentClear(s,a,b,view.obstacles)){
-  const along=t=>groundOffset(s,view,a.x+(b.x-a.x)*t,a.y+(b.y-a.y)*t);
+  const along=t=>groundOffset(s,view,a.x+(b.x-a.x)*t,a.y+(b.y-a.y)*t,t===0||t===1);
   const start=along(0),end=along(1);
   // Opposite segments evaluate the same gradient at a junction. Convert it
   // to Bézier handles so their verges and walkers share the incoming heading.
@@ -184,7 +206,50 @@ function footpathControl(s,view,id,from,to){
    return {x:point.x+sign*(front.x-back.x)*2/3,y:point.y+sign*(front.y-back.y)*2/3};
   };
   const offsets=[start,handle(start,0,1),handle(end,1,-1),end];
-  if(offsets.some(d=>d.x||d.y)){
+  const solids=nearbySolids(s,view,a,b).filter(o=>solidClearance(o,a,b)<1.05);
+  if(solids.some(o=>solidClearance(o,a,b)<.48)){
+   const dx=b.x-a.x,dy=b.y-a.y,length=Math.hypot(dx,dy);
+   const first=footpathRibbonPoint(a,b,offsets,0);
+   // The quartic lateral displacement has zero slope at both ends. Try
+   // offsets on both sides and use the gentlest bend with walking clearance.
+   let best=null,bestScore=-Infinity;
+   search:for(const [broad,skew] of [[0,0],[.65,0],[1,0],[.65,-.85],[.65,.85],[0,-.85],[0,.85]]){
+    candidate:for(const amplitude of [0,.05,-.05,.12,-.12,.20,-.20,.29,-.29,.39,-.39,.50,-.50,.62,-.62,.75,-.75,.88,-.88]){
+     if(!amplitude&&(broad||skew))continue;
+     const bump={x:-dy/length*amplitude,y:dx/length*amplitude,skew,broad};
+     offsets.bump=bump;
+     const samples=[first];let room=Infinity,cartRoom=Infinity;
+     for(let i=0;i<=20;i++){
+      const t=i/20,next=i?footpathRibbonPoint(a,b,offsets,t):first;
+      const tangent=footpathRibbonTangent(a,b,offsets,t),length=Math.hypot(tangent.x,tangent.y)||1;
+      const ex=tangent.x/length,ey=tangent.y/length;
+      for(const o of solids){
+       room=Math.min(room,solidClearance(o,samples.at(-1),next));
+       // Both directions of the route share this curve. Include the wheel
+       // overhang, hubs and front rail of a cart pushed ahead of its porter.
+       const ox=o.x-next.x,oy=o.y-next.y,along=Math.abs(ox*ex+oy*ey),across=Math.abs(ox*ey-oy*ex);
+       const gap=Math.hypot(Math.max(0,.10-along,along-.315),Math.max(0,across-.115))-o.radius;
+       cartRoom=Math.min(cartRoom,gap);
+      }
+      // Both scores are minima over the entire curve. Later samples cannot
+      // rescue a candidate that already ties or loses to a legal alternative.
+      if(room-.085<=bestScore||cartRoom<=bestScore)continue candidate;
+      if(i)samples.push(next);
+     }
+     const score=Math.min(room-.085,cartRoom);
+     if(score<=bestScore)continue;
+     const legal=samples.every((q,i)=>isDryPoint(s,q.x,q.y)&&!onBridge(view.bridges,q.x,q.y,s)&&(!i||navigationSegmentClear(s,samples[i-1],q,view.obstacles)));
+     if(!legal)continue;
+     best=bump;bestScore=score;
+     if(room>=walkerMargin+.012&&cartRoom>.012)break search;
+    }
+   }
+   if(best&&(best.x||best.y||offsets.some(d=>d.x||d.y))){
+    if(best.x||best.y)offsets.bump=best;else delete offsets.bump;
+    offsets.solids=solids;
+    control=offsets;
+   }
+  }else if(offsets.some(d=>d.x||d.y)){
    let prev=footpathRibbonPoint(a,b,offsets,0),clear=true;
    for(let i=1;i<=8;i++){
     const next=footpathRibbonPoint(a,b,offsets,i/8);
@@ -200,7 +265,16 @@ function footpathControl(s,view,id,from,to){
 // Take the topology snapshot once for the complete Canvas or WebGL road pass.
 export function streetCurveLookup(s){
  const view=terrainAccess(s);
- return (a,b,id=footpathId(a,b))=>footpathControl(s,view,id,a,b);
+ const lookup=(a,b,id=footpathId(a,b))=>footpathControl(s,view,id,a,b);
+ lookup.revision=view;lookup.bridges=view.bridges;
+ lookup.obstacles=(a,b,id=footpathId(a,b))=>{
+  if(!view.edgeSolids.has(id)){
+   const close=nearbySolids(s,view,a,b).filter(o=>solidClearance(o,a,b)<.70);
+   view.edgeSolids.set(id,close.length?close:null);
+  }
+  return view.edgeSolids.get(id);
+ };
+ return lookup;
 }
 
 export function residentFootpathPositions(s){
@@ -247,8 +321,10 @@ export function footpathRibbonPoint(a,b,control,t){
  if(!control)return {x,y};
  const u=a.x<b.x||a.x===b.x&&a.y<b.y?t:1-t,v=1-u;
  const k0=v*v*v,k1=3*u*v*v,k2=3*u*u*v,k3=u*u*u;
- return {x:x+control[0].x*k0+control[1].x*k1+control[2].x*k2+control[3].x*k3,
-  y:y+control[0].y*k0+control[1].y*k1+control[2].y*k2+control[3].y*k3};
+ const bump=control.bump,broad=bump?.broad||0,arch=4*u*v;
+ const weight=arch*(broad+(1-broad)*arch)*(1+(bump?.skew||0)*(1-2*u));
+ return {x:x+control[0].x*k0+control[1].x*k1+control[2].x*k2+control[3].x*k3+(bump?bump.x*weight:0),
+  y:y+control[0].y*k0+control[1].y*k1+control[2].y*k2+control[3].y*k3+(bump?bump.y*weight:0)};
 }
 
 export function footpathRibbonTangent(a,b,control,t){
@@ -256,6 +332,8 @@ export function footpathRibbonTangent(a,b,control,t){
  if(!control)return {x:dx,y:dy};
  const sign=a.x<b.x||a.x===b.x&&a.y<b.y?1:-1,u=sign===1?t:1-t,v=1-u;
  const [a0,a1,a2,a3]=control,k0=3*sign*v*v,k1=6*sign*u*v,k2=3*sign*u*u;
- return {x:dx+(a1.x-a0.x)*k0+(a2.x-a1.x)*k1+(a3.x-a2.x)*k2,
-  y:dy+(a1.y-a0.y)*k0+(a2.y-a1.y)*k1+(a3.y-a2.y)*k2};
+ const bump=control.bump,broad=bump?.broad||0,skew=bump?.skew||0,arch=4*u*v;
+ const slope=sign*(4*(1-2*u)*(broad+2*(1-broad)*arch)*(1+skew*(1-2*u))-2*skew*arch*(broad+(1-broad)*arch));
+ return {x:dx+(a1.x-a0.x)*k0+(a2.x-a1.x)*k1+(a3.x-a2.x)*k2+(bump?bump.x*slope:0),
+  y:dy+(a1.y-a0.y)*k0+(a2.y-a1.y)*k1+(a3.y-a2.y)*k2+(bump?bump.y*slope:0)};
 }

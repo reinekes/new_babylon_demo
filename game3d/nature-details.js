@@ -42,20 +42,7 @@ export function natureDetailPlan(s,roads=[],tier='balanced'){
 // Metres travelled along a prechecked corridor drive the physical rotation.
 export function tumbleweedPose(p,clock){const t=Math.sin(clock*.12+p.phase),distance=t*p.reach*TILE;return {x:p.x+p.dx*p.reach*t,y:p.y+p.dy*p.reach*t,yaw:Math.atan2(p.dx,p.dy),roll:distance/.43};}
 
-export function resourceDisplayLayout(deposit){
- const items=[],{kind,x,y}=deposit,angle=random(x+11,y+19)*Math.PI*2;
- const add=(u,v,i)=>{const jitter=.09,px=u+(random(x+i,y+29)-.5)*jitter,py=v+(random(x+41,y+i)-.5)*jitter;items.push({x:x+px,y:y+py,angle:angle+i*2.399,size:.75+random(x+i,y+71)*.48});};
- if(kind==='reed'||kind==='clay'||kind==='stone'){
-  const count=kind==='reed'?15:7,spread=kind==='reed'?.36:.31;
-  for(let i=0;i<count;i++){
-   const a=i*2.399+angle,r=spread*Math.sqrt(i/(count-1));
-   add(Math.cos(a)*r,Math.sin(a)*r*(kind==='reed'?.65:.82),i);
-   items[i].size*=i===0&&kind!=='reed'?1.55:.76+random(x-i,y+27)*.28;
-  }
- }
- else if(kind==='forest'||kind==='dates'){for(const [i,p]of [[-.21,-.12],[.19,-.14],[.04,.21]].entries())add(p[0],p[1],i);}
- return items;
-}
+export {resourceDisplayLayout} from '../resource-layout.js';
 export function advanceWetness(wetness,rain,delta){const dt=Math.max(0,Math.min(1,Number.isFinite(delta)?delta:0));return Math.max(0,Math.min(1,wetness+(rain?.14:-.025)*dt));}
 
 function polygon(g,s,x,y,r,angle,color,seed=0,stretch=1,wet=false){

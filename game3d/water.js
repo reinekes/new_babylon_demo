@@ -90,10 +90,13 @@ export function wornRoadGeometry(s,a,b,width=1.12,height=.04,level=1,segmentsPer
    g.positions.push(X-origin.x,(ground?0:Math.max(0,surfaceElevation(X/TILE,Z/TILE,s)))+height+crown+relief,Z-origin.z);
    // Orient the grain with the alluvial plain, including across junctions and
    // when a block was built from the opposite end.
-   g.uvs.push((.93*X+.37*Z)/3.4,(.93*Z-.37*X)/3.4);
+   if(level>=3)g.uvs.push(X/3.2,Z/3.2);
+   else g.uvs.push((.93*X+.37*Z)/3.4,(.93*Z-.37*X)/3.4);
    const grain=noise(X*.91,Z*.91),patch=Math.sin(X*.65+Z*.38)*Math.sin(Z*.77-X*.18);
-   const alpha=streetSoilCoverage(row,side,X,Z,cover);
-   const v=(.96+.019*patch+.018*(grain-.5))*compacted*(1+imprint*(floor?-.38:lip?.08:0));
+   const alpha=streetSoilCoverage(row,side,X,Z,cover,width.built?level:0);
+   // Dust collects along the joints and margins; the middle faces polish lighter.
+   const rubbed=level===3?1+.10*(1-Math.abs(side))/2:1;
+   const v=rubbed*(.96+.019*patch+.018*(grain-.5))*compacted*(1+imprint*(floor?-.38:lip?.08:0));
    g.colors.push(v,v*.99,v*.967,alpha*opacity);
    if(j<steps&&k<fractions.length-1){const i=j*fractions.length+k;g.indices.push(i,i+fractions.length,i+1,i+1,i+fractions.length,i+fractions.length+1);}
   }

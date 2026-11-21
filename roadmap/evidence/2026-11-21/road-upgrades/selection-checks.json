@@ -1,0 +1,656 @@
+{
+  "before": {
+    "mode": "3d",
+    "base": "http://127.0.0.1:8257",
+    "checks": [
+      {
+        "label": "single-selection",
+        "mode": true,
+        "selected": "road:10,9|9,9",
+        "route": 0,
+        "planned": 0,
+        "open": true,
+        "queued": 0,
+        "finished": 0,
+        "meshes": [
+          "road-editing-network",
+          "road-route"
+        ],
+        "picked": {
+          "x": 9,
+          "y": 8.5
+        },
+        "card": "Участок дороги"
+      },
+      {
+        "label": "single-ordered",
+        "mode": true,
+        "selected": "road:10,9|9,9",
+        "route": 0,
+        "planned": 0,
+        "open": true,
+        "queued": 1,
+        "finished": 0,
+        "meshes": [
+          "road-editing-network",
+          "road-route"
+        ],
+        "picked": {
+          "x": 9,
+          "y": 8.5
+        },
+        "card": "Участок дороги"
+      },
+      {
+        "label": "single-complete",
+        "mode": true,
+        "selected": "road:10,9|9,9",
+        "route": 0,
+        "planned": 0,
+        "open": true,
+        "queued": 0,
+        "finished": 1,
+        "meshes": [
+          "road-route",
+          "road-editing-network"
+        ],
+        "picked": {
+          "x": 9,
+          "y": 8.5
+        },
+        "card": "Участок дороги"
+      },
+      {
+        "label": "route-preview",
+        "mode": true,
+        "selected": "road:10,10|10,9",
+        "route": 3,
+        "planned": 0,
+        "open": true,
+        "queued": 0,
+        "finished": 1,
+        "meshes": [
+          "road-editing-network",
+          "road-route",
+          "road-route",
+          "road-route"
+        ],
+        "picked": {},
+        "card": "Улучшить путь"
+      },
+      {
+        "label": "route-ordered",
+        "mode": true,
+        "selected": "road:10,10|10,9",
+        "route": 0,
+        "planned": 0,
+        "open": false,
+        "queued": 3,
+        "finished": 1,
+        "meshes": [
+          "road-editing-network",
+          "road-route"
+        ],
+        "picked": {},
+        "card": "Улучшить путь"
+      },
+      {
+        "label": "route-complete",
+        "mode": true,
+        "selected": "road:10,10|10,9",
+        "route": 0,
+        "planned": 0,
+        "open": false,
+        "queued": 0,
+        "finished": 4,
+        "meshes": [
+          "road-route",
+          "road-editing-network"
+        ],
+        "picked": {},
+        "card": "Улучшить путь"
+      },
+      {
+        "label": "canceled",
+        "mode": true,
+        "selected": "road:12,9|13,9",
+        "route": 0,
+        "planned": 0,
+        "open": true,
+        "queued": 0,
+        "finished": 4,
+        "meshes": [
+          "road-editing-network",
+          "road-route"
+        ],
+        "picked": {
+          "x": 12,
+          "y": 8.5
+        },
+        "card": "Ячменное поле"
+      },
+      {
+        "label": "closed-escaped",
+        "mode": false,
+        "selected": "road:8,8|9,8",
+        "route": 0,
+        "planned": 0,
+        "open": false,
+        "queued": 0,
+        "finished": 4,
+        "meshes": [
+          "road-route"
+        ],
+        "picked": {},
+        "card": "Участок дороги"
+      }
+    ],
+    "ticks": [
+      9,
+      11.5
+    ],
+    "edges": {
+      "one": {
+        "x": 582.7745848030142,
+        "y": 357.9958999165802,
+        "id": "road:10,9|9,9",
+        "level": 1,
+        "built": false
+      },
+      "start": {
+        "x": 524.1593600570812,
+        "y": 445.5926931430144,
+        "id": "road:10,10|10,9",
+        "level": 1,
+        "built": false
+      },
+      "end": {
+        "x": 367.8289658980975,
+        "y": 419.3223123588286,
+        "id": "road:11,9|12,9",
+        "level": 1,
+        "built": false
+      },
+      "cancelEdge": {
+        "x": 239.91367442071464,
+        "y": 455.8179895574531,
+        "id": "road:12,9|13,9",
+        "level": 1,
+        "built": false
+      },
+      "closedEdge": {
+        "x": 704.6512350191018,
+        "y": 272.7076651687757,
+        "id": "road:8,8|9,8",
+        "level": 1,
+        "built": false
+      }
+    },
+    "success": true
+  },
+  "after": {
+    "mode": "3d",
+    "base": "http://127.0.0.1:8256",
+    "checks": [
+      {
+        "label": "single-selection",
+        "mode": true,
+        "selected": "road:11,9|12,9",
+        "route": 0,
+        "planned": 0,
+        "open": true,
+        "queued": 0,
+        "finished": 0,
+        "meshes": [
+          "road-editing-network",
+          "road-route"
+        ],
+        "picked": {
+          "x": 11,
+          "y": 8.5
+        },
+        "card": "Участок дороги"
+      },
+      {
+        "label": "single-ordered",
+        "mode": false,
+        "selected": null,
+        "route": 0,
+        "planned": 0,
+        "open": true,
+        "queued": 1,
+        "finished": 0,
+        "meshes": [],
+        "picked": {
+          "x": 11,
+          "y": 8.5
+        },
+        "card": "Участок дороги"
+      },
+      {
+        "label": "single-complete",
+        "mode": false,
+        "selected": null,
+        "route": 0,
+        "planned": 0,
+        "open": true,
+        "queued": 0,
+        "finished": 1,
+        "meshes": [],
+        "picked": {
+          "x": 11,
+          "y": 8.5
+        },
+        "card": "Участок дороги"
+      },
+      {
+        "label": "route-preview",
+        "mode": true,
+        "selected": null,
+        "route": 2,
+        "planned": 0,
+        "open": true,
+        "queued": 0,
+        "finished": 1,
+        "meshes": [
+          "road-editing-network",
+          "road-route",
+          "road-route"
+        ],
+        "picked": {},
+        "card": "Улучшить путь"
+      },
+      {
+        "label": "route-ordered",
+        "mode": false,
+        "selected": null,
+        "route": 0,
+        "planned": 0,
+        "open": false,
+        "queued": 2,
+        "finished": 1,
+        "meshes": [],
+        "picked": {},
+        "card": "Улучшить путь"
+      },
+      {
+        "label": "route-complete",
+        "mode": false,
+        "selected": null,
+        "route": 0,
+        "planned": 0,
+        "open": false,
+        "queued": 0,
+        "finished": 3,
+        "meshes": [],
+        "picked": {},
+        "card": "Улучшить путь"
+      },
+      {
+        "label": "canceled",
+        "mode": false,
+        "selected": null,
+        "route": 0,
+        "planned": 0,
+        "open": false,
+        "queued": 0,
+        "finished": 3,
+        "meshes": [],
+        "picked": {},
+        "card": "Участок дороги"
+      },
+      {
+        "label": "dismissed",
+        "mode": false,
+        "selected": null,
+        "route": 0,
+        "planned": 0,
+        "open": false,
+        "queued": 0,
+        "finished": 3,
+        "meshes": [],
+        "picked": {},
+        "card": "Участок дороги"
+      },
+      {
+        "label": "closed-escaped",
+        "mode": false,
+        "selected": null,
+        "route": 0,
+        "planned": 0,
+        "open": false,
+        "queued": 0,
+        "finished": 3,
+        "meshes": [],
+        "picked": {},
+        "card": "Участок дороги"
+      }
+    ],
+    "ticks": [
+      9.75,
+      9.75
+    ],
+    "edges": {
+      "one": {
+        "x": 387.54536424018335,
+        "y": 443.3981904743538,
+        "id": "road:11,9|12,9",
+        "level": 1,
+        "built": false,
+        "bendM": 0.5334288800538403,
+        "errM": 0.0005389388243199338,
+        "t": 0.6,
+        "world": {
+          "x": 10.943615224685072,
+          "y": 8.411095186657693
+        },
+        "pick": {
+          "x": 10.943561637519046,
+          "y": 8.411167274185376
+        }
+      },
+      "start": {
+        "x": 481.9728382909932,
+        "y": 415.551794970239,
+        "id": "road:10,9|11,9",
+        "level": 1,
+        "built": false,
+        "bendM": 0.48034653556930706,
+        "errM": 0.000559993826109543,
+        "t": 0.4,
+        "world": {
+          "x": 10.146626700366625,
+          "y": 8.419942244071782
+        },
+        "pick": {
+          "x": 10.146572276523857,
+          "y": 8.4200180659972
+        }
+      },
+      "end": {
+        "x": 606.8821918897181,
+        "y": 383.49333815786025,
+        "id": "road:10,9|9,9",
+        "level": 1,
+        "built": false,
+        "bendM": 0,
+        "errM": 0.0005824503102279168,
+        "t": 0.5,
+        "world": {
+          "x": 9,
+          "y": 8.5
+        },
+        "pick": {
+          "x": 8.99994480810195,
+          "y": 8.500079858750636
+        }
+      },
+      "cancelEdge": {
+        "x": 580.4664898189295,
+        "y": 428.0483909728407,
+        "id": "road:10,10|10,9",
+        "level": 1,
+        "built": false,
+        "bendM": 0,
+        "errM": 0.0005366165589855081,
+        "t": 0.5,
+        "world": {
+          "x": 9.5,
+          "y": 9
+        },
+        "pick": {
+          "x": 9.499947989436532,
+          "y": 9.000072757927734
+        }
+      },
+      "closedEdge": {
+        "x": 580.4664898189295,
+        "y": 428.0483909728407,
+        "id": "road:10,10|10,9",
+        "level": 1,
+        "built": false,
+        "bendM": 0,
+        "errM": 0.0005366165589855081,
+        "t": 0.5,
+        "world": {
+          "x": 9.5,
+          "y": 9
+        },
+        "pick": {
+          "x": 9.499947989436532,
+          "y": 9.000072757927734
+        }
+      }
+    },
+    "success": true
+  },
+  "afterCanvas": {
+    "mode": "2d",
+    "base": "http://127.0.0.1:8256",
+    "checks": [
+      {
+        "label": "single-selection",
+        "mode": true,
+        "selected": "road:11,9|12,9",
+        "route": 0,
+        "planned": 0,
+        "open": true,
+        "queued": 0,
+        "finished": 0,
+        "meshes": null,
+        "picked": {
+          "x": 11,
+          "y": 8.5
+        },
+        "card": "Участок дороги"
+      },
+      {
+        "label": "single-ordered",
+        "mode": false,
+        "selected": null,
+        "route": 0,
+        "planned": 0,
+        "open": true,
+        "queued": 1,
+        "finished": 0,
+        "meshes": null,
+        "picked": {
+          "x": 11,
+          "y": 8.5
+        },
+        "card": "Участок дороги"
+      },
+      {
+        "label": "single-complete",
+        "mode": false,
+        "selected": null,
+        "route": 0,
+        "planned": 0,
+        "open": true,
+        "queued": 0,
+        "finished": 1,
+        "meshes": null,
+        "picked": {
+          "x": 11,
+          "y": 8.5
+        },
+        "card": "Участок дороги"
+      },
+      {
+        "label": "route-preview",
+        "mode": true,
+        "selected": null,
+        "route": 2,
+        "planned": 0,
+        "open": true,
+        "queued": 0,
+        "finished": 1,
+        "meshes": null,
+        "picked": {},
+        "card": "Улучшить путь"
+      },
+      {
+        "label": "route-ordered",
+        "mode": false,
+        "selected": null,
+        "route": 0,
+        "planned": 0,
+        "open": false,
+        "queued": 2,
+        "finished": 1,
+        "meshes": null,
+        "picked": {},
+        "card": "Улучшить путь"
+      },
+      {
+        "label": "route-complete",
+        "mode": false,
+        "selected": null,
+        "route": 0,
+        "planned": 0,
+        "open": false,
+        "queued": 0,
+        "finished": 3,
+        "meshes": null,
+        "picked": {},
+        "card": "Улучшить путь"
+      },
+      {
+        "label": "canceled",
+        "mode": false,
+        "selected": null,
+        "route": 0,
+        "planned": 0,
+        "open": false,
+        "queued": 0,
+        "finished": 3,
+        "meshes": null,
+        "picked": {},
+        "card": "Участок дороги"
+      },
+      {
+        "label": "dismissed",
+        "mode": false,
+        "selected": null,
+        "route": 0,
+        "planned": 0,
+        "open": false,
+        "queued": 0,
+        "finished": 3,
+        "meshes": null,
+        "picked": {},
+        "card": "Участок дороги"
+      },
+      {
+        "label": "closed-escaped",
+        "mode": false,
+        "selected": null,
+        "route": 0,
+        "planned": 0,
+        "open": false,
+        "queued": 0,
+        "finished": 3,
+        "meshes": null,
+        "picked": {},
+        "card": "Участок дороги"
+      }
+    ],
+    "ticks": [
+      9.75,
+      9.75
+    ],
+    "edges": {
+      "one": {
+        "x": 709.8449008181038,
+        "y": 436.0960490392798,
+        "id": "road:11,9|12,9",
+        "level": 1,
+        "built": false,
+        "bendM": 0.5334288800538403,
+        "errM": 0,
+        "t": 0.6,
+        "world": {
+          "x": 10.943615224685072,
+          "y": 8.411095186657693
+        },
+        "pick": {
+          "x": 10.943615224685072,
+          "y": 8.411095186657693
+        }
+      },
+      "start": {
+        "x": 676.6943885472037,
+        "y": 419.8847436799132,
+        "id": "road:10,9|11,9",
+        "level": 1,
+        "built": false,
+        "bendM": 0.48034653556930706,
+        "errM": 1.0658141036401503e-14,
+        "t": 0.4,
+        "world": {
+          "x": 10.146626700366625,
+          "y": 8.419942244071782
+        },
+        "pick": {
+          "x": 10.146626700366625,
+          "y": 8.419942244071784
+        }
+      },
+      "end": {
+        "x": 626.2309701492536,
+        "y": 397.9464552238806,
+        "id": "road:10,9|9,9",
+        "level": 1,
+        "built": false,
+        "bendM": 0,
+        "errM": 0,
+        "t": 0.5,
+        "world": {
+          "x": 9,
+          "y": 8.5
+        },
+        "pick": {
+          "x": 9,
+          "y": 8.5
+        }
+      },
+      "cancelEdge": {
+        "x": 626.2309701492536,
+        "y": 418.5154850746269,
+        "id": "road:10,10|10,9",
+        "level": 1,
+        "built": false,
+        "bendM": 0,
+        "errM": 0,
+        "t": 0.5,
+        "world": {
+          "x": 9.5,
+          "y": 9
+        },
+        "pick": {
+          "x": 9.5,
+          "y": 9
+        }
+      },
+      "closedEdge": {
+        "x": 626.2309701492536,
+        "y": 418.5154850746269,
+        "id": "road:10,10|10,9",
+        "level": 1,
+        "built": false,
+        "bendM": 0,
+        "errM": 0,
+        "t": 0.5,
+        "world": {
+          "x": 9.5,
+          "y": 9
+        },
+        "pick": {
+          "x": 9.5,
+          "y": 9
+        }
+      }
+    },
+    "success": true
+  }
+}

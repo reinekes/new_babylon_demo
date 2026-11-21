@@ -1,0 +1,12 @@
+{
+  "before": {
+    "meshId": 4156,
+    "triangles": 855,
+    "bricks": 45
+  },
+  "after": {
+    "meshId": 4729,
+    "triangles": 1577,
+    "bricks": 83
+  }
+}

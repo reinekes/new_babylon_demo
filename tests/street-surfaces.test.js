@@ -119,3 +119,12 @@ test('even full pedestrian wear leaves most of the underlying soil exposed while
  assert.ok(Math.min(...busy)>.025&&Math.max(...busy)>2*Math.min(...busy),'broken patches visible up close');
  assert.ok(Math.min(...samples(32,6,false))>.65&&Math.min(...samples(2,0,true))>.70);
 });
+
+test('an upgraded bed is visible on a quiet street while material edges feather away',()=>{
+ const profiles=[1,2,3].map(level=>streetSurfaceLayout(state,[{...road(a,b),level}]).get(footpathId(a,b)));
+ const [earth,aggregate,brick]=profiles;
+ assert.ok(aggregate.width>earth.width+.4&&brick.width>aggregate.width+.2);
+ const halfway=p=>streetSoilCoverage({plots:[]},.55,15,23,1,p.level);
+ assert.ok(halfway(brick)>halfway(aggregate)&&halfway(aggregate)>halfway(earth));
+ for(const p of profiles)assert.equal(streetSoilCoverage({plots:[]},1,15,23,1,p.level),0);
+});

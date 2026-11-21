@@ -16,6 +16,25 @@ const clamp = (v,a=0,b=1) => Math.max(a,Math.min(b,v));
 const smooth = v => {v=clamp(v);return v*v*(3-2*v);};
 const noise = (x,y) => {const n=Math.sin(x*127.1+y*311.7+73129)*43758.5453;return n-Math.floor(n);};
 
+// Substantial loose stones survive a new street. Smaller pebbles still
+// belong to the decorative ground cover and need no walking clearance.
+function isLooseStone(state,x,y,shore,variation){
+ const quarter=x>=5.5&&x<=12.5&&y>=6.5&&y<=11.5;
+ return variation>.88&&variation<.94&&shore>=1.25&&!(shore<6&&variation>.92)&&!(quarter&&(!isStrictSumer(state)||shore<5));
+}
+export function roadsideBoulders(state){
+ const result=[];
+ for(let y=0;y<worldHeight(state);y++)for(let x=0;x<worldWidth(state);x++){
+  const variation=noise(x+3,y+7);
+  if(variation<=.88||variation>=.94)continue;
+  const grain=noise(x,y),radius=.22+grain*.24;
+  if(radius<.36)continue;
+  const px=x+(grain-.5)*.65,py=y+(noise(y,x+6)-.5)*.65;
+  if(!isLooseStone(state,px,py,shoreDistance(px,py,state),variation)||state.buildings?.some(b=>Math.abs(b.x-px)<.7&&Math.abs(b.y-py)<.7))continue;
+  result.push({kind:'rock',x:px,y:py,radius:radius*1.6/TILE});
+ }
+ return result;
+}
 // Positive on dry land. Lake outlines retain the actual saved cell footprint.
 export function shoreDistance(x,y,s) {
   let d=Math.abs(signedRiverDistance(x,y,s))-1.1;
@@ -261,7 +280,7 @@ export function createDistrictTerrain(B,scene,initialState,materials,{renderRoad
   if(li.length)geometry('saved-lakes',lp,li,water,lc).receiveShadows=false;
   const trunks=[],fronds=[],reeds=[],stones=[],scrub=[];
   let initialRoads=districtRoadEdges(state),nearbyRoads=indexNearbyRoads(initialRoads);
-  const occupied=(x,y)=>state.buildings?.some(b=>Math.abs(b.x-x)<.7&&Math.abs(b.y-y)<.7)||nearbyRoads(x,y).some(([a,b])=>{
+  const occupied=(x,y,keepStone=false)=>state.buildings?.some(b=>Math.abs(b.x-x)<.7&&Math.abs(b.y-y)<.7)||!keepStone&&nearbyRoads(x,y).some(([a,b])=>{
     const dx=b.x-a.x,dy=b.y-a.y,t=clamp(((x-a.x)*dx+(y-a.y)*dy)/(dx*dx+dy*dy));
     return Math.hypot(x-a.x-dx*t,y-a.y-dy*t)<.22;
   });
@@ -352,7 +371,7 @@ export function createDistrictTerrain(B,scene,initialState,materials,{renderRoad
   // Date palms, tamarisk-like scrub and marsh reeds; no temperate conifers.
   for(let y=0;y<worldHeight(state);y++)for(let x=0;x<worldWidth(state);x++){
     const xx=x+(noise(x,y)-.5)*.65,yy=y+(noise(y,x+6)-.5)*.65,d=shoreDistance(xx,yy,state),r=noise(x+3,y+7);
-    if(d<.24||occupied(xx,yy))continue;
+    if(d<.24||occupied(xx,yy,isLooseStone(state,xx,yy,d,r)&&.22+noise(x,y)*.24>=.36))continue;
     const X=xx*TILE,Z=yy*TILE,Y=surfaceElevation(xx,yy,state);
     const nearQuarter=xx>=5.5&&xx<=12.5&&yy>=6.5&&yy<=11.5;
     if((d<6&&r>.92)||(nearQuarter&&r>.68&&(!isStrictSumer(state)||d<5))){

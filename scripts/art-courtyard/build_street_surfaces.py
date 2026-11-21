@@ -39,47 +39,47 @@ def clast(draws, x, y, radius, elongation, tint, rise):
             draws[1].polygon(shell, fill=128+rise)
 
 
-def lay_stones(color, relief, source):
-    """Cut irregular flagstones at the halfway line between their neighbours."""
-    cols, rows = 14, 16
-    offsets = [(rng.uniform(-.35,.35), rng.uniform(-.35,.35)) for _ in range(cols*rows)]
-    def site(i,j):
-        dx,dy = offsets[(j%rows)*cols+i%cols]
-        return ((i+.5+dx)*SIZE/cols, (j+.5+dy)*SIZE/rows)
-    draw, height = ImageDraw.Draw(color), ImageDraw.Draw(relief)
-    for j in range(-1,rows+1):
-        for i in range(-1,cols+1):
-            x,y = site(i,j)
-            # Use the same stone on either side of a repetition seam.
-            variation = random.Random(1979+(i%cols)+(j%rows)*cols)
-            if variation.random()<.13:continue
-            outline = [(x-65,y-65),(x+65,y-65),(x+65,y+65),(x-65,y+65)]
-            for dj in range(-2,3):
-                for di in range(-2,3):
-                    if di==0 and dj==0:continue
-                    xx,yy=site(i+di,j+dj)
-                    nx,ny=xx-x,yy-y
-                    limit=nx*(x+xx)*.5+ny*(y+yy)*.5
-                    clipped=[]
-                    for a,b in zip(outline,outline[1:]+outline[:1]):
-                        da=nx*a[0]+ny*a[1]-limit
-                        db=nx*b[0]+ny*b[1]-limit
-                        if da<=0:clipped.append(a)
-                        if (da>0)!=(db>0):
-                            t=da/(da-db)
-                            clipped.append((a[0]+t*(b[0]-a[0]),a[1]+t*(b[1]-a[1])))
-                    outline=clipped
-            inset=variation.uniform(.72,.91)
-            # Worn corners are chipped off each angular slab.
-            face=[]
-            for n,(ax,ay) in enumerate(outline):
-                for neighbour in (outline[n-1],outline[(n+1)%len(outline)]):
-                    t=variation.uniform(.04,.16)
-                    face.append((x+(ax+(neighbour[0]-ax)*t-x)*inset,y+(ay+(neighbour[1]-ay)*t-y)*inset))
-            source_color=source.getpixel((round(x)%SIZE,round(y)%SIZE))
-            delta=variation.uniform(-9,17)
-            draw.polygon(face,fill=tuple(round(c+delta+d) for c,d in zip(source_color,(3,6,8))))
-            height.polygon(face,fill=variation.randint(141,155))
+def lay_bricks(color, relief, source, fines):
+    """Stagger hand-moulded courses with a chipped lip and silt-filled joint."""
+    columns, rows = 8, 10
+    w, h = SIZE/columns, SIZE/rows
+    top = Image.new('RGB', (SIZE, SIZE), (110, 91, 72))
+    col, height = ImageDraw.Draw(top), ImageDraw.Draw(relief)
+    tones = [(182,135,96), (178,131,90), (191,147,106), (181,137,98),
+             (174,123,87), (194,149,108), (189,140,96), (175,132,96)]
+    for j in range(-1, rows+1):
+        for i in range(-1, columns+1):
+            variation = random.Random(3109 + i % columns + (j % rows)*columns)
+            x, y = (i+.5*(j%2))*w, j*h
+            inset = variation.uniform(1.4, 2.2)
+            a,b,c,d = x+inset,y+inset,x+w-inset,y+h-inset
+            cut = [variation.uniform(1.4, 5.0) for _ in range(8)]
+            if variation.random()<.16:cut[0]+=6
+            face = [(a+cut[0],b),(c-cut[1],b+variation.uniform(-.8,.8)),
+                    (c,b+cut[2]),(c,d-cut[3]),(c-cut[4],d),
+                    (a+cut[5],d),(a,d-cut[6]),(a,b+cut[7])]
+            tone = variation.choice(tones)
+            col.polygon(face, fill=tone)
+            col.line(face[:3], fill=tuple(k+9 for k in tone), width=2)
+            col.line(face[3:6], fill=tuple(k-10 for k in tone), width=2)
+            height.polygon(face, fill=variation.randint(151,170))
+    # The baked clay and the bedding both inherit small-scale grain.
+    sediment = ImageChops.add(source.convert('L').point(lambda v:round((v-141)*.40+128)),
+                              fines.point(lambda v:round((v-128)*.12+128)), offset=-128)
+    color.paste(ImageChops.add(top, Image.merge('RGB',(sediment,)*3), offset=-128))
+
+
+def scatter_aggregate(fragments, relief, cloud):
+    draw = ImageDraw.Draw(fragments), ImageDraw.Draw(relief)
+    tones = [(125,111,94), (158,150,128), (192,178,147), (116,108,94),
+             (177,165,141), (151,101,73), (178,126,89), (158,111,81)]
+    for _ in range(1500):
+        x,y = rng.randrange(SIZE),rng.randrange(SIZE)
+        if rng.randrange(220)>72+cloud.getpixel((x,y)):continue
+        radius = 2+8.5*rng.random()**2.2
+        shade = rng.uniform(-10,12)
+        tint = tuple(round(v+shade) for v in rng.choice(tones))
+        clast(draw, x, y, radius, rng.uniform(.4,.86), tint, round(6+radius*2.3))
 
 
 def render(kind):
@@ -113,11 +113,17 @@ def render(kind):
         red = rng.randrange(4)==0 and kind=='aggregate'
         tint = tuple(min(245,max(0,v+delta+extra)) for v,extra in zip(color.getpixel((x,y)),(9,-2,-7) if red else (-1,1,3)))
         clast(draw,x,y,radius,rng.uniform(.38,.85),tint,round(radius*1.5))
+    if kind=='aggregate':
+        scatter_aggregate(fragments, relief, cloud)
     if kind=='paving':
-        lay_stones(fragments,relief,color)
+        lay_bricks(fragments, relief, color, flecks)
     # Expose the smaller stones in broken patches, with silt showing through
     # their faces rather than flat, uniformly coloured polygons.
     opacity=ImageChops.add(dust.point(lambda x:round(x*.35+108)),flecks.point(lambda x:round(x*.18)))
+    if kind=='paving':
+        opacity = dust.point(lambda v:round(218+v*.12))
+    elif kind=='aggregate':
+        opacity = dust.point(lambda v:round(195+v*.20))
     color=Image.composite(fragments,color,opacity)
     fine=ImageChops.add(flecks.point(lambda x:round(x*.12)),dust.point(lambda x:round(x*.06)))
     relief=ImageChops.add(relief.filter(ImageFilter.GaussianBlur(.68)),fine)

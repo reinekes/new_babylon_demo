@@ -2,6 +2,7 @@ import {isReedShrine} from './building-presentation.js';
 import {footprintCells,footprintSize} from './footprints.js';
 import {fortificationWorldPoint as buildingPoint} from './fortification-layout.js';
 import {worldWidth,worldHeight} from './world.js';
+import {streetCurveLookup} from './footpaths.js';
 import {renderedShoreDistance} from './game3d/shore-profile.js';
 import {lakeContours} from './game3d/lake-shore.js';
 import {surfaceElevation} from './district3d/terrain.js';
@@ -26,10 +27,12 @@ export function civicEntranceBricks(s){
  if(!sites.length)return [];
  const occupied=new Map();
  for(const b of buildings)for(const p of footprintCells(b))occupied.set(p.x+','+p.y,b);
- const width=worldWidth(s),height=worldHeight(s),contours=lakeContours(s),result=[];
+ const width=worldWidth(s),height=worldHeight(s),contours=lakeContours(s),obstacles=streetCurveLookup(s).obstacles,result=[];
  for(const b of sites){
   const center=(footprintSize(b)-1)*3,seed=b.x*37+b.y*13,pattern=threshold(b,s);
   const temple=b.type==='ziggurat',pitch=temple?.64:.50;
+  const start=buildingPoint(b,center,center+pattern.start),end=buildingPoint(b,center,center+pattern.start+pattern.rows*.30);
+  const solids=obstacles(start,end);
   const open=p=>{
    const x=Math.round(p.x),y=Math.round(p.y),owner=occupied.get(x+','+y);
    return x>=0&&x<width&&y>=0&&y<height&&(!owner||owner===b)&&renderedShoreDistance(p.x,p.y,s,contours)>.22;
@@ -52,6 +55,9 @@ export function civicEntranceBricks(s){
      buildingPoint(b,center+cx+u*cos-v*sin,center+cz+u*sin+v*cos));
     if(!polygon.every(open))continue;
     const at=buildingPoint(b,center+cx,center+cz);
+    // A partly buried brick leaves the same breathing room around a trunk or
+    // outcrop as the street shoulder. Its diagonal encloses every chipped edge.
+    if(solids?.some(o=>Math.hypot(at.x-o.x,at.y-o.y)<o.radius+.022+Math.hypot(w,d)/6))continue;
     const mix=noise(seed+2,row,course),shade=temple?6+Math.floor(mix*3):Math.floor(mix*6);
     result.push({polygon,at,shade,wear:worn,rough:grain});
    }

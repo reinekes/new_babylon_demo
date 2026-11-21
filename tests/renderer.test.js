@@ -3,6 +3,7 @@ import {createHomeVisits} from '../game3d/home-visits.js';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {Renderer} from '../renderer.js';
+import {streetCurveLookup,footpathRibbonPoint} from '../footpaths.js';
 test('projection and hit testing agree after resize and zoom',()=>{for(const [w,h] of [[390,510],[510,510],[945,715],[1300,1000]])for(const zoom of [.7,1,1.45,1.7,3]){const r=Object.create(Renderer.prototype);Object.assign(r,{w,h,zoom,pan:{x:87,y:-42},canvas:{getBoundingClientRect:()=>({left:230,top:166})}});r.layout();for(let x=0;x<22;x++)for(let y=0;y<18;y++){const p=r.point(x,y);assert.deepEqual(r.pick(p.x+230,p.y+166),{x,y});}assert.equal(r.pick(-999,-999),null);}});
 
 test('actual render queue interleaves people and solid buildings in depth order',async()=>{
@@ -142,7 +143,9 @@ test('Canvas joins one soil tint before compositing into the ground, caches it a
  r.roadMode=true;r.streetsLayer();
  assert.equal(gradients.length,count,'a camera-stable selection reuses the existing pixels');
  assert.deepEqual(images,['source-over','source-over']);assert.equal(lines.length,1);
- assert.deepEqual(lines[0].at(-1),r.point(points[4].x,points[4].y));
+ const automatic=roads[3],curve=streetCurveLookup(r.state)(automatic.a,automatic.b,automatic.id);
+ const endpoint=footpathRibbonPoint(automatic.a,automatic.b,curve,1);
+ assert.deepEqual(lines[0].at(-1),r.point(endpoint.x,endpoint.y));
  r.ox+=40;r.streetsLayer();assert.equal(gradients.length,count*2,'panning repaints with soil grain anchored in the world');
  gradients.length=0;
  r.state={roads:[],footpaths:[{a:points[0],b:points[1],wear:32,at:0}]};

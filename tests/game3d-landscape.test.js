@@ -500,3 +500,22 @@ test('an extraction court preserves the selected deposit and reserves four dry c
  assert.deepEqual(buildingAt(saved,d.x,d.y).deposit,court.deposit);
  assert.equal(saved.buildings.find(b=>b.type==='clay').footprint,undefined);
 });
+
+test('an exhausted clay outcrop releases actual entrance bricks in the open landscape',async()=>{
+ const s=createGame({seed:137,start:'established',scenario:strictScenario()});
+ const {build}=await import('../engine.js');
+ assert.ok(build(s,'shrine',9,6,0,{instant:true}).ok);
+ const engine=new B.NullEngine(),scene=new B.Scene(engine);
+ const materials=Object.fromEntries(['soil','grass','wood','stone','terracotta','reed','linen'].map(k=>[k,new B.PBRMaterial(k,scene)]));
+ const original=B.SceneLoader.LoadAssetContainerAsync;
+ B.SceneLoader.LoadAssetContainerAsync=async()=>new B.AssetContainer(scene);
+ let view;
+ try{
+  view=await createGameLandscape(B,scene,s,materials);
+  const before=scene.getMeshByName('civic-entrance-bricks'),indices=before.getTotalIndices();
+  s.clayPits={...s.clayPits,'9,7':0};
+  view.update(s,1);
+  const after=scene.getMeshByName('civic-entrance-bricks');
+  assert.ok(before.isDisposed()&&after.getTotalIndices()>indices);
+ }finally{B.SceneLoader.LoadAssetContainerAsync=original;view?.dispose();scene.dispose();engine.dispose();}
+});
