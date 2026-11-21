@@ -38,7 +38,12 @@
 
 В Chrome WebGL 2 один город с 500 жителями и 250 зданиями работал на 4× при разрешении 1440 × 780. В городе 89 проложенных участков трёх уровней и 175 протоптанных участков. Перед каждым 20-секундным замером игру прогревали и возвращали сохранение и камеру к одному состоянию.
 
-[Сохранение нагрузочного города](../../docs/benchmarks/2026-11-21-road-levels-city.json.gz)
+| Сборка | Три прогона, FPS | FPS за суммарное время | Время кадра p95 |
+| --- | --- | ---: | ---: |
+| До | 10,54 / 10,37 / 10,19 | 10,37 | 166,7 мс |
+| После | 9,83 / 9,43 / 10,42 | 9,9 | 166,7 мс |
+
+[Интервалы кадров](../../docs/benchmarks/2026-11-21-road-levels-4x.json) · [Тот самый город](../../docs/benchmarks/2026-11-21-road-levels-city.json.gz)
 
 Прошли 2230 тестов Node. Все 20 архивных городов загрузились и после повторной записи совпали с результатом предыдущей сборки, включая личности жителей и учёт грузов.
 
@@ -47,7 +52,8 @@
 date: 2026-11-21
 type: release
 release: road-materials-and-detours-20261121
-publication: pending
+commit: 6c89019b0ae63629553f65c2219d38ddad0b07f9
+publication: verified
 groups: graphics; ux
 completed: road-upgrade-marker; road-level-finishes; road-obstacle-curves
-source: roadmap/reports/2026-11-21-road-upgrades.md
+source: docs/versions/2026-11-21-08.md

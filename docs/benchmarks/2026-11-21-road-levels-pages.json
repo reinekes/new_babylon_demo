@@ -1,0 +1,706 @@
+{
+  "release": "6c89019b0ae63629553f65c2219d38ddad0b07f9",
+  "site": "https://reinekes.github.io/new_babylon_demo/",
+  "matched": {
+    "GAME_DESIGN.md": "6f9c3addc097be32d1b24fde8d7f0c28005108fbee93976bc1b3f163b20278b6",
+    "assets/3d/textures/street-aggregate-normal.webp": "bcd4496b030b22f43b4c02ee3853cb3f8b2fed8c4be0e5bd9dac864c22931517",
+    "assets/3d/textures/street-paving-color.webp": "05c72723685f22b6e13179fe4a7c10dd0dce651c87a8bb599739c566bab6bf2a",
+    "civic-entrance-bricks.js": "3154b26fe1389aef91d6deace6472f64fd17fcb43d1f92edf48c2be452a410d2",
+    "courtyard.html": "b452c04a1e3f1377a0227189450c34c8a9194be42171abbb4e296588ec0b5460",
+    "district3d/terrain.js": "edf5328955d3e29e0e0b6c543304ceebe767d94794cfa223d0d470af2c12f364",
+    "docs/benchmarks/2026-11-21-road-levels-city.json.gz": "b678bd25b692b2caf9c491fe263312635cd0228f1174be7edac0d94172309826",
+    "docs/model-index.json": "444a10958265d72a856adf6a1d0d6663119b6226f66ac20b329353c48ac83b2e",
+    "environment.js": "108d0372ceb27dda6435cd93ce209dc8ec96093a58acfadc7c56a55cadc26cd3",
+    "footpaths.js": "3fbd9a294682dc4dc5f4156b7de3f106c05511a385ad4b01fa728abb3854819a",
+    "game3d/nature-details.js": "f060f319c2fcddfc2392052a97a45f8456489a293f476383bc4c8361855131e2",
+    "game3d/renderer.js": "689a50f1fe5e3b9e5b8f5c6ff42615b0d80da85dc4dcf5c5ac4a296d30fd04d0",
+    "game3d/water.js": "107f67bb91980f8bf0136e013a2e0096957351a03876f83ed8dd3afebe4b2d49",
+    "index.html": "1f2f567a37999727b07f51f7236b1155edb1fb688a5230e24dcff1380e49bffc",
+    "mallards.html": "fd4e586fbed295d5c35290a94fac2a8f181979e2627c7f2903801063b18d013e",
+    "model-atlas/index.html": "8449d0ff28517bbf746262bee061b810ff8731323a86efd6a7df86c9b2d6a667",
+    "renderer.js": "1d0d71b29489947a54a869b2106e457f3fca7f899010ef668ce731b6f8ac8181",
+    "resource-layout.js": "88d80a668fd152b21fdc3812148c48d69c51237bd259f17fa0d5c6e959bb15fb",
+    "roadmap/evidence/2026-11-21/road-upgrades/apron-update.json": "dc820a44b309b6e8a841307bc5598a262044ebe30a81f8d8aecacc6347ab96d6",
+    "roadmap/evidence/2026-11-21/road-upgrades/canvas-comparison.webp": "d44b4ee2513c8533e2932ac8c91ad98e90521b586b7840887a614bea76be2a44",
+    "roadmap/evidence/2026-11-21/road-upgrades/district.webp": "ff706bbffb7b330b0644caa2b9741dd29fcd39754a31908726fbbfcfc4701836",
+    "roadmap/evidence/2026-11-21/road-upgrades/material-checks.json": "56f739656963afa76b2566250f6bf099e699b1529e68db5abf8cc0ccb44c025e",
+    "roadmap/evidence/2026-11-21/road-upgrades/obstacle-cart-check.json": "06da7915195a0eb145699d6e30eb6f1da5c375ab4d46b4568625a5f00faa04ca",
+    "roadmap/evidence/2026-11-21/road-upgrades/obstacle-edges-after.json": "62a98f5b090124f16fac2bcfbc255d2122289a389834dc67825af5d1b71d846f",
+    "roadmap/evidence/2026-11-21/road-upgrades/obstacle-edges-before.json": "e5a89200802b0a72714c767287a96b49270bfcf4209efad4440ce55cd7ec0784",
+    "roadmap/evidence/2026-11-21/road-upgrades/obstacles-save.json": "69f8baff44ea54688169300d3979ff91bf904c1b82598032d852c9bc36d91776",
+    "roadmap/evidence/2026-11-21/road-upgrades/selection-checks.json": "bf3158391ba6f036e5684678e4ec16e6dbfa000890c65f81869850a40fad8e4b",
+    "roadmap/evidence/2026-11-21/road-upgrades/selection-comparison.webp": "a7f27ac16c508434a136e1f27f76d2ebc6f186b2a74b94cb48cb2ac3e75025eb",
+    "roadmap/evidence/2026-11-21/road-upgrades/three-roads-comparison.webp": "db219d1ce6ec95e6bece338b3c2b4a4842b0f4a3fb60434108c5fae90228e7a3",
+    "roadmap/evidence/2026-11-21/road-upgrades/three-roads.webp": "0bc136d69c6be9d16f619ee2a8dcb7ce7995e6ef5c83060c07fc71baf4388418",
+    "roadmap/evidence/2026-11-21/road-upgrades/walker-around-palms.webp": "69b9bcc135fa34e788d151a7281a76981aa1b8b0aed36f165244286fede1486f",
+    "roadmap/evidence/2026-11-21/road-upgrades/walker-check.json": "7432cbd06fc18a742e5a1477fede748374f8ea129b3332fda169e02aa3655224",
+    "roadmap/evidence/2026-11-21/road-upgrades/walker-save.json": "e5c44ccd775335abd68e749c8571506f6698280ce8116684028be0995d0777fb",
+    "roadmap/index.html": "06cd2ce0d1b062865892a3b7de8d84d4b58477fc09a30d6d256e986c993a900f",
+    "roadmap/manifest.json": "16438fbebf742a90e377f4a9e1afc056af2f031a779044dd06eeaec759c07574",
+    "roadmap/reports/2026-11-21-road-upgrades.md": "c52d7f88ab41d4aa918ed3bc5cac9a593cf1a08e398d0359ee03c37d17841b69",
+    "roadmap/reports/2026-11-21-streets-quarries-pelican.md": "7f148b73d621ce428ba9886dd4bf070f49cccd0293ba53573d07fbbca776d7bf",
+    "roadmap/snapshot.json": "b49c176c97b9eca004ad17109e03dca843e380e864ec4f2065f4cd78db8e0b02",
+    "scripts/art-courtyard/build_street_surfaces.py": "ab48acce939437214da576843d552a0779932c8352c78d7aa3063257b61c737e",
+    "scripts/sumer-building-studio.html": "2341b023b27d4be511a9a830ca5d426e9234827b485f2a824274664ea52312ef",
+    "street-obstacles.js": "e5c36e4853897e5f959d2dcb20f697197f592e5e19ea6fcff9fc8e85369c979f",
+    "street-picking.js": "62674d727c48c2c533d71ae95695c6320c49a726bf6efe03166f3a26d8b42d05",
+    "street-surfaces.js": "64952168d477e640f273956dc1a28ee3ebbd8f222e3e1f32deb003ecf78fb323",
+    "app.js": "8340c034cb21829cc385850410ca59e172c3744a69738bf0f962af008ef50d14",
+    "assets/3d/textures/street-aggregate-color.webp": "1a6b9ce4eb8051673accf851e2b738d1ba49dfa22d4007c82374f6d9be0dddd3",
+    "assets/3d/textures/street-paving-normal.webp": "d24612b66bbcb615ce53a012b2111a77d9c2091c7feb7939b0aebb3f4279b841",
+    "crop-studio.html": "4994a2820ded1fedef4b8c97318b86c9e300ada54fde1c7c384c4aa84c06dcd4",
+    "roadmap/evidence/2026-11-21/road-upgrades/materials-detail.webp": "c775fb48ae780348fca38541a2cc1d1f816aac0c569513e655bb031a58a29908",
+    "roadmap/evidence/2026-11-21/road-upgrades/obstacle-comparison.webp": "b089abee2a241180423abf2c033b83108cdfeaf10faf98c6c591759a26526c4c",
+    "roadmap/evidence/2026-11-21/road-upgrades/obstacle-numbers.json": "3bd09e93d1b5607722041ad0f9a8f782fd9f5dc812f56420dab0171671743745",
+    "roadmap/evidence/2026-11-21/road-upgrades/roads-save.json": "9763b609500c24e03925874aa8932a407de4ffc88b9a2329605d43152cc578ca",
+    "district3d.html": "360d6c83eb83c8b8baec69fed3edc2e297780de5c0a5955e622cab684c938d8e",
+    "game3d/landscape.js": "dfc6f1c37c55872045eb805198d9f10166be4f64f81fa80ccf46057ba4752f03",
+    "roadmap/plan.md": "68ef495ddabcdde42ff9c12229adbbe17ff170e6567f68bed872b0763aaf8dae",
+    "goat-studio.html": "72908ecdedffdacf26b44882b4786dc391aec36bb8f714166a005629aefe660d"
+  },
+  "deployment": "https://github.com/reinekes/new_babylon_demo/actions/runs/44936683534",
+  "publicGame": {
+    "streetLevelsWebGL": {
+      "base": "https://reinekes.github.io/new_babylon_demo",
+      "district": {
+        "webgl": 2,
+        "error": 0,
+        "errors": [],
+        "levels": {
+          "1": 5,
+          "2": 5,
+          "3": 5
+        },
+        "markers": [
+          [
+            588.0917460775719,
+            567.2619262231502
+          ],
+          [
+            613.665442990364,
+            439.4433598396569
+          ],
+          [
+            634.328169346123,
+            336.17006034863005
+          ]
+        ],
+        "materials": [
+          {
+            "name": "game-road-compacted-earth",
+            "texture": "assets/3d/textures/street-silt-color.webp?v=laid-streets-2",
+            "ready": true,
+            "normal": "assets/3d/textures/street-silt-normal.webp?v=laid-streets-2",
+            "normalReady": true,
+            "tint": [
+              0.61,
+              0.51,
+              0.41
+            ]
+          },
+          {
+            "name": "game-road-clay-gravel",
+            "texture": "assets/3d/textures/street-aggregate-color.webp?v=laid-streets-2",
+            "ready": true,
+            "normal": "assets/3d/textures/street-aggregate-normal.webp?v=laid-streets-2",
+            "normalReady": true,
+            "tint": [
+              0.91,
+              0.88,
+              0.81
+            ]
+          },
+          {
+            "name": "game-road-bedded-stone",
+            "texture": "assets/3d/textures/street-paving-color.webp?v=laid-streets-2",
+            "ready": true,
+            "normal": "assets/3d/textures/street-paving-normal.webp?v=laid-streets-2",
+            "normalReady": true,
+            "tint": [
+              0.99,
+              0.93,
+              0.86
+            ]
+          }
+        ],
+        "camera": {
+          "x": 6.68,
+          "y": 4.85,
+          "alpha": -1.43,
+          "beta": 0.74,
+          "radius": 39
+        }
+      },
+      "three": {
+        "webgl": 2,
+        "error": 0,
+        "errors": [],
+        "levels": {
+          "1": 5,
+          "2": 5,
+          "3": 5
+        },
+        "markers": [
+          [
+            546.1136845248119,
+            645.88856513796
+          ],
+          [
+            576.775756618716,
+            399.5150978029953
+          ],
+          [
+            599.3805587530557,
+            217.8827716117955
+          ]
+        ],
+        "materials": [
+          {
+            "name": "game-road-compacted-earth",
+            "texture": "assets/3d/textures/street-silt-color.webp?v=laid-streets-2",
+            "ready": true,
+            "normal": "assets/3d/textures/street-silt-normal.webp?v=laid-streets-2",
+            "normalReady": true,
+            "tint": [
+              0.61,
+              0.51,
+              0.41
+            ]
+          },
+          {
+            "name": "game-road-clay-gravel",
+            "texture": "assets/3d/textures/street-aggregate-color.webp?v=laid-streets-2",
+            "ready": true,
+            "normal": "assets/3d/textures/street-aggregate-normal.webp?v=laid-streets-2",
+            "normalReady": true,
+            "tint": [
+              0.91,
+              0.88,
+              0.81
+            ]
+          },
+          {
+            "name": "game-road-bedded-stone",
+            "texture": "assets/3d/textures/street-paving-color.webp?v=laid-streets-2",
+            "ready": true,
+            "normal": "assets/3d/textures/street-paving-normal.webp?v=laid-streets-2",
+            "normalReady": true,
+            "tint": [
+              0.99,
+              0.93,
+              0.86
+            ]
+          }
+        ],
+        "camera": {
+          "x": 6.83,
+          "y": 4.5,
+          "alpha": -1.5,
+          "beta": 0.6,
+          "radius": 22.2
+        }
+      },
+      "detail": {
+        "webgl": 2,
+        "error": 0,
+        "errors": [],
+        "levels": {
+          "1": 5,
+          "2": 5,
+          "3": 5
+        },
+        "markers": [
+          [
+            576.7981720559015,
+            791.2516538064867
+          ],
+          [
+            604.6832657296742,
+            411.3503620050644
+          ],
+          [
+            623.8260903693835,
+            150.5521056164309
+          ]
+        ],
+        "materials": [
+          {
+            "name": "game-road-compacted-earth",
+            "texture": "assets/3d/textures/street-silt-color.webp?v=laid-streets-2",
+            "ready": true,
+            "normal": "assets/3d/textures/street-silt-normal.webp?v=laid-streets-2",
+            "normalReady": true,
+            "tint": [
+              0.61,
+              0.51,
+              0.41
+            ]
+          },
+          {
+            "name": "game-road-clay-gravel",
+            "texture": "assets/3d/textures/street-aggregate-color.webp?v=laid-streets-2",
+            "ready": true,
+            "normal": "assets/3d/textures/street-aggregate-normal.webp?v=laid-streets-2",
+            "normalReady": true,
+            "tint": [
+              0.91,
+              0.88,
+              0.81
+            ]
+          },
+          {
+            "name": "game-road-bedded-stone",
+            "texture": "assets/3d/textures/street-paving-color.webp?v=laid-streets-2",
+            "ready": true,
+            "normal": "assets/3d/textures/street-paving-normal.webp?v=laid-streets-2",
+            "normalReady": true,
+            "tint": [
+              0.99,
+              0.93,
+              0.86
+            ]
+          }
+        ],
+        "camera": {
+          "x": 6.69,
+          "y": 4.53,
+          "alpha": -1.52,
+          "beta": 0.52,
+          "radius": 16
+        }
+      }
+    },
+    "streetLevelsCanvas": {
+      "base": "https://reinekes.github.io/new_babylon_demo",
+      "canvas": {
+        "levels": {
+          "1": 5,
+          "2": 5,
+          "3": 5
+        },
+        "markers": [
+          [
+            739.5232835820896,
+            352.4034328358209
+          ],
+          [
+            637.1650746268657,
+            403.5825373134329
+          ],
+          [
+            534.8068656716418,
+            454.7616417910448
+          ]
+        ],
+        "camera": {
+          "x": 6.55,
+          "y": 4.5,
+          "zoom": 3.6
+        }
+      }
+    },
+    "selection3d": {
+      "mode": "3d",
+      "base": "https://reinekes.github.io/new_babylon_demo",
+      "checks": [
+        {
+          "label": "single-selection",
+          "mode": true,
+          "selected": "road:11,9|12,9",
+          "route": 0,
+          "planned": 0,
+          "open": true,
+          "queued": 0,
+          "finished": 0,
+          "meshes": [
+            "road-editing-network",
+            "road-route"
+          ],
+          "picked": {
+            "x": 11,
+            "y": 8.5
+          },
+          "card": "Участок дороги"
+        },
+        {
+          "label": "single-ordered",
+          "mode": false,
+          "selected": null,
+          "route": 0,
+          "planned": 0,
+          "open": true,
+          "queued": 1,
+          "finished": 0,
+          "meshes": [],
+          "picked": {
+            "x": 11,
+            "y": 8.5
+          },
+          "card": "Участок дороги"
+        },
+        {
+          "label": "single-complete",
+          "mode": false,
+          "selected": null,
+          "route": 0,
+          "planned": 0,
+          "open": true,
+          "queued": 0,
+          "finished": 1,
+          "meshes": [],
+          "picked": {
+            "x": 11,
+            "y": 8.5
+          },
+          "card": "Участок дороги"
+        },
+        {
+          "label": "route-preview",
+          "mode": true,
+          "selected": null,
+          "route": 2,
+          "planned": 0,
+          "open": true,
+          "queued": 0,
+          "finished": 1,
+          "meshes": [
+            "road-editing-network",
+            "road-route",
+            "road-route"
+          ],
+          "picked": {},
+          "card": "Улучшить путь"
+        },
+        {
+          "label": "route-ordered",
+          "mode": false,
+          "selected": null,
+          "route": 0,
+          "planned": 0,
+          "open": false,
+          "queued": 2,
+          "finished": 1,
+          "meshes": [],
+          "picked": {},
+          "card": "Улучшить путь"
+        },
+        {
+          "label": "route-complete",
+          "mode": false,
+          "selected": null,
+          "route": 0,
+          "planned": 0,
+          "open": false,
+          "queued": 0,
+          "finished": 3,
+          "meshes": [],
+          "picked": {},
+          "card": "Улучшить путь"
+        },
+        {
+          "label": "canceled",
+          "mode": false,
+          "selected": null,
+          "route": 0,
+          "planned": 0,
+          "open": false,
+          "queued": 0,
+          "finished": 3,
+          "meshes": [],
+          "picked": {},
+          "card": "Участок дороги"
+        },
+        {
+          "label": "dismissed",
+          "mode": false,
+          "selected": null,
+          "route": 0,
+          "planned": 0,
+          "open": false,
+          "queued": 0,
+          "finished": 3,
+          "meshes": [],
+          "picked": {},
+          "card": "Участок дороги"
+        },
+        {
+          "label": "closed-escaped",
+          "mode": false,
+          "selected": null,
+          "route": 0,
+          "planned": 0,
+          "open": false,
+          "queued": 0,
+          "finished": 3,
+          "meshes": [],
+          "picked": {},
+          "card": "Участок дороги"
+        }
+      ],
+      "ticks": [
+        9.75,
+        9.75
+      ],
+      "edges": {
+        "one": {
+          "x": 387.54536424018335,
+          "y": 443.3981904743538,
+          "id": "road:11,9|12,9",
+          "level": 1,
+          "built": false,
+          "bendM": 0.5334288800538403,
+          "errM": 0.0005389388243199338,
+          "t": 0.6,
+          "world": {
+            "x": 10.943615224685072,
+            "y": 8.411095186657693
+          },
+          "pick": {
+            "x": 10.943561637519046,
+            "y": 8.411167274185376
+          }
+        },
+        "start": {
+          "x": 481.9728382909932,
+          "y": 415.551794970239,
+          "id": "road:10,9|11,9",
+          "level": 1,
+          "built": false,
+          "bendM": 0.48034653556930706,
+          "errM": 0.000559993826109543,
+          "t": 0.4,
+          "world": {
+            "x": 10.146626700366625,
+            "y": 8.419942244071782
+          },
+          "pick": {
+            "x": 10.146572276523857,
+            "y": 8.4200180659972
+          }
+        },
+        "end": {
+          "x": 606.8821918897181,
+          "y": 383.49333815786025,
+          "id": "road:10,9|9,9",
+          "level": 1,
+          "built": false,
+          "bendM": 0,
+          "errM": 0.0005824503102279168,
+          "t": 0.5,
+          "world": {
+            "x": 9,
+            "y": 8.5
+          },
+          "pick": {
+            "x": 8.99994480810195,
+            "y": 8.500079858750636
+          }
+        },
+        "cancelEdge": {
+          "x": 580.4664898189295,
+          "y": 428.0483909728407,
+          "id": "road:10,10|10,9",
+          "level": 1,
+          "built": false,
+          "bendM": 0,
+          "errM": 0.0005366165589855081,
+          "t": 0.5,
+          "world": {
+            "x": 9.5,
+            "y": 9
+          },
+          "pick": {
+            "x": 9.499947989436532,
+            "y": 9.000072757927734
+          }
+        },
+        "closedEdge": {
+          "x": 580.4664898189295,
+          "y": 428.0483909728407,
+          "id": "road:10,10|10,9",
+          "level": 1,
+          "built": false,
+          "bendM": 0,
+          "errM": 0.0005366165589855081,
+          "t": 0.5,
+          "world": {
+            "x": 9.5,
+            "y": 9
+          },
+          "pick": {
+            "x": 9.499947989436532,
+            "y": 9.000072757927734
+          }
+        }
+      },
+      "success": true
+    },
+    "selection2d": {
+      "mode": "2d",
+      "base": "https://reinekes.github.io/new_babylon_demo",
+      "checks": []
+    },
+    "obstacles": {
+      "origin": "https://reinekes.github.io/new_babylon_demo",
+      "cameras": {
+        "land": {
+          "population": 12,
+          "roads": 12,
+          "visibleRoad": [
+            "road-road:7,9|8,9-level-1",
+            "road-region-1:1:47477:268435455:0:true:1",
+            "resident-footpaths"
+          ],
+          "webgl": 2,
+          "gl": 0,
+          "issues": [],
+          "camera": [
+            10.36,
+            10.04,
+            1.17,
+            0.64,
+            20
+          ]
+        },
+        "above": {
+          "population": 12,
+          "roads": 12,
+          "visibleRoad": [
+            "road-road:7,9|8,9-level-1",
+            "road-region-1:1:47477:268435455:0:true:1",
+            "resident-footpaths"
+          ],
+          "webgl": 2,
+          "gl": 0,
+          "issues": [],
+          "camera": [
+            10.5,
+            10,
+            1.19,
+            0.4,
+            24
+          ]
+        },
+        "wood": {
+          "population": 12,
+          "roads": 12,
+          "visibleRoad": [
+            "road-road:7,9|8,9-level-1",
+            "road-region-1:1:47477:268435455:0:true:1",
+            "resident-footpaths"
+          ],
+          "webgl": 2,
+          "gl": 0,
+          "issues": [],
+          "camera": [
+            7.05,
+            8.05,
+            0.52,
+            0.65,
+            18
+          ]
+        },
+        "wide": {
+          "population": 12,
+          "roads": 12,
+          "visibleRoad": [
+            "road-road:7,9|8,9-level-1",
+            "road-region-1:1:47477:268435455:0:true:1",
+            "resident-footpaths"
+          ],
+          "webgl": 2,
+          "gl": 0,
+          "issues": [],
+          "camera": [
+            9,
+            9.2,
+            1.1,
+            0.62,
+            41
+          ]
+        }
+      }
+    },
+    "walker": {
+      "base": "https://reinekes.github.io/new_babylon_demo",
+      "id": 3,
+      "frames": [
+        {
+          "t": 3.5,
+          "logical": [
+            10.686171625440426,
+            9.686171625440426
+          ],
+          "shown": [
+            10.846348462694596,
+            9.509225734945755
+          ],
+          "node": "citizen-3",
+          "world": [
+            65.07809448242188,
+            0.0010032638674601912,
+            57.055355072021484
+          ],
+          "screen": [
+            323.07792781816084,
+            440.4887473889617
+          ],
+          "phase": "toWork",
+          "work": "11,11",
+          "error": 0,
+          "webgl": 2
+        },
+        {
+          "t": 3.9200000000000004,
+          "logical": [
+            10.998005715943691,
+            9.998005715943691
+          ],
+          "shown": [
+            11.372091672744444,
+            9.622577405021104
+          ],
+          "node": "citizen-3",
+          "world": [
+            68.23255157470703,
+            0,
+            57.73546600341797
+          ],
+          "screen": [
+            598.3205937065973,
+            399.07060862006045
+          ],
+          "phase": "toWork",
+          "work": "11,11",
+          "error": 0,
+          "webgl": 2
+        },
+        {
+          "t": 4.459999999999997,
+          "logical": [
+            11.39893526087646,
+            10.39893526087646
+          ],
+          "shown": [
+            11.446928164116798,
+            10.351150490935035
+          ],
+          "node": "citizen-3",
+          "world": [
+            68.68157196044922,
+            0,
+            62.106903076171875
+          ],
+          "screen": [
+            598.5879369933912,
+            219.68458997011155
+          ],
+          "phase": "toWork",
+          "work": "11,11",
+          "error": 0,
+          "webgl": 2
+        }
+      ]
+    }
+  }
+}
