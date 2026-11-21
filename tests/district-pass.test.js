@@ -36,3 +36,15 @@ test('large cities can retain two hundred owned completed orders plus active aut
  s.district.jobs=Array.from({length:344},(_,i)=>({id:i+1,source:'9,8',target:key,resource:'wood',amount:1,remaining:i>=200&&i<328?1:0,delivered:i>=200&&i<328?0:1,cancelled:0,automatic:true}));s.district.nextId=345;s.district.lastScan=-1;
  assert.ok(decode(encode(s)),'owned IDs and one hundred twenty-eight active orders fit a valid save');districts.syncDistrictJobs(s);assert.equal(s.district.jobs.length,344);assert.equal(s.district.nextId,345);assert.ok(decode(encode(s)));
 });
+
+test('one supply scan groups residents once when checking all household goods',()=>{
+ const s=makeStressDistrict();
+ let reads=0;
+ for(const c of s.citizens){
+  const home=c.home;
+  Object.defineProperty(c,'home',{get(){reads++;return home;},enumerable:true});
+ }
+ s.district.lastScan=-1;
+ districts.syncDistrictJobs(s);
+ assert.ok(reads<s.population*8,`home address reads for ${s.population} residents: ${reads}`);
+});

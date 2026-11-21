@@ -9,7 +9,7 @@ const EPS=1e-8;
 export function navigationDistance(route){let d=0;for(let i=1;i<(route?.length||0);i++)d+=Math.hypot(route[i].x-route[i-1].x,route[i].y-route[i-1].y);return d;}
 export function navigationGridStep(a,b){const dx=Math.abs(a.x-b.x),dy=Math.abs(a.y-b.y);return dx+dy>EPS&&(dx<EPS||Math.abs(dx-1)<EPS)&&(dy<EPS||Math.abs(dy-1)<EPS);}
 function solidBounds(b){const n=footprintSize(b);return {minX:b.x-.47,maxX:b.x+n-.53,minY:b.y-.47,maxY:b.y+n-.53};}
-function intersectsBox(a,b,r){
+export function segmentIntersectsObstacle(a,b,r){
  let lo=0,hi=1;
  for(const [start,delta,min,max]of [[a.x,b.x-a.x,r.minX,r.maxX],[a.y,b.y-a.y,r.minY,r.maxY]]){
   if(Math.abs(delta)<EPS){if(start<=min||start>=max)return false;continue;}
@@ -66,13 +66,13 @@ export function fortificationAccess(buildings){
  const index=obstacleIndex(forts);
  return {
   pointClear:p=>!insideObstacle(index,p),
-  segmentClear:(a,b)=>![...localObstacles(index,a,b)].some(box=>intersectsBox(a,b,box)),
+  segmentClear:(a,b)=>![...localObstacles(index,a,b)].some(box=>segmentIntersectsObstacle(a,b,box)),
  };
 }
 export function navigationSegmentClear(s,a,b,index=obstacleIndex(s.buildings||[])){
  const length=Math.hypot(b.x-a.x,b.y-a.y),steps=Math.max(4,Math.ceil(length/.1)),crossing=Math.abs(riverLocal(a.x,a.y,s).along-riverLocal(b.x,b.y,s).along)<EPS;
  for(let i=0;i<=steps;i++){const t=i/steps,x=a.x+(b.x-a.x)*t,y=a.y+(b.y-a.y)*t;if(!isDryPoint(s,x,y)&&!(crossing&&onBridge(s.buildings||[],x,y,s)))return false;}
- for(const box of localObstacles(index,a,b))if(intersectsBox(a,b,box))return false;return true;
+ for(const box of localObstacles(index,a,b))if(segmentIntersectsObstacle(a,b,box))return false;return true;
 }
 function speedFor(s,a,b,roads,bridges=s.buildings||[]){
  const road=roads.get(pairKey(a.key,b.key)),roadFactor=1+((road?.level||1)-1)*.2;

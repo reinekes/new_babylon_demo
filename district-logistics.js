@@ -3,7 +3,7 @@ import {appendGrain,takeGrain} from './grain-origin.js';
 import {toolResource} from './axe-kit.js';
 import {isStrictSumer} from './scenario-profiles.js';
 import {harvestNameEvidence} from './causal-facts.js';
-import {supplyHome} from './households.js';
+import {supplyHome,residentsByHome} from './households.js';
 import {findShapingBatch,loadShapingBatch} from './shaping-batch.js';
 import {markWindCargo} from './wind-delivery.js';
 import {markCreatorCargo} from './creator-materials.js';
@@ -34,7 +34,7 @@ export function createDistrictPass(s,{network=null}={}){
  return {...indexDistrictJobs(s),food,stores,central,endpoints,components};
 }
 export const logisticsStock=(s,b,k)=>central(s,b)?storeStock(s,buildingKey(b),k):b.workshopStock?.output?.[k]||0;
-export const logisticsRoom=(s,b,k,targetKind=null,pass=null)=>!b?0:targetKind==='input'?buildingInputRoom(s,b,k):central(s,b,pass)?Math.max(0,storeCapacity(b)-(pass?b.stock?.[k]||0:storeStock(s,buildingKey(b),k))):buildingInputRoom(s,b,k);
+export const logisticsRoom=(s,b,k,targetKind=null,pass=null)=>!b?0:targetKind==='input'?buildingInputRoom(s,b,k,pass?.households):central(s,b,pass)?Math.max(0,storeCapacity(b)-(pass?b.stock?.[k]||0:storeStock(s,buildingKey(b),k))):buildingInputRoom(s,b,k,pass?.households);
 export function logisticsDeposit(s,key,k,n,targetKind=null){const b=store(s,key);return !b?0:central(s,b)&&targetKind!=='input'?0:putBuildingInput(s,b,k,n);}
 export function initializeDistricts(s){s.district??={nextId:1,jobs:[],lastScan:-1};}
 export const storeMinimum=(b,k)=>b.stockMinimum?.[k]??(b.type==='depot'&&k==='food'?12*(b.level||1):0);
@@ -83,7 +83,7 @@ function scheduleDryFish(s,pass,destinations,nearest){
    for(const target of targets){
     if(available<.01||pass.active>=128)break;
     const to=buildingKey(target),destKey=entry(to,'food');
-    const room=housebound?buildingInputRoom(s,target,'food')-(pass.incoming.get(destKey)||0)-(pass.extra.get(destKey)||0):
+    const room=housebound?buildingInputRoom(s,target,'food',pass.households)-(pass.incoming.get(destKey)||0)-(pass.extra.get(destKey)||0):
      dryFishRoom(s,target)-(inGranary.get(to)||0);
     const n=Math.min(available,room);
     if(n<.01)continue;
@@ -98,6 +98,8 @@ function scheduleDryFish(s,pass,destinations,nearest){
 }
 export function syncDistrictJobs(s){
  initializeDistricts(s);if(blocked(s))return;const scan=Math.floor(s.simTime||0);if(s.district.lastScan===scan)return;s.district.lastScan=scan;collectReadyOutputs(s);const pass=createDistrictPass(s);
+ // This synchronous scan creates orders, but no resident moves home during it.
+ pass.households=residentsByHome(s.citizens);
  // Keep user orders and every owned ID. Only obsolete automatic history is compacted.
  const civicJobs=new Set(s.civicOrder?.history.flatMap(q=>q.restitution?[q.restitution.job]:[]));
  const completed=s.district.jobs.filter(q=>!civicJobs.has(q.id)&&q.automatic&&!pass.owners.has(q.id)&&q.remaining+transferCarried(s,q,pass)<=eps),recent=new Set(completed.slice(-16).map(q=>q.id));
@@ -136,7 +138,7 @@ export function syncDistrictJobs(s){
  }
  const stores=pass.stores,destinations=[...pass.endpoints.values()].filter(b=>isBuildingStore(b)&&!b.campSalvage),donors=new Map();
  const nearest=(b,metric='round')=>{const target=buildingKey(b),id=target+metric;if(!donors.has(id))donors.set(id,stores.filter(a=>a!==b&&connectedStores(s,buildingKey(a),target,pass)).sort((a,c)=>metric==='round'?Math.hypot(a.x-b.x,a.y-b.y)-Math.hypot(c.x-b.x,c.y-b.y):Math.abs(a.x-b.x)+Math.abs(a.y-b.y)-Math.abs(c.x-b.x)-Math.abs(c.y-b.y)));return donors.get(id);};
- const inbound=(b,k,need)=>{const target=buildingKey(b),wanted=need-pending(s,target,k,pass)-(pass.extra.get(entry(target,k))||0);if(wanted<(isResidence(b)&&k==='food'?Math.min(1,homeStockCapacity(s,b,'food')/2):.01))return;for(const a of nearest(b)){const source=buildingKey(a),amount=Math.min(wanted,Math.max(0,exportable(s,source,k,pass)-(pass.queued.get(entry(source,k))||0)));if(amount>=.01&&requestTransfer(s,source,target,k,amount,{automatic:true,targetKind:'input'},pass).ok)break;}};
+ const inbound=(b,k,need)=>{const target=buildingKey(b),wanted=need-pending(s,target,k,pass)-(pass.extra.get(entry(target,k))||0);if(wanted<(isResidence(b)&&k==='food'?Math.min(1,homeStockCapacity(s,b,'food',pass.households)/2):.01))return;for(const a of nearest(b)){const source=buildingKey(a),amount=Math.min(wanted,Math.max(0,exportable(s,source,k,pass)-(pass.queued.get(entry(source,k))||0)));if(amount>=.01&&requestTransfer(s,source,target,k,amount,{automatic:true,targetKind:'input'},pass).ok)break;}};
  if(s.lastFishLotId)scheduleDryFish(s,pass,destinations,nearest);
  const markedFields=s.earthDiscovery?.qualifiedAt!=null&&!harvestNameEvidence(s)?
   destinations.filter(b=>b.type==='field'&&b.grainEvidence?.inspired):[];
@@ -146,7 +148,7 @@ export function syncDistrictJobs(s){
   if(home&&!harvestRecipients.has(home))harvestRecipients.set(home,c.id);
  }
  for(const b of destinations)if(isResidence(b)){
-  const target=buildingKey(b),need=buildingInputRoom(s,b,'food');
+  const target=buildingKey(b),need=buildingInputRoom(s,b,'food',pass.households);
   const incoming=pending(s,target,'food',pass),wanted=need-incoming-(pass.extra.get(entry(target,'food'))||0);
   const recipient=harvestRecipients.get(target);
   if(wanted>=1&&incoming<=eps&&recipient!==undefined&&!credited.some(f=>f.home===target||f.recipientId===recipient)){
@@ -163,7 +165,7 @@ export function syncDistrictJobs(s){
  // goods remain safely in their separate output buffer until that stock clears.
  for(const b of [...destinations.filter(b=>isProductionStore(b)&&!b.recoveryOnly),...stores.filter(b=>b.recoveryOnly)])for(const [k,amount]of Object.entries(b.recoveryOnly?b.stock:b.workshopStock?.output||{})){const source=buildingKey(b),queued=pass.queued.get(entry(source,k))||0;if(amount-queued<.01)continue;const target=nearest(b).find(a=>logisticsRoom(s,a,k,null,pass)-pending(s,buildingKey(a),k,pass)>.01);if(target){const key=buildingKey(target),n=Math.min(amount-queued,logisticsRoom(s,target,k,null,pass)-pending(s,key,k,pass));if(n>=.01)requestTransfer(s,source,key,k,n,{automatic:true},pass);}}
  for(const b of destinations)if(!isResidence(b)&&(!toolResource(b)||isStrictSumer(s)))for(const [k,need]of Object.entries(inputNeeds(b)))if(k!=='water')inbound(b,k,need);
- for(const b of destinations)if(isResidence(b))for(const k of ['clothing','pottery','beer','milk','mat'])inbound(b,k,buildingInputRoom(s,b,k));
+ for(const b of destinations)if(isResidence(b))for(const k of ['clothing','pottery','beer','milk','mat'])inbound(b,k,buildingInputRoom(s,b,k,pass.households));
  for(const b of stores)for(const k of MATERIALS){const target=buildingKey(b),need=storeMinimum(b,k)-b.stock[k]-pending(s,target,k,pass);if(need<=eps||need<Math.min(1,storeMinimum(b,k))-eps)continue;for(const a of nearest(b,'taxicab')){const source=buildingKey(a),n=Math.min(need,Math.max(0,exportable(s,source,k,pass)-(pass.queued.get(entry(source,k))||0)));if(n>eps&&requestTransfer(s,source,target,k,n,{automatic:true},pass).ok)break;}}
 }
 export function districtPickup(s,c){

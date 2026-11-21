@@ -58,6 +58,18 @@ export function isShore(s,x,y){return !['water','void'].includes(terrain(x,y,s))
 export function isDryPoint(s,x,y){
  return Number.isFinite(x)&&Number.isFinite(y)&&x>=-.5&&y>=-.5&&x<=worldWidth(s)-.5&&y<=worldHeight(s)-.5&&Math.abs(signedRiverDistance(x,y,s))>=1.25&&!s?.world?.lakes?.some(l=>l.cells.some(c=>Math.abs(x-c.x)<.51&&Math.abs(y-c.y)<.51));
 }
+
+// True only when the entire rectangle lies on dry ground. This bounds the
+// same continuous river and square lake margins tested by isDryPoint.
+export function dryLandRectangle(s,minX,maxX,minY,maxY){
+ if(minX<-.5||maxX>worldWidth(s)-.5||minY<-.5||maxY>worldHeight(s)-.5)return false;
+ const axis=riverAxis(s),alongMin=axis==='x'?minX:minY,alongMax=axis==='x'?maxX:maxY;
+ const acrossMin=axis==='x'?minY:minX,acrossMax=axis==='x'?maxY:maxX,r=s?.world?.river;
+ const slope=r?Math.abs(r.slope)+Math.abs(r.amplitude*r.frequency):.27+.7*.55;
+ const center=river((alongMin+alongMax)/2,s),margin=(alongMax-alongMin)*.5*slope+1.25;
+ if(!(acrossMax<center-margin||acrossMin>center+margin))return false;
+ return !s?.world?.lakes?.some(l=>l.cells.some(c=>c.x+.51>minX&&c.x-.51<maxX&&c.y+.51>minY&&c.y-.51<maxY));
+}
 export function validateWorld(s){
  const w=s?.world,kinds=['clay','reed','stone','forest','wildlife','dates'];
  if(!w||(w.resourceVersion!==undefined&&![1,2].includes(w.resourceVersion))||!Number.isSafeInteger(w.seed)||!Array.isArray(w.lakes)||!Array.isArray(w.deposits))return false;

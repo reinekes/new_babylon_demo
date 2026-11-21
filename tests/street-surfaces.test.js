@@ -128,3 +128,19 @@ test('an upgraded bed is visible on a quiet street while material edges feather 
  assert.ok(halfway(brick)>halfway(aggregate)&&halfway(aggregate)>halfway(earth));
  for(const p of profiles)assert.equal(streetSoilCoverage({plots:[]},1,15,23,1,p.level),0);
 });
+
+test('the dry shoulder shortcut excludes a lake between dry corners, river bends in both directions, and the map rim',async()=>{
+ const {dryLandRectangle,isDryPoint}=await import('../world.js');
+ const lake={world:{lakes:[{cells:[{x:4,y:4}]}]}};
+ assert.equal(dryLandRectangle(lake,1,2,1,2),true);
+ assert.equal(dryLandRectangle(lake,3,5,3,5),false);
+ assert.equal(dryLandRectangle(lake,-.55,1,0,1),false);
+ for(const axis of ['x','y']){
+  const s={world:{river:{axis,offset:20,slope:0,amplitude:2.4,frequency:.2,phase:0}}};
+  const box=axis==='y'?[22.3,22.5,0,Math.PI/.2]:[0,Math.PI/.2,22.3,22.5];
+  const [left,right,top,bottom]=box;
+  for(const x of [left,right])for(const y of [top,bottom])assert.ok(isDryPoint(s,x,y));
+  assert.equal(isDryPoint(s,(left+right)/2,(top+bottom)/2),false);
+  assert.equal(dryLandRectangle(s,...box),false);
+ }
+});

@@ -49,3 +49,22 @@ test('carrier matching fills two depot places brightly without opening productio
  const pin=a.workplace;for(const type of ['pottery','field','market','harbor']){assert.equal(canStaffBuilding(a,{type}),false);assert.equal(professionMatchesTask(a,type),false);assert.ok(!staffingCandidates([a],{type,x:1,y:1}).length);}
  assert.equal(assignWorkplace(s,a.id,'6,8').ok,false);assert.equal(a.workplace,pin);
 });
+
+test('dispatch resumes at the same source and gives the second depot its pinned carrier first',async()=>{
+ const {requestTransfer}=await import('../district-logistics.js');
+ const s=town();s.buildings.push({type:'depot',x:11,y:9,level:1});
+ syncCitizens(s);
+ for(const house of s.buildings.filter(b=>b.type==='house'))house.pantry=100;
+ for(const c of s.citizens)Object.assign(c,{age:30,role:'builder',phase:'home',work:null,site:null,cargo:{}});
+ const [pinned,...free]=s.citizens.slice(0,5);
+ for(const c of [pinned,...free])carrier(c);
+ assert.ok(assignWorkplace(s,pinned.id,'10,9').ok);
+ for(const c of [pinned,...free])Object.assign(c,{phase:'home',work:null});
+ assert.ok(requestTransfer(s,'9,8','11,9','wood',2).ok);
+ assert.ok(requestTransfer(s,'9,8','10,9','wood',2).ok);
+ const [first,second]=s.district.jobs.slice(-2);
+ invalidateAssignments(s);syncCitizens(s);
+ const workers=q=>s.citizens.filter(c=>c.districtJob===q.id).map(c=>c.id);
+ assert.deepEqual(workers(first),[free[2].id,free[3].id]);
+ assert.deepEqual(workers(second),[pinned.id,free[1].id]);
+});

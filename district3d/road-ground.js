@@ -27,12 +27,18 @@ export function createRoadGround({positions,indices}){
  function faceAt(i){
   if(facesByIndex[i/3])return facesByIndex[i/3];
   const points=[indices[i],indices[i+1],indices[i+2]].map(id=>({x:positions[id*3],z:positions[id*3+2],h:Math.max(0,positions[id*3+1])}));
-  const area=side(...points),face={points,sign:Math.sign(area),area};
+  const [a,b,c]=points,area=side(a,b,c);
+  const minX=Math.min(a.x,b.x,c.x),maxX=Math.max(a.x,b.x,c.x),minZ=Math.min(a.z,b.z,c.z),maxZ=Math.max(a.z,b.z,c.z);
+  // inside() accepts a tiny barycentric margin along shared edges. Include it
+  // in these cheap bounds before rejecting a candidate support triangle.
+  const margin=area?3e-8*Math.max(maxX-minX,maxZ-minZ)/Math.abs(area):0;
+  const face={points,sign:Math.sign(area),area,minX:minX-margin,maxX:maxX+margin,minZ:minZ-margin,maxZ:maxZ+margin};
   facesByIndex[i/3]=face;
   return face;
  }
  function side(a,b,p){return (b.x-a.x)*(p.z-a.z)-(b.z-a.z)*(p.x-a.x);}
  function inside(face,p){
+  if(p.x<face.minX||p.x>face.maxX||p.z<face.minZ||p.z>face.maxZ)return false;
   const [a,b,c]=face.points,s=face.sign;
   return side(a,b,p)*s>=-1e-8&&side(b,c,p)*s>=-1e-8&&side(c,a,p)*s>=-1e-8;
  }
@@ -64,7 +70,7 @@ export function createRoadGround({positions,indices}){
  function fit(g){
   if(!g.indices.length)return g;
   const origin=g.origin||{x:0,z:0},points=[],added=new Map();
-  const x0=origin.x,z0=origin.z,faces=new Set();
+  const x0=origin.x,z0=origin.z,neighbours=new Set(),faces=[];
   let minX=Infinity,maxX=-Infinity,minZ=Infinity,maxZ=-Infinity,raised=false;
   for(let i=0;i<g.positions.length;i+=3){
    const x=g.positions[i]+x0,z=g.positions[i+2]+z0;
@@ -78,17 +84,30 @@ export function createRoadGround({positions,indices}){
   }
   const output=[];
   for(let i=0;i<g.indices.length;i+=3){
-   const ids=g.indices.slice(i,i+3),[a,b,c]=ids.map(k=>points[k]),area=side(a,b,c);
-   faces.clear();let raised=false;
-   visitBins(Math.min(a.x,b.x,c.x),Math.max(a.x,b.x,c.x),Math.min(a.z,b.z,c.z),Math.max(a.z,b.z,c.z),key=>{
-    const bin=bins.get(key);if(!bin)return;
-    if(bin.raised)raised=true;
-    for(const id of bin.ids)faces.add(id);
-   });
-   if(!raised||Math.abs(area)<1e-10){output.push(...ids);continue;}
+   const ia=g.indices[i],ib=g.indices[i+1],ic=g.indices[i+2],a=points[ia],b=points[ib],c=points[ic],area=side(a,b,c);
+   const minX=Math.min(a.x,b.x,c.x),maxX=Math.max(a.x,b.x,c.x),minZ=Math.min(a.z,b.z,c.z),maxZ=Math.max(a.z,b.z,c.z);
+   const left=Math.floor(minX/size),right=Math.floor(maxX/size),top=Math.floor(minZ/size),bottom=Math.floor(maxZ/size);
+   let candidates;
+   if(left===right&&top===bottom){
+    const bin=bins.get(binKey(left,top));if(bin?.raised)candidates=bin.ids;
+   }else{
+    neighbours.clear();let raised=false;
+    for(let z=top;z<=bottom;z++)for(let x=left;x<=right;x++){
+     const bin=bins.get(binKey(x,z));if(!bin)continue;
+     if(bin.raised)raised=true;
+     for(const id of bin.ids)neighbours.add(id);
+    }
+    if(raised)candidates=neighbours;
+   }
+   if(!candidates||Math.abs(area)<1e-10){output.push(ia,ib,ic);continue;}
+   faces.length=0;
+   for(const id of candidates){
+    const f=faceAt(id);
+    if(f.area&&f.maxX>=minX&&f.minX<=maxX&&f.maxZ>=minZ&&f.minZ<=maxZ)faces.push(f);
+   }
    let contained=false;
-   for(const id of faces){const f=faceAt(id);if(f.area&&inside(f,a)&&inside(f,b)&&inside(f,c)){contained=true;break;}}
-   if(contained){output.push(...ids);continue;}
+   for(const f of faces)if(inside(f,a)&&inside(f,b)&&inside(f,c)){contained=true;break;}
+   if(contained){output.push(ia,ib,ic);continue;}
    const vertex=(p,face)=>{
     if(p.id!==undefined)return p.id;
     const key=Math.round(p.x*1e7)+','+Math.round(p.z*1e7);
@@ -116,8 +135,7 @@ export function createRoadGround({positions,indices}){
      append(clip(within,start,end,-1),null);within=clip(within,start,end,1);
     }
    }
-   for(const id of faces){
-    const face=faceAt(id);if(!face.area)continue;
+   for(const face of faces){
     let polygon=[a,b,c];
     for(let k=0;k<3&&polygon.length;k++)polygon=clip(polygon,face.points[k],face.points[(k+1)%3],face.sign);
     append(polygon,face);

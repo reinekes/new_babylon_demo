@@ -1,7 +1,7 @@
 import {solidClearance} from './street-obstacles.js';
 import {footpathRibbonPoint,footpathRibbonTangent,streetCurveLookup,visibleFootpaths} from './footpaths.js';
-import {navigationSegmentClear,obstacleIndex} from './navigation.js';
-import {isDryPoint,onBridge} from './world.js';
+import {navigationSegmentClear,obstacleIndex,segmentIntersectsObstacle} from './navigation.js';
+import {isDryPoint,onBridge,dryLandRectangle} from './world.js';
 import {TILE} from './district3d/terrain.js';
 
 const smooth=t=>{const u=Math.max(0,Math.min(1,t));return u*u*(3-2*u);};
@@ -234,11 +234,20 @@ export function streetCrossSections(s,a,b,width,control,obstacles=obstacleIndex(
  const origin={x:(a.x+b.x)*TILE/2,z:(a.y+b.y)*TILE/2},len=Math.hypot(a.x-b.x,a.y-b.y);
  const rows=[];
  if(!len||progress<=0||!isDryPoint(s,a.x,a.y)||!isDryPoint(s,b.x,b.y)||onBridge(width.bridges||s.buildings||[],origin.x/TILE,origin.z/TILE,s)||!navigationSegmentClear(s,a,b,obstacles))return [];
- const nearby=new Set();
- for(let y=Math.floor(Math.min(a.y,b.y)-1);y<=Math.ceil(Math.max(a.y,b.y)+1);y++){
-  for(let x=Math.floor(Math.min(a.x,b.x)-1);x<=Math.ceil(Math.max(a.x,b.x)+1);x++){
-   for(const box of obstacles.get(x+','+y)||[])nearby.add(box);
-  }
+ const minX=Math.min(a.x,b.x)-1,maxX=Math.max(a.x,b.x)+1,minY=Math.min(a.y,b.y)-1,maxY=Math.max(a.y,b.y)+1;
+ const nearby=new Set(),solids=width.solids||control?.solids;
+ for(let y=Math.floor(minY);y<=Math.ceil(maxY);y++)for(let x=Math.floor(minX);x<=Math.ceil(maxX);x++){
+  for(const box of obstacles.get(x+','+y)||[])nearby.add(box);
+ }
+ const dry=dryLandRectangle(s,minX,maxX,minY,maxY);
+ function shoulderClear(from,to){
+  // Most sections are wholly on dry ground. Reuse the neighbouring boxes for
+  // their exact edge tests. At a bank, or outside that region, use navigation.
+  if(!dry||from.x<minX||from.x>maxX||from.y<minY||from.y>maxY||to.x<minX||to.x>maxX||to.y<minY||to.y>maxY)return dryClearance(s,from,to,obstacles,solids);
+  if(solids?.some(o=>solidClearance(o,from,to)<.022))return false;
+  const loX=Math.min(from.x,to.x),hiX=Math.max(from.x,to.x),loY=Math.min(from.y,to.y),hiY=Math.max(from.y,to.y);
+  for(const box of nearby)if(box.minX<=hiX&&box.maxX>=loX&&box.minY<=hiY&&box.maxY>=loY&&segmentIntersectsObstacle(from,to,box))return false;
+  return true;
  }
  const plots=Array.from(nearby,box=>({minX:box.minX*TILE,maxX:box.maxX*TILE,minZ:box.minY*TILE,maxZ:box.maxY*TILE}));
  for(let j=0;j<=steps;j++){
@@ -253,7 +262,7 @@ export function streetCrossSections(s,a,b,width,control,obstacles=obstacleIndex(
    const key=side<0?'left':'right';
    const X=x+side*nx*half,Z=z+side*nz*half;
    const verge=typeof width==='number'?1:.966+.033*Math.sin(.59*X+.28*Z+1.3*Math.sin(.25*Z))+.022*Math.sin(1.03*Z-.39*X);
-   row[key]=verge*safeFraction(k=>dryClearance(s,p,shoulderPoint(row,side,k*verge),obstacles,width.solids||control?.solids));
+   row[key]=verge*safeFraction(k=>shoulderClear(p,shoulderPoint(row,side,k*verge)));
   }
   rows.push(row);
  }
@@ -277,7 +286,7 @@ export function streetCrossSections(s,a,b,width,control,obstacles=obstacleIndex(
   }
   for(const side of [-1,1]){
    const key=side<0?'left':'right';
-   const scale=safeFraction(k=>dryClearance(s,shoulderPoint(a,side,a[key]*k),shoulderPoint(b,side,b[key]*k),obstacles,width.solids||control?.solids));
+   const scale=safeFraction(k=>shoulderClear(shoulderPoint(a,side,a[key]*k),shoulderPoint(b,side,b[key]*k)));
    const trim=side<0?'trimLeft':'trimRight';
    a[trim]=Math.min(a[trim],scale);b[trim]=Math.min(b[trim],scale);
   }

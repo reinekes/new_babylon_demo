@@ -1,3 +1,4 @@
+import {prepareResidentClip} from './resident-constant-tracks.js';
 import {cartHeading} from '../porter-cart-art.js';
 import {createPorterCarts,cartGrip} from './porter-cart.js';
 import {workRate} from '../wellbeing.js';
@@ -212,6 +213,22 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   residentTextile.name='resident-fine-woven-cloth';residentTextile.uScale=2;residentTextile.vScale=2;
   return residentTextile;
  }
+ // Skin, hair and tailored cloth are private to this rig. Babylon's PBR
+ // setters otherwise walk every submesh in the city to find their draw passes.
+ function residentMaterial(material,root){
+  material._markAllSubMeshesAsTexturesDirty=()=>{
+   if(scene.blockMaterialDirtyMechanism||material.blockDirtyMechanism)return;
+   for(const mesh of root.getChildMeshes(false,m=>m.material===material)){
+    for(const sub of mesh.subMeshes||[]){
+     for(let pass=0;pass<sub._drawWrappers.length;pass++){
+      const draw=sub._drawWrappers[pass];
+      if(draw&&draw.materialContext===material._materialContext&&sub.getMaterial(true,pass)===material)draw.defines?.markAsTexturesDirty?.();
+     }
+    }
+   }
+  };
+  return material;
+ }
  function cloneResidentMaterial(material,name,prepare){
   // Babylon scans the whole scene for every PBR setter during clone. No mesh
   // uses the new material yet, so there are no draw caches to invalidate.
@@ -251,7 +268,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
      cloth=cloneResidentMaterial(original,`citizen-${kind}-${metadata.citizenId}-${cloned.size}`,copy=>{
       if(a.nativeResident&&kind==='cloth'&&surfaces.some(surface=>surface.material===original&&surface.isVerticesDataPresent(B.VertexBuffer.UVKind)))copy.albedoTexture=metadata.child?(materials.linen?.albedoTexture||null):wovenCloth();
      });
-     cloned.set(original,cloth);a.materials.push(cloth);a[kind].push(cloth);
+     residentMaterial(cloth,root);cloned.set(original,cloth);a.materials.push(cloth);a[kind].push(cloth);
      if(a.sourceWalk&&/undyed linen/i.test(original.name))a.upperCloth.add(cloth);
     }
     m.material=cloth;
@@ -528,7 +545,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    Object.assign(a.root.metadata,{workClothing:profession?.id||null,clothShape:profession?.shape||null,clothColor:profession?.color||null});
    if(profession){
     if(!a.professionMaterial){
-     a.professionMaterial=new B.PBRMaterial(`profession-cloth-${c.id}`,scene);
+     a.professionMaterial=residentMaterial(new B.PBRMaterial(`profession-cloth-${c.id}`,scene),a.root);
      a.professionMaterial.metallic=0;a.professionMaterial.albedoTexture=wovenCloth();
      a.materials.push(a.professionMaterial);
     }
@@ -644,6 +661,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    attachClock(a);
    a.groups.get(a.clip)?.stop();
    const g=a.groups.get(decision.clip);if(!g)throw Error(`Missing actor animation: ${decision.clip}`);g.start(true,1,g.from,g.to,false);
+   if(a.sourceWalk&&(decision.clip==='Idle_Loop'||decision.clip==='Walk_Loop'))prepareResidentClip(g);
    if(decision.clip==='Walk_Loop')queueManualChannels(a,g);
    if(g.to>g.from){const phase=a.look?a.look.motion.phase/(Math.PI*2):a.sheepClipPhase;if(phase!==undefined)g.goToFrame(g.from+phase*(g.to-g.from));}a.clip=decision.clip;
   }}

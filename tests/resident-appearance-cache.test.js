@@ -93,6 +93,25 @@ test('age, sex, mood, site duties and guards refresh while head identity survive
  c.sex='f';root=frame();assert.equal(root.metadata.residentVariant,'female');c.age=7;root=frame();assert.equal(root.metadata.residentVariant,'child');const height=root.scaling.y;c.age=8;frame();assert.ok(root.scaling.y>height);c.age=13;root=frame();assert.equal(root.metadata.residentVariant,'adolescent');c.age=30;root=frame();assert.equal(root.metadata.residentVariant,'female');
 }));
 
+test('changing one resident’s worn cloth refreshes its draw pass without visiting unrelated meshes',async()=>studio(({scene,actors,state,c,frame})=>{
+ c.calling='potter';const root=frame(),wool=cloth(root);
+ const body=root.getChildMeshes().find(m=>m.material===wool),wrapper=body.subMeshes[0]._getDrawWrapper(0,true);
+ // Install a prepared pass as on the WebGL renderer (NullEngine skips actual shader compilation).
+ const defines=new B.MaterialDefines();defines.markAsProcessed();wrapper.defines=defines;wrapper.materialContext=wool._materialContext;
+ const alternate=body.subMeshes[0]._getDrawWrapper(1,true),otherPass=new B.MaterialDefines();
+ otherPass.markAsProcessed();alternate.defines=otherPass;alternate.materialContext={};
+ const unrelated=B.MeshBuilder.CreateBox('unrelated-house',{},scene),original=unrelated.subMeshes;
+ let unrelatedReads=0;
+ Object.defineProperty(unrelated,'subMeshes',{configurable:true,get(){unrelatedReads++;return original;},set(value){Object.defineProperty(this,'subMeshes',{configurable:true,writable:true,value});}});
+ try{
+  c.clothing=25;actors.update(state,1/60);
+  assert.equal(unrelatedReads,0,'changing an actor-owned material must not scan city roofs and roads');
+  assert.equal(defines._areTexturesDirty,true,'the owner’s prepared draw pass must be invalidated');
+  assert.equal(otherPass._areTexturesDirty,false,'a pass using another material context stays valid');
+  assert.equal(wool.roughness,1);
+ }finally{Object.defineProperty(unrelated,'subMeshes',{configurable:true,writable:true,value:original});}
+}));
+
 test('replacement city with reused citizen IDs refreshes appearance on the same paused rig without mutating saves',async()=>studio(({state,c,frame})=>{
  c.calling='potter';const root=frame(),initial=colors(root),loaded=structuredClone(state),before=JSON.stringify(loaded);
  frame(loaded,{paused:true});assert.equal(frame(loaded,{paused:true}),root);assert.ok(colors(root).writes>initial.writes,'state replacement resets cached appearance even for the same IDs');

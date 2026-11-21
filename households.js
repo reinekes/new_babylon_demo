@@ -1,4 +1,13 @@
 import {isResidence,buildingKey,capacityOf} from './definitions.js';
+export function residentsByHome(citizens){
+ const homes=new Map();
+ for(const c of citizens){
+  let residents=homes.get(c.home);
+  if(!residents){residents=[];homes.set(c.home,residents);}
+  residents.push(c);
+ }
+ return homes;
+}
 // Food values are meal equivalents: two units of actual milk replace one food.
 export const homeMealFood=b=>(b?.pantry||0)+(b?.householdStock?.milk||0)*.5;
 export function homeFoodCouriers(s,key){const jobs=new Set((s.district?.jobs||[]).filter(q=>q.target===key&&q.targetKind==='input'&&['food','milk'].includes(q.resource)).map(q=>q.id));return (s.citizens||[]).filter(c=>c.pantryTrip&&(c.pantryTarget||c.home)===key||jobs.has(c.districtJob));}

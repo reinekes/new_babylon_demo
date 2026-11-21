@@ -1,0 +1,561 @@
+{
+  "reference": "9e29d46f639f37e6e8e58f424861b4f4b664f246",
+  "fixture": "06643e43309c504c7f1ffcae6b834f2086ab3f4e63a48a3b141676974b1c797b",
+  "geometryBeforeEqualsAfter": true,
+  "scenes": {
+    "city": {
+      "surfaceCount": 264,
+      "vertices": 23842,
+      "triangles": 38437,
+      "kinds": {
+        "cart": 59,
+        "level1": 30,
+        "foot": 116,
+        "level3": 29,
+        "level2": 30
+      },
+      "webGL": "4275305cec34fe77b8d34faa365e0218cfbf9c4520c980daf2d0f441cca2b11e",
+      "canvas": "4c9c001965e7b66a1aca396b56351d9f28f2c0e39634ea7b75a86d8c17d5aa70",
+      "curveAndTangent": "dc9f04953719ee795ed2afdc1b48791ea1c6e85c2eb5a7e6e23039b25060ef16",
+      "civicBricks": "e699b33ad1427584275d2e13dfdf9ba8f1b6016104ab86702747ab27bef14925",
+      "nature": "58954d862bf1bea80b44a08b800ebafae8379b3aceffd3222962a71895897dbe"
+    },
+    "hill": {
+      "surfaceCount": 13,
+      "vertices": 2544,
+      "triangles": 4434,
+      "kinds": {
+        "cart": 4,
+        "level1": 9
+      },
+      "webGL": "32aa4f13f13c506c122871aef98b7b1dbc58cbef49e49f1c0f016a9ba5f359f9",
+      "canvas": "35eff0bd763c5bc21904be4164a3a02566f8cd3bbf4fda478cc32c801aacf642",
+      "curveAndTangent": "06382be5abce095a56baa60ff57ccebaae8bdaa231cc8328a3542f1f12a62ec5",
+      "civicBricks": "5386da46ee4f9b8c11b81e2f892a5010c2df7dc07c9d4d27b9bb4af826561857",
+      "nature": "c80f775ac6d9dca1c82144140c9da99d56ef381128d02f39bcf403288131dc49"
+    },
+    "detour": {
+      "surfaceCount": 9,
+      "vertices": 1888,
+      "triangles": 3313,
+      "kinds": {
+        "cart": 4,
+        "level1": 5
+      },
+      "webGL": "27f9df9558c69bec5adeca21b47756c385fa4861ea201c413516dd6b71df46e8",
+      "canvas": "da62ccca551698bc849a622a676cb50af1745331d539aa37c5b77fd5393e6ff0",
+      "curveAndTangent": "1c60498e2942dc182e20e7724daecb4587b4107fd0891421383bab1bd4c1be71",
+      "civicBricks": "5386da46ee4f9b8c11b81e2f892a5010c2df7dc07c9d4d27b9bb4af826561857",
+      "nature": "c80f775ac6d9dca1c82144140c9da99d56ef381128d02f39bcf403288131dc49"
+    },
+    "levels": {
+      "surfaceCount": 20,
+      "vertices": 2639,
+      "triangles": 4420,
+      "kinds": {
+        "level1": 5,
+        "level2": 5,
+        "level3": 5,
+        "foot": 5
+      },
+      "webGL": "7518a8e9eee2b53b81691c394a1596b0cc3aa5b9beb5ae3af5454a7b7c4e50de",
+      "canvas": "ef7f4713f2e1daf10f0041da558d2ff653147c6e27746d41f73959e8979cebf3",
+      "curveAndTangent": "d5d6c4c28cc99c53f89a019edc7124785d39d6e84ff0dd2eb81c5983b8f10982",
+      "civicBricks": "ead1d370c8341ce42e2d05e44c3f61b976b860fbb4f1d2de9034496b542d41a2",
+      "nature": "6ae32a7b2fcde8557d4cc84d4af366e5a9ee866004094ff57eb3b36e74fd8a85"
+    }
+  },
+  "posedCartBothVersions": [
+    {
+      "gl": 2,
+      "error": 0,
+      "assetErrors": [],
+      "t": 5.599999999999996,
+      "id": 4,
+      "phase": "toDistrictStore",
+      "shown": [
+        4.871666666666667,
+        8.292535872987374
+      ],
+      "world": [
+        29.652116775512695,
+        0,
+        49.75521469116211
+      ],
+      "renderErrorM": 0.42211677551304544,
+      "carried": {
+        "wood": 24
+      },
+      "cart": {
+        "attached": true,
+        "enabled": true,
+        "wheels": 2,
+        "rolling": [
+          0,
+          0
+        ],
+        "timber": 3,
+        "origin": [
+          29.652116775512695,
+          0,
+          49.75521469116211
+        ],
+        "angle": 0,
+        "holder": "5,8",
+        "worldWheels": [
+          [
+            29.16335105895996,
+            0.39126119017601013,
+            50.98521423339844
+          ],
+          [
+            30.14088249206543,
+            0.39126119017601013,
+            50.98521423339844
+          ]
+        ]
+      }
+    },
+    {
+      "gl": 2,
+      "error": 0,
+      "assetErrors": [],
+      "t": 6.019999999999993,
+      "id": 4,
+      "phase": "toDistrictStore",
+      "shown": [
+        5.136533046477396,
+        8.481682036825122
+      ],
+      "world": [
+        31.241315841674805,
+        0,
+        50.89009094238281
+      ],
+      "renderErrorM": 0.422117562812364,
+      "carried": {
+        "wood": 24
+      },
+      "cart": {
+        "attached": true,
+        "enabled": true,
+        "wheels": 2,
+        "rolling": [
+          0,
+          0
+        ],
+        "timber": 3,
+        "origin": [
+          31.241315841674805,
+          0,
+          50.89009094238281
+        ],
+        "angle": 0,
+        "holder": "5,8",
+        "worldWheels": [
+          [
+            30.75255012512207,
+            0.39126119017601013,
+            52.12009048461914
+          ],
+          [
+            31.73008155822754,
+            0.39126119017601013,
+            52.12009048461914
+          ]
+        ]
+      }
+    },
+    {
+      "gl": 2,
+      "error": 0,
+      "assetErrors": [],
+      "t": 6.55999999999999,
+      "id": 4,
+      "phase": "toDistrictStore",
+      "shown": [
+        5.644512622062218,
+        8.645125666239165
+      ],
+      "world": [
+        34.28919219970703,
+        0,
+        51.87075424194336
+      ],
+      "renderErrorM": 0.42211646733379354,
+      "carried": {
+        "wood": 24
+      },
+      "cart": {
+        "attached": true,
+        "enabled": true,
+        "wheels": 2,
+        "rolling": [
+          0,
+          0
+        ],
+        "timber": 3,
+        "origin": [
+          34.28919219970703,
+          0,
+          51.87075424194336
+        ],
+        "angle": 0,
+        "holder": "5,8",
+        "worldWheels": [
+          [
+            33.8004264831543,
+            0.39126119017601013,
+            53.10075378417969
+          ],
+          [
+            34.777957916259766,
+            0.39126119017601013,
+            53.10075378417969
+          ]
+        ]
+      }
+    }
+  ],
+  "cartTripBeforeEqualsAfter": {
+    "owner": 4,
+    "phases": {
+      "toDistrictStore": 66,
+      "toReturnCart": 66,
+      "toHome": 1
+    },
+    "samples": [
+      {
+        "phase": "toDistrictStore",
+        "t": 5.599999999999996,
+        "cart": true,
+        "wood": 24
+      },
+      {
+        "phase": "toReturnCart",
+        "t": 12.199999999999973,
+        "cart": true,
+        "wood": 0
+      },
+      {
+        "phase": "toHome",
+        "t": 18.799999999999997,
+        "cart": false,
+        "wood": 0
+      }
+    ],
+    "back": 18.799999999999997,
+    "delivered": 36,
+    "returned": true,
+    "loaded": "b9e548149a841766e98f7dbbf26f45baf99089a0f6f8d4324ff12a946d151d8d",
+    "trip": "a81af67ad349d6345b84eff7c760e5b4b8674dd325c678dd2d896abf06654ddf"
+  },
+  "walkerWorldBeforeEqualsAfter": [
+    [
+      65.07809448242188,
+      0.0010032638674601912,
+      57.055355072021484
+    ],
+    [
+      68.23255157470703,
+      0,
+      57.73546600341797
+    ],
+    [
+      68.68157196044922,
+      0,
+      62.106903076171875
+    ]
+  ],
+  "materialNames": [
+    "game-road-compacted-earth",
+    "game-road-clay-gravel",
+    "game-road-bedded-stone"
+  ],
+  "matTexturesReady": true,
+  "archiveImportsIdentical": 20,
+  "sameEncodedCityAndGoodsDuringSimulation": 9,
+  "cityHashes": [
+    "06643e43309c504c7f1ffcae6b834f2086ab3f4e63a48a3b141676974b1c797b",
+    "68f657cae5275b3caf09291e856ba7eea417e2d87fddd2d69b8b21b099d1451b",
+    "1e65b09dad2678a214d7e217fd2a2e5ec3682a05a82bb03f76c14b79c449e43c",
+    "31a26e3fafacd531763a15e3a0e04ece9a837bae1f6ab778a56ddebbc85991fb",
+    "c02621d5d4a0f8f59d6b428e47ac8ebaf756a528f2fc1378e22be3f26367118e",
+    "8e426172f76aa0b721cf8e4221f501acec6c71a3bc2d1b596501ce634038d6cb",
+    "1324b1a5d49f66892ccaad2e60c51cc469d7b5511a85a0acb2f0c40687c0779d",
+    "5246d6593dce8bd78a6236e9eca20bd226f7529112399df94af16908cc7106c4",
+    "8105c66a2bb3fe77d1d5e5075236bb426aaf62aa904d94a54f3c972e9591fa6c"
+  ],
+  "cityRenderedRouteHashes": [
+    "d77fd88d046ad1d01da4f87cc1965226992003fad4b15ff6bd03b77cb1835778",
+    "af9b0726233c865a05a498b4c2f1167d8030e4ce97696fa36f453cfb8d2a159e",
+    "81b20ffd9adf4dcb49b0560894e3d8eeb569956928236a4d5ea99b3bfa062540",
+    "bd0d2f3fb1cb6265036fb601f09bce2676f29e108ec6de122062db4e6d2187e3",
+    "c32cedbf5d71013216769f897cf3bd2ec1ebbdedf672ae5f558b8898be7a9c69",
+    "b0933df12f44c1d427ce5acfc184def0531562ce3547457c4e4f774d026f53cd",
+    "a00e3686f972e35f0d50b612d49f677537bdffe80dc22972d4f8fe7917573aa1",
+    "e443b6839412ed74b766e9c474469c40177d21e05dfc8ca9114af3fa8b632f25",
+    "5baf3693fe913f055804955e1878ee1ec58a2874176dbf29a0f791de961c44dc"
+  ],
+  "citySimulatedSeconds": [
+    0,
+    1.25,
+    2.5,
+    3.75,
+    5,
+    6.25,
+    7.5,
+    8.75,
+    10
+  ],
+  "candidateTree": "239d44c2fdeb0ff95d6d555c13626bb1e39cc8d5",
+  "webGLRuntime": {
+    "base": "http://127.0.0.1:8345",
+    "checks": {
+      "levels": [
+        {
+          "gl": 2,
+          "error": 0,
+          "assetErrors": [],
+          "mats": [
+            [
+              "game-road-compacted-earth",
+              "assets/3d/textures/street-silt-color.webp?v=laid-streets-2",
+              true,
+              true
+            ],
+            [
+              "game-road-clay-gravel",
+              "assets/3d/textures/street-aggregate-color.webp?v=laid-streets-2",
+              true,
+              true
+            ],
+            [
+              "game-road-bedded-stone",
+              "assets/3d/textures/street-paving-color.webp?v=laid-streets-2",
+              true,
+              true
+            ]
+          ],
+          "levels": {
+            "1": 5,
+            "2": 5,
+            "3": 5
+          }
+        }
+      ],
+      "walker": [
+        {
+          "gl": 2,
+          "error": 0,
+          "assetErrors": [],
+          "t": 3.5,
+          "id": 3,
+          "phase": "toWork",
+          "shown": [
+            10.846348462694596,
+            9.509225734945755
+          ],
+          "world": [
+            65.07809448242188,
+            0.0010032638674601912,
+            57.055355072021484
+          ],
+          "renderErrorM": 3.764973353585804e-06,
+          "carried": {}
+        },
+        {
+          "gl": 2,
+          "error": 0,
+          "assetErrors": [],
+          "t": 3.9200000000000004,
+          "id": 3,
+          "phase": "toWork",
+          "shown": [
+            11.372091672744444,
+            9.622577405021104
+          ],
+          "world": [
+            68.23255157470703,
+            0,
+            57.73546600341797
+          ],
+          "renderErrorM": 2.200324767140792e-06,
+          "carried": {}
+        },
+        {
+          "gl": 2,
+          "error": 0,
+          "assetErrors": [],
+          "t": 4.459999999999997,
+          "id": 3,
+          "phase": "toWork",
+          "shown": [
+            11.446928164116798,
+            10.351150490935035
+          ],
+          "world": [
+            68.68157196044922,
+            0,
+            62.106903076171875
+          ],
+          "renderErrorM": 2.978611264475566e-06,
+          "carried": {}
+        }
+      ],
+      "cart": [
+        {
+          "gl": 2,
+          "error": 0,
+          "assetErrors": [],
+          "t": 5.599999999999996,
+          "id": 4,
+          "phase": "toDistrictStore",
+          "shown": [
+            4.871666666666667,
+            8.292535872987374
+          ],
+          "world": [
+            29.652116775512695,
+            0,
+            49.75521469116211
+          ],
+          "renderErrorM": 0.42211677551304544,
+          "carried": {
+            "wood": 24
+          },
+          "cart": {
+            "attached": true,
+            "enabled": true,
+            "wheels": 2,
+            "rolling": [
+              0,
+              0
+            ],
+            "timber": 3,
+            "origin": [
+              29.652116775512695,
+              0,
+              49.75521469116211
+            ],
+            "angle": 0,
+            "holder": "5,8",
+            "worldWheels": [
+              [
+                29.16335105895996,
+                0.39126119017601013,
+                50.98521423339844
+              ],
+              [
+                30.14088249206543,
+                0.39126119017601013,
+                50.98521423339844
+              ]
+            ]
+          }
+        },
+        {
+          "gl": 2,
+          "error": 0,
+          "assetErrors": [],
+          "t": 6.019999999999993,
+          "id": 4,
+          "phase": "toDistrictStore",
+          "shown": [
+            5.136533046477396,
+            8.481682036825122
+          ],
+          "world": [
+            30.847566604614258,
+            0,
+            50.89009094238281
+          ],
+          "renderErrorM": 0.028368325778693488,
+          "carried": {
+            "wood": 24
+          },
+          "cart": {
+            "attached": true,
+            "enabled": true,
+            "wheels": 2,
+            "rolling": [
+              5.92164953075924,
+              5.92164953075924
+            ],
+            "timber": 3,
+            "origin": [
+              30.847566604614258,
+              0,
+              50.89009094238281
+            ],
+            "angle": 1.3645784080754255,
+            "holder": "5,8",
+            "worldWheels": [
+              [
+                31.951425552368164,
+                0.39126119017601013,
+                51.62035369873047
+              ],
+              [
+                32.15158462524414,
+                0.39126119017601013,
+                50.663536071777344
+              ]
+            ]
+          }
+        },
+        {
+          "gl": 2,
+          "error": 0,
+          "assetErrors": [],
+          "t": 6.55999999999999,
+          "id": 4,
+          "phase": "toDistrictStore",
+          "shown": [
+            5.644512622062218,
+            8.645125666239165
+          ],
+          "world": [
+            33.86729431152344,
+            0,
+            51.87075424194336
+          ],
+          "renderErrorM": 0.00021857928688571275,
+          "carried": {
+            "wood": 24
+          },
+          "cart": {
+            "attached": true,
+            "enabled": true,
+            "wheels": 2,
+            "rolling": [
+              14.33970803137899,
+              14.33970803137899
+            ],
+            "timber": 3,
+            "origin": [
+              33.86729431152344,
+              0,
+              51.87075424194336
+            ],
+            "angle": 0.8917968697886446,
+            "holder": "5,8",
+            "worldWheels": [
+              [
+                34.51752853393555,
+                0.39126119017601013,
+                53.0235710144043
+              ],
+              [
+                35.13143539428711,
+                0.39126119017601013,
+                52.262855529785156
+              ]
+            ]
+          }
+        }
+      ]
+    },
+    "opened": true
+  }
+}

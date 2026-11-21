@@ -73,7 +73,7 @@ import {cropFor,workField,advanceCrops,canTillField,fieldActive} from './agricul
 import {fieldWater} from './irrigation.js';
 import {medicalLevel,qualifiedHealer,newMedicalSkill,STUDY_SECONDS,healingSpeed,healingQuality,healingCost} from './education.js';
 import {initializeWellbeing,advanceWellbeing,workRate,beliefMultiplier,isDinnerTime,mealCycle} from './wellbeing.js';
-import {ration,homeMealFood,supplyHome,recordHomeRation} from './households.js';
+import {ration,homeMealFood,supplyHome,recordHomeRation,residentsByHome} from './households.js';
 import {childPlay} from './local-motion.js';
 import {canWork,initializeDemography,lifeStage} from './demography.js';
 import {advanceFuneral} from './funerals.js';
@@ -178,15 +178,7 @@ function context(s){
 }
 function houseDemand(s,ctx,home){if(ctx.foodCitizens!==s.citizens){ctx.foodCitizens=s.citizens;ctx.foodDemand=new Map();for(const c of s.citizens){const key=supplyHome(c);ctx.foodDemand.set(key,(ctx.foodDemand.get(key)||0)+ration(c));}}return ctx.foodDemand.get(home)||0;}
 function residentsAtHome(s,ctx,home){
- if(!ctx.citizenPass.residentsByHome){
-  const residents=new Map();
-  for(const c of s.citizens){
-   let family=residents.get(c.home);
-   if(!family){family=[];residents.set(c.home,family);}
-   family.push(c);
-  }
-  ctx.citizenPass.residentsByHome=residents;
- }
+ ctx.citizenPass.residentsByHome??=residentsByHome(s.citizens);
  return ctx.citizenPass.residentsByHome.get(home)||[];
 }
 function hasMealStock(s,ctx){
@@ -431,12 +423,40 @@ export function syncCitizens(s){
   let assigned=citizens.filter(c=>locked.has(c.id)&&(c.tradeMarket||c.saleMarket)===q.market).length+[...tradeAssignments.values()].filter(a=>(a.tradeMarket||a.saleMarket)===q.market).length;
   for(const c of [...citizens].sort((a,b)=>Number(!!a.work)-Number(!!b.work)||b.id-a.id)){if(assigned>=2)break;if(reserved.has(c.id)||locked.has(c.id)||assignments.has(c.id)||tradeAssignments.has(c.id)||!['auto','carrier'].includes(c.role)||!routeBetween(s,ctx.ports.get(c.home)?.key,market.key,ctx))continue;const home=ctx.buildings.get(c.home);if(c.phase==='home'&&home&&homeMealFood(home)<houseDemand(s,ctx,c.home)*4/3&&closestStock(s,ctx,c.home,'food'))continue;tradeAssignments.set(c.id,{...sale?{saleJob:q.id,saleMarket:q.market}:{tradeJob:q.id,tradeMarket:q.market},store});assigned++;}
  }
- const districtAssignments=new Map(),districtPass=createDistrictPass(s,{network:ctx.network}),routeAssigned=new Map(districtPass.routeOwners),porterOrder=citizens.filter(c=>['home','working'].includes(c.phase)&&canWork(c)&&!locked.has(c.id)&&!assignments.has(c.id)&&!tradeAssignments.has(c.id)).sort((a,b)=>Number(!!a.work)-Number(!!b.work)||b.id-a.id),porterTargets=new Map(),houseSupply=new Map();
- for(const q of s.district.jobs){if(!isWorkday(s.simTime)||q.remaining<=1e-8||q.targetKind!=='votive'&&(districtReceiptRoom(s,q,ctx.buildings.get(q.target),districtPass)<=1e-8||districtExportable(s,q,districtPass)<=1e-8)||!connectedStores(s,q.source,q.target,districtPass))continue;const pair=`${q.source}>${q.target}`;let n=routeAssigned.get(pair)||0;if(n>=2)continue;
-  if(!porterTargets.has(q.target))porterTargets.set(q.target,[...porterOrder.filter(c=>c.workplace===q.target),...porterOrder.filter(c=>c.workplace!==q.target)]);
-  for(const c of porterTargets.get(q.target)){if(n>=2)break;const pinned=c.workplace===q.target&&ctx.buildings.get(q.target)?.type==='depot';if(c.phase==='working'&&!pinned&&(c.role!=='auto'||c.workplace)||districtAssignments.has(c.id)||reserved.has(c.id)&&!pinned||!['auto','carrier'].includes(c.role)&&!pinned)continue;const home=ctx.ports.get(c.home),source=ctx.ports.get(q.source);if(!home||!source||!routeBetween(s,home.key,source.key,ctx))continue;
-   if(c.phase==='home'){if(!houseSupply.has(c.home)){const house=ctx.buildings.get(c.home);houseSupply.set(c.home,!!(house&&homeMealFood(house)<houseDemand(s,ctx,c.home)*4/3&&closestStock(s,ctx,c.home,'food')));}if(houseSupply.get(c.home))continue;}
-   districtAssignments.set(c.id,{districtJob:q.id,store:q.source,target:q.target,source:q.source});n++;routeAssigned.set(pair,n);
+ const districtAssignments=new Map(),districtPass=createDistrictPass(s,{network:ctx.network}),routeAssigned=new Map(districtPass.routeOwners);
+ districtPass.households=residentsByHome(citizens);
+ if(isWorkday(s.simTime)&&s.district.jobs.length){
+  const order=citizens.filter(c=>['home','working'].includes(c.phase)&&canWork(c)&&!locked.has(c.id)&&!assignments.has(c.id)&&!tradeAssignments.has(c.id)).sort((a,b)=>Number(!!a.work)-Number(!!b.work)||b.id-a.id);
+  const free=[],depotStaff=new Map(),houseSupply=new Map(),freeCursor=new Map(),staffCursor=new Map();
+  for(const c of order){
+   if(c.workplace&&ctx.buildings.get(c.workplace)?.type==='depot'){
+    if(!depotStaff.has(c.workplace))depotStaff.set(c.workplace,[]);
+    depotStaff.get(c.workplace).push(c);
+   }else if(!reserved.has(c.id)&&['auto','carrier'].includes(c.role)&&(c.phase!=='working'||c.role==='auto'&&!c.workplace))free.push(c);
+  }
+  for(const q of s.district.jobs){
+   if(q.remaining<=1e-8||q.targetKind!=='votive'&&(districtReceiptRoom(s,q,ctx.buildings.get(q.target),districtPass)<=1e-8||districtExportable(s,q,districtPass)<=1e-8)||!connectedStores(s,q.source,q.target,districtPass))continue;
+   const pair=q.source+'>'+q.target,source=ctx.ports.get(q.source);
+   let n=routeAssigned.get(pair)||0;
+   if(n>=2||!source)continue;
+   // Order, home food decisions, and routes stay fixed during this assignment
+   // pass. Resume at the next candidate when another order shares the source.
+   function assignFrom(list,cursors,key){
+    let i=cursors.get(key)||0;
+    for(;i<list.length&&n<2;i++){
+     const c=list[i],home=ctx.ports.get(c.home);
+     if(districtAssignments.has(c.id)||!home||!routeBetween(s,home.key,source.key,ctx))continue;
+     if(c.phase==='home'){
+      if(!houseSupply.has(c.home)){const house=ctx.buildings.get(c.home);houseSupply.set(c.home,!!(house&&homeMealFood(house)<houseDemand(s,ctx,c.home)*4/3&&closestStock(s,ctx,c.home,'food')));}
+      if(houseSupply.get(c.home))continue;
+     }
+     districtAssignments.set(c.id,{districtJob:q.id,store:q.source,target:q.target,source:q.source});n++;
+    }
+    cursors.set(key,i);
+   }
+   const staff=depotStaff.get(q.target);if(staff)assignFrom(staff,staffCursor,pair);
+   if(n<2)assignFrom(free,freeCursor,q.source);
+   routeAssigned.set(pair,n);
   }
  }
  if(isWorkday(s.simTime)&&laborKind!=='repair'){
@@ -450,15 +470,24 @@ export function syncCitizens(s){
  }
  const priority={waterpoint:-.5,pottery:1,brewery:1,bakery:1,linenYard:1,dairyStore:1,basketry:1,matYard:1,coppersmith:1,joineryYard:1,kiln:1,brickyard:1,tailor:1,sheepfold:1,weaver:1,depot:-.5,granary:5,healer:-1,field:0,garden:1,fishing:1,hunting:1,clay:2,reed:3,logging:3,quarry:3,shrine:4,ziggurat:5,musicHouse:6};
  const jobs=s.buildings.filter(b=>isComplete(b)&&hasWorkplace(b.type)&&(b.type!=='garden'||orchardMaturity(s,b).yield>0)&&(!['clay','quarry'].includes(b.type)||availableExtractionSources(s,b).length)).sort((a,b)=>priority[a.type]-priority[b.type]);
- const slots=jobs.flatMap(b=>Array(workplaceCapacity(b.type)).fill(buildingKey(b))),used=new Set();
- for(const c of citizens.filter(c=>locked.has(c.id)&&c.work&&!c.guardPost)){const j=slots.findIndex((key,i)=>key===c.work&&!used.has(i));if(j>=0)used.add(j);}
- // A pinned worker completing an old delivery still owns their new workplace
- // seat. Do not give that promised seat to an automatic replacement.
- for(const c of citizens.filter(c=>locked.has(c.id)&&c.workplace&&c.workplace!==c.work)){const j=slots.findIndex((key,i)=>key===c.workplace&&!used.has(i));if(j>=0)used.add(j);}
- for(const assignment of labor.values()){
-  const slot=slots.findIndex((key,i)=>key===assignment.work&&!used.has(i));
-  if(slot>=0)used.add(slot);
+ // Map order retains the stable workplace priority. Once a job fills, later
+ // workers in this pass cannot take any of its seats.
+ const workplaces=new Map(),automatic=new Map();
+ for(const b of jobs){
+  const key=buildingKey(b),job={key,building:b,remaining:workplaceCapacity(b.type)};
+  workplaces.set(key,job);
+  if(!['depot','musicHouse','granary'].includes(b.type)&&(b.type!=='field'||fieldActive(s,b)))automatic.set(key,job);
  }
+ function reserveSeat(key){
+  const job=workplaces.get(key);
+  if(!job?.remaining)return;
+  job.remaining--;
+  if(!job.remaining)automatic.delete(key);
+ }
+ for(const c of citizens)if(locked.has(c.id)&&c.work&&!c.guardPost)reserveSeat(c.work);
+ // Keep the promised seat while a pinned worker finishes an earlier delivery.
+ for(const c of citizens)if(locked.has(c.id)&&c.workplace&&c.workplace!==c.work)reserveSeat(c.workplace);
+ for(const assignment of labor.values())reserveSeat(assignment.work);
  for(const c of [...citizens].sort((a,b)=>Number(!!b.workplace)-Number(!!a.workplace))){
   if(locked.has(c.id))continue;
   const oldDistrict=c.districtJob;const oldSale=c.saleJob;const oldTrade=c.tradeJob;delete c.districtJob;const oldHome=c.home,oldWork=c.work,oldStore=c.store,oldSite=c.site,oldPort=c.sitePort,oldDuty=c.siteDuty;c.home=homes[c.id];c.work=null;c.site=null;c.sitePort=null;c.siteDuty=null;c.tradeJob=null;c.tradeMarket=null;c.saleJob=null;c.saleMarket=null;
@@ -469,7 +498,16 @@ export function syncCitizens(s){
   else if(districtAssignments.has(c.id)){const {target,source,...job}=districtAssignments.get(c.id);Object.assign(c,job);}
   else{
    const p=ctx.ports.get(c.home);
-   for(let j=0;j<slots.length&&['auto','production','healer','tailor','watercarrier','carrier'].includes(c.role);j++){if(used.has(j))continue;const work=slots[j];if(c.workplace&&c.workplace!==work)continue;if(!c.workplace&&['depot','musicHouse','granary'].includes(ctx.buildings.get(work).type))continue;if(!c.workplace&&ctx.buildings.get(work).type==='field'&&!fieldActive(s,ctx.buildings.get(work)))continue;if(!canStaffBuilding(c,ctx.buildings.get(work)))continue;const workPort=ctx.ports.get(work),store=closestStore(s,ctx,work);if(workPort&&store&&routeBetween(s,p.key,workPort.key,ctx)){used.add(j);c.work=work;c.store=store;break;}}
+   if(['auto','production','healer','tailor','watercarrier','carrier'].includes(c.role)){
+    const candidates=c.workplace?[workplaces.get(c.workplace)]:automatic.values();
+    for(const job of candidates){
+     if(!job?.remaining||!canStaffBuilding(c,job.building))continue;
+     const work=job.key,workPort=ctx.ports.get(work),store=closestStore(s,ctx,work);
+     if(workPort&&store&&routeBetween(s,p.key,workPort.key,ctx)){
+      reserveSeat(work);c.work=work;c.store=store;break;
+     }
+    }
+   }
    if(!c.work)c.store=closestStore(s,ctx,c.home);
   }
   if(oldDistrict!==c.districtJob||oldSale!==c.saleJob||oldTrade!==c.tradeJob||oldHome!==c.home||oldWork!==c.work||oldStore!==c.store||oldSite!==c.site||oldPort!==c.sitePort||oldDuty!==c.siteDuty){

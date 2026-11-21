@@ -39,9 +39,11 @@ export function initializeBuildingInventory(s){
   if(isResidence(b))b.householdStock??={clothing:0,pottery:0,beer:0,milk:0};
  }
 }
-export function homeStockCapacity(s,b,k){
- if(k==='mat')return isStrictSumer(s)&&!b.floodDamage&&s.citizens.some(c=>c.home===buildingKey(b))?2:0;
- const people=(s.citizens||[]).filter(c=>c.home===buildingKey(b));
+export function homeStockCapacity(s,b,k,households){
+ if(k==='mat'&&(!isStrictSumer(s)||b.floodDamage))return 0;
+ const key=buildingKey(b);
+ const people=households?households.get(key)||[]:(s.citizens||[]).filter(c=>c.home===key);
+ if(k==='mat')return people.length?2:0;
  if(!people.length)return 0;
  if(k==='food')return people.reduce((a,c)=>a+ration(c)*8/3,0);
  if(k==='water')return people.reduce((a,c)=>a+(c.age<16?.5:1)*3,0);
@@ -79,10 +81,10 @@ export function collectReadyOutputs(s){
  }
 }
 export function buildingInputStock(b,k){return isResidence(b)?k==='food'?n(b.pantry):k==='water'?n(b.water):n(b.householdStock?.[k]):n(inputBuffer(b)?.[k]);}
-export function buildingInputRoom(s,b,k){
+export function buildingInputRoom(s,b,k,households){
  if(!isOperational(b))return 0;
  if(toolResource(b)&&!isStrictSumer(s))return 0;
- if(isResidence(b))return Math.max(0,homeStockCapacity(s,b,k)-buildingInputStock(b,k));
+ if(isResidence(b))return Math.max(0,homeStockCapacity(s,b,k,households)-buildingInputStock(b,k));
  if(b.type==='cowshed'&&b.dairy?.shortage!==undefined&&k==='reed')return Math.max(0,dairyInputCapacity(b).reed-b.dairy.reed);
  if(b.type==='sheepfold'&&b.flock?.adults!==undefined&&k==='reed')return Math.max(0,inputRecipe(b).reed-b.flock.reed);
  return Math.max(0,inputNeeds(b)[k]||0);
