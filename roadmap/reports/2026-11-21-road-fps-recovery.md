@@ -37,6 +37,7 @@
 date: 2026-11-21
 type: release
 release: road-fps-recovery-20261121
-publication: pending
+commit: ff2a6dd0f169f569d1638ff6e0d91ae30b3c63ea
+publication: verified
 groups: performance; graphics; simulation
-source: roadmap/reports/2026-11-21-road-fps-recovery.md
+source: docs/versions/2026-11-21-09.md

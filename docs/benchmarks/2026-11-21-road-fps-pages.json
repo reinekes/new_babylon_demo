@@ -1,0 +1,285 @@
+{
+  "release": "ff2a6dd0f169f569d1638ff6e0d91ae30b3c63ea",
+  "site": "https://reinekes.github.io/new_babylon_demo/",
+  "matched": {
+    "GAME_DESIGN.md": "02054a235ff66f40a2d864d2b810928584dab49ee1233fed471aa843ce01bb17",
+    "building-inventory.js": "163dbc8f93ca8c7f3db9e9c82c7af6f4878277e8be5a69d3245c0cee00da1ccc",
+    "courtyard.html": "bf64bf6a2f22fa1f7c0a60d8080ee8df146608cb44fda4fb8fcfb5771c76536f",
+    "crop-studio.html": "a4270df4c3887b72fed477c9a386f5f16936932ccba5b17c2ecd97bb84ab51d1",
+    "district-logistics.js": "57c15fe470d08b637c5e2149cca79140d78a93aeafbf9e1715da183883d63cbc",
+    "district3d.html": "46c6aff4f03e0f502c0ed5ce57857e98338b31bb757e319de631dd33d8c212fb",
+    "district3d/road-ground.js": "2dd0746d5eeb31e1a581a9dc28f33f50d6c3d835cfd3f4fe1cd04e327406c9c7",
+    "docs/benchmarks/2026-11-21-road-fps-4x.json": "d2e6165a7d15e46bef208c464bb4579d700fe28c50f0673be1223bd998138cf5",
+    "docs/benchmarks/2026-11-21-road-fps-compatibility.json": "7a503412fa3838730371bb8c21a48a2f7445f4783aed79873ec65f8a9e3f28a5",
+    "docs/benchmarks/2026-11-21-road-fps-diagnostics.json": "f02034d3416355db6874b4672745bee5342b2728bd107982ab0e7f4c9b82243b",
+    "docs/model-index.json": "acf1db7214cd13cd5082d745a560b3ca265f7ec5077a276f7ded0502ef1df0bb",
+    "game3d/resident-constant-tracks.js": "a34bb59b99f860f6063b7d096c5bb41370d50238e42414bf42d2c708145fc9f6",
+    "goat-studio.html": "84850f0196b7462ee1475954ddf092dcb00657977d513d72496c99d0ba92172b",
+    "mallards.html": "de4c1006935686b056f0c36924332287512bf9bbfdf30a4eca467c04993ad7b0",
+    "model-atlas/index.html": "b11fd7bcf01556450f8fa853f006df9b60321b45cb68592f58e3930371735212",
+    "navigation.js": "5e3bd7fc9468717ef4ac00ccab36580f364a46961b11ba3ec0fd208669f5d663",
+    "roadmap/index.html": "d0c32b36c68bd73ac2bc23449b2a1383cad8c5ea1610b3775add5bda657aed57",
+    "roadmap/manifest.json": "78014e90cfd86750a6fd732a67cd1ff83b5f6e7a0afe5eb2aa1cc5930f54857e",
+    "roadmap/reports/2026-11-21-road-fps-recovery.md": "60a656cd87f766736b12a3b89d0dae9090a274900c2ab8cea62c86e25dc70bbf",
+    "roadmap/snapshot.json": "85df1525e053e076d0142f2c7dcff69852a23922106b6ba25a88be6eae17740c",
+    "scripts/benchmark-road-recovery.cjs": "db8dc70935e69ff0c9cf2b5f908209d603e9ae2bbb7c56bfc24bf7c01fdbe9e6",
+    "scripts/sumer-building-studio.html": "b9a61b0f7ba845ac83af8c87037afc07bfe0c2872c7c801889fc45b24c71eb3e",
+    "street-surfaces.js": "965bc0711120956d93322b4fb9836291667ea85870511e2f8fed96dc362863d0",
+    "tools/loading-check/index.html": "ba6ec1957b6afd12f77a99b2a4ef93518817098f86865c27981dd669193855c7",
+    "world.js": "c2653cab121c7cf5e16e0be9e9fdd67f5ea25977f2eaedcf8251e0d808769a25",
+    "game3d/actors.js": "da9591cc88a6e85c87da9492f66d324237919620ed05a2394f4188abd2509b44",
+    "households.js": "a11a4eae0c22646dba13677d5ce9dca8a8a425906851fcc9b612db5594da9564",
+    "workforce.js": "f842e7a33899962481bc64a2fa45807438d728e5178f66f4643c68c139e6adbc",
+    "index.html": "e24da5351e8c2b907022e737a59affe28a4ba4271111eaae64cadacc67eb66c9"
+  },
+  "webgl": {
+    "base": "https://reinekes.github.io/new_babylon_demo",
+    "checks": {
+      "levels": [
+        {
+          "gl": 2,
+          "error": 0,
+          "assetErrors": [],
+          "mats": [
+            [
+              "game-road-compacted-earth",
+              "assets/3d/textures/street-silt-color.webp?v=laid-streets-2",
+              true,
+              true
+            ],
+            [
+              "game-road-clay-gravel",
+              "assets/3d/textures/street-aggregate-color.webp?v=laid-streets-2",
+              true,
+              true
+            ],
+            [
+              "game-road-bedded-stone",
+              "assets/3d/textures/street-paving-color.webp?v=laid-streets-2",
+              true,
+              true
+            ]
+          ],
+          "levels": {
+            "1": 5,
+            "2": 5,
+            "3": 5
+          }
+        }
+      ],
+      "walker": [
+        {
+          "gl": 2,
+          "error": 0,
+          "assetErrors": [],
+          "t": 3.5,
+          "id": 3,
+          "phase": "toWork",
+          "shown": [
+            10.846348462694596,
+            9.509225734945755
+          ],
+          "world": [
+            65.07809448242188,
+            0.0010032638674601912,
+            57.055355072021484
+          ],
+          "renderErrorM": 3.764973353585804e-06,
+          "carried": {}
+        },
+        {
+          "gl": 2,
+          "error": 0,
+          "assetErrors": [],
+          "t": 3.9200000000000004,
+          "id": 3,
+          "phase": "toWork",
+          "shown": [
+            11.372091672744444,
+            9.622577405021104
+          ],
+          "world": [
+            68.23255157470703,
+            0,
+            57.73546600341797
+          ],
+          "renderErrorM": 2.200324767140792e-06,
+          "carried": {}
+        },
+        {
+          "gl": 2,
+          "error": 0,
+          "assetErrors": [],
+          "t": 4.459999999999997,
+          "id": 3,
+          "phase": "toWork",
+          "shown": [
+            11.446928164116798,
+            10.351150490935035
+          ],
+          "world": [
+            68.68157196044922,
+            0,
+            62.106903076171875
+          ],
+          "renderErrorM": 2.978611264475566e-06,
+          "carried": {}
+        }
+      ],
+      "cart": [
+        {
+          "gl": 2,
+          "error": 0,
+          "assetErrors": [],
+          "t": 5.599999999999996,
+          "id": 4,
+          "phase": "toDistrictStore",
+          "shown": [
+            4.871666666666667,
+            8.292535872987374
+          ],
+          "world": [
+            29.652116775512695,
+            0,
+            49.75521469116211
+          ],
+          "renderErrorM": 0.42211677551304544,
+          "carried": {
+            "wood": 24
+          },
+          "cart": {
+            "attached": true,
+            "enabled": true,
+            "wheels": 2,
+            "rolling": [
+              0,
+              0
+            ],
+            "timber": 3,
+            "origin": [
+              29.652116775512695,
+              0,
+              49.75521469116211
+            ],
+            "angle": 0,
+            "holder": "5,8",
+            "worldWheels": [
+              [
+                29.16335105895996,
+                0.39126119017601013,
+                50.98521423339844
+              ],
+              [
+                30.14088249206543,
+                0.39126119017601013,
+                50.98521423339844
+              ]
+            ]
+          }
+        },
+        {
+          "gl": 2,
+          "error": 0,
+          "assetErrors": [],
+          "t": 6.019999999999993,
+          "id": 4,
+          "phase": "toDistrictStore",
+          "shown": [
+            5.136533046477396,
+            8.481682036825122
+          ],
+          "world": [
+            30.847566604614258,
+            0,
+            50.89009094238281
+          ],
+          "renderErrorM": 0.028368325778693488,
+          "carried": {
+            "wood": 24
+          },
+          "cart": {
+            "attached": true,
+            "enabled": true,
+            "wheels": 2,
+            "rolling": [
+              5.92164953075924,
+              5.92164953075924
+            ],
+            "timber": 3,
+            "origin": [
+              30.847566604614258,
+              0,
+              50.89009094238281
+            ],
+            "angle": 1.3645784080754255,
+            "holder": "5,8",
+            "worldWheels": [
+              [
+                31.951425552368164,
+                0.39126119017601013,
+                51.62035369873047
+              ],
+              [
+                32.15158462524414,
+                0.39126119017601013,
+                50.663536071777344
+              ]
+            ]
+          }
+        },
+        {
+          "gl": 2,
+          "error": 0,
+          "assetErrors": [],
+          "t": 6.55999999999999,
+          "id": 4,
+          "phase": "toDistrictStore",
+          "shown": [
+            5.644512622062218,
+            8.645125666239165
+          ],
+          "world": [
+            33.86729431152344,
+            0,
+            51.87075424194336
+          ],
+          "renderErrorM": 0.00021857928688571275,
+          "carried": {
+            "wood": 24
+          },
+          "cart": {
+            "attached": true,
+            "enabled": true,
+            "wheels": 2,
+            "rolling": [
+              14.33970803137899,
+              14.33970803137899
+            ],
+            "timber": 3,
+            "origin": [
+              33.86729431152344,
+              0,
+              51.87075424194336
+            ],
+            "angle": 0.8917968697886446,
+            "holder": "5,8",
+            "worldWheels": [
+              [
+                34.51752853393555,
+                0.39126119017601013,
+                53.0235710144043
+              ],
+              [
+                35.13143539428711,
+                0.39126119017601013,
+                52.262855529785156
+              ]
+            ]
+          }
+        }
+      ]
+    },
+    "opened": true
+  },
+  "deployment": "https://github.com/reinekes/new_babylon_demo/actions/runs/44941923767"
+}
