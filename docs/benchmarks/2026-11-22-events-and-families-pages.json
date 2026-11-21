@@ -1,0 +1,66 @@
+{
+  "publication": {
+    "release": "73f484a3239f97c15ef93fb9e746005366211e8c",
+    "site": "https://reinekes.github.io/new_babylon_demo/",
+    "matched": {
+      "city-events.js": "51dad1d674bff8618a9da09742ae33aca689e7c9d1f880e4ef708183c2a1e923",
+      "app.js": "a48b6190ee0e578be3de5a59837b9a19121767f88c939d4c0820cedf6eb7a742",
+      "city-audio.js": "81b8a0ca03ea6911930c6281558251c9c7e21486bb014a61e9cdbaeef1b621d0",
+      "courtyard.html": "448210ecc12b6c4c55d933459fbcc5c45561090a8ef4172516213e88206594ad",
+      "crop-studio.html": "e88afc90a1e531906427504864cf9ae505cec946f4047dbf254cb3f11a44a646",
+      "demography.js": "a43127c14ec5fc01044abbc67ab838367362c07bfb58b360950aae5da9b8e281",
+      "district3d.html": "83be2d4cc627dd3650cfea616391c3543ec6a259d0cc397d33fc79be53de7efd",
+      "district3d/app.js": "eef00395dc50f72f8df545ee6f650594556a962f49a7259d2929c4e528969891",
+      "docs/benchmarks/2026-11-22-events-and-families.json": "cef12f1b6e920117fbbf94a35438e3951d0efabafa3c00f6185055dfaff30789",
+      "engine.js": "fd899fc6462c054d926ee81b12a8444bb5709412097f11862d734232ba4e237a",
+      "goat-studio.html": "1de4b3704bc2a4b731f0be41e47d2ac4c5ffd1b1480cfb7d99e0b7867f5cc11e",
+      "household-initiative.js": "f84dab7f0dc2f03fa008bfd73dcdd83eb9da8262df4790c32ffd5366c1ebf415",
+      "index.html": "96e30e7ca78f278d4a9079bcdbc324b58cc1f1220b271ad550c8501608b5c336",
+      "inventory.js": "6c4fcac651907f3dc916e872210f46cfe36676b73edeb6a6ff0ad7e045610437",
+      "mallards.html": "06f0f645f51178aacc2c91fa5a16dd667ec08aebed9dbc18094eb412c194e0ed",
+      "model-atlas/index.html": "cb6bd44e322ce064ee5d98dda61f4cca56f44dca56caeb9c8946c70e41c8ca54",
+      "relic-quest.js": "9506c4e0775e4bb93d67418748e911e3c073e9ba31358eed30eb62bea8a42936",
+      "roadmap/index.html": "8236e6b5d2c7cf61a1cb6909f173ca6c50e7f9e09d4b2738d32e290755ee2802",
+      "roadmap/manifest.json": "10cf3339a8171b3e3300fa7b30441ced5a3a4f8d1f11a26e46d03eb8877b940c",
+      "roadmap/reports/2026-11-22-events-and-families.md": "a12f476f2e5df1428f33d45e15a06daa6d1d9d0cd0b7cae6531ba11c229783f9",
+      "roadmap/snapshot.json": "7ec20b0c3bb155fea185544d36a32ff57358ce1b36fe5ce786c5d833e7da4d00",
+      "scripts/sumer-building-studio.html": "1602a37fbe727f0e92843d9daee6435171aedf8990725e507b0c898b4c944ffd",
+      "test-tools.js": "e87c30007f4abba7a87cd0f05495732c15c35dd1d5fd369c650263355eef4217",
+      "ui-city-tools.js": "a9fb2b315d8b83d8033e02a15ccb42ca2257ab57a47182096d72a9c585cd4141",
+      "ui-uruk.js": "64a96d7ae5d09c519fc1bc454aff93afb0ca6f5217582810e700a1d8e2d75ba7",
+      "uruk-ui.css": "ef7ad5c9cb2f758dfb0371bda99b31429488740d2417f4c3d574cba7b6a7b5c0",
+      "GAME_DESIGN.md": "619244e0b9b9d833a06c388bab03edc67e60f5f2559e1e7a25403b21d66353f9"
+    }
+  },
+  "webgl": {
+    "checks": {
+      "defaultModal": true,
+      "accept": {
+        "prestigeGained": 3,
+        "reedGained": 24,
+        "paused": true
+      },
+      "decline": true,
+      "reload": {
+        "remainingBefore": 58.853750000000005,
+        "remainingAfter": 58.853750000000005
+      },
+      "mobileWidth": 390,
+      "expiry": {
+        "elapsed": 58.90406249999998,
+        "remainingAtStart": 58.853750000000005,
+        "paused": false
+      },
+      "turnedOn": true,
+      "familyYear": {
+        "initial": 12,
+        "now": 14,
+        "births": 2,
+        "seasons": 4,
+        "roundTrip": true
+      }
+    },
+    "base": "https://reinekes.github.io/new_babylon_demo/",
+    "webgl": "3d"
+  }
+}
