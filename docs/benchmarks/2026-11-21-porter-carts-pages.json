@@ -1,0 +1,82 @@
+{
+  "release": "192319c1398413921f7e964f01723b5789fac2f0",
+  "site": "https://reinekes.github.io/new_babylon_demo/",
+  "matched": {
+    "GAME_DESIGN.md": "de29c21fa16f677a4ae96304dcb5422369c763d08f3ad0ad97274d647faa350e",
+    "app.js": "a1a6d417b348b0cb6ce13299294b7bee7f7f6a9db771c4251cd99f4ad82b810f",
+    "civic-entrance-bricks.js": "e11b69731bc0017444e17e9fc1ebdee663bdc486530c2d46610fd52f23b83a1c",
+    "courtyard.html": "86a6a0cb31c1f4b195ab238b001ce54899b2c7b36064a4a185c867a1286106b3",
+    "crop-studio.html": "6e5ddf557b5e6bb1a131b9b79de5e3817e4880be203e0eb974a0e001eee14302",
+    "district-logistics.js": "3e74abda12f260b9a0b070022d6a58b7c77227612b0e00a84d45da2ac7c7f934",
+    "district3d.html": "469e3da91ac3291151535b3114f768b2052c4627d17b5c9d8d981ef7ba2cf4f3",
+    "docs/benchmarks/2026-11-21-porter-carts.json": "4c732ff75b121ea5eb2e864ce008259fc836ca563eebc111b3bee61aa3796dc5",
+    "docs/model-index.json": "e2c4a3e363ba625e02d0e25432fc8c4d98adc7dca48c9eb65ea315c9ebeced9c",
+    "engine.js": "9767ab7b183b1f1b1af528bcc663a3312834b05a00f73aa731a0f34fc88dceee",
+    "footpaths.js": "39bddbd742a314c45af5f0462640afa3b9fa9fccf891afe43b518654730c5829",
+    "freight-carts.js": "736e4612e968bb364e60102c4310ba2e3cbb6e782309bcd1305189a421ee64cc",
+    "game3d/actors.js": "d2d64f73e2b1f0e66554329694ea8a885376183cad9abb99b3f5744959aeb2bf",
+    "game3d/landscape.js": "e30d419699044f93d9cfd19f7a4c08e6097d46687434be00f316fbe2dcb3a57e",
+    "game3d/porter-cart.js": "b8adae00c482d1b36a96e499f6fcc8e08cb4bb70ae0df068546fabfd30ab4398",
+    "game3d/water.js": "d9a3115d23a0e16820aa857e871dda2450a8e475c5a19cc9caa17d1baf7b3fc3",
+    "goat-studio.html": "8d3008bc07164e72b3199f280a869abbd3b157c061b9c719439141d3ecc82c85",
+    "index.html": "32ca138d573388949136cdab419185a2955e03b6545f5eec9bdf4ace6547d599",
+    "mallards.html": "1184a0fd44870463ac5e4e698ace1dd57393ed9130f79a255ffc4c6ce70ea2b4",
+    "management.js": "a375f495496c0489bb97ef71e9f9e5a487260c92cbbe048fb4ebdb674ccf11cb",
+    "model-atlas/index.html": "e64a8ddc21b323baf3c07d2d8186e6e46dc1dbd5da5cfff02d9d4f8fc8377466",
+    "porter-cart-art.js": "bdc4b7f7b3e5b3b366c5ee811803d9dfab7a60e3b6b850fb2af2ea4026e63c10",
+    "renderer.js": "91de9878536344bb330ba0d51b92d5938dd13d72893047a59d568d6fc12b9941",
+    "roadmap/evidence/2026-11-21/porter-carts/communal.webp": "686714c32d74235d34a71d5aaeae76120d03e7c81207524c1155dedefacbc8d3",
+    "roadmap/evidence/2026-11-21/porter-carts/porter.mp4": "95cd2cb557280b92a8ba091fff1c4e025d2bfdbfd272572eeeb71fd8e545b247",
+    "roadmap/evidence/2026-11-21/porter-carts/porter.webp": "2801762f64152fb6cd2ebcfe6a11a154ee49e6eb4cf1937e365c9941edfe6445",
+    "roadmap/evidence/2026-11-21/porter-carts/ruts.webp": "53f781ccde283ef038a4b297a9dd64df8e067485677f9af649c9cd547bab8ab6",
+    "roadmap/evidence/2026-11-21/porter-carts/street.webp": "403bb79c28044b1f57aa8be259827cd42502d946b84be7ec3aa6425678d14051",
+    "roadmap/evidence/2026-11-21/porter-carts/streets.webp": "00357277f94903731e0e6cf34207031c696a77d3fd79d148b57d04a9e0d41f16",
+    "roadmap/evidence/2026-11-21/porter-carts/temple.webp": "b88bf3da7bc0ecea328736ac78ec5571c7b7d3f73fcf6698f59f5ee9902117c0",
+    "roadmap/index.html": "0736942ba026c220d969133f46c4238da347f6bac1fb0a02cb52dea222272df5",
+    "roadmap/manifest.json": "fcf2db9c8f23918c9e9c8a14a962edf542e3946d8917bb0835bcedf66037ed0d",
+    "roadmap/reports/2026-11-21-porter-carts.md": "02e5e137684d4b7eab05f1f1257c7d7ab55715ddc72b4ca1ce5135529abfb7ea",
+    "roadmap/snapshot.json": "a99e52d1256d6d47b4bde185ee6706463451f5a0d576fcfc75a738af3ded256f",
+    "scripts/sumer-building-studio.html": "851461af29cc2265f52ef0251dbff25791ed3023719f23a0638e9618f39807fc",
+    "service-court.js": "d6fc258bc5ebd76460b8080787d80db81d0ba58f6853f8e113a0b34d0f7e524a",
+    "street-surfaces.js": "803e8a0abc0bed2a07dd4e9a95698857b9df1d9a2998c649861e3388e270a830",
+    "workforce.js": "ce17359ab47d88a6fe7a5d6132ca347c3f5309417fa4ae470dd1f1fb14f55a92"
+  },
+  "liveWebGL": {
+    "info": {
+      "webgl": 2,
+      "phase": "toDistrictStore",
+      "cart": "10,9",
+      "cargo": {
+        "wood": 24
+      },
+      "root": [
+        44.18862402437011,
+        0,
+        56.75073029189133
+      ],
+      "rotation": -1.522791653282361,
+      "route": {
+        "x": 6.5,
+        "y": 9.5
+      },
+      "wheels": 2,
+      "ready": [],
+      "motion": {
+        "start": {
+          "x": 7.323734611932601,
+          "y": 9.5,
+          "spin": 0
+        },
+        "end": {
+          "x": 7.274748611932602,
+          "y": 9.5,
+          "spin": 0.7306121439503266
+        }
+      }
+    },
+    "errors": []
+  },
+  "deployRun": "https://github.com/reinekes/new_babylon_demo/actions/runs/44895315436",
+  "nodeTests": 2201,
+  "roadmapTests": 7
+}
