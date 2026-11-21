@@ -3,7 +3,8 @@ import {JSDOM} from 'jsdom';
 import assert from 'node:assert/strict';
 import {createGame} from '../engine.js';
 import {cityToolsHTML,renderCityTools,residentVitalsHTML} from '../ui-city-tools.js';
-import {buildingInventoryHTML} from '../ui-building-inventory.js';
+import {buildingInventoryHTML,storeStockSummaryHTML} from '../ui-building-inventory.js';
+import {MATERIALS} from '../definitions.js';
 import {RESOURCE_GROUPS} from '../season-balance.js';
 
 test('inventory uses header order, icon quantities and accessible full resource labels',()=>{
@@ -14,6 +15,36 @@ test('inventory uses header order, icon quantities and accessible full resource 
  assert.match(html,/title="глина"/);assert.match(html,/aria-label="глина: 84"/);
  assert.match(html,/tabindex="0"/);assert.doesNotMatch(html,/<span>глина<\/span>/);
  assert.equal(JSON.stringify(storage),before);
+});
+
+test('store summary groups every stored material once and keeps the brick chain together',()=>{
+ const stock=Object.fromEntries([...MATERIALS].reverse().map(k=>[k,5]));
+ const dom=new JSDOM(storeStockSummaryHTML(Object.freeze(stock)));
+ const grids=[...dom.window.document.querySelectorAll('.store-stock-grid')];
+ const keys=grid=>[...grid.querySelectorAll('[data-stock-resource]')].map(e=>e.dataset.stockResource);
+ assert.deepEqual(keys(grids[0]),['food','milk','beer']);
+ assert.deepEqual(keys(grids[1]),['clay','brick','firedBrick','pottery']);
+ assert.deepEqual(grids.flatMap(keys).sort(),[...MATERIALS].sort());
+ assert.match(grids[1].textContent,/Сырцовый кирпич/);
+ assert.match(grids[1].textContent,/Обожжённый кирпич/);
+ dom.window.close();
+});
+
+test('small local amounts remain visible without rounding up, zero stock and transit stay separate',()=>{
+ const inventory={storage:{food:0,clay:.999,firedBrick:.003,pottery:12.05},inTransit:{input:{food:5}}};
+ const dom=new JSDOM(storeStockSummaryHTML(inventory.storage));
+ const doc=dom.window.document;
+ assert.equal(doc.querySelectorAll('[data-stock-resource]').length,3);
+ assert.equal(doc.querySelector('[data-stock-resource="clay"] dd').textContent,'0,99');
+ assert.equal(doc.querySelector('[data-stock-resource="firedBrick"] dd').textContent,'<0,01');
+ assert.equal(doc.querySelector('[data-stock-resource="pottery"] dd').textContent,'12,05');
+ assert.doesNotMatch(storeStockSummaryHTML({food:0}),/store-stock-grid/);
+ assert.match(storeStockSummaryHTML({food:0}),/Пусто/);
+ assert.equal(buildingInventoryHTML({storage:{clay:4}},{includeStorage:false}),'');
+ const details=buildingInventoryHTML(inventory,{includeStorage:false});
+ assert.doesNotMatch(details,/data-stock-group="storage"/);
+ assert.match(details,/data-stock-group="input-transit"/);
+ dom.window.close();
 });
 
 test('work cards are closed disclosures with compact headers and all details inside',()=>{
@@ -98,4 +129,18 @@ test('food and water advice link to the supplied home and do not link when there
  assert.deepEqual([...doc.querySelectorAll('#vital-map-17-food [data-vital-home],#vital-map-17-water [data-vital-home]')].map(b=>[b.dataset.vitalHome,b.dataset.vitalTab]),[['courtyard-a','food'],['courtyard-a','water']]);
  assert.doesNotMatch(residentVitalsHTML({...c,home:null},s),/data-vital-home/);
  dom.window.close();
+});
+
+test('store cards in the building and district registers lead with only the selected store’s goods',()=>{
+ const s=createGame({start:'established'}),b={type:'depot',x:4,y:4,level:1,stock:{food:11,clay:5}};
+ s.buildings.push(b);s.resources.food+=11;s.resources.clay+=5;
+ const w=cityToolsHTML(s,{tab:'workshops',expandedBuildings:new Set(['4,4'])});
+ const body=new JSDOM(w).window.document.querySelector('[data-city-building="4,4"] .city-tools-building-body');
+ assert.ok(body.firstElementChild.hasAttribute('data-store-stock-summary'));
+ assert.equal(body.querySelector('[data-store-stock-summary] [data-stock-resource="food"] b').textContent,'11');
+ assert.equal(body.querySelector('[data-stock-group="storage"]'),null);
+ const district=cityToolsHTML(s,{tab:'districts'}),doc=new JSDOM(district).window.document;
+ const summary=doc.querySelector('[data-city-store-group="store:4,4"] > .city-tools-row-head + [data-store-stock-summary]');
+ assert.ok(summary);
+ assert.equal(summary.querySelector('[data-stock-resource="clay"] b').textContent,'5');
 });

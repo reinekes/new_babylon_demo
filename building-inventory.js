@@ -94,6 +94,12 @@ export function putBuildingInput(s,b,k,amount){
  else inputBuffer(b)[k]=n(inputBuffer(b)[k])+actual;return actual;
 }
 export function takeBuildingOutput(b,k,amount){const actual=Math.min(n(amount),n(b.workshopStock?.output?.[k]));if(actual)b.workshopStock.output[k]-=actual;return actual;}
+// A trading yard holds paid purchases until pickup. Early homes and recovery
+// sites may also hold public stock separately from supplies for their own use.
+export function hasStoreSummary(b){
+ return !!b&&isOperational(b)&&(!!b.stock||['granary','depot','shrine','market','harbor'].includes(b.type));
+}
+
 export function buildingInventory(s,b){
  const input={},output={...b.workshopStock?.output},storage={...b.stock},inProcess={},incoming={},outgoing={},capacities={input:{},output:{},storage:{}};
  if(isResidence(b))for(const k of ['food','water','clothing','pottery','beer','milk',...isStrictSumer(s)?['mat']:[]]){input[k]=buildingInputStock(b,k);capacities.input[k]=homeStockCapacity(s,b,k);}

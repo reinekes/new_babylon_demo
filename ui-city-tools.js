@@ -1,7 +1,7 @@
 import {productionChainsHTML} from './ui-production-chains.js';
 import {mountProductionGraph} from './ui-production-graph.js';
 import {RESIDENT_REACTION_LABELS} from './resident-reactions.js';
-import {buildingInventory} from './building-inventory.js';
+import {buildingInventory,hasStoreSummary} from './building-inventory.js';
 import {homeMealFood,supplyHome} from './households.js';
 import {birthFoodStatus,usesCourtyardBirthFood} from './demography.js';
 import {residentLinkHTML} from './ui-resident-links.js';
@@ -48,7 +48,7 @@ import {inspirationPriceLabel} from './professions.js';
 import {inspirationReason,inspirationSuccessChance} from './management.js';
 import {uiIcon} from './ui-icons.js';
 import {resourceIcon} from './resource-icons.js';
-import {buildingInventoryHTML} from './ui-building-inventory.js';
+import {buildingInventoryHTML,storeStockSummaryHTML} from './ui-building-inventory.js';
 import {buildingProductionHistoryHTML} from './ui-building-production.js';
 import {citizenProfessionName,selectedProfession} from './ui-professions.js';
 import {buildingChronology,compareBuildingsNewest} from './building-chronology.js';
@@ -61,9 +61,10 @@ const tag=(text,warn=false)=>`<span class="city-tools-tag${warn?' is-warning':''
 function select(name,label,value,options){return `<label class="city-tools-field"><span>${label}</span><select data-city-filter="${name}" aria-label="${label}">${options.map(([id,text])=>`<option value="${escape(id)}"${value===id?' selected':''}>${escape(text)}</option>`).join('')}</select></label>`;}
 const empty=text=>`<p class="city-tools-empty">${escape(text)}</p>`;
 const districtActions={path:['food','Проверить путь к складу'],food:['food','Открыть еду'],helper:['food','Проверить доставку'],delivery:['food','Посмотреть еду в пути'],water:['water','Открыть воду'],health:['family','Открыть семью']};
-function neighborhoodsHTML(model){
+function neighborhoodsHTML(s,model){
+ const storeStocks=new Map(s.buildings.filter(b=>b.stock).map(b=>[buildingKey(b),b.stock]));
  const housing=model.neighborhoods.filter(n=>n.homeKeys.length),stores=model.neighborhoods.filter(n=>!n.homeKeys.length);
- const cards=items=>[...items].sort((a,b)=>b.troubled-a.troubled).map(n=>`<article class="city-tools-row"${!n.homeKeys.length?` data-city-store-group="${escape(n.key)}"`:''}><div class="city-tools-row-head"><div class="city-district-name">${uiIcon(n.homeKeys.length?'house':'depot')}${focus(n.focus,n.label)}</div>${tag(n.homeKeys.length?`${n.population} жителей · ${n.homeKeys.length} домов`:'Склад')}</div><div class="city-tools-metrics"><span>Склад <b>${number(n.food)}</b> еды</span>${n.homeKeys.length?`<span>Дома <b>${number(n.homeFood)}</b></span><span>В пути <b>${number(n.foodInTransit)}</b></span><span>Вода <b>${number(n.water)}</b> / ${number(n.waterDemand)}</span><span>Работают <b>${n.workers}</b> · с грузом <b>${n.cargo}</b></span>`:''}</div>${n.reasons.length?`<div class="city-tools-reasons">${n.reasons.map(r=>`<button type="button" class="city-tools-link is-warning" data-city-homes="${escape(n.key)}">${escape(r.label)}</button>`).join('')}</div>`:tag(n.homeKeys.length?'Дома обеспечены':'Без соседних семей')}${n.troubled?`<button type="button" class="city-tools-households" data-city-homes="${escape(n.key)}">Проблемные дома · ${n.troubled} →</button>`:''}</article>`).join('');
+ const cards=items=>[...items].sort((a,b)=>b.troubled-a.troubled).map(n=>`<article class="city-tools-row"${!n.homeKeys.length?` data-city-store-group="${escape(n.key)}"`:''}><div class="city-tools-row-head"><div class="city-district-name">${uiIcon(n.homeKeys.length?'house':'depot')}${focus(n.focus,n.label)}</div>${tag(n.homeKeys.length?`${n.population} жителей · ${n.homeKeys.length} домов`:'Склад')}</div>${n.homeKeys.length?'':storeStockSummaryHTML(storeStocks.get(n.focus))}<div class="city-tools-metrics"><span>Доступно для питания <b>${number(n.food)}</b></span>${n.homeKeys.length?`<span>Дома <b>${number(n.homeFood)}</b></span><span>В пути <b>${number(n.foodInTransit)}</b></span><span>Вода <b>${number(n.water)}</b> / ${number(n.waterDemand)}</span><span>Работают <b>${n.workers}</b> · с грузом <b>${n.cargo}</b></span>`:''}</div>${n.reasons.length?`<div class="city-tools-reasons">${n.reasons.map(r=>`<button type="button" class="city-tools-link is-warning" data-city-homes="${escape(n.key)}">${escape(r.label)}</button>`).join('')}</div>`:tag(n.homeKeys.length?'Дома обеспечены':'Без соседних семей')}${n.troubled?`<button type="button" class="city-tools-households" data-city-homes="${escape(n.key)}">Проблемные дома · ${n.troubled} →</button>`:''}</article>`).join('');
  return `<div class="city-district-intro"><h3>Снабжение дворов</h3><p>Здесь видно, где не хватает еды или воды. Дома сгруппированы по ближайшему доступному складу; запас склада, припасы дома и грузы в пути считаются отдельно.</p></div><section class="city-tools-category" data-city-district-section="housing"><h3>Жилые кварталы <small>${housing.length}</small></h3><div class="city-tools-list city-tools-card-grid">${cards(housing)||empty('Пока нет жилых домов.')}</div></section><section class="city-tools-category" data-city-district-section="stores"><h3>Другие здания с запасами <small>${stores.length}</small></h3><div class="city-tools-list city-tools-card-grid">${cards(stores)||empty('Все склады обслуживают жилые кварталы.')}</div></section>`;
 }
 function optionsHTML(options,value){return options.map(([id,text])=>`<option value="${escape(id)}"${value===id?' selected':''}>${escape(text)}</option>`).join('');}
@@ -179,9 +180,9 @@ function staffingHTML(s,w){
 function workshopCard(s,w,b,expanded){
  const date=buildingChronology(b),open=expanded.has(w.key);
  const inventory=open?(w.inventory||buildingInventory(s,b)):null;
- const compactInventory=inventory?{...inventory,storage:Object.fromEntries(Object.entries(inventory.storage||{}).filter(([,n])=>n>0))}:null;
+ const showStock=hasStoreSummary(b);
  const slots=w.staffing?`${w.staffing.count} / ${w.staffing.capacity}`:b?.construction?`${w.builders.length} строит.`:'—',color=w.staffing?.state||(b?.construction?'construction':'ready');
- return `<article class="city-tools-row city-tools-workshop" data-city-building="${escape(w.key)}" data-staffing="${color}"><details data-city-disclosure="${escape(w.key)}"${expanded.has(w.key)?' open':''}><summary class="city-tools-building-summary"><span class="city-tools-building-name">${uiIcon(w.type)}<span><b>${escape(w.name)}</b><small>${w.x}, ${w.y} · Ур. ${b?.level||1} · ${escape(date.label)}</small></span></span><span class="city-tools-building-slots" aria-label="${escape(w.staffing?.label||w.reason.label)}: ${escape(slots)}">${w.staffing?'<i aria-hidden="true"></i>':''}${escape(slots)}</span><span class="city-register-building-status${w.status==='attention'?' is-warning':''}"><span>${escape(w.reason.label)}</span></span></summary>${open?`<div class="city-tools-building-body"><div class="city-tools-row-head">${focus(w.key,'Показать на карте')}${tag(`Клетка ${w.x}, ${w.y}`)}</div>${w.reason.detail||w.reason.target?`<div class="city-tools-production ${w.status==='attention'?'is-warning':''}">${w.reason.target?focus(w.reason.target,w.reason.label):''}<span>${escape(w.reason.detail)}</span></div>`:''}${w.reason.code==='construction'?`<p class="city-tools-note">Строителей: ${w.builders.length} · носильщиков: ${w.carriers.length}. Год будет записан после завершения.</p>`:''}${staffingHTML(s,w)}${buildingInventoryHTML(compactInventory,{house:isResidence(w),production:!!Object.keys(BUILDINGS[w.type]?.output||{}).filter(k=>!['faith','prestige'].includes(k)).length})}${buildingProductionHistoryHTML(s,b)}</div>`:''}</details></article>`;
+ return `<article class="city-tools-row city-tools-workshop" data-city-building="${escape(w.key)}" data-staffing="${color}"><details data-city-disclosure="${escape(w.key)}"${expanded.has(w.key)?' open':''}><summary class="city-tools-building-summary"><span class="city-tools-building-name">${uiIcon(w.type)}<span><b>${escape(w.name)}</b><small>${w.x}, ${w.y} · Ур. ${b?.level||1} · ${escape(date.label)}</small></span></span><span class="city-tools-building-slots" aria-label="${escape(w.staffing?.label||w.reason.label)}: ${escape(slots)}">${w.staffing?'<i aria-hidden="true"></i>':''}${escape(slots)}</span><span class="city-register-building-status${w.status==='attention'?' is-warning':''}"><span>${escape(w.reason.label)}</span></span></summary>${open?`<div class="city-tools-building-body">${showStock?storeStockSummaryHTML(inventory.storage):''}<div class="city-tools-row-head">${focus(w.key,'Показать на карте')}${tag(`Клетка ${w.x}, ${w.y}`)}</div>${w.reason.detail||w.reason.target?`<div class="city-tools-production ${w.status==='attention'?'is-warning':''}">${w.reason.target?focus(w.reason.target,w.reason.label):''}<span>${escape(w.reason.detail)}</span></div>`:''}${w.reason.code==='construction'?`<p class="city-tools-note">Строителей: ${w.builders.length} · носильщиков: ${w.carriers.length}. Год будет записан после завершения.</p>`:''}${staffingHTML(s,w)}${buildingInventoryHTML(inventory,{includeStorage:!showStock,compactStorage:true,house:isResidence(w),production:!!Object.keys(BUILDINGS[w.type]?.output||{}).filter(k=>!['faith','prestige'].includes(k)).length})}${buildingProductionHistoryHTML(s,b)}</div>`:''}</details></article>`;
 }
 export const CITY_WORK_CATEGORIES=[
  {id:'food',name:'Пища',icon:'field',types:['field','garden','fishing','hunting','cowshed']},
@@ -487,7 +488,7 @@ export function cityToolsHTML(s,{tab='districts',filter={},page=0,selectedId=nul
    <span><b>${totals.population}</b> жителей</span><span><b>${totals.workers}</b> на службе</span>
    <span><b>${totals.carrying}</b> с грузом</span><span class="${needsHelp?'is-warning':''}"><b>${helpCount}</b> нужна помощь</span>
   </div>`;
-  legend='<footer class="city-tools-legend">Еда склада — без семян · Грузы не прибавлены к запасам · Вода — в домашних сосудах</footer>';
+  legend='<footer class="city-tools-legend">Доступно для питания — без семян, с учётом молока · Грузы не прибавлены к запасам · Вода — в домашних сосудах</footer>';
  }
  let content;
  switch(tab){
@@ -498,7 +499,7 @@ export function cityToolsHTML(s,{tab='districts',filter={},page=0,selectedId=nul
   case 'citizens': content=citizensHTML(s,filter,page,selectedId,desiredInspirations,expandedCitizens);break;
   case 'workshops': content=workshopsHTML(s,model,expandedBuildings,buildingFilter,page);break;
   case 'homes': content=homesHTML(model,group);break;
-  default: content=neighborhoodsHTML(model)+fireForecastHTML(s)+blessingProgressHTML(s)+peaceProgressHTML(s)+
+  default: content=neighborhoodsHTML(s,model)+fireForecastHTML(s)+blessingProgressHTML(s)+peaceProgressHTML(s)+
     earthProgressHTML(s)+richCatchProgressHTML(s)+creatorMaterialsHTML(s)+shapingProjectsHTML(s)+
     arrivalHospitalityHTML(s)+starObservationsHTML(s)+depthSupplyHTML(s)+landMemoryHTML(s)+
     inannaDiscoveryHTML(s)+windDeliveryHTML(s)+abundanceDiscoveryHTML(s)+sunlightDedicationsHTML(s)+
