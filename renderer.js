@@ -18,7 +18,7 @@ import {miracleGardenPlan} from './miracle-garden-plan.js';
 import {footprintCells,footprintSize,newFootprint,occupiesCell} from './footprints.js';
 import {roadIsBuilt,roadTopologyRevision} from './roads.js';
 import {footpathRibbonPoint} from './footpaths.js';
-import {streetSurfaceLayout,streetCrossSections} from './street-surfaces.js';
+import {streetSurfaceLayout,streetCrossSections,streetEndFade,streetTrafficAt,streetCoverAt} from './street-surfaces.js';
 import {obstacleIndex} from './navigation.js';
 import {festivalView} from './festival.js';
 import {drawFestivalCourt,drawFestivalBuildingLights,drawFestivalBlessing} from './festival-art.js';
@@ -49,6 +49,82 @@ const hash=(x,y)=>{const n=Math.sin(x*127.1+y*311.7)*43758.5453;return n-Math.fl
 // Match the 3D garden's foundation clearance without loading 3D scenery assets.
 export function miraclePlantClear(s,p){
  return isDryPoint(s,p.x,p.y)&&!(s.buildings||[]).some(b=>{const size=footprintSize(b),center=(size-1)/2,half=size/2+.16;return Math.abs(b.x+center-p.x)<half&&Math.abs(b.y+center-p.y)<half;});
+}
+// A repeating tile of silt and grit breaks up compacted areas. White dust
+// lifts the tint back towards the local ground colour, including at the verge.
+function streetGrain(renderer,ctx){
+ if(!renderer.streetGrain){
+  const tile=renderer.createLayerCanvas?.()||(typeof document!=='undefined'?document.createElement('canvas'):null);
+  if(!tile)return null;
+  const n=192;tile.width=tile.height=n;
+  const brush=tile.getContext('2d');
+  if(!brush?.createImageData)return null;
+  const pixels=brush.createImageData(n,n);
+  const lattice=size=>Array.from({length:size*size},(_,i)=>hash(i%size+size*2,Math.floor(i/size)-size));
+  const broad=lattice(11),fine=lattice(37);
+  const field=(grid,size,x,y)=>{
+   const px=x*size/n,py=y*size/n,ix=Math.floor(px),iy=Math.floor(py);
+   const t=px-ix,u=py-iy,v=t*t*(3-2*t),w=u*u*(3-2*u);
+   const at=(i,j)=>grid[i%size+(j%size)*size];
+   return ((1-v)*at(ix,iy)+v*at(ix+1,iy))*(1-w)+((1-v)*at(ix,iy+1)+v*at(ix+1,iy+1))*w;
+  };
+  for(let y=0;y<n;y++)for(let x=0;x<n;x++){
+   const grain=hash(x,y),patch=field(broad,11,x,y),silt=field(fine,37,x,y);
+   const k=4*(x+n*y);pixels.data[k]=pixels.data[k+1]=pixels.data[k+2]=255;
+   pixels.data[k+3]=255*(.03+.52*Math.max(0,patch-.30)+.17*silt+.13*grain+(grain>.98?.27:0));
+  }
+  brush.putImageData(pixels,0,0);renderer.streetGrain=tile;
+ }
+ return ctx.createPattern(renderer.streetGrain,'repeat');
+}
+// Paint the soil tint onto a white map. Darken takes the strongest footprint
+// at a crossing. Multiplying the finished map into the terrain preserves its
+// own silt, vegetation colour and cracks under every material.
+function paintStreetSoil(renderer,ctx,shapes){
+ const palettes=[[222,197,166],[208,205,181],[221,176,142]];
+ const mapped=(row,side)=>{const d=row.reach/1.045*side*(side<0?row.left*row.trimLeft:row.right*row.trimRight);return {x:row.p.x+row.nx*d,y:row.p.y+row.nz*d};};
+ ctx.save();
+ ctx.transform(renderer.tw/2,renderer.th/2,-renderer.tw/2,renderer.th/2,renderer.ox,renderer.oy);
+ ctx.globalCompositeOperation='darken';
+ for(const {profile,rows,level} of shapes.values()){
+  const {a,b}=profile;
+  if(rows.length<2||!renderer.inView((a.x+b.x)/2,(a.y+b.y)/2,60))continue;
+  const rgb=palettes[Math.max(0,level-1)];
+  const pressure=t=>.12+.33*Math.sqrt(streetTrafficAt(profile,t))+.55*streetCoverAt(profile,t);
+  const shade=amount=>'rgb('+rgb.map(v=>Math.round(255-(255-v)*amount)).join(',')+')';
+  let left=mapped(rows[0],-1),right=mapped(rows[0],1),previousLeft=left,previousRight=right;
+  for(let i=1;i<rows.length;i++){
+   const row=rows[i],prev=rows[i-1],endLeft=mapped(row,-1),endRight=mapped(row,1);
+   // A wall can trim one verge. Keep the worn centre under the walkers;
+   // clipping the polygon must not move the soil gradient sideways.
+   const mx=(prev.p.x+row.p.x)/2,my=(prev.p.y+row.p.y)/2;
+   const wx=(prev.nx*prev.reach+row.nx*row.reach)/(2*1.045),wy=(prev.nz*prev.reach+row.nz*row.reach)/(2*1.045);
+   const lx=mx-wx,ly=my-wy,rx=mx+wx,ry=my+wy;
+   if(Math.hypot(rx-lx,ry-ly)>.0001){
+    const gradient=ctx.createLinearGradient(lx,ly,rx,ry);
+    const t=(prev.t+row.t)/2,wear=pressure(t)*(.88+.09*Math.sin(lx*2.9-ly*1.8)+.03*Math.cos(rx*6.1+ry*2.8))*Math.sqrt(streetEndFade(profile,t));
+    const drift=.035*Math.sin(lx*4.1+ly*2.3);
+    for(const [u,strength] of [[0,0],[.065,.28],[.17+drift,.87],[.44+drift,1],[.80+drift,.91],[.94,.27],[1,0]])gradient.addColorStop(u,shade(wear*strength));
+    // Slight overlap at internal samples prevents antialiasing hairlines.
+    const back=(start,previous)=>start+(previous-start)*.035;
+    ctx.fillStyle=gradient;ctx.beginPath();ctx.moveTo(back(left.x,previousLeft.x),back(left.y,previousLeft.y));ctx.lineTo(back(right.x,previousRight.x),back(right.y,previousRight.y));ctx.lineTo(endRight.x,endRight.y);ctx.lineTo(endLeft.x,endLeft.y);ctx.closePath();ctx.fill();
+   }
+   previousLeft=left;previousRight=right;left=endLeft;right=endRight;
+  }
+  if(renderer.s<.65)continue;
+  const count=level===3?15:level===2?13:7;
+  for(let j=0;j<count;j++){
+   const seed=j*3.83,noise=k=>hash(a.x*5.7+b.x*.29+seed+k,a.y*8.3+b.y*2.7-j*.71+k);
+   const t=.04+noise(1)*.92,f=t*(rows.length-1),i=Math.floor(f),r=rows[i],next=rows[i+1],u=f-i;
+   const side=(noise(2)-.5)*1.18,d=r.reach*side*(side<0?r.left*r.trimLeft:r.right*r.trimRight);
+   if(Math.abs(d)+.012>=r.reach*Math.min(r.left*r.trimLeft,r.right*r.trimRight)||streetEndFade(profile,t)<.55)continue;
+   const x=r.p.x+(next.p.x-r.p.x)*u+r.nx*d,y=r.p.y+(next.p.y-r.p.y)*u+r.nz*d;
+   const long=(level===3?.029:level===2?.018:.011)*(.7+noise(3)),short=long*(.35+.25*noise(4));
+   const dx=r.nz*long,dy=-r.nx*long,sx=r.nx*short,sy=r.nz*short;
+   ctx.fillStyle=shade(pressure(t)*(1.02+noise(5)*.34));ctx.beginPath();ctx.moveTo(x-dx,y-dy);ctx.lineTo(x+sx,y+sy);ctx.lineTo(x+dx,y+dy);ctx.lineTo(x+dx*.48-sx,y+dy*.48-sy);ctx.closePath();ctx.fill();
+  }
+ }
+ ctx.restore();
 }
 export class Renderer{
  constructor(canvas,onSelect,onRoadSelect){this.onRoadSelect=onRoadSelect;this.canvas=canvas;this.ctx=canvas.getContext('2d');this.zoom=1.75;this.pan={x:0,y:0};this.ambient=0;this.visualLast=null;this.lightMode='auto';this.lights=[];this.hover=null;this.selected=null;this.effects=[];this.reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;canvas.addEventListener('pointermove',e=>{if(this.dragOrigin){this.pan.x=this.dragOrigin.panX+e.clientX-this.dragOrigin.x;this.pan.y=this.dragOrigin.panY+e.clientY-this.dragOrigin.y;this.hover=null;}else this.hover=this.pick(e.clientX,e.clientY);});canvas.addEventListener('pointerleave',()=>this.hover=null);canvas.addEventListener('contextmenu',e=>e.preventDefault());canvas.addEventListener('pointerup',()=>this.dragOrigin=null);canvas.addEventListener('pointercancel',()=>this.dragOrigin=null);canvas.addEventListener('pointerdown',e=>{if(e.button===1||e.button===2||e.shiftKey){e.preventDefault();this.dragOrigin={x:e.clientX,y:e.clientY,panX:this.pan.x,panY:this.pan.y};canvas.setPointerCapture(e.pointerId);return;}if(e.button===0){this.hover=this.pick(e.clientX,e.clientY);if(this.hover)this.selectPoint(this.hover,onSelect);}});canvas.addEventListener('keydown',e=>{const moves={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0]},home=this.state?.world?.foundingCenter||{x:10,y:9},defaultTile={x:Math.round(home.x),y:Math.round(home.y)};if(moves[e.key]){e.preventDefault();const current=this.hover||defaultTile;const [dx,dy]=moves[e.key];this.hover={x:Math.max(0,Math.min(worldWidth(this.state)-1,current.x+dx)),y:Math.max(0,Math.min(worldHeight(this.state)-1,current.y+dy))};}if(e.key==='Enter'){e.preventDefault();this.hover ||= defaultTile;this.selectPoint(this.hover,onSelect);}if(this.hover)canvas.setAttribute('aria-description',`Выбрана клетка ${this.hover.x}, ${this.hover.y}`);});this.observer=new ResizeObserver(()=>this.resize());this.observer.observe(canvas);this.resize();}
@@ -307,8 +383,7 @@ export class Renderer{
   this.polygon([[p.x-1.8*q,p.y-18*q],[p.x,p.y-(24+Math.sin(t*5+lamp.x)*1.2)*q],[p.x+1.8*q,p.y-18*q]],'#f6c878');
   this.lights.push({x:p.x,y:p.y-20*q,size:30*q});
  }
- streetsLayer() {
-  const c=this.ctx;c.save();c.lineCap='round';c.lineJoin='round';
+ prepareStreets() {
   const state=this.state,roads=state.roads||[];
   const finished=new Set(roads.filter(r=>r.construction||roadIsBuilt(r)).map(r=>r.id));
   const bucket=Math.floor((state.simTime||0)/2),paved=roads.filter(r=>finished.has(r.id));
@@ -318,44 +393,64 @@ export class Renderer{
    cache=this.streetPaint={state,city:this.citySignature,obstacles:obstacleIndex(state.buildings||[]),shapes:new Map()};
   }
   if(cache.bucket!==bucket||cache.pavedKey!==pavedKey){
-   const shapes=new Map();
+   const shapes=new Map(),levels=new Map(paved.map(r=>[r.id,r.level||1]));
+   let changed=false;
    for(const profile of streetSurfaceLayout(state,paved).values()){
-    const previous=cache.shapes.get(profile.id);
-    if(previous&&previous.profile.control===profile.control&&previous.profile.start===profile.start&&previous.profile.end===profile.end&&previous.profile.width===profile.width&&previous.profile.startTip===profile.startTip&&previous.profile.endTip===profile.endTip&&previous.profile.built===profile.built){shapes.set(profile.id,previous);continue;}
-    const rows=streetCrossSections(state,profile.a,profile.b,profile,profile.control,cache.obstacles,8);
-    shapes.set(profile.id,{profile,rows});
+    const previous=cache.shapes.get(profile.id),level=levels.get(profile.id)||0;
+    if(previous&&previous.profile.shapeKey===profile.shapeKey&&previous.profile.control===profile.control&&previous.profile.start===profile.start&&previous.profile.end===profile.end&&previous.profile.width===profile.width&&previous.profile.startTip===profile.startTip&&previous.profile.endTip===profile.endTip&&previous.level===level){shapes.set(profile.id,previous);continue;}
+    const rows=streetCrossSections(state,profile.a,profile.b,profile,profile.control,cache.obstacles,12);
+    shapes.set(profile.id,{profile,rows,level});changed=true;
    }
-   Object.assign(cache,{bucket,pavedKey,shapes});
+   if(changed||cache.shapes.size!==shapes.size){
+    cache.paintKey=null;cache.vergeCells=new Set();
+    for(const {profile:{a,b},rows} of shapes.values()){
+     if(!rows.length)continue;
+     for(let x=Math.ceil(Math.min(a.x,b.x)-.5);x<=Math.floor(Math.max(a.x,b.x)+.5);x++)
+      for(let y=Math.ceil(Math.min(a.y,b.y)-.5);y<=Math.floor(Math.max(a.y,b.y)+.5);y++)cache.vergeCells.add(x+','+y);
+    }
+   }
+   Object.assign(cache,{bucket,pavedKey,shapes,finished});
+  }
+  return cache;
+ }
+ streetsLayer(cache=this.prepareStreets()) {
+  const c=this.ctx;c.save();c.lineCap='round';c.lineJoin='round';
+  const roads=this.state.roads||[],finished=cache.finished;
+  if(cache.shapes.size&&this.canvas?.width&&this.canvas.height){
+   const key=[this.canvas.width,this.canvas.height,this.w,this.h,this.s,this.ox,this.oy].join('/');
+   if(cache.paintKey!==key){
+    const layer=cache.layer||this.createLayerCanvas?.()||(typeof document!=='undefined'?document.createElement('canvas'):null);
+    if(layer){
+     cache.layer=layer;layer.width=this.canvas.width;layer.height=this.canvas.height;
+     const ctx=layer.getContext('2d');
+     ctx.setTransform(layer.width/this.w,0,0,layer.height/this.h,0,0);
+     ctx.fillStyle='white';ctx.fillRect(0,0,this.w,this.h);
+     paintStreetSoil(this,ctx,cache.shapes);
+     const grain=streetGrain(this,ctx);
+     if(grain){
+      // Keep grains registered to the same ground as the camera pans or zooms.
+      grain.setTransform({a:this.s*.43,d:this.s*.31,e:this.ox,f:this.oy});
+      ctx.fillStyle=grain;ctx.fillRect(0,0,this.w,this.h);
+     }
+     cache.paintKey=key;
+    }
+   }
+   if(cache.layer&&cache.paintKey===key){
+    c.save();c.globalCompositeOperation='multiply';c.drawImage(cache.layer,0,0,this.w,this.h);c.restore();
+   }
   }
   const points=r=>{
-   const control=cache.shapes.get(r.id)?.profile.control;
+   const shape=cache.shapes.get(r.id);
+   if(shape?.rows.length)return shape.rows.map(({p})=>this.point(p.x,p.y));
+   const control=shape?.profile.control;
    return control?[0,.25,.5,.75,1].map(t=>{const p=footpathRibbonPoint(r.a,r.b,control,t);return this.point(p.x,p.y);}):[this.point(r.a.x,r.a.y),this.point(r.b.x,r.b.y)];
   };
-  const fill=(shape,scale,color)=>{
-   if(!shape?.rows.length)return;
-   const left=[],right=[];
-   for(const r of shape.rows){
-    const half=r.reach/1.045*scale,lo=-half*r.left*r.trimLeft,hi=half*r.right*r.trimRight;
-    left.push(this.point(r.p.x+r.nx*lo,r.p.y+r.nz*lo));right.push(this.point(r.p.x+r.nx*hi,r.p.y+r.nz*hi));
-   }
-   this.polygon(left.concat(right.reverse()),color);
-  };
-  for(const shape of cache.shapes.values()){
-   const p=shape.profile;
-   if(p.built||!this.inView((p.a.x+p.b.x)/2,(p.a.y+p.b.y)/2,50))continue;
-   const opacity=.21+p.traffic*.52;
-   fill(shape,1,`rgba(104,80,51,${opacity*.48})`);fill(shape,.74,`rgba(144,111,74,${opacity})`);
-  }
   const showNetwork=this.roadMode&&!this.photoMode,hovered=showNetwork?this.roadNear(this.hover||{})?.id:null;
   const visibleRoads=roads.filter(r=>(finished.has(r.id)||showNetwork||this.routeRoads?.has(r.id)||this.selectedRoad===r.id||this.selectedRoad?.id===r.id)&&this.inView(r.x,r.y,55));
-  const built=visibleRoads.filter(r=>finished.has(r.id));
-  for(const [color,scale] of [['#af9c73',1],['#dbc79c',.76]])for(const r of built)fill(cache.shapes.get(r.id),scale,color);
   for(const road of visibleRoads){
-   const {a,b,level}=road,path=points(road);
+   const {a,b}=road,path=points(road);
    if(finished.has(road.id)){
     const shape=cache.shapes.get(road.id);
-    fill(shape,level>1?.57:.23,level===3?'#ad7956':level===2?'#b5af94':'#e4d1a8');
-    if(level===3)for(let k=1;k<5;k++){const q=footpathRibbonPoint(a,b,shape?.profile.control,k/5),p=this.point(q.x,q.y);this.line([[p.x-2*this.s,p.y-2*this.s],[p.x+2*this.s,p.y+2*this.s]],'#dfbd91',.65*this.s);}
     if(road.construction){const q=footpathRibbonPoint(a,b,shape?.profile.control,.5),p=this.point(q.x,q.y);this.box(p.x,p.y,4*this.s,2*this.s,3*this.s,'#e4ba77','#aa8054','#c69b62');this.line([[p.x-5*this.s,p.y-6*this.s],[p.x+5*this.s,p.y-2*this.s]],'#977b4b',2*this.s);}
    }else if(showNetwork)this.line(path,'rgba(238,211,143,.55)',1.1*this.s);
    if(!this.photoMode&&(this.routeRoads?.has(road.id)||this.selectedRoad===road.id||this.selectedRoad?.id===road.id||hovered===road.id))this.line(path,'#fff0ae',2*this.s);
@@ -395,7 +490,7 @@ export class Renderer{
  const riverPoints=[];for(let y=-.5;y<=length-.5;y+=.25)riverPoints.push(waterPoint(y,-1.12));for(let y=length-.5;y>=-.5;y-=.25)riverPoints.push(waterPoint(y,1.12));this.polygon(riverPoints,s.drought?'#80aaa0':'#77aaa0');const inner=[];for(let y=-.5;y<=length-.5;y+=.25)inner.push(waterPoint(y,-.7));for(let y=length-.5;y>=-.5;y-=.25)inner.push(waterPoint(y,.6));this.polygon(inner,'#4d9192');for(const side of [-1,1]){const bank=[],shallows=[];for(let yy=-.5;yy<=length-.5;yy+=.25){bank.push(waterPoint(yy,side*1.15));shallows.push(waterPoint(yy,side*.91));}this.line(bank,'#a9b58a',2.2*this.s);this.line(shallows,'#a4c5af70',1.3*this.s);}
  for(let y=0;y<HEIGHT;y++)for(let x=0;x<WIDTH;x++){if(!this.inView(x,y,40))continue;if(terrain(x,y,s)==='water'&&Math.abs(signedRiverDistance(x,y,s))>1.2){this.tile(x,y,'#70aaa2');for(const [dx,dy,a,b]of [[0,-1,[x-.5,y-.5],[x+.5,y-.5]],[1,0,[x+.5,y-.5],[x+.5,y+.5]],[0,1,[x+.5,y+.5],[x-.5,y+.5]],[-1,0,[x-.5,y+.5],[x-.5,y-.5]]])if(terrain(x+dx,y+dy,s)!=='water')this.line([this.point(...a),this.point(...b)],'#a5bb8a',3*this.s);const p=this.point(x,y);this.line([[p.x-8*this.s,p.y],[p.x+5*this.s,p.y+2*this.s]],'#b1d1be77',this.s);}}
  }
- depositsLayer(s){
+ depositsLayer(s,vergeCells){
   const colors={clay:'#b88764',reed:'#8ca16a',stone:'#a8ae9b',forest:'#719064',wildlife:'#b69c72',dates:'#bba161'};
   const pits=new Map(mineralExcavations(s).map(p=>[`${p.x},${p.y}`,p]));
   for(const deposit of s.world?.deposits||[]){
@@ -407,7 +502,15 @@ export class Renderer{
     if(pit||(size>0&&!s.buildings?.some(b=>occupiesCell(b,x,y))))drawMapMineral(this,deposit,pit,size);
     pits.delete(key);continue;
    }
-   this.tile(x,y,color+'77');
+   // On a worn street the boundary of a resource marker otherwise runs down
+   // the middle of the road. Fade the patch into the soil before the verge.
+   if(vergeCells?.has(x+','+y)){
+    const c=this.ctx,p=this.point(x,y);c.save();
+    c.transform(this.tw/2,this.th/2,-this.tw/2,this.th/2,p.x,p.y);
+    const wash=c.createRadialGradient(0,0,.12,0,0,.52);
+    wash.addColorStop(0,color+'77');wash.addColorStop(.58,color+'51');wash.addColorStop(1,color+'00');
+    c.fillStyle=wash;c.fillRect(-.5,-.5,1,1);c.restore();
+   }else this.tile(x,y,color+'77');
    if(size<=0&&kind!=='dates')continue;
    if(extractionOwner(s,deposit)){
     for(const [dx,dy] of [[-.19,-.1],[.19,-.13],[.03,.21]]){
@@ -460,11 +563,11 @@ export class Renderer{
  this.lighting=lightingAt(this.lightMode==='auto'?(s.simTime||0):(modeSeconds[this.lightMode]??s.simTime??0));
  this.refreshCity(s);this.weather=weatherAt(s);this.lights=[];c.clearRect(0,0,w,h);c.save();const ground=this.point(10,9);const glow=c.createRadialGradient(ground.x,ground.y,10,ground.x,ground.y,w*.7);glow.addColorStop(0,'#f0ecd9');glow.addColorStop(1,'#e2e6d8');c.fillStyle=glow;c.fillRect(0,0,w,h);
  if(this.lighting.night){c.fillStyle=`rgba(239,232,207,${this.lighting.night*.65})`;for(let k=0;k<55;k++){const px=hash(k,34)*w,py=hash(k,56)*(h-80);c.beginPath();c.arc(px,py,(k%5===0?1.2:.6)*this.s,0,7);c.fill();}}
- this.terrainLayer(s);this.depositsLayer(s);
+ const streets=this.prepareStreets();this.terrainLayer(s);this.depositsLayer(s,streets.vergeCells);
  for(let k=0;k<42;k++){const length=riverLength(s)-.3,along=((k*.47+t*.13*riverFlowSign(s))%length+length)%length-.4,offset=(hash(k,9)-.5)*1.45,at=riverPoint(along,s,offset),to=riverPoint(along+.13+hash(k,8)*.4,s,offset+.06),p=this.point(at.x,at.y),p2=this.point(to.x,to.y);this.line([p,p2],'#c3d9bd70',this.s);}
  const irrigation=irrigationFor(s);
  for(const b of s.buildings)if(b.type==='canal'&&!b.construction)drawCanal(this,b,s,{network:irrigation});
- this.streetsLayer();
+ this.streetsLayer(streets);
  const flood=floodMapView(s);
  if(flood)for(const {x,y} of flood.tiles)if(this.inView(x,y,50))this.tile(x,y,flood.phase==='active'?'#4b9fa5a6':'#4b9fa54a','#28737d75');
  for(const b of s.buildings)if(b.type==='canal'&&!b.construction)drawCanal(this,b,s,{crossings:true,network:irrigation});

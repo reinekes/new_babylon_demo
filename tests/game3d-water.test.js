@@ -35,6 +35,30 @@ test('built streets keep their route centre, shared shoulders and fading edges i
  assert.equal(JSON.stringify([a,b,state]),before);
 });
 
+test('earthen streets preserve world-aligned sediment grain without painting two continuous wheel ruts',()=>{
+ const a={x:2.5,y:4.5},b={x:3.5,y:4.5},g=wornRoadGeometry(state,a,b,3);
+ const rowCount=g.positions.length/21;
+ let crown=0,interior=0;
+ for(let row=0;row<rowCount;row++){
+  crown+=g.colors[(row*7+3)*4];
+  interior+=(g.colors[(row*7+2)*4]+g.colors[(row*7+4)*4])/2;
+  for(let col=0;col<7;col++){
+   const i=row*7+col,x=g.positions[i*3]+g.origin.x,z=g.positions[i*3+2]+g.origin.z;
+   assert.ok(Math.abs(g.uvs[i*2]-(.93*x+.37*z)/3.4)<1e-10);
+   assert.ok(Math.abs(g.uvs[i*2+1]-(.93*z-.37*x)/3.4)<1e-10);
+  }
+ }
+ assert.ok(Math.abs(crown-interior)/rowCount<.04);
+ const surface=traffic=>wornRoadGeometry(state,a,b,{a,b,start:3,width:3,end:3,traffic},.04);
+ const barely=surface(.0625),busy=surface(1);
+ // The centre and both interior columns compact together. A row of dark ruts
+ // would leave a pale central stripe when the camera moves out.
+ for(let row=0;row<rowCount;row++)for(const col of [2,3,4]){
+  const i=(row*7+col)*4;
+  assert.ok(busy.colors[i]<barely.colors[i]*.87);
+ }
+});
+
 test('curved paving keeps both verges joined, and upgrades cover the same centre as the resident route',()=>{
  const a={x:2.5,y:4.5},b={x:3.5,y:4.5},c={x:4.5,y:4.5},lookup=streetCurveLookup(state);
  const street=(p,q,progress=1)=>wornRoadGeometry(state,p,q,1.22,.038,1,2,lookup(p,q),undefined,progress);
@@ -61,10 +85,16 @@ test('repeated walks widen both surfaces, taper into quieter blocks and preserve
  assert.equal(side.start,side.width);assert.equal(streetWidthAt(main,.5),main.width);
  assert.ok(streetWidthAt(main,.85)>main.end&&streetWidthAt(main,.85)<main.width);
  const shape=p=>wornRoadGeometry(s,p.a,p.b,p,.04,1,2,p.control);
- const first=shape(main),next=shape(quiet);
+ const first=shape(main),next=shape(quiet),third=shape(busy);
  for(let i=0;i<7;i++){
   const j=first.positions.length-21+i*3,k=i*3;
   assert.ok(Math.hypot(first.positions[j]+first.origin.x-next.positions[k]-next.origin.x,first.positions[j+2]+first.origin.z-next.positions[k+2]-next.origin.z)<1e-7);
+  for(const [left,right] of [[first,next],[next,third]]){
+   const previous=(left.colors.length-28)+i*4,nextRow=i*4;
+   for(let channel=0;channel<4;channel++){
+    assert.ok(Math.abs(left.colors[previous+channel]-right.colors[nextRow+channel])<1e-6,'equal tint and coverage at dirt-to-trail and trail-to-trail joins');
+   }
+  }
  }
 });
 

@@ -144,8 +144,10 @@ function groundOffset(s,view,x,y){
  const key=x+','+y;
  if(view.offsets.has(key))return view.offsets.get(key);
  const phase=(s.world?.seed||0)*.013;
- const dx=.092*Math.sin(y*.81+x*.23-phase)+.029*Math.sin(x*.67-y*.47+phase);
- const dy=.109*Math.sin(x*.87+y*.31+phase)+.037*Math.cos(x*.39-y*.74-phase);
+ // Slow shifts in direction give adjoining lanes different lengths of bend.
+ // The same continuous drift also places walkers over the worn ground.
+ const dx=.101*Math.sin(y*.66+x*.21-phase+.74*Math.sin(x*.28-y*.19+phase))+.032*Math.sin(x*.64-y*.43+phase);
+ const dy=.106*Math.sin(x*.75+y*.28+phase+.68*Math.sin(y*.35+x*.21-phase))+.034*Math.cos(x*.35-y*.70-phase);
  let room=1;
  for(let xx=Math.floor(x);xx<=Math.ceil(x);xx++)for(let yy=Math.floor(y);yy<=Math.ceil(y);yy++){
   for(const box of view.obstacles.get(xx+','+yy)||[]){

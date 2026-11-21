@@ -1,4 +1,4 @@
-import {streetCrossSections,streetEndFade} from '../street-surfaces.js';
+import {streetCrossSections,streetEndFade,streetTrafficAt,streetCoverAt} from '../street-surfaces.js';
 import {obstacleIndex} from '../navigation.js';
 import {createAlluvialWaterMaterial} from './alluvial-water.js';
 import {worldWidth,worldHeight,riverLength,riverPoint,riverAxis,terrain} from '../world.js';
@@ -65,7 +65,11 @@ export function wornRoadGeometry(s,a,b,width=1.12,height=.04,level=1,segmentsPer
  const rows=streetCrossSections(s,a,b,width,control,obstacles,steps,progress);
  for(let j=0;j<rows.length;j++){
   const row=rows[j],{t,x,z,nx,nz,half}=row;
+  // Sample wear along the street, including the shared value at the join.
+  // Bedded stone retains its mineral colour as the soil between stones compacts.
+  const traffic=streetTrafficAt(width,t),compacted=1-(level===1?.20:.08)*traffic;
   g.centers.push({x,y:z});
+  const opacity=streetEndFade(width,t)*streetCoverAt(width,t),crownHeight=Math.sin(Math.PI*t)*(level>=3?.012:.004);
   const left=row.left*row.trimLeft,right=row.right*row.trimRight;
   g.widths.push(half*(left+right));
   for(let k=0;k<fractions.length;k++){
@@ -75,13 +79,16 @@ export function wornRoadGeometry(s,a,b,width=1.12,height=.04,level=1,segmentsPer
    const X=x+nx*offset*fray,Z=z+nz*offset*fray;
    // Gently crowned paving and shoulders of compacted earth meet the original
    // elevation at every endpoint, including at street and footpath junctions.
-   const crown=Math.sin(Math.PI*t)*(1-Math.abs(side))*(level>=3?.022:.012);
-   g.positions.push(X-origin.x,Math.max(height,surfaceElevation(X/TILE,Z/TILE,s)+height)+crown,Z-origin.z);g.uvs.push(X/3,Z/3);
-   const margin=Math.abs(side),alpha=margin===1?0:margin>.8?.32:.84+.12*noise(X,Z);
-   const wear=level===1 ? .14*Math.exp(-side*side*5)-.12*Math.exp(-((margin-.48)**2)/.015) : 0;
-   const compaction=typeof width==='number'?0:width.traffic;
-   const v=.88+wear+.09*noise(X*2,Z*2)+compaction*.07*(1-margin);
-   g.colors.push(v*1.025,v,v*.955,alpha*streetEndFade(width,t));
+   const crown=crownHeight*(1-Math.abs(side));
+   g.positions.push(X-origin.x,Math.max(height,surfaceElevation(X/TILE,Z/TILE,s)+height)+crown,Z-origin.z);
+   // Orient the grain with the alluvial plain, including across junctions and
+   // when a block was built from the opposite end.
+   g.uvs.push((.93*X+.37*Z)/3.4,(.93*Z-.37*X)/3.4);
+   const grain=noise(X*.91,Z*.91),patch=Math.sin(X*.65+Z*.38)*Math.sin(Z*.77-X*.18);
+   const margin=Math.abs(side);
+   const alpha=margin===1?0:margin>.8?.50+.40*(grain-.5)+.12*patch:.92+.06*grain;
+   const v=(.96+.015*patch+.032*(grain-.5)+.02*traffic)*compacted;
+   g.colors.push(v,v*.99,v*.967,alpha*opacity);
    if(j<steps&&k<fractions.length-1){const i=j*fractions.length+k;g.indices.push(i,i+fractions.length,i+1,i+1,i+fractions.length,i+fractions.length+1);}
   }
  }

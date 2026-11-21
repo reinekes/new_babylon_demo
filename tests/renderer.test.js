@@ -118,17 +118,32 @@ test('placement sites reuse terrain checks until buildings or deposits change',a
  assert.deepEqual(r.placementSites(s,'house'),[]);
 });
 
-test('automatic roads are hidden in 2D outside road mode; finished road outlines have no border seams',()=>{
- const r=Object.create(Renderer.prototype),calls=[];
- const a={key:'a',x:0,y:0},b={key:'b',x:1,y:0},c={key:'c',x:2,y:0},d={key:'d',x:3,y:0};
- const road=(id,a,b,built)=>({id,a,b,built,level:1,x:(a.x+b.x)/2,y:0});
- const roads=[road('built-a',a,b,true),road('built-b',b,c,true),road('automatic',c,d,false)];
- Object.assign(r,{ctx:{save(){},restore(){}},s:1,state:{roads},streets:{edges:[[a,b],[b,c],[c,d]],ports:[]},point:(x,y)=>[x,y],line:(path,color)=>calls.push({path,color}),polygon:(path,color)=>calls.push({path,color}),inView:()=>true});
+test('Canvas joins one soil tint before compositing into the ground, caches it and still selects automatic routes',()=>{
+ const r=Object.create(Renderer.prototype),images=[],gradients=[],modes=[],lines=[];
+ const points=[0,1,2,3,4].map(i=>({x:2.5+i,y:3.5,key:(3+i)+',4'}));
+ const roads=points.slice(1).map((b,i)=>({id:'r'+i,a:points[i],b,built:i<3,level:i<3?i+1:1,x:b.x-.5,y:b.y}));
+ const ctx={save(){},restore(){},drawImage(){images.push(this.globalCompositeOperation);}};
+ const layer={save(){},restore(){},setTransform(){},transform(){},beginPath(){},moveTo(){},lineTo(){},closePath(){},fillRect(){},
+  createLinearGradient(){const stops=[];gradients.push(stops);return {addColorStop(u,c){stops.push([u,c]);}};},
+  fill(){modes.push(this.globalCompositeOperation);}
+ };
+ Object.assign(r,{ctx,s:1,w:600,h:500,tw:60,th:30,ox:300,oy:40,canvas:{width:600,height:500},state:{roads},
+  createLayerCanvas:()=>({getContext:()=>layer}),line:(path)=>lines.push(path),inView:()=>true});
  r.streetsLayer();
- assert.deepEqual(calls.slice(0,4).map(call=>call.color),['#af9c73','#af9c73','#dbc79c','#dbc79c']);
- assert.ok(calls.every(call=>call.path[1][0]<d.x));
- r.roadMode=true;calls.length=0;r.streetsLayer();
- assert.ok(calls.some(call=>call.path[1][0]===d.x));
+ assert.deepEqual([...r.streetPaint.shapes.values()].map(s=>s.level),[1,2,3]);
+ assert.deepEqual(new Set(modes),new Set(['darken']));
+ assert.deepEqual(images,['multiply']);
+ assert.equal(lines.length,0);
+ assert.ok(gradients.every(stops=>stops[0][1]==='rgb(255,255,255)'&&stops.at(-1)[1]==='rgb(255,255,255)'));
+ const count=gradients.length;assert.ok(count>=3*8);
+ const tones=[0,1,2].map(i=>gradients[i*count/3+Math.floor(count/6)][3][1].match(/\d+/g).map(Number));
+ assert.ok(tones[1][0]-tones[1][1]<tones[0][0]-tones[0][1],'the middle level uses less ochre than the dirt lane');
+ assert.ok(tones[2][0]-tones[2][2]>tones[0][0]-tones[0][2],'the brick surface has a distinct fired-clay tint');
+ r.roadMode=true;r.streetsLayer();
+ assert.equal(gradients.length,count,'a camera-stable selection reuses the existing pixels');
+ assert.deepEqual(images,['multiply','multiply']);assert.equal(lines.length,1);
+ assert.deepEqual(lines[0].at(-1),r.point(points[4].x,points[4].y));
+ r.ox+=40;r.streetsLayer();assert.equal(gradients.length,count*2,'panning repaints with soil grain anchored in the world');
 });
 test('supply focus puts a distant house visibly to the right of the desktop detail card',()=>{const r=Object.create(Renderer.prototype);Object.assign(r,{w:945,h:715,zoom:1.45,pan:{x:0,y:0}});r.layout();r.focusOn(35,27);const p=r.point(35,27);assert.ok(p.x>400&&p.x<r.w-80);assert.ok(p.y>90&&p.y<r.h-90);});
 

@@ -1,0 +1,332 @@
+{
+  "release": "earthen-streets-20261121",
+  "beforeCommit": "eeee9dbe",
+  "method": "Same settlements, camera and time in normal WebGL/Canvas. Luma is measured on identical screenshot regions (0–255). Throughput uses the 500/250 WebGL city at 4x with the same road wear and laid sections, 18 real seconds per sample. Indexed edges receive 4, 14 or 32 prior complete passages before each run. Both versions have one unscored warmup. Observed FPS is frames per wall-clock second.",
+  "webglBefore": {
+    "junction": {
+      "renderer": "3d",
+      "webglVersion": 2,
+      "gl": 0,
+      "visuals": {
+        "builtSources": 5,
+        "builtVisibleDraws": 1,
+        "footpathVertices": 343
+      },
+      "roadPasses": 238,
+      "builtEdges": 5,
+      "population": 12,
+      "buildings": 5,
+      "sim": 65,
+      "ordinaryUI": true,
+      "saveSHA256": "b742008876b9f63a8aea0c47bb858b48856629ef6ce4fe9d5978c48ea374dd71",
+      "errors": []
+    },
+    "village": {
+      "renderer": "3d",
+      "webglVersion": 2,
+      "gl": 0,
+      "visuals": {
+        "builtSources": 0,
+        "builtVisibleDraws": 0,
+        "footpathVertices": 2184
+      },
+      "roadPasses": 518.1402845799893,
+      "builtEdges": 0,
+      "population": 50,
+      "buildings": 15,
+      "sim": 73.49999999999838,
+      "ordinaryUI": true,
+      "saveSHA256": "1779addb59102d4fba57547f75e5fe3b977312e6b57c0b2da943425ba6a811a9",
+      "errors": []
+    }
+  },
+  "webglAfter": {
+    "junction": {
+      "renderer": "3d",
+      "webglVersion": 2,
+      "gl": 0,
+      "visuals": {
+        "builtSources": 5,
+        "builtVisibleDraws": 1,
+        "footpathVertices": 343
+      },
+      "roadPasses": 238,
+      "builtEdges": 5,
+      "population": 12,
+      "buildings": 5,
+      "sim": 65,
+      "ordinaryUI": true,
+      "saveSHA256": "b742008876b9f63a8aea0c47bb858b48856629ef6ce4fe9d5978c48ea374dd71",
+      "errors": []
+    },
+    "village": {
+      "renderer": "3d",
+      "webglVersion": 2,
+      "gl": 0,
+      "visuals": {
+        "builtSources": 0,
+        "builtVisibleDraws": 0,
+        "footpathVertices": 2184
+      },
+      "roadPasses": 518.1402845799893,
+      "builtEdges": 0,
+      "population": 50,
+      "buildings": 15,
+      "sim": 73.49999999999838,
+      "ordinaryUI": true,
+      "saveSHA256": "1779addb59102d4fba57547f75e5fe3b977312e6b57c0b2da943425ba6a811a9",
+      "errors": []
+    }
+  },
+  "pixelsBefore": {
+    "sample": "Unobstructed portion of the main-junction capture, 91 scanlines; luminance 0–255",
+    "centreLuma": 108,
+    "leftShoulderLuma": 98.0,
+    "rightShoulderLuma": 98.0,
+    "referenceGroundLuma": 125,
+    "bothShouldersDarkerBy": 10.0,
+    "centreMeanAbsoluteHighpass2px": 0.9,
+    "naturalTrail": {
+      "sample": "Empty diagonal path between the houses and the watch-house, 76 fixed scanlines in village-turn.",
+      "centreLuma": 97.0,
+      "adjacentGroundLuma": 133.0
+    },
+    "fieldTransitionMaxFivePixelJump": 24
+  },
+  "pixelsAfter": {
+    "sample": "Unobstructed portion of the main-junction capture, 91 scanlines; luminance 0–255",
+    "centreLuma": 108,
+    "leftShoulderLuma": 108.0,
+    "rightShoulderLuma": 120.0,
+    "referenceGroundLuma": 125,
+    "bothShouldersDarkerBy": -12.0,
+    "centreMeanAbsoluteHighpass2px": 2.863,
+    "naturalTrail": {
+      "sample": "Empty diagonal path between the houses and the watch-house, 76 fixed scanlines in village-turn.",
+      "centreLuma": 118.0,
+      "adjacentGroundLuma": 133.0
+    },
+    "fieldTransitionMaxFivePixelJump": 6
+  },
+  "canvas": {
+    "method": "Live game Canvas fallback, same decoded save, paused frame, day light, fixed pan and zoom; native canvas pixels at a T junction, a busy-to-quiet trail beside the field, and mid zoom.",
+    "before": {
+      "camera": {
+        "zoom": 3.8,
+        "pan": {
+          "x": -9.481999999999971,
+          "y": -78.44599999999991
+        },
+        "s": 3.4136666666666664,
+        "ox": 427.10800000000006,
+        "oy": -609.3409999999999,
+        "cx": 10.7,
+        "cy": 9.5,
+        "w": 1100,
+        "h": 850
+      },
+      "checks": {
+        "surfaceCount": 12,
+        "people": 12,
+        "simTime": 65
+      },
+      "exceptions": [],
+      "http": [],
+      "warn": [],
+      "saveSHA256": "b742008876b9f63a8aea0c47bb858b48856629ef6ce4fe9d5978c48ea374dd71"
+    },
+    "after": {
+      "camera": {
+        "zoom": 3.8,
+        "pan": {
+          "x": -9.481999999999971,
+          "y": -78.44599999999991
+        },
+        "s": 3.4136666666666664,
+        "ox": 427.10800000000006,
+        "oy": -609.3409999999999,
+        "cx": 10.7,
+        "cy": 9.5,
+        "w": 1100,
+        "h": 850
+      },
+      "checks": {
+        "surfaceCount": 12,
+        "people": 12,
+        "simTime": 65,
+        "junction": {
+          "point": {
+            "x": 10.575039690901615,
+            "y": 10.469758640850696
+          },
+          "mainAndBranch": [
+            235,
+            221,
+            202
+          ],
+          "mainAlone": [
+            235,
+            221,
+            202
+          ]
+        },
+        "fieldJoin": {
+          "farBusy": [
+            236,
+            222,
+            204
+          ],
+          "nearBusy": [
+            238,
+            224,
+            208
+          ],
+          "nearQuiet": [
+            238,
+            225,
+            209
+          ],
+          "farQuiet": [
+            244,
+            236,
+            226
+          ],
+          "maxChannelStep": 1
+        },
+        "warmPaintCache": true,
+        "mediumZoom": {
+          "zoom": 2.4,
+          "roadWidthPx": 40.563382253538094,
+          "tint": [
+            233,
+            217,
+            196
+          ],
+          "framePixel": [
+            183,
+            163,
+            119
+          ],
+          "terrainPixel": [
+            216,
+            201,
+            158
+          ]
+        }
+      },
+      "exceptions": [],
+      "http": [],
+      "warn": [],
+      "saveSHA256": "b742008876b9f63a8aea0c47bb858b48856629ef6ce4fe9d5978c48ea374dd71"
+    },
+    "beforeLongitudinalBlend": {
+      "farBusy": [
+        234,
+        218,
+        199
+      ],
+      "nearBusy": [
+        228,
+        209,
+        187
+      ],
+      "nearQuiet": [
+        246,
+        239,
+        231
+      ],
+      "farQuiet": [
+        242,
+        232,
+        221
+      ],
+      "maxChannelStep": 44
+    },
+    "cameraAndSaveMatch": true,
+    "junctionRGBMatch": true
+  },
+  "performance": {
+    "GPU": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+    "resolution": [
+      1440,
+      780
+    ],
+    "order": [
+      "before",
+      "after",
+      "after",
+      "before"
+    ],
+    "runs": [
+      {
+        "build": "before",
+        "fps": 27.586742821618685,
+        "frames": 497,
+        "seconds": 18.0159,
+        "frameP95Ms": 50.099999999998545,
+        "simCpuP95Ms": 12.899999976158142,
+        "glError": 0,
+        "population": 500,
+        "buildings": 250,
+        "roadNetwork": {
+          "visible": 177,
+          "built": 45
+        },
+        "roundTripIdsCargoAndResources": true
+      },
+      {
+        "build": "after",
+        "fps": 27.228615000693193,
+        "frames": 491,
+        "seconds": 18.0325,
+        "frameP95Ms": 66.59999999999854,
+        "simCpuP95Ms": 13.899999976158142,
+        "glError": 0,
+        "population": 500,
+        "buildings": 250,
+        "roadNetwork": {
+          "visible": 177,
+          "built": 45
+        },
+        "roundTripIdsCargoAndResources": true
+      },
+      {
+        "build": "after",
+        "fps": 28.530353743082497,
+        "frames": 514,
+        "seconds": 18.015900000000002,
+        "frameP95Ms": 50,
+        "simCpuP95Ms": 12.799999952316284,
+        "glError": 0,
+        "population": 500,
+        "buildings": 250,
+        "roadNetwork": {
+          "visible": 177,
+          "built": 45
+        },
+        "roundTripIdsCargoAndResources": true
+      },
+      {
+        "build": "before",
+        "fps": 27.228464004081495,
+        "frames": 491,
+        "seconds": 18.032600000000002,
+        "frameP95Ms": 50.100000000000364,
+        "simCpuP95Ms": 13.100000023841858,
+        "glError": 0,
+        "population": 500,
+        "buildings": 250,
+        "roadNetwork": {
+          "visible": 177,
+          "built": 45
+        },
+        "roundTripIdsCargoAndResources": true
+      }
+    ],
+    "meanFPS": {
+      "before": 27.40760341285009,
+      "after": 27.879484371887845
+    }
+  },
+  "archives": 20
+}
