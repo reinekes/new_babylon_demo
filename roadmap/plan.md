@@ -189,7 +189,7 @@ group: economy
 status: partial
 priority: P1
 depends: -
-sources: docs/PRODUCTION_AND_MIRACLES_2026-11-21.md
+sources: docs/PRODUCTION_AND_MIRACLES_2026-11-21.md; roadmap/reports/2026-11-21-fishery.md
 
 ### Описание
 Предложены пять цепочек. Первой рыбацкий двор отдаёт улов на сегодняшнюю еду или на сушку. Следом идут вторая грузовая тележка, пропитка снастей рыбьим жиром, товарные финики и праздничное храмовое полотно.
@@ -208,7 +208,7 @@ group: godhood
 status: partial
 priority: P1
 depends: -
-sources: docs/PRODUCTION_AND_MIRACLES_2026-11-21.md; roadmap/assets/rich-catch-storyboard-2026-11-21.webp
+sources: docs/PRODUCTION_AND_MIRACLES_2026-11-21.md; roadmap/assets/rich-catch-storyboard-2026-11-21.webp; roadmap/reports/2026-11-21-fishery.md
 
 ### Описание
 Предложена постановка трёх действующих даров в игровом мире. Для «Богатого улова» подготовлен концепт из трёх кадров. Для «Небесного дождя» и «Дыхания земли» расписано движение воды, света и растительности.

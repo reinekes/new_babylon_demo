@@ -1,0 +1,88 @@
+{
+  "release": "2e672f0fd7ed5a45ac217664d11a5a7733bd4c6e",
+  "site": "https://reinekes.github.io/new_babylon_demo/",
+  "matched": {
+    "fishing-yard-art.js": "d474b6724d62119d33268fc9faae76c8b21859bc22b60a1522b3a6d1403e87ac",
+    "work-audio.js": "9152cb9c79ea95d7b0fb08c8fa14dfebcea2c881f2415454823ef4bde107489e",
+    "workforce.js": "8fa762f224d9490a8c4448e8514a8b47ff45cc4debfda47411cc56bf6fd52b97",
+    "app.js": "ed634eeb3a58734921ba7d536302227292eaa8433d4ff746c7b5d47e60dcafb1",
+    "bricks.js": "723ee7ab89b84384a276d8a390268c4e68c102c31fe9fc545003c789b30e8942",
+    "cat-fishing-ledger.js": "cc860dd244e4fe970a4587ec9b768438748085f0beb41c062d799f9d9466e9ea",
+    "courtyard.html": "225b58987c35835b0213b3f5327e0ed82a9073ba18c5e1b9c93d0316ca9fcb30",
+    "crop-studio.html": "2fe19678cfe898ec987bab0a7ff0611311257aa767622ee613b84ec852198b1a",
+    "desert-funeral.js": "86ca537b606addd90aa9959abb3c0abcca249fc82d0d429c95bc2686ff76f04a",
+    "district-logistics.js": "902ce7c8fc31540c14abf4fa5ec89214b39f7abcc1d80c86a800ff93058680d1",
+    "docs/PRODUCTION_AND_MIRACLES_2026-11-21.md": "abbf69cc2f7f4d7ecfe1bcafb34f5b1285babd36d0c3181eab96d8baff8c0b28",
+    "docs/benchmarks/2026-11-21-fishery-4x.json": "1766b58fe1d3606314c1b90c2d9e0649162356c211bff871eb44dce84502bb45",
+    "docs/benchmarks/2026-11-21-fishery-fishing-save.json.gz": "63ee995e62130674bd6ae48a825ebc94313badaacd444f97e9f7da4b640d606a",
+    "docs/benchmarks/2026-11-21-fishery-overview-save.json.gz": "4edb9790b5f0b1e33de9357ab95b4b4a3b1941d4c47e8437a02f0ebb93e33b0a",
+    "engine.js": "8bb56a424785af4fcaa00f86f03c8d60e3b704f4619b3a5f383ddb1acd54c45e",
+    "fish-drying.js": "faa1778f77bf37f8c5401be55ae818b7af9ad3d0a3271c8225175a8f277add8f",
+    "fish-provenance.js": "76c3a0ff971e783dde03906f640e6bd70ed1b2c948bb392284182b3edb8650bd",
+    "game3d/actors.js": "caaa55c3988b69363908027515b0a6e8734af6931a823de0c3bef177ca7eec0a",
+    "game3d/buildings.js": "f862e57774e985731d73cfc5e36ef8d8965e3d0ea7ffc6768a7693ca7a2d08d7",
+    "game3d/harvest-gear.js": "8b304acf5426f49d2babe2db636a5f77df80435366adc151c27982e48eec405f",
+    "game3d/resident-motion.js": "f0d36af4eb01eacc38216c26c228faf120a58002978b217a748af176d6cc61bc",
+    "goat-studio.html": "eb41a899ce811cc682bb85dced0e02bfaee775b83050a52317a7957154dd62eb",
+    "households.js": "5088a6767fdc7544757c062b4d770db4b2ce543a930fb7d8d8566c5681d7229b",
+    "mallards.html": "1801072bd8f866f28128a4aae2cbf62d3a75890b227c6a45da3a9887e5972c56",
+    "management.js": "e936f498ba80c481c81a1da25cee5280567da69e372769aacf01f5f21622d588",
+    "model-atlas/index.html": "b704e78e9628ad9d9a9e42eaadcae74473237c252cd01f1179f21c9dc0f0cb25",
+    "renderer.js": "9e17472d262fd840c6eb52f9e593affa4d521409f13dc74564d4b911cdc1e234",
+    "rich-catch-presentation.css": "1084d28df1d06f012a02a2d457c4979b0d8cf9b4e3900b42aab8f9bf7e6f2937",
+    "rich-catch-presentation.js": "82673c99a006976aac06f31013d71adf715f6d16602c1046c67754fc59b37836",
+    "roadmap/assets/rich-catch-storyboard-2026-11-21.webp": "ab546442f67c007ab4db63c751203e629a7d83444beb1190946503dcd64de04c",
+    "roadmap/evidence/2026-11-21/fishery/browser-trace.json": "394f7918b3ea2ee8425cf7140ee9ee457c9d9bc512b5395d6564ac32b2813ae9",
+    "roadmap/evidence/2026-11-21/fishery/compare.mp4": "335804389935aa7e505300b5cc36ebfedc8f8bff53c14d30a8cf3405fadec4d8",
+    "roadmap/evidence/2026-11-21/fishery/fish-delivery.webp": "b3fb6c780453c0d0ee71db4b0eb909c21186037d950e6092f3a1c16bc0336bd4",
+    "roadmap/evidence/2026-11-21/fishery/fishery-before-bite.json": "835049e560eabef032db369a3cbd688a7035dec38de2fdd6b35449fa640411b4",
+    "roadmap/evidence/2026-11-21/fishery/rich-catch.mp4": "db5f0d7f137fad2df89022749f2c90d6ad021a15210e7c47d6eb19559a96be63",
+    "roadmap/evidence/2026-11-21/fishery/rich-catch.webp": "576ad9f7ecb7cfa0f22ddf8198ae26f56e387c9e507bcc566e4e0454cdea4370",
+    "roadmap/manifest.json": "f11a45a23a9bfb597b7da02ff7622f401f50a5ba209951720208b7767f4cd511",
+    "roadmap/reports/2026-11-21-fishery.md": "7c3ed69d857dcdba026ee34db1743b4c98932056b8090ec38da1bc34c4c0b82d",
+    "roadmap/snapshot.json": "e12087035e740156477f55c342abea32fe0d18ed6c5dc444b8df55937dba826b",
+    "scripts/sumer-building-studio.html": "550b16006b2ff076c7932caa4eaacc7a77714d01cea0282f39c5e36678801d22",
+    "ui-production-chains.js": "8d8758dd9adad5a0115149a09fc9d8efe7a1d07ad5bf950f8ec95cdeb6b234f3",
+    "GAME_DESIGN.md": "c73cf14d28622b9e9ce17954312fcf32569e0a2b9fc8119406ab15fa2de84770",
+    "calendar.js": "a0e63fde3721d7bcf76171a6e941f3323a0caadb4d6323db069e4ec8f7ce781a",
+    "docs/model-index.json": "dc43ab1f6edd12022312fba225598e894dbb08c6791fd8e9fdb0c2753ce23d78",
+    "game3d/fishing-props.js": "05a39db897041126e146a1d08fef02ea025ed283962d4d9157463ea670648ead",
+    "index.html": "07d640078095fffaf164e77534c8288a131ba65537773688526a675d1e264412",
+    "labor-life.js": "2e9e7404a2605ea94f6b964e63199550f2b8be54e7cfb1dd925decec551ef70e",
+    "roadmap/evidence/2026-11-21/fishery/ordinary-bite.mp4": "06a9655c2c742cea999944e775fa32c67b10ec19bbf4c4522c32640615ef014b",
+    "roadmap/evidence/2026-11-21/fishery/ordinary-bite.webp": "6dc46efa9ff435582b286800101870ae86ae6712299337af90ee807eff0c030d",
+    "roadmap/index.html": "02b8b162bd40e349f3b0ac6ce643b314efb0b1b08203eee22d628951bb5398ac",
+    "roadmap/plan.md": "31e14e208d058e71c4d1258fe3e7b1459389af05a678a4d7ba3de9332a7e5ce4",
+    "district3d.html": "75106916836d9feee3f1f1c48746f95c61831d1e5c878a309de7f2d75d177ca0"
+  },
+  "liveGame": {
+    "renderer": 2,
+    "site": "https://reinekes.github.io",
+    "trace": [
+      [
+        "bite",
+        7.5,
+        5
+      ],
+      [
+        "rack",
+        1,
+        2
+      ],
+      [
+        "granary",
+        1,
+        2
+      ],
+      [
+        "home",
+        1,
+        2
+      ]
+    ],
+    "detailErrors": []
+  },
+  "deployRun": "https://github.com/reinekes/new_babylon_demo/actions/runs/44902963072",
+  "archiveSaves": 20,
+  "nodeTests": 2209
+}
