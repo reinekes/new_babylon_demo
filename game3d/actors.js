@@ -36,7 +36,7 @@ import {actorWorkActivity} from '../labor-life.js';
 import {catPettingPairs} from '../pests.js';
 import {createWildlife} from './wildlife.js';
 import {createGameGoats} from './goats.js';
-import {createSuppliedFauna} from './supplied-fauna.js?v=living-fields-20261116';
+import {createSuppliedFauna} from './supplied-fauna.js?v=streets-quarries-pelican-20261121';
 import {createImportedFauna} from './imported-fauna.js';
 import {createAmbientFauna,courtyardFauna} from './ambient-fauna.js';
 import {WORK_POSES,workplaceIndex,workplaceActivity,workPose} from './work-poses.js';

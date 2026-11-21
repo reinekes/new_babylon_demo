@@ -144,3 +144,19 @@ test('canal banks taper below the water surface at the river and pebbles form ir
  for(const p of a)assert.ok(waterDepth(p.x,p.y,state)>.14);
  assert.equal(JSON.stringify(state),before);
 });
+
+test('the same worn lane loses its bright core between facing foundations and feathers away from a single wall',()=>{
+ const a={x:2.5,y:1.5},b={x:2.5,y:2.5};
+ const left={type:'house',x:2,y:2},right={type:'house',x:3,y:2};
+ function middle(buildings){
+  const g=wornRoadGeometry({buildings,world:{lakes:[]}},a,b,3);
+  const centre=Math.floor(g.centers.length/2)*7;
+  return Array.from({length:7},(_,k)=>({x:g.positions[(centre+k)*3]+g.origin.x,alpha:g.colors[(centre+k)*4+3]}));
+ }
+ const alley=middle([left,right]),wall=middle([left]),open=middle([]);
+ assert.ok(open[3].alpha>.65,'the travelled centre is still visible on open ground');
+ assert.ok(Math.max(...alley.map(p=>p.alpha))<.08,'the narrow space between two buildings must not squeeze a full-strength street into a streak');
+ assert.ok(wall.every(p=>p.x-2.47*6>.22||p.alpha<.03),'leave a bare strip beside the occupied plot');
+ assert.ok(wall.some(p=>p.x-2.47*6>.6&&p.alpha>.12),'the street remains readable on its open side');
+ assert.ok(open[1].alpha<.20&&open[2].alpha>open[1].alpha,'soft shoulders, visibly broader than a thin outline');
+});

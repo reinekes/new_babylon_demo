@@ -1,0 +1,972 @@
+{
+  "scope": "Running Node city simulation; no GPU rendering. Uniform 0.05 simulation-second sampling. Distances in metres from worker center to nearest horizontal reed panel; segment intersections tested between samples.",
+  "layoutCases": "two mineral types, four deposit corners within the 2x2 court, four building rotations, two assigned residents, all starting at home",
+  "routeSummary": {
+    "runs": 64,
+    "completed": 64,
+    "intersections": 0,
+    "minimumMetres": 0.425,
+    "below026": 0
+  },
+  "warehouseSummary": {
+    "runs": 8,
+    "completed": 8,
+    "porterHits": 0
+  },
+  "examples": [
+    {
+      "mineral": "clay",
+      "miner": [
+        2,
+        "Илду"
+      ],
+      "homeDeparture": 0.05,
+      "entry": {
+        "at": 2.05,
+        "way": "in",
+        "carrying": 0,
+        "step": "approach",
+        "phase": "working",
+        "x": 7.47,
+        "y": 7.421,
+        "gap": 2.626
+      },
+      "mining": {
+        "x": 7.31,
+        "y": 7,
+        "phase": "working",
+        "step": "working",
+        "n": 0,
+        "at": 2.75,
+        "local": 0
+      },
+      "return": {
+        "at": 6.25,
+        "way": "out",
+        "carrying": 6,
+        "step": null,
+        "phase": "toWorkshop",
+        "x": 7.47,
+        "y": 7.421,
+        "gap": 2.626
+      },
+      "pitDropOff": {
+        "at": 6.35,
+        "amount": 6,
+        "local": 6
+      },
+      "porter": {
+        "id": 6,
+        "name": "Ишме",
+        "order": 4,
+        "target": "6,8",
+        "resource": "clay",
+        "requested": 12,
+        "trace": [
+          {
+            "time": 7.1,
+            "phase": "toCollectCart",
+            "x": 8.4475,
+            "y": 8.5,
+            "cargo": 0,
+            "delivered": 0
+          },
+          {
+            "time": 9.75,
+            "phase": "toDistrictSupply",
+            "x": 5.871666666666667,
+            "y": 8.297535872987364,
+            "cargo": 0,
+            "delivered": 0
+          },
+          {
+            "time": 11.9,
+            "phase": "toDistrictStore",
+            "x": 7.469341134355367,
+            "y": 7.530658865644633,
+            "cargo": 12,
+            "delivered": 0
+          },
+          {
+            "time": 14,
+            "phase": "toHome",
+            "x": 5.871666666666667,
+            "y": 8.296680494215865,
+            "cargo": 0,
+            "delivered": 12
+          }
+        ],
+        "hits": [],
+        "crossings": [],
+        "delivered": {
+          "at": 14,
+          "cargo": 12,
+          "sum": 12,
+          "target": "6,8"
+        }
+      }
+    },
+    {
+      "mineral": "stone",
+      "miner": [
+        3,
+        "Энлил"
+      ],
+      "homeDeparture": 1,
+      "entry": {
+        "at": 4.7,
+        "way": "in",
+        "carrying": 0,
+        "step": "approach",
+        "phase": "working",
+        "x": 5.47,
+        "y": 6.47,
+        "gap": 2.92
+      },
+      "mining": {
+        "x": 5.219,
+        "y": 6.219,
+        "phase": "working",
+        "step": "working",
+        "n": 0,
+        "at": 5.25,
+        "local": 0
+      },
+      "return": {
+        "at": 9.65,
+        "way": "out",
+        "carrying": 5,
+        "step": null,
+        "phase": "toWorkshop",
+        "x": 5.47,
+        "y": 6.47,
+        "gap": 2.92
+      },
+      "pitDropOff": {
+        "at": 9.7,
+        "amount": 5,
+        "local": 10
+      },
+      "porter": {
+        "id": 8,
+        "name": "Лугаль Отец",
+        "order": 4,
+        "target": "6,8",
+        "resource": "stone",
+        "requested": 10,
+        "trace": [
+          {
+            "time": 10.05,
+            "phase": "toCollectCart",
+            "x": 9.4475,
+            "y": 9.5,
+            "cargo": 0,
+            "delivered": 0
+          },
+          {
+            "time": 14.05,
+            "phase": "toDistrictSupply",
+            "x": 5.871666666666667,
+            "y": 8.300822310614258,
+            "cargo": 0,
+            "delivered": 0
+          },
+          {
+            "time": 17.15,
+            "phase": "toDistrictStore",
+            "x": 5.5312149610235934,
+            "y": 6.5312149610235934,
+            "cargo": 10,
+            "delivered": 0
+          },
+          {
+            "time": 20.2,
+            "phase": "toHome",
+            "x": 5.871666666666667,
+            "y": 8.294966931842767,
+            "cargo": 0,
+            "delivered": 10
+          }
+        ],
+        "hits": [],
+        "crossings": [],
+        "delivered": {
+          "at": 20.2,
+          "cargo": 10,
+          "sum": 10,
+          "target": "6,8"
+        }
+      }
+    }
+  ],
+  "runs": [
+    {
+      "kind": "clay",
+      "rotation": 0,
+      "anchor": [
+        0,
+        0
+      ],
+      "actor": 2,
+      "load": 6,
+      "intersections": 0,
+      "clearanceMetres": 1.786
+    },
+    {
+      "kind": "clay",
+      "rotation": 0,
+      "anchor": [
+        1,
+        0
+      ],
+      "actor": 2,
+      "load": 6,
+      "intersections": 0,
+      "clearanceMetres": 0.425
+    },
+    {
+      "kind": "clay",
+      "rotation": 0,
+      "anchor": [
+        0,
+        1
+      ],
+      "actor": 2,
+      "load": 6,
+      "intersections": 0,
+      "clearanceMetres": 1.679
+    },
+    {
+      "kind": "clay",
+      "rotation": 0,
+      "anchor": [
+        1,
+        1
+      ],
+      "actor": 2,
+      "load": 6,
+      "intersections": 0,
+      "clearanceMetres": 0.934
+    },
+    {
+      "kind": "clay",
+      "rotation": 1,
+      "anchor": [
+        0,
+        0
+      ],
+      "actor": 2,
+      "load": 6,
+      "intersections": 0,
+      "clearanceMetres": 1.786
+    },
+    {
+      "kind": "clay",
+      "rotation": 1,
+      "anchor": [
+        1,
+        0
+      ],
+      "actor": 2,
+      "load": 6,
+      "intersections": 0,
+      "clearanceMetres": 0.425
+    },
+    {
+      "kind": "clay",
+      "rotation": 1,
+      "anchor": [
+        0,
+        1
+      ],
+      "actor": 2,
+      "load": 6,
+      "intersections": 0,
+      "clearanceMetres": 1.679
+    },
+    {
+      "kind": "clay",
+      "rotation": 1,
+      "anchor": [
+        1,
+        1
+      ],
+      "actor": 2,
+      "load": 6,
+      "intersections": 0,
+      "clearanceMetres": 0.934
+    },
+    {
+      "kind": "clay",
+      "rotation": 2,
+      "anchor": [
+        0,
+        0
+      ],
+      "actor": 2,
+      "load": 6,
+      "intersections": 0,
+      "clearanceMetres": 1.786
+    },
+    {
+      "kind": "clay",
+      "rotation": 2,
+      "anchor": [
+        1,
+        0
+      ],
+      "actor": 2,
+      "load": 6,
+      "intersections": 0,
+      "clearanceMetres": 0.425
+    },
+    {
+      "kind": "clay",
+      "rotation": 2,
+      "anchor": [
+        0,
+        1
+      ],
+      "actor": 2,
+      "load": 6,
+      "intersections": 0,
+      "clearanceMetres": 1.679
+    },
+    {
+      "kind": "clay",
+      "rotation": 2,
+      "anchor": [
+        1,
+        1
+      ],
+      "actor": 2,
+      "load": 6,
+      "intersections": 0,
+      "clearanceMetres": 0.934
+    },
+    {
+      "kind": "clay",
+      "rotation": 3,
+      "anchor": [
+        0,
+        0
+      ],
+      "actor": 2,
+      "load": 6,
+      "intersections": 0,
+      "clearanceMetres": 1.786
+    },
+    {
+      "kind": "clay",
+      "rotation": 3,
+      "anchor": [
+        1,
+        0
+      ],
+      "actor": 2,
+      "load": 6,
+      "intersections": 0,
+      "clearanceMetres": 0.425
+    },
+    {
+      "kind": "clay",
+      "rotation": 3,
+      "anchor": [
+        0,
+        1
+      ],
+      "actor": 2,
+      "load": 6,
+      "intersections": 0,
+      "clearanceMetres": 1.679
+    },
+    {
+      "kind": "clay",
+      "rotation": 3,
+      "anchor": [
+        1,
+        1
+      ],
+      "actor": 2,
+      "load": 6,
+      "intersections": 0,
+      "clearanceMetres": 0.934
+    },
+    {
+      "kind": "clay",
+      "rotation": 0,
+      "anchor": [
+        0,
+        0
+      ],
+      "actor": 3,
+      "load": 6,
+      "intersections": 0,
+      "clearanceMetres": 2.065
+    },
+    {
+      "kind": "clay",
+      "rotation": 0,
+      "anchor": [
+        1,
+        0
+      ],
+      "actor": 3,
+      "load": 6,
+      "intersections": 0,
+      "clearanceMetres": 0.844
+    },
+    {
+      "kind": "clay",
+      "rotation": 0,
+      "anchor": [
+        0,
+        1
+      ],
+      "actor": 3,
+      "load": 6,
+      "intersections": 0,
+      "clearanceMetres": 0.844
+    },
+    {
+      "kind": "clay",
+      "rotation": 0,
+      "anchor": [
+        1,
+        1
+      ],
+      "actor": 3,
+      "load": 6,
+      "intersections": 0,
+      "clearanceMetres": 2.065
+    },
+    {
+      "kind": "clay",
+      "rotation": 1,
+      "anchor": [
+        0,
+        0
+      ],
+      "actor": 3,
+      "load": 6,
+      "intersections": 0,
+      "clearanceMetres": 2.065
+    },
+    {
+      "kind": "clay",
+      "rotation": 1,
+      "anchor": [
+        1,
+        0
+      ],
+      "actor": 3,
+      "load": 6,
+      "intersections": 0,
+      "clearanceMetres": 0.844
+    },
+    {
+      "kind": "clay",
+      "rotation": 1,
+      "anchor": [
+        0,
+        1
+      ],
+      "actor": 3,
+      "load": 6,
+      "intersections": 0,
+      "clearanceMetres": 0.844
+    },
+    {
+      "kind": "clay",
+      "rotation": 1,
+      "anchor": [
+        1,
+        1
+      ],
+      "actor": 3,
+      "load": 6,
+      "intersections": 0,
+      "clearanceMetres": 2.065
+    },
+    {
+      "kind": "clay",
+      "rotation": 2,
+      "anchor": [
+        0,
+        0
+      ],
+      "actor": 3,
+      "load": 6,
+      "intersections": 0,
+      "clearanceMetres": 2.065
+    },
+    {
+      "kind": "clay",
+      "rotation": 2,
+      "anchor": [
+        1,
+        0
+      ],
+      "actor": 3,
+      "load": 6,
+      "intersections": 0,
+      "clearanceMetres": 0.844
+    },
+    {
+      "kind": "clay",
+      "rotation": 2,
+      "anchor": [
+        0,
+        1
+      ],
+      "actor": 3,
+      "load": 6,
+      "intersections": 0,
+      "clearanceMetres": 0.844
+    },
+    {
+      "kind": "clay",
+      "rotation": 2,
+      "anchor": [
+        1,
+        1
+      ],
+      "actor": 3,
+      "load": 6,
+      "intersections": 0,
+      "clearanceMetres": 2.065
+    },
+    {
+      "kind": "clay",
+      "rotation": 3,
+      "anchor": [
+        0,
+        0
+      ],
+      "actor": 3,
+      "load": 6,
+      "intersections": 0,
+      "clearanceMetres": 2.065
+    },
+    {
+      "kind": "clay",
+      "rotation": 3,
+      "anchor": [
+        1,
+        0
+      ],
+      "actor": 3,
+      "load": 6,
+      "intersections": 0,
+      "clearanceMetres": 0.844
+    },
+    {
+      "kind": "clay",
+      "rotation": 3,
+      "anchor": [
+        0,
+        1
+      ],
+      "actor": 3,
+      "load": 6,
+      "intersections": 0,
+      "clearanceMetres": 0.844
+    },
+    {
+      "kind": "clay",
+      "rotation": 3,
+      "anchor": [
+        1,
+        1
+      ],
+      "actor": 3,
+      "load": 6,
+      "intersections": 0,
+      "clearanceMetres": 2.065
+    },
+    {
+      "kind": "stone",
+      "rotation": 0,
+      "anchor": [
+        0,
+        0
+      ],
+      "actor": 2,
+      "load": 5,
+      "intersections": 0,
+      "clearanceMetres": 1.786
+    },
+    {
+      "kind": "stone",
+      "rotation": 0,
+      "anchor": [
+        1,
+        0
+      ],
+      "actor": 2,
+      "load": 5,
+      "intersections": 0,
+      "clearanceMetres": 0.425
+    },
+    {
+      "kind": "stone",
+      "rotation": 0,
+      "anchor": [
+        0,
+        1
+      ],
+      "actor": 2,
+      "load": 5,
+      "intersections": 0,
+      "clearanceMetres": 1.679
+    },
+    {
+      "kind": "stone",
+      "rotation": 0,
+      "anchor": [
+        1,
+        1
+      ],
+      "actor": 2,
+      "load": 5,
+      "intersections": 0,
+      "clearanceMetres": 0.934
+    },
+    {
+      "kind": "stone",
+      "rotation": 1,
+      "anchor": [
+        0,
+        0
+      ],
+      "actor": 2,
+      "load": 5,
+      "intersections": 0,
+      "clearanceMetres": 1.786
+    },
+    {
+      "kind": "stone",
+      "rotation": 1,
+      "anchor": [
+        1,
+        0
+      ],
+      "actor": 2,
+      "load": 5,
+      "intersections": 0,
+      "clearanceMetres": 0.425
+    },
+    {
+      "kind": "stone",
+      "rotation": 1,
+      "anchor": [
+        0,
+        1
+      ],
+      "actor": 2,
+      "load": 5,
+      "intersections": 0,
+      "clearanceMetres": 1.679
+    },
+    {
+      "kind": "stone",
+      "rotation": 1,
+      "anchor": [
+        1,
+        1
+      ],
+      "actor": 2,
+      "load": 5,
+      "intersections": 0,
+      "clearanceMetres": 0.934
+    },
+    {
+      "kind": "stone",
+      "rotation": 2,
+      "anchor": [
+        0,
+        0
+      ],
+      "actor": 2,
+      "load": 5,
+      "intersections": 0,
+      "clearanceMetres": 1.786
+    },
+    {
+      "kind": "stone",
+      "rotation": 2,
+      "anchor": [
+        1,
+        0
+      ],
+      "actor": 2,
+      "load": 5,
+      "intersections": 0,
+      "clearanceMetres": 0.425
+    },
+    {
+      "kind": "stone",
+      "rotation": 2,
+      "anchor": [
+        0,
+        1
+      ],
+      "actor": 2,
+      "load": 5,
+      "intersections": 0,
+      "clearanceMetres": 1.679
+    },
+    {
+      "kind": "stone",
+      "rotation": 2,
+      "anchor": [
+        1,
+        1
+      ],
+      "actor": 2,
+      "load": 5,
+      "intersections": 0,
+      "clearanceMetres": 0.934
+    },
+    {
+      "kind": "stone",
+      "rotation": 3,
+      "anchor": [
+        0,
+        0
+      ],
+      "actor": 2,
+      "load": 5,
+      "intersections": 0,
+      "clearanceMetres": 1.786
+    },
+    {
+      "kind": "stone",
+      "rotation": 3,
+      "anchor": [
+        1,
+        0
+      ],
+      "actor": 2,
+      "load": 5,
+      "intersections": 0,
+      "clearanceMetres": 0.425
+    },
+    {
+      "kind": "stone",
+      "rotation": 3,
+      "anchor": [
+        0,
+        1
+      ],
+      "actor": 2,
+      "load": 5,
+      "intersections": 0,
+      "clearanceMetres": 1.679
+    },
+    {
+      "kind": "stone",
+      "rotation": 3,
+      "anchor": [
+        1,
+        1
+      ],
+      "actor": 2,
+      "load": 5,
+      "intersections": 0,
+      "clearanceMetres": 0.934
+    },
+    {
+      "kind": "stone",
+      "rotation": 0,
+      "anchor": [
+        0,
+        0
+      ],
+      "actor": 3,
+      "load": 5,
+      "intersections": 0,
+      "clearanceMetres": 2.065
+    },
+    {
+      "kind": "stone",
+      "rotation": 0,
+      "anchor": [
+        1,
+        0
+      ],
+      "actor": 3,
+      "load": 5,
+      "intersections": 0,
+      "clearanceMetres": 0.844
+    },
+    {
+      "kind": "stone",
+      "rotation": 0,
+      "anchor": [
+        0,
+        1
+      ],
+      "actor": 3,
+      "load": 5,
+      "intersections": 0,
+      "clearanceMetres": 0.844
+    },
+    {
+      "kind": "stone",
+      "rotation": 0,
+      "anchor": [
+        1,
+        1
+      ],
+      "actor": 3,
+      "load": 5,
+      "intersections": 0,
+      "clearanceMetres": 2.065
+    },
+    {
+      "kind": "stone",
+      "rotation": 1,
+      "anchor": [
+        0,
+        0
+      ],
+      "actor": 3,
+      "load": 5,
+      "intersections": 0,
+      "clearanceMetres": 2.065
+    },
+    {
+      "kind": "stone",
+      "rotation": 1,
+      "anchor": [
+        1,
+        0
+      ],
+      "actor": 3,
+      "load": 5,
+      "intersections": 0,
+      "clearanceMetres": 0.844
+    },
+    {
+      "kind": "stone",
+      "rotation": 1,
+      "anchor": [
+        0,
+        1
+      ],
+      "actor": 3,
+      "load": 5,
+      "intersections": 0,
+      "clearanceMetres": 0.844
+    },
+    {
+      "kind": "stone",
+      "rotation": 1,
+      "anchor": [
+        1,
+        1
+      ],
+      "actor": 3,
+      "load": 5,
+      "intersections": 0,
+      "clearanceMetres": 2.065
+    },
+    {
+      "kind": "stone",
+      "rotation": 2,
+      "anchor": [
+        0,
+        0
+      ],
+      "actor": 3,
+      "load": 5,
+      "intersections": 0,
+      "clearanceMetres": 2.065
+    },
+    {
+      "kind": "stone",
+      "rotation": 2,
+      "anchor": [
+        1,
+        0
+      ],
+      "actor": 3,
+      "load": 5,
+      "intersections": 0,
+      "clearanceMetres": 0.844
+    },
+    {
+      "kind": "stone",
+      "rotation": 2,
+      "anchor": [
+        0,
+        1
+      ],
+      "actor": 3,
+      "load": 5,
+      "intersections": 0,
+      "clearanceMetres": 0.844
+    },
+    {
+      "kind": "stone",
+      "rotation": 2,
+      "anchor": [
+        1,
+        1
+      ],
+      "actor": 3,
+      "load": 5,
+      "intersections": 0,
+      "clearanceMetres": 2.065
+    },
+    {
+      "kind": "stone",
+      "rotation": 3,
+      "anchor": [
+        0,
+        0
+      ],
+      "actor": 3,
+      "load": 5,
+      "intersections": 0,
+      "clearanceMetres": 2.065
+    },
+    {
+      "kind": "stone",
+      "rotation": 3,
+      "anchor": [
+        1,
+        0
+      ],
+      "actor": 3,
+      "load": 5,
+      "intersections": 0,
+      "clearanceMetres": 0.844
+    },
+    {
+      "kind": "stone",
+      "rotation": 3,
+      "anchor": [
+        0,
+        1
+      ],
+      "actor": 3,
+      "load": 5,
+      "intersections": 0,
+      "clearanceMetres": 0.844
+    },
+    {
+      "kind": "stone",
+      "rotation": 3,
+      "anchor": [
+        1,
+        1
+      ],
+      "actor": 3,
+      "load": 5,
+      "intersections": 0,
+      "clearanceMetres": 2.065
+    }
+  ]
+}

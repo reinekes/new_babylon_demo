@@ -56,8 +56,8 @@ export function streetSurfaceLayout(s,paved){
   if(!length)return;
   const track=wear.get(id),traffic=Math.round((track?.traffic||0)*16)/16;
   const cartTraffic=built&&edge.level>=3?0:Math.round((track?.cartTraffic||0)*8)/8;
-  const wornWidth=built ? .90+(edge.level||1)*.10+traffic*2.22 : .32+traffic*2.66;
-  const width=cartTraffic?Math.max(wornWidth,1.52+.92*cartTraffic):wornWidth;
+  const wornWidth=built ? .65+(edge.level||1)*.08+traffic*1.50 : .24+traffic*1.67;
+  const width=cartTraffic?Math.max(wornWidth,1.54+.90*cartTraffic):wornWidth;
   const control=built?curve(a,b,id):edge.control;
   const cartCover=cartTraffic>0 ? .70+.24*cartTraffic : 0;
   const cover=built?1:Math.max(.30+.67*traffic,cartCover);
@@ -121,7 +121,14 @@ export function streetSurfaceLayout(s,paved){
    }
    return true;
   });
-  if(!legal){delete a.profile[a.side+'Turn'];delete b.profile[b.side+'Turn'];}
+  if(!legal){
+   // A rounded corner would cut through this plot. Let both arms disappear
+   // into its bare earth before their mismatched cross-sections meet.
+   for(const arm of pair){
+    delete arm.profile[arm.side+'Turn'];
+    arm.profile[arm.side+'Blend']=Math.min(.32,jointWidth*.65/(TILE*arm.profile.length));
+   }
+  }
  }
  for(const [a,b] of crossings)blendCrossedDiagonals(a,b);
  for(const p of surfaces.values()){
@@ -165,7 +172,7 @@ export function streetWheelSection(profile,row){
  const {x,z,half,t}=row;
  const cart=blendAlongStreet(profile.cartTraffic,profile.startCart,profile.endCart,t);
  const softness=smooth(.66+.45*Math.sin(.49*x+.33*z)+.23*Math.sin(.73*z-.19*x));
- const gauge=Math.min(.505+.018*Math.sin(.24*x-.32*z),half*.55)/half;
+ const gauge=Math.min(.505+.018*Math.sin(.24*x-.32*z),half*.65)/half;
  const rim=Math.min(.13,half*.145)/half;
  return {gauge,rim,depth:(.45+.55*cart)*softness*smooth(cart/.18)};
 }
@@ -191,12 +198,35 @@ function shoulderPoint(row,side,t){
  return {x:row.p.x+row.nx*d,y:row.p.y+row.nz*d};
 }
 
+// A grid lane can run only 18 cm from a legal building boundary. Its visible
+// pressure falls off in metres, even where collision clipping pinches a whole
+// shoulder into a few centimetres. Both renderers use the same sample.
+export function streetSoilCoverage(row,side,x,z){
+ const radius=Math.abs(side);
+ if(radius>=1)return 0;
+ const fleck=Math.sin(x*.83+z*.46)*Math.sin(z*.69-x*.27);
+ const shoulder=1-smooth((radius-.08-.065*fleck)/.92);
+ let distanceSquared=1;
+ for(const box of row.plots){
+  const dx=Math.max(box.minX-x,0,x-box.maxX),dz=Math.max(box.minZ-z,0,z-box.maxZ);
+  distanceSquared=Math.min(distanceSquared,dx*dx+dz*dz);
+ }
+ return (.85+.045*fleck)*shoulder*smooth((Math.sqrt(distanceSquared)-.22)/.78);
+}
+
 // Both views trim the very same cross-sections against real plots and shores.
 // reach has a small margin for the frayed edge of the WebGL mesh.
-export function streetCrossSections(s,a,b,width,control,obstacles,steps,progress=1){
+export function streetCrossSections(s,a,b,width,control,obstacles=obstacleIndex(s.buildings||[]),steps,progress=1){
  const origin={x:(a.x+b.x)*TILE/2,z:(a.y+b.y)*TILE/2},len=Math.hypot(a.x-b.x,a.y-b.y);
  const rows=[];
  if(!len||progress<=0||!isDryPoint(s,a.x,a.y)||!isDryPoint(s,b.x,b.y)||onBridge(s.buildings||[],origin.x/TILE,origin.z/TILE,s)||!navigationSegmentClear(s,a,b,obstacles))return [];
+ const nearby=new Set();
+ for(let y=Math.floor(Math.min(a.y,b.y)-1);y<=Math.ceil(Math.max(a.y,b.y)+1);y++){
+  for(let x=Math.floor(Math.min(a.x,b.x)-1);x<=Math.ceil(Math.max(a.x,b.x)+1);x++){
+   for(const box of obstacles.get(x+','+y)||[])nearby.add(box);
+  }
+ }
+ const plots=Array.from(nearby,box=>({minX:box.minX*TILE,maxX:box.maxX*TILE,minZ:box.minY*TILE,maxZ:box.maxY*TILE}));
  for(let j=0;j<=steps;j++){
   const t=j/steps*progress;
   const {p,v}=typeof width==='number'?{p:footpathRibbonPoint(a,b,control,t),v:footpathRibbonTangent(a,b,control,t)}:pointOnStreet(width,t);
@@ -204,7 +234,7 @@ export function streetCrossSections(s,a,b,width,control,obstacles,steps,progress
   const tangent=Math.hypot(vx,vz)||1,nx=-vz/tangent,nz=vx/tangent;
   const x=p.x*TILE,z=p.y*TILE;
   const half=streetWidthAt(width,t)*.5*(.98+.035*Math.sin(x*.7+z*.34)+.022*Math.sin(x*1.03-z*.58)),reach=half*1.045/TILE;
-  const row={t,p,x,z,nx,nz,half,reach,trimLeft:1,trimRight:1};
+  const row={t,p,x,z,nx,nz,half,reach,plots,trimLeft:1,trimRight:1};
   for(const side of [-1,1]){
    const key=side<0?'left':'right';
    const X=x+side*nx*half,Z=z+side*nz*half;

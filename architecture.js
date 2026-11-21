@@ -1,3 +1,4 @@
+import {mapQuarryFence} from './mineral-map-art.js';
 import {constructionProgress} from './construction.js';
 import {ovenHeat} from './kilns.js';
 import {isExtractionCourt,extractionWorkArea} from './extraction-courts.js';
@@ -36,15 +37,16 @@ export function drawBuilding(r, b, state, t) {
     for(let i=0;i<5;i++)r.line([[p.x+(-9+i*4.6)*q,p.y+(-17+i*2.1)*q],[p.x+(-21+i*4.6)*q,p.y+(5+i*2.1)*q]],'#8e6d46',q);
     return;
   }
+  const fence=mapQuarryFence(r,b,state);fence?.(false);
   if(isExtractionCourt(b)){
     const progress=constructionProgress(b),work=extractionWorkArea({...b,rotation:0},state),q=r.s;
     const point=(x,y)=>r.point(b.x+x,b.y+y),near=point(-.46,-.46),east=point(1.46,-.46),far=point(1.46,1.46),west=point(-.46,1.46);
-    if(!b.construction||progress.work>0)for(const [a,c]of [[near,east],[east,far],[near,west]])r.line([a,c],'#91784f',1.7*q);
+    if(!fence&&(!b.construction||progress.work>0))for(const [a,c]of [[near,east],[east,far],[near,west]])r.line([a,c],'#91784f',1.7*q);
     const workPoint=point(work.x/6,work.z/6);
     if(b.construction?.kind==='new'){
       for(let i=0;i<Math.floor(progress.materials*5);i++)r.box(workPoint.x+i*3*q,workPoint.y,4*q,2*q,2.5*q,'#b39065','#7e5c41','#9e7753');
     }else r.box(workPoint.x,workPoint.y,13*q,7*q,(9+levelOf(b))*q,'#bb9d68','#80623e','#9c794a');
-    return;
+    fence?.(true);return;
   }
   if(b.type==='communalHouse'){drawCommunalHouse(r,b);return;}
   if(b.type==='house'){drawCourtyardHouse(r,b,state);return;}
@@ -408,6 +410,6 @@ export function drawBuilding(r, b, state, t) {
     box(0,11,6,3,7,'#e9d5a7','#ad8c59','#ceb17b');
     c.fillStyle='#665337';c.textAlign='center';c.font=`bold ${Math.max(6,7*q)}px Georgia`;c.fillText(level===2?'II':'III',x,y+9*q);
   }
-  drawBuildingFinish(r,b,state);
+  drawBuildingFinish(r,b,state);fence?.(true);
   c.restore();
 }

@@ -22,6 +22,12 @@ test('two arms of a bend share the same rounded cross-section and tangent in eit
   assert.ok(Math.hypot(left.p.x-old.x,left.p.y-old.y)*6<left.half,'the original route stays within the worn ground');
   assert.equal(streetEndFade(first,1),1);assert.equal(streetEndFade(second,reversed?1:0),1);
  }
+ const occupied={...state,buildings:[{type:'house',x:2,y:3}],footpaths:[{a,b,wear:32,at:0},{a:b,b:c,wear:32,at:0}]};
+ const turn=streetSurfaceLayout(occupied,[road(a,b),road(b,c)]);
+ const incoming=turn.get(footpathId(a,b)),outgoing=turn.get(footpathId(b,c));
+ assert.ok(!incoming.endTurn&&!outgoing.startTurn,'the rounded route would cut the courtyard corner');
+ assert.equal(streetEndFade(incoming,1),0);assert.equal(streetEndFade(outgoing,0),0);
+ assert.ok(streetEndFade(incoming,.9)>0&&streetEndFade(incoming,.9)<1);
 });
 
 test('a side lane fades into the through street and gains a new shape when a junction appears',()=>{
@@ -84,4 +90,18 @@ test('compaction and opacity fade continuously from busy bare ground onto a quie
  }
  assert.ok(streetTrafficAt(enter,.5)>streetTrafficAt(leave,.5)*6);
  assert.ok(streetCoverAt(leave,.5)>streetCoverAt(enter,.5));
+});
+
+test('open ground distinguishes a light footpath, residential street and metre-gauge freight route',()=>{
+ const laid=road(a,b);
+ const profile=(wear,cartWear,built)=>{
+  const town={...state,footpaths:[{a,b,wear,cartWear,at:0,cartAt:0}]};
+  return streetSurfaceLayout(town,built?[laid]:[]).get(laid.id);
+ };
+ const quiet=profile(2,0,false),home=profile(2,0,true),busy=profile(32,0,true);
+ const walking=profile(32,0,false),freight=profile(32,6,false);
+ assert.ok(quiet.width>.30&&quiet.width<.40);
+ assert.ok(home.width>.75&&home.width<.90);
+ assert.ok(busy.width>2&&busy.width<2.30);
+ assert.ok(walking.width<2&&freight.width>busy.width+.15&&freight.width<2.50);
 });

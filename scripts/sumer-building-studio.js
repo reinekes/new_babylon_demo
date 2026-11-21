@@ -124,7 +124,7 @@ const focus=type=>{
  renderer.buildings.sacredReady().then(()=>{if(selector.value===type)renderer.draw(state,null,performance.now(),{paused:true});});
  const link=document.querySelector('#download');
  link.download=type+'.glb';
- const release=riverDownloads.has(type)?'river-farms-and-pits-20261118':craftDownloads.has(type)?'alluvial-craft-20261118':'';
+ const release=type==='clay'||type==='quarry'?'bound-reed-quarries-20261121':riverDownloads.has(type)?'river-farms-and-pits-20261118':craftDownloads.has(type)?'alluvial-craft-20261118':'';
  link.href='assets/3d/sumer-buildings/'+link.download+(release?'?v='+release:'');
  status.textContent=titles[type]+' · '+n+'×'+n+(type==='bridge'?' · пролёт по реке':'');
 };

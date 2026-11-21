@@ -6,6 +6,7 @@ import {ovenHeat} from './kilns.js';
 import {extractionStockFraction} from './extraction-stock.js';
 import {mineralExcavations} from './game3d/mineral-excavation.js';
 import {drawMapMineral} from './mineral-map-art.js';
+import {workstationBuilding} from './game3d/workstations.js';
 import {extractionOwner,extractionKinds} from './extraction-courts.js';
 import {localFerryVessel} from './river-stores.js';
 import {showBlessingApproach} from './blessing-presentation.js';
@@ -21,7 +22,7 @@ import {miracleGardenPlan} from './miracle-garden-plan.js';
 import {footprintCells,footprintSize,newFootprint,occupiesCell} from './footprints.js';
 import {roadIsBuilt,roadTopologyRevision} from './roads.js';
 import {footpathRibbonPoint} from './footpaths.js';
-import {streetSurfaceLayout,streetCrossSections,streetEndFade,streetTrafficAt,streetCoverAt,streetWheelSection} from './street-surfaces.js';
+import {streetSurfaceLayout,streetCrossSections,streetEndFade,streetTrafficAt,streetCoverAt,streetWheelSection,streetSoilCoverage} from './street-surfaces.js';
 import {obstacleIndex} from './navigation.js';
 import {festivalView} from './festival.js';
 import {drawFestivalCourt,drawFestivalBuildingLights,drawFestivalBlessing} from './festival-art.js';
@@ -32,6 +33,7 @@ import {drawTradeBoat} from './waterfront-art.js';
 import {residentAppearance,drawResidentClothes} from './resident-appearance.js';
 import {drawCanal,irrigationFor} from './irrigation.js';
 import {drawGroundTexture} from './terrain-texture.js';
+import {TILE} from './district3d/terrain.js';
 import {houseLightCount} from './households.js';
 import {drawConstruction,drawConstructionLabel} from './construction-art.js';
 import {buildingPlacement,canPlace} from './engine.js';
@@ -71,26 +73,30 @@ function paintStreetSoil(renderer,ctx,shapes){
   let left=mapped(rows[0],-1),right=mapped(rows[0],1),previousLeft=left,previousRight=right;
   for(let i=1;i<rows.length;i++){
    const row=rows[i],prev=rows[i-1],endLeft=mapped(row,-1),endRight=mapped(row,1);
-   // A wall can trim one verge. Keep the worn centre under the walkers;
-   // clipping the polygon must not move the soil gradient sideways.
-   const mx=(prev.p.x+row.p.x)/2,my=(prev.p.y+row.p.y)/2;
-   const wx=(prev.nx*prev.reach+row.nx*row.reach)/(2*1.045),wy=(prev.nz*prev.reach+row.nz*row.reach)/(2*1.045);
-   const lx=mx-wx,ly=my-wy,rx=mx+wx,ry=my+wy;
+   const lx=(left.x+endLeft.x)/2,ly=(left.y+endLeft.y)/2;
+   const rx=(right.x+endRight.x)/2,ry=(right.y+endRight.y)/2;
    if(Math.hypot(rx-lx,ry-ly)>.0001){
     const gradient=ctx.createLinearGradient(lx,ly,rx,ry);
     const t=(prev.t+row.t)/2,wear=pressure(t)*(.88+.09*Math.sin(lx*2.9-ly*1.8)+.03*Math.cos(rx*6.1+ry*2.8))*Math.sqrt(streetEndFade(profile,t));
-    const drift=.035*Math.sin(lx*4.1+ly*2.3);
     const wheel=level<=2&&streetWheelSection(profile,{...row,t,x:(prev.x+row.x)/2,z:(prev.z+row.z)/2,half:(prev.half+row.half)/2});
-    const stops=wheel?[[0,0],[.065,.28],[.5,1],[.94,.27],[1,0]]:[[0,0],[.065,.28],[.17+drift,.87],[.44+drift,1],[.80+drift,.91],[.94,.27],[1,0]];
+    const stops=[[-1,1],[-.82,1],[0,1],[.82,1],[1,1]];
     if(wheel){
      const depth=wheel.depth*(level===2?.58:1);
      for(const sign of [-1,1]){
-      const centre=.5+sign*wheel.gauge*.5,rim=wheel.rim*.5;
-      stops.push([centre+sign*rim,.95,1+.05*depth],[centre,1,1-.32*depth],[centre-sign*rim,.98,1]);
+      const centre=sign*wheel.gauge;
+      stops.push([centre+sign*wheel.rim,1+.05*depth],[centre,1-.32*depth],[centre-sign*wheel.rim,1]);
      }
-     stops.sort((a,b)=>a[0]-b[0]);
+    }else stops.push([-.48,1],[.48,1]);
+    stops.sort((a,b)=>a[0]-b[0]);
+    // The walking line is off-centre where one shoulder is clipped. Project
+    // it onto the actual cross-section before positioning the wheel contacts.
+    const dx=rx-lx,dy=ry-ly,midX=(prev.p.x+row.p.x)/2,midY=(prev.p.y+row.p.y)/2;
+    const middle=Math.max(0,Math.min(1,((midX-lx)*dx+(midY-ly)*dy)/(dx*dx+dy*dy)));
+    for(const [side,tone] of stops){
+     const u=middle+side*(side<0?middle:1-middle);
+     const strength=streetSoilCoverage(row,side,(lx+u*dx)*TILE,(ly+u*dy)*TILE);
+     gradient.addColorStop(u,shade(wear*strength,tone));
     }
-    for(const [u,strength,tone] of stops)gradient.addColorStop(u,shade(wear*strength,tone));
     // Slight overlap at internal samples prevents antialiasing hairlines.
     const back=(start,previous)=>start+(previous-start)*.035;
     ctx.fillStyle=gradient;ctx.beginPath();ctx.moveTo(back(left.x,previousLeft.x),back(left.y,previousLeft.y));ctx.lineTo(back(right.x,previousRight.x),back(right.y,previousRight.y));ctx.lineTo(endRight.x,endRight.y);ctx.lineTo(endLeft.x,endLeft.y);ctx.closePath();ctx.fill();
@@ -134,7 +140,7 @@ export class Renderer{
   if(b.reedCamp||!spriteTypes.has(b.type)||b.construction||footprintSize(b)>1){drawBuilding(this,b,state,t);return;}
   const dx=(this.canvas?.width/this.w)||1,dy=(this.canvas?.height/this.h)||dx,q=this.s,scale=`${q}/${dx}/${dy}`;
   if(this.spriteScale!==scale){this.spriteScale=scale;this.buildingSprites=new Map();this.spriteBytes=0;}
-  const variant=b.type==='brickyard'?(b.brickmaking?.wet?'wet':b.brickmaking?.ready?'ready':'empty'):b.type==='house'?`${houseVariant(b)}:${Number(blessingCupAt(state,b))}`:['clay','quarry'].includes(b.type)?`${b.x}/${b.y}`:'';
+  const variant=b.type==='brickyard'?(b.brickmaking?.wet?'wet':b.brickmaking?.ready?'ready':'empty'):b.type==='house'?`${houseVariant(b)}:${Number(blessingCupAt(state,b))}`:['clay','quarry'].includes(b.type)?`${b.x}/${b.y}/${workstationBuilding(b,state).workCorner}`:'';
   const key=`${isStrictSumer(state)?'sumer-iii-v1':'legacy-v1'}/${b.type}/${variant}/${b.level||1}/${(this.lighting?.night||0)>.12}/${b.type==='house'?houseLightCount(b,this.houseOccupancy?.get(`${b.x},${b.y}`)??state.citizens?.filter(c=>c.home===`${b.x},${b.y}`).length??0):''}`;
   let entry=this.buildingSprites.get(key);
   if(!entry){

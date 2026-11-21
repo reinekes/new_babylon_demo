@@ -6,7 +6,8 @@ const models={
  mouse:{file:'supplied-realistic-rat.glb',height:.085,yaw:0},
  'common-quail':{file:'supplied-common-quail.glb',height:.20,yaw:0},
  'savigny-tree-frog':{file:'supplied-frog-jump.glb',height:.07,yaw:0,clip:'metarig|jumpInPlace'},
- 'white-pelican':{file:'supplied-pelican-wasis.glb',height:1.42,yaw:Math.PI/2,waterline:.42}
+ // The glTF import puts the bill on +X; the route and wake use +Z forward.
+ 'white-pelican':{file:'supplied-pelican-wasis.glb',height:1.42,yaw:-Math.PI/2,waterline:.42}
 };
 
 const fishModels={
@@ -138,7 +139,7 @@ export async function createSuppliedFauna(B,scene,meshes,{loadAsset}={}){
     const scoop=pose.scoop||0,stroke=pose.stroke??1,phase=state.simTime||0;
     actor.root.position.y=WATER_HEIGHT+.012+Math.sin(phase*2.1)*.018-.045*scoop;
     actor.root.rotation.x=Math.sin(phase*1.4)*.018;
-    actor.root.rotation.z=scoop*.40+Math.sin(phase*1.7)*.022;
+    actor.root.rotation.z=-scoop*.40+Math.sin(phase*1.7)*.022;
     actor.wake.setEnabled(stroke>.12);
     actor.wake.position.set(actor.root.position.x,WATER_HEIGHT+.027,actor.root.position.z);
     actor.wake.rotation.y=pose.yaw||0;

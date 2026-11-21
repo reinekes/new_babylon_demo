@@ -31,7 +31,7 @@ export function workstationContext(state){
  stationContexts.set(state,cached);return cached;
 }
 export function workstationBuilding(b,state,context=null){
- if(!state||b.type==='granary'&&!b.construction||!equipment[b.type]&&!hasArtisanContact(b.type)&&!b.construction&&!['field','fishing','hunting'].includes(b.type))return b;
+ if(!state||b.type==='granary'&&!b.construction||!equipment[b.type]&&!hasArtisanContact(b.type)&&!b.construction&&!['field','fishing','hunting','quarry'].includes(b.type))return b;
  // Same ordered dry corners as generateStreets, without rebuilding its whole graph.
  const n=footprintSize(b),port=[[b.x+n-.5,b.y+n-.5],[b.x-.5,b.y+n-.5],[b.x+n-.5,b.y-.5],[b.x-.5,b.y-.5]].map(([x,y])=>({x,y})).find(p=>context?context.canUse(p.x,p.y):isDryPoint(state,p.x,p.y)&&!(state.buildings||[]).some(v=>insideFootprint(v,p.x,p.y)));
  if(!port)return b;

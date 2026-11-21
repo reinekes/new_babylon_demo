@@ -3,6 +3,11 @@ import assert from 'node:assert/strict';
 import vm from 'node:vm';
 import {readFileSync} from 'node:fs';
 import {mineralDepositGeometry,mineralExcavations,mineralPitGeometry,mineralWorkingPoint} from '../game3d/mineral-excavation.js';
+import {quarryFencePanels} from '../game3d/quarry-fence.js';
+import {foundationWorldPoint} from '../game3d/building-foundations.js';
+import {workstationBuilding} from '../game3d/workstations.js';
+import {generateStreets} from '../city-life.js';
+import {workGathering} from '../labor-life.js';
 import {createDistrictTerrain} from '../district3d/terrain.js';
 import {createArchitecture} from '../game3d/architecture.js';
 import {createGame} from '../engine.js';
@@ -94,4 +99,33 @@ test('a quarry worker has clear boots on the excavated floor and can reach the e
   }
   assert.equal(mineralWorkingPoint(s,site,{x:7.31,y:7},0),null);
  }finally{view.dispose();scene.dispose();engine.dispose();}
+});
+
+
+test('bound reeds leave a clear carrying route from the actual street port and a landing at every rim ladder',()=>{
+ const s=fixture();
+ function clearance(p,a,b){
+  const dx=b.x-a.x,dy=b.y-a.y,t=Math.max(0,Math.min(1,((p.x-a.x)*dx+(p.y-a.y)*dy)/(dx*dx+dy*dy)));
+  return Math.hypot(a.x+t*dx-p.x,a.y+t*dy-p.y)*6;
+ }
+ for(const type of ['clay','quarry'])for(const rotation of [0,1,2,3])for(const [ox,oy] of [[0,0],[1,0],[0,1],[1,1]]){
+  const kind=type==='quarry'?'stone':'clay',site=s.world.deposits.find(d=>d.kind===kind);
+  const b={type,x:site.x-ox,y:site.y-oy,rotation,footprint:2,level:1,deposit:{x:site.x,y:site.y}};s.buildings=[b];
+  const port=generateStreets(s.buildings,s).ports[0],worker={...port,id:1,work:`${b.x},${b.y}`,workElapsed:0};
+  const spans=quarryFencePanels(workstationBuilding(b,s),s).map(({a,b:end})=>[a,end].map(p=>foundationWorldPoint(b,p.x,p.z)));
+  const distance=p=>Math.min(...spans.map(([a,end])=>clearance(p,a,end)));
+  assert.ok(spans.length>=16);assert.ok(distance(port)>2);
+  for(const pit of mineralExcavations(s)){
+   const [x,,z]=mineralPitGeometry(pit).ladder.head;
+   assert.ok(distance({x:pit.x+x/6,y:pit.y+z/6})>=.76,'clear bank at the head of each ladder');
+  }
+  let delivery=null;
+  for(let i=0;i<250&&!delivery;i++){
+   delivery=workGathering(s,worker,b,.05,2,port);
+   assert.ok(distance(worker)>.405,'worker clears the fence while entering and working');
+  }
+  assert.deepEqual(delivery.source,b.deposit);assert.equal(delivery.x,port.x);assert.equal(delivery.y,port.y);
+  assert.deepEqual(quarryFencePanels({...b,construction:{kind:'new'}},s),[]);
+  assert.deepEqual(quarryFencePanels({...b,type:'rock'},s),[]);
+ }
 });

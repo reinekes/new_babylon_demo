@@ -17,7 +17,7 @@
     },
     {
       "file": "game3d/actors.js",
-      "sha256": "caaa55c3988b69363908027515b0a6e8734af6931a823de0c3bef177ca7eec0a"
+      "sha256": "bea670fc38c357dfb77b10972003ddf1db9fc9ad86d9be6df25bdad738fb4fa7"
     },
     {
       "file": "game3d/ambient-fauna.js",
@@ -29,7 +29,7 @@
     },
     {
       "file": "game3d/buildings.js",
-      "sha256": "f862e57774e985731d73cfc5e36ef8d8965e3d0ea7ffc6768a7693ca7a2d08d7"
+      "sha256": "47b0f34a32ba3e10b23afa05b5fdea0ebd36e0ad73f9ef235b77cc06bd1ada4a"
     },
     {
       "file": "game3d/caravan.js",
@@ -65,7 +65,7 @@
     },
     {
       "file": "game3d/landscape.js",
-      "sha256": "e30d419699044f93d9cfd19f7a4c08e6097d46687434be00f316fbe2dcb3a57e"
+      "sha256": "c3da82ed76da9bac0ca17261a22decb898a8a0b4b9441b685635e92df33dc5b3"
     },
     {
       "file": "game3d/miracle-garden.js",
@@ -93,7 +93,7 @@
     },
     {
       "file": "game3d/supplied-fauna.js",
-      "sha256": "1f9ef3a7e07a6e2fdc717d530cc0507648f0338f8818a18de3f3c6a81bc24261"
+      "sha256": "931893ab96ffc4ad8a97a26031be72d79df87b0ce3092fa08598b26252237f84"
     },
     {
       "file": "game3d/test-livestock.js",
@@ -135,7 +135,7 @@
         {
           "model": "adobe-courtyard.glb",
           "file": "game3d/buildings.js",
-          "line": 35,
+          "line": 36,
           "kind": "literal"
         }
       ]
@@ -678,7 +678,7 @@
         {
           "model": "date-palm.glb",
           "file": "game3d/landscape.js",
-          "line": 233,
+          "line": 237,
           "kind": "literal"
         }
       ]
@@ -2851,7 +2851,7 @@
         {
           "model": "supplied-oriental-goby.glb",
           "file": "game3d/supplied-fauna.js",
-          "line": 15,
+          "line": 16,
           "kind": "literal"
         }
       ]
@@ -2880,7 +2880,7 @@
         {
           "model": "supplied-pelican-wasis.glb",
           "file": "game3d/supplied-fauna.js",
-          "line": 9,
+          "line": 10,
           "kind": "literal"
         }
       ]
@@ -2986,7 +2986,7 @@
         {
           "model": "supplied-yellowfin-goby.glb",
           "file": "game3d/supplied-fauna.js",
-          "line": 14,
+          "line": 15,
           "kind": "literal"
         }
       ]

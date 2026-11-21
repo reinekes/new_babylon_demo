@@ -1,8 +1,9 @@
+import {createQuarryFence,quarryFencePanels} from './quarry-fence.js';
 import {createHomeLightSpill} from './home-light-spill.js';
 import {createOvenFires} from './oven-fire.js';
 import {ovenChambers} from './reference-workshops.js';
 import {BASE_TIME_RATE} from '../calendar.js';
-import {isExtractionCourt,extractionWorkArea} from '../extraction-courts.js';
+import {isExtractionCourt,extractionWorkArea,extractionSources} from '../extraction-courts.js';
 import {blessingCupAt} from '../blessing-discovery.js';
 import {cultSign} from '../cult-sign.js';
 import {isStrictSumer} from '../scenario-profiles.js';
@@ -40,8 +41,9 @@ const isHouse=b=>!b.reedCamp&&b.type==='house'&&b.construction?.kind!=='new';
 
 // The adapter only reads simulation objects. Templates live outside the game state.
 export function gameBuildingSignature(b,state,shoreContext,fieldPatch=b.type==='field'?fieldPatches(state?.buildings).get(b):null,stationContext=null){
+ const quarry=b.type==='clay'||b.type==='quarry'?`${b.x},${b.y},${rotationOf(b)}:${extractionSources(state,b).map(p=>p.x+','+p.y).join('/')}`:'';
  const field=b.type==='field'?`${rotationOf(b)}:${districtCropVisual(b).signature}:${usesBarleyCards(b)?fieldCropKind(b):'sprouts'}:${fieldPatch?.signature||''}:${fieldBorderSignature(b,state,shoreContext?.occupied)}`:'';
- return [isStrictSumer(state)?'sumer-iii-v1':'legacy-v1',workstationBuilding(b,state,stationContext).workCorner?.join(',')||'',b.campSalvage?`reed-camp-salvage-${Number(b.campSalvage.reed>0)}`:b.reedCamp?'reed-camp':b.type,b.footprint||1,isExtractionCourt(b)?Object.values(extractionWorkArea(b,state)).join(','):'',Number(!!b.commonMeals),tier(b),b.construction?.kind||'complete',b.construction?.target||'',progress(b),field,b.type==='bridge'||b.type==='field'?`${b.x},${b.y}`:'',b.type==='field'||b.type==='bridge'?JSON.stringify([state?.world?.river,state?.world?.lakes||[]]):'',isHouse(b)?`${houseVisualKind(b,state)}:${organicHouseVariant(b)}:${Math.floor(b.householdStock?.mat||0)}:${Number(blessingCupAt(state,b))}`:'',foundationSignature(b,state,shoreContext),b.type==='sheepfold'?sheepfoldGateSide(b,state):'',leveeSignature(b,state),fortificationSignature(b,state),cultSign(state,b).map(mark=>mark.id).join(',')].join('|');
+ return [isStrictSumer(state)?'sumer-iii-v1':'legacy-v1',workstationBuilding(b,state,stationContext).workCorner?.join(',')||'',b.campSalvage?`reed-camp-salvage-${Number(b.campSalvage.reed>0)}`:b.reedCamp?'reed-camp':b.type,b.footprint||1,isExtractionCourt(b)?Object.values(extractionWorkArea(b,state)).join(','):'',Number(!!b.commonMeals),tier(b),b.construction?.kind||'complete',b.construction?.target||'',progress(b),field,quarry,b.type==='bridge'||b.type==='field'?`${b.x},${b.y}`:'',b.type==='field'||b.type==='bridge'?JSON.stringify([state?.world?.river,state?.world?.lakes||[]]):'',isHouse(b)?`${houseVisualKind(b,state)}:${organicHouseVariant(b)}:${Math.floor(b.householdStock?.mat||0)}:${Number(blessingCupAt(state,b))}`:'',foundationSignature(b,state,shoreContext),b.type==='sheepfold'?sheepfoldGateSide(b,state):'',leveeSignature(b,state),fortificationSignature(b,state),cultSign(state,b).map(mark=>mark.id).join(',')].join('|');
 }
 
 // glTF's handedness conversion is a reflected root. MergeMeshes bakes its negative
@@ -264,6 +266,11 @@ export async function createGameBuildings(B,scene,materials,options={}){
    const footing=createBuildingFoundations(B,scene,b,materialSet,state,shoreContext),lift=footing[0]?.metadata?.lift;
    if(lift){for(const mesh of sources)mesh.position.y+=lift;if(lampOrigin)lampOrigin.y+=lift;}
    for(const mesh of footing){mesh.parent=root;sources.push(mesh);}
+  }
+  if((b.type==='clay'||b.type==='quarry')&&b.construction?.kind!=='new'){
+   const panels=quarryFencePanels(workstationBuilding(b,state),state,shoreContext.contours);
+   const fence=createQuarryFence(B,scene,panels,materialSet.reed||trim);
+   if(fence){fence.parent=root;sources.push(fence);}
   }
   for(const source of sources){source.isVisible=false;source.isPickable=false;source.checkCollisions=false;source.receiveShadows=true;source.computeWorldMatrix(true);}
   t={root,sources,lampOrigin,users:1};templates.set(key,t);return t;

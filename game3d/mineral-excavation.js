@@ -21,9 +21,9 @@ function clearanceOfCell(x,y,state){
  return minimum;
 }
 // Sites stay in map coordinates when the building or work bay is rotated.
-export function mineralExcavations(state){
+export function mineralExcavations(state,buildings=state.buildings||[]){
  const pits=[];
- for(const b of state.buildings||[]){
+ for(const b of buildings){
   if(!mineralType(b)||b.construction?.kind==='new')continue;
   const kind=extractionKinds[b.type],sites=extractionSources(state,b);
   for(const p of sites.length?sites:[b.deposit||b]){

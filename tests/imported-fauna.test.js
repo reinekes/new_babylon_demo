@@ -37,12 +37,12 @@ test('gazelle gait moves detached hoof controls and stationary clips restore eve
  }
 });
 
-test('both shipped fish meshes face head first at multiple travel headings',async()=>{
+async function suppliedGeometryFixture(includeFile){
  box.BABYLON=B;box.exports=undefined;box.module=undefined;box.TextDecoder=TextDecoder;box.TextEncoder=TextEncoder;box.URL=URL;box.Blob=Blob;
  vm.runInNewContext(readFileSync(new URL('../assets/vendor/babylonjs-loaders-9.31.0.min.js',import.meta.url),'utf8'),box);
  const engine=new B.NullEngine(),scene=new B.Scene(engine),meshes=[];
  const load=async file=>{
-  if(!file.includes('goby')){
+  if(!includeFile(file)){
    const empty=new B.AssetContainer(scene);
    if(file.includes('frog'))empty.animationGroups.push(new B.AnimationGroup('metarig|jumpInPlace',scene));
    return empty;
@@ -51,6 +51,10 @@ test('both shipped fish meshes face head first at multiple travel headings',asyn
   return B.SceneLoader.LoadAssetContainerAsync('',new Uint8Array(readFileSync(new URL(`../assets/art-courtyard/models/${file}`,import.meta.url))),scene,undefined,'.glb');
  };
  const view=await createSuppliedFauna(B,scene,meshes,{loadAsset:load});
+ return {view,scene,engine};
+}
+test('both shipped fish meshes face head first at multiple travel headings',async()=>{
+ const {view,scene,engine}=await suppliedGeometryFixture(file=>file.includes('goby'));
  try{
   const poses=[0,1].map(i=>({id:`fish:river:${i}`,kind:'fish',x:3+i,y:4,swimDepth:.20}));
   for(const yaw of [0,.8,-1.4,Math.PI]){
@@ -65,5 +69,49 @@ test('both shipped fish meshes face head first at multiple travel headings',asyn
     assert.ok(root.position.y<-.34&&root.position.y>-.42);
    }
   }
+ }finally{view.dispose();scene.dispose();engine.dispose();}
+});
+
+test('winter pelican swims bill first round both bends with its wake behind and dips its bill to feed',async()=>{
+ const {courtyardFauna}=await import('../game3d/ambient-fauna.js');
+ const {calendarRateFor,useThreeDayCalendar}=await import('../calendar.js');
+ const {view,scene,engine}=await suppliedGeometryFixture(file=>file==='supplied-pelican-wasis.glb');
+ const state=createGame({seed:137});
+ try{
+  useThreeDayCalendar(state);
+  state.season=3;
+  const sample=seconds=>{
+   state.seasonElapsed=5.85+seconds*calendarRateFor(state);
+   state.simTime=seconds;
+   return courtyardFauna(state).find(animal=>animal.kind==='white-pelican');
+  };
+  const start=sample(1);
+  view.update(state,[start]);
+  const root=view.rootFor({animalId:start.id}),wake=scene.getMeshByName('pelican-wake');
+  const skin=root.getChildMeshes().find(mesh=>mesh.getTotalVertices()>1000);
+  // The narrow bill and the tip of the folded wings are the two X extremes of this scan.
+  const vertices=skin.getVerticesData(B.VertexBuffer.PositionKind);
+  let bill=0,tail=0;
+  for(let i=3;i<vertices.length;i+=3){
+   if(vertices[i]<vertices[bill])bill=i;
+   if(vertices[i]>vertices[tail])tail=i;
+  }
+  const landmark=i=>B.Vector3.TransformCoordinates(B.Vector3.FromArray(vertices,i),skin.computeWorldMatrix(true));
+  for(const seconds of [1,7,11,12,13,19,24,30,35,36,37,44,47]){
+   const previous=sample(seconds-.01),pose=sample(seconds);
+   assert.equal(pose.behavior,'swimming');
+   view.update(state,[pose]);
+   const motion=new B.Vector3(pose.x-previous.x,0,pose.y-previous.y).normalize();
+   const billDirection=landmark(bill).subtract(landmark(tail));
+   billDirection.y=0;
+   assert.ok(B.Vector3.Dot(motion,billDirection.normalize())>.94,'bill at '+seconds);
+   const wakeDirection=B.Vector3.TransformNormal(new B.Vector3(0,0,-1),wake.computeWorldMatrix(true)).normalize();
+   assert.ok(B.Vector3.Dot(motion,wakeDirection)<-.99,'wake at '+seconds);
+  }
+  const pose=sample(8);
+  view.update(state,[{...pose,scoop:0}]);
+  const billHeight=landmark(bill).y;
+  view.update(state,[{...pose,scoop:1}]);
+  assert.ok(landmark(bill).y<billHeight-.25,'feeding lowers the bill');
  }finally{view.dispose();scene.dispose();engine.dispose();}
 });

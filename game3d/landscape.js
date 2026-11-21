@@ -196,7 +196,11 @@ export async function createGameLandscape(B,scene,initialState,materials,options
  }
  bank.albedoColor=B.Color3.FromHexString('#b69e80').toLinearSpace();
  wetMud.albedoColor=B.Color3.FromHexString('#81735e').toLinearSpace();
- for(const mat of [earth,gravel,paving,trail]){mat.transparencyMode=B.Material.MATERIAL_ALPHABLEND;mat.forceDepthWrite=false;}
+ for(const mat of [earth,gravel,paving,trail]){
+  mat.transparencyMode=B.Material.MATERIAL_ALPHABLEND;mat.forceDepthWrite=false;
+  // Loose soil at zero coverage contributes neither highlights nor reflections.
+  mat.useSpecularOverAlpha=false;mat.useRadianceOverAlpha=false;
+ }
  rainMaterial.alpha=.55;rainMaterial.emissiveColor=color(.12,.17,.19);
  const add=(m,collection=staticMeshes)=>{m.isPickable=false;if(!m.sourceMesh)m.receiveShadows=true;collection.push(m);meshes.push(m);return m;};
  function registerMeshes(collection,disableOldWater=false){

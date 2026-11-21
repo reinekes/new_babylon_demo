@@ -1,3 +1,5 @@
+import {quarryFencePanels} from './game3d/quarry-fence.js';
+import {workstationBuilding} from './game3d/workstations.js';
 import {mineralDepositAngle,mineralDepositGeometry,mineralPitGeometry} from './game3d/mineral-excavation.js';
 
 // One tile is 6 m in the city and 60 × 30 pixels in the unzoomed map.
@@ -70,4 +72,28 @@ export function drawMapMineral(r,site,pit,size){
   }
  }
  r.ctx.drawImage(sprite.canvas,p.x-sprite.originX*r.s,p.y-sprite.originY*r.s,sprite.width*r.s,sprite.height*r.s);
+}
+
+const fenceDrawings=new WeakMap();
+export function mapQuarryFence(r,b,state){
+ if(!['clay','quarry'].includes(b.type)||b.construction?.kind==='new')return null;
+ const oriented=workstationBuilding({...b,rotation:0},state),corner=(oriented.workCorner||[1,1]).join(',');
+ let saved=fenceDrawings.get(b);
+ if(!saved||saved.corner!==corner||saved.world!==state.world){
+  saved={corner,world:state.world,panels:quarryFencePanels(oriented,state)};fenceDrawings.set(b,saved);
+ }
+ return front=>{
+  const q=r.s;
+  for(const {a,b:end,side} of saved.panels){
+   if((side===1||side===2)!==front)continue;
+   const from=r.point(b.x+a.x/6,b.y+a.z/6,a.y*7),to=r.point(b.x+end.x/6,b.y+end.z/6,end.y*7);
+   const height=5.5*q,steps=Math.max(2,Math.round(Math.hypot(a.x-end.x,a.z-end.z)*2.8));
+   r.polygon([[from.x,from.y],[to.x,to.y],[to.x,to.y-height],[from.x,from.y-height]],front?'#a8895a':'#95754a');
+   for(let i=0;i<=steps;i++){
+    const t=i/steps,x=from.x+(to.x-from.x)*t,y=from.y+(to.y-from.y)*t;
+    r.line([[x,y],[x+.12*q,y-height-(i===0?1.5:.48*Math.sin(i*3.9+side))*q]],i===0?'#695137':'#c3a877',q*(i===0?1.05:.55));
+   }
+   for(const h of [.32,.72])r.line([[from.x,from.y-height*h],[to.x,to.y-height*h]],'#78603e',.7*q);
+  }
+ };
 }
