@@ -463,8 +463,11 @@ export function advanceTime(s,seconds,{calendarRate=calendarRateFor(s),funeralTi
   if(ceremonyActive(s)){
    // Keep the frame budget in city seconds, including the part left after a ceremony.
    const rate=frameRate&&!s.funeral?1/BASE_TIME_RATE:1,miracle=s.miracleCelebration;
-   const untilEnd=miracle?miracle.duration-miracle.elapsed:s.funeral?stationaryFarewellSecondsLeft(s.funeral)/funeralTimerRate:festivalSecondsLeft(s,s.festival);
-   const dt=Math.min(remaining*rate,.1,Math.max(1e-7,untilEnd));
+   let dt=Math.min(remaining*rate,.1);
+   if(frameRate!==null){
+    const untilEnd=miracle?miracle.duration-miracle.elapsed:s.funeral?stationaryFarewellSecondsLeft(s.funeral)/funeralTimerRate:festivalSecondsLeft(s,s.festival);
+    dt=Math.min(dt,Math.max(1e-7,untilEnd));
+   }
    if(miracle)advanceMiracleCelebration(s,dt);
    else if(s.funeral){advanceFestival(s,dt,{ceremony:true});advanceFuneral(s,dt,funeralTimerRate);}
    else advanceFestival(s,dt,{ceremony:true});
