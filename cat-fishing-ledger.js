@@ -66,6 +66,24 @@ export function acceptFishingCargo(s,c,n,beforeCargo,{qualifies=false}={}){
  for(const piece of pieces){if(!piece.id)continue;const row=q.pending.find(r=>r.id===piece.id);if(!row)continue;if(qualifies)row.accepted+=piece.amount;else invalid.add(row.id);}
  removeReceipts(q,invalid);finish(q,s);
 }
+export function hangFishingEvidence(s,b,lot,n,before){
+ const q=s.catFishing,key=output(b);
+ if(!q?.flows[key])return;
+ const rows=queue(q,key,before),parts=[];let left=n;
+ while(left>eps&&rows.length){
+  const last=rows.at(-1),part=Math.min(left,last.amount);
+  parts.unshift({id:last.id,amount:part});last.amount-=part;left-=part;
+  if(last.amount<=eps)rows.pop();
+ }
+ writeFlow(q,key,rows);writeFlow(q,'rack:'+lot,parts);
+}
+export function pickupDryFishingEvidence(s,c,id,n,before){
+ const key='rack:'+id;
+ if(s.catFishing?.flows[key])move(s.catFishing,key,cargo(c),n,before,0);
+}
+export function returnDryFishingEvidence(s,c,id,n,before){
+ if(s.catFishing?.flows[cargo(c)])move(s.catFishing,cargo(c),'rack:'+id,n,n,before);
+}
 export function dryFishingOutput(s,b,n,beforeOutput){
  if(!s.catFishing||!b.catFishingSiteId)return;
  const q=s.catFishing,parts=take(q,output(b),n,beforeOutput);
@@ -89,11 +107,21 @@ export function validateCatFishing(s){
  const totals=new Map(),ids=new Set(),byProducer=new Map();
  for(const r of q.pending){if(!plain(r)||!keys(r,['id','producerId','siteId','total','accepted'])||!integer(r.id,1)||r.id>=q.nextCatchId||ids.has(r.id)||!people.has(r.producerId)||!integer(r.siteId,1)||r.siteId>=q.nextSiteId||!amount(r.total)||r.total>1e6||!Number.isFinite(r.accepted)||r.accepted<0||r.accepted>=r.total-eps)return false;ids.add(r.id);totals.set(r.id,0);byProducer.set(r.producerId,(byProducer.get(r.producerId)||0)+1);}
  if([...byProducer].some(([id,n])=>n+(q.lessons[id]||0)>3))return false;
- if(Object.keys(q.flows).length>people.size+sites.size)return false;
+ // Only the at most three pending lessons need temporary rack holders.
+ if(Object.keys(q.flows).length>people.size+sites.size+q.pending.length)return false;
  for(const [key,rows]of Object.entries(q.flows)){
-  const match=/^(cargo|output):(0|[1-9]\d*)$/.exec(key);if(!match||!Array.isArray(rows)||!rows.length||rows.length>7||!rows.some(r=>r.id))return false;
-  const holder=match[1]==='cargo'?people.get(Number(match[2])):sites.get(Number(match[2]));if(!holder)return false;
-  const physical=match[1]==='cargo'?holder.cargo?.food||0:holder.workshopStock?.output?.food||0;
+  const match=/^(cargo|output|rack):(0|[1-9]\d*)$/.exec(key);if(!match||!Array.isArray(rows)||!rows.length||rows.length>7||!rows.some(r=>r.id))return false;
+  const kind=match[1],id=Number(match[2]);
+  let physical;
+  if(kind==='rack'){
+   const site=markers.find(b=>b.fishRack?.batch?.id===id||b.dryFishLots?.some(lot=>lot.id===id));
+   if(!site)return false;
+   physical=site.fishRack?.batch?.id===id?site.fishRack.batch.amount:site.dryFishLots.find(lot=>lot.id===id).amount;
+   if(rows.some(r=>r.id&&q.pending.find(row=>row.id===r.id)?.siteId!==site.catFishingSiteId))return false;
+  }else{
+   const holder=(kind==='cargo'?people:sites).get(id);if(!holder)return false;
+   physical=kind==='cargo'?holder.cargo?.food||0:holder.workshopStock?.output?.food||0;
+  }
   for(const r of rows){if(!plain(r)||!keys(r,['id','amount'])||!integer(r.id)||r.id&&!ids.has(r.id)||!amount(r.amount))return false;if(r.id)totals.set(r.id,totals.get(r.id)+r.amount);}
   if(sum(rows)>physical+1e-6)return false;
  }

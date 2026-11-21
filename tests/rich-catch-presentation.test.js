@@ -1,11 +1,18 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {catchSceneFrame,catchOpeningPoints} from '../rich-catch-presentation.js';
+import {JSDOM} from 'jsdom';
+import {catchSceneFrame,catchOpeningPoints,createRichCatchPresentation} from '../rich-catch-presentation.js';
 import {recordInspiredCatch,newRichCatchEvidence} from '../fish-provenance.js';
 
-test('the network reflection and cast have separate timed endings',()=>{
+test('casting acknowledges the yard briefly, even if no fish ever bites',()=>{
  assert.deepEqual([0,6,12,20,27].map(t=>catchSceneFrame('opening',t)),['unload','share','reflection','still',null]);
- assert.deepEqual([0,2,5,8].map(t=>catchSceneFrame('cast',t)),['ripple','school','silt',null]);
+ assert.deepEqual([0,1.5,2,5,8].map(t=>catchSceneFrame('cast',t)),['ripple','ripple',null,null,null]);
+ const document=new JSDOM('<main></main>').window.document,host=document.querySelector('main');
+ const yard={type:'fishing',x:11,y:9},s={buildings:[yard],citizens:[]},sounds=[],views=[];
+ const scene=createRichCatchPresentation(host,{focus:p=>views.push(p),project:()=>({x:29,y:41}),cue:p=>{sounds.push(p);}});
+ scene.reset(s);scene.cast(s,yard);scene.tick(s,1800);scene.tick(s,16);
+ assert.equal(host.querySelector('.catch-yard-ripple').style.left,'29px');
+ assert.equal(scene.active,false);assert.deepEqual(views,[]);assert.deepEqual(sounds,['ripple']);
 });
 
 test('the scene remembers the yard of the tenth catch after reassignment',()=>{

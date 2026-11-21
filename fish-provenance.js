@@ -45,6 +45,20 @@ export function takeFish(holder,key,amount,before){
  return taken;
 }
 
+// The rack takes the newest part of the fisher's landing. Earlier catches
+// and the unidentified prefix in the fresh output keep their positions.
+export function trimFishingOutput(site,remaining){
+ const queue=site.fishOutput;if(!queue)return;
+ let excess=magnitude(queue)-remaining;
+ while(excess>EPS&&queue.length){
+  const part=queue.at(-1);
+  if(Math.abs(part)<=excess+EPS){excess-=Math.abs(part);queue.pop();}
+  else{queue[queue.length-1]-=Math.sign(part)*excess;excess=0;}
+ }
+ if(queue.at(-1)<0)queue.pop();
+ if(!queue.length)delete site.fishOutput;
+}
+
 export function recordInspiredCatch(s,site,fisher,amount,{inspired=fisher.calling==='fisher'}={}){
  const q=s.richCatchEvidence;
  if(!q||q.fisher!==undefined||!inspired||amount<=EPS||site?.type!=='fishing'||fisher.work!==buildingKey(site))return;

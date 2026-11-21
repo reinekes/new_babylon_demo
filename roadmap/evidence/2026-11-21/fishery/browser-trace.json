@@ -1,0 +1,276 @@
+{
+  "events": [
+    {
+      "stage": "blessed",
+      "time": 9.99,
+      "catch": 7.5,
+      "worker": "Амал",
+      "workerId": 0,
+      "charges": 5
+    },
+    {
+      "stage": "rack",
+      "time": 11.43,
+      "batch": {
+        "id": 1,
+        "amount": 2,
+        "remaining": 11.932
+      },
+      "fresh": 5.5
+    },
+    {
+      "stage": "ready-ration",
+      "time": 25.51,
+      "lot": {
+        "yard": "13,13",
+        "id": 1,
+        "amount": 2
+      }
+    },
+    {
+      "stage": "porter-to-granary",
+      "time": 72.63,
+      "from": "13,13",
+      "to": "11,9",
+      "job": 5,
+      "lot": {
+        "yard": "13,13",
+        "id": 1
+      },
+      "carrier": 7,
+      "name": "Нанна",
+      "food": 2,
+      "x": 12.452181373233174,
+      "y": 13.452181373233174
+    },
+    {
+      "stage": "granary",
+      "time": 77.35,
+      "receipt": {
+        "yard": "13,13",
+        "id": 1,
+        "amount": 2,
+        "carrier": 7,
+        "at": 77.2699999999987
+      },
+      "reserve": 2
+    },
+    {
+      "stage": "porter-to-family",
+      "time": 81.19,
+      "from": "11,9",
+      "to": "9,9",
+      "job": 10,
+      "lot": {
+        "yard": "13,13",
+        "id": 1
+      },
+      "carrier": 5,
+      "name": "Тари",
+      "food": 2,
+      "x": 10.871666666666666,
+      "y": 9.295362310614296
+    },
+    {
+      "stage": "family",
+      "time": 83.75,
+      "home": "9,9",
+      "receipt": {
+        "yard": "13,13",
+        "id": 1,
+        "granary": "11,9",
+        "amount": 2,
+        "carrier": 5,
+        "at": 83.66999999999857
+      },
+      "pantry": 3.9136600000000517,
+      "reserve": 0,
+      "family": [
+        {
+          "id": 8,
+          "name": "Лугаль Отец"
+        },
+        {
+          "id": 9,
+          "name": "Сила Мать"
+        },
+        {
+          "id": 10,
+          "name": "Уту"
+        },
+        {
+          "id": 11,
+          "name": "Белет"
+        }
+      ]
+    }
+  ],
+  "webgl": 2,
+  "seed": 137,
+  "canvasSmoke": {
+    "out": {
+      "blessed": {
+        "calls": {
+          "#bbccc0": 5,
+          "#899f94": 8
+        },
+        "mode": "2d"
+      },
+      "rack": {
+        "calls": {
+          "#b1b3a3": 1,
+          "#bfbc93": 6
+        },
+        "mode": "2d"
+      },
+      "porter-to-family": {
+        "calls": {
+          "#a87f4e": 1
+        },
+        "mode": "2d"
+      }
+    },
+    "errors": []
+  },
+  "capture": {
+    "gameScreen": "index.html",
+    "speed": 4,
+    "sameSave": "fishery-before-bite.json",
+    "setCameraInMetres": [
+      1.5,
+      1.14,
+      8.4,
+      [
+        76.93724769304687,
+        0.7,
+        83.82017990420255
+      ]
+    ],
+    "shots": {
+      "ordinary": [
+        {
+          "tag": "school",
+          "real": 1.57,
+          "elapsed": 0.26659999999999856,
+          "amount": 5,
+          "first": false,
+          "line": {
+            "citizenId": 0,
+            "waterPoint": {
+              "x": 13.013935221568419,
+              "y": 13.970029984033758
+            },
+            "waterContact": true,
+            "catchLift": 0,
+            "phase": "bite",
+            "blessed": false
+          },
+          "fish": 0
+        },
+        {
+          "tag": "lift",
+          "real": 2.286300000000745,
+          "elapsed": 0.9998999999999999,
+          "amount": 5,
+          "first": false,
+          "line": {
+            "citizenId": 0,
+            "waterPoint": {
+              "x": 13.013935221568419,
+              "y": 13.970029984033758
+            },
+            "waterContact": false,
+            "catchLift": 0.9859859999999999,
+            "phase": "lift",
+            "blessed": false
+          },
+          "fish": 0
+        },
+        {
+          "tag": "basket",
+          "real": 2.9209000000003726,
+          "elapsed": 1.6333000000000006,
+          "amount": 5,
+          "first": false,
+          "line": {
+            "citizenId": 0,
+            "waterPoint": {
+              "x": 13.013935221568419,
+              "y": 13.970029984033758
+            },
+            "waterContact": false,
+            "catchLift": 1,
+            "phase": "basket",
+            "blessed": false
+          },
+          "fish": 0
+        }
+      ],
+      "blessed": [
+        {
+          "tag": "school",
+          "real": 2.379300000000745,
+          "elapsed": 1.1333000000000018,
+          "amount": 7.5,
+          "first": true,
+          "line": {
+            "citizenId": 0,
+            "waterPoint": {
+              "x": 13.013935221568419,
+              "y": 13.970029984033758
+            },
+            "waterContact": true,
+            "catchLift": 0,
+            "phase": "bite",
+            "blessed": true
+          },
+          "fish": 13
+        },
+        {
+          "tag": "lift",
+          "real": 5.66260000000149,
+          "elapsed": 4.416500000000002,
+          "amount": 7.5,
+          "first": true,
+          "line": {
+            "citizenId": 0,
+            "waterPoint": {
+              "x": 13.013935221568419,
+              "y": 13.970029984033758
+            },
+            "waterContact": false,
+            "catchLift": 0.9819027767743261,
+            "phase": "lift",
+            "blessed": true
+          },
+          "fish": 0
+        },
+        {
+          "tag": "basket",
+          "real": 8.473900000000372,
+          "elapsed": 7.216300000000033,
+          "amount": 7.5,
+          "first": true,
+          "line": {
+            "citizenId": 0,
+            "waterPoint": {
+              "x": 13.013935221568419,
+              "y": 13.970029984033758
+            },
+            "waterContact": false,
+            "catchLift": 1,
+            "phase": "basket",
+            "blessed": true
+          },
+          "fish": 0
+        }
+      ]
+    }
+  },
+  "supplyCheck": {
+    "stepSeconds": 0.08,
+    "rackButton": "fish-rack-toggle",
+    "releaseButton": "fish-reserve-release",
+    "snapshotRoundTrip": "parseSaveFile"
+  }
+}

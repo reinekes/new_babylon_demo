@@ -4,16 +4,14 @@ import {terrain,isDryPoint} from './world.js';
 
 const timing={
  opening:[[0,'unload'],[6,'share'],[12,'reflection'],[20,'still'],[27,null]],
- cast:[[0,'ripple'],[2,'school'],[5,'silt'],[8,null]]
+ cast:[[0,'ripple'],[1.8,null]]
 };
 const captions={
  unload:'Рыбак принёс десятый улов. Сеть поднялась над водой.',
  share:'Два жилых двора получили долю улова.',
  reflection:'Под водой сеть всё ещё раскрыта. Рыбы собираются в её тени.',
  still:'Рыбак замер и смотрит на отражение. Богатый улов открыт.',
- ripple:'Круг по воде пошёл против течения.',
- school:'Стайка повернула разом.',
- silt:'Мутная вода скрыла рыб. Следующие уловы станут тяжелее.'
+ ripple:'Дар принят. Рыбак ждёт поклёвки.'
 };
 
 export function catchSceneFrame(kind,seconds){
@@ -41,10 +39,11 @@ export function catchOpeningPoints(s){
  return {yard,home:{x,y},water:waterPoint(s,yard)};
 }
 
-export function createRichCatchPresentation(root,{focus,cue}={}){
+export function createRichCatchPresentation(root,{focus,project,cue}={}){
  const panel=root.ownerDocument.createElement('section');
  panel.className='catch-scene';panel.hidden=true;panel.setAttribute('aria-label','Сцена Богатого улова');
  panel.innerHTML=`<div class="catch-scene-water" aria-hidden="true"></div>
+ <span class="catch-yard-ripple" aria-hidden="true" hidden></span>
  <div class="earth-scene-card catch-scene-card">
   <svg viewBox="0 0 146 100" aria-hidden="true">
    <path class="catch-scene-bank" d="M6 56q32-10 68 0t66 0M6 65q32-10 68 0t66 0"/>
@@ -58,11 +57,12 @@ export function createRichCatchPresentation(root,{focus,cue}={}){
  </div>`;
  root.append(panel);
  const title=panel.querySelector('h2'),step=panel.querySelector('small'),caption=panel.querySelector('p');
+ const ripple=panel.querySelector('.catch-yard-ripple');
  let seen=false,pending=null,active=null,stopCue=null;
  const unlocked=s=>s.richCatchEvidence?.fisher!==undefined&&s.richCatchEvidence.homes.length===2;
 
  function skip(){
-  stopCue?.();stopCue=null;active=null;panel.hidden=true;
+  stopCue?.();stopCue=null;active=null;panel.hidden=true;ripple.hidden=true;
  }
  panel.querySelector('button').addEventListener('click',skip);
 
@@ -78,12 +78,17 @@ export function createRichCatchPresentation(root,{focus,cue}={}){
   const phase=catchSceneFrame(active.kind,active.seconds);
   if(!phase){skip();return;}
   panel.hidden=false;
+  if(active.kind==='cast'){
+   const p=project?.(active.points.water);
+   ripple.hidden=!p;
+   if(p){ripple.style.left=p.x+'px';ripple.style.top=p.y+'px';}
+  }
   if(phase===active.phase)return;
   active.phase=phase;panel.dataset.phase=phase;caption.textContent=captions[phase];
-  const point=active.points[{unload:'yard',share:'home',reflection:'water',ripple:'water'}[phase]];
+  const point=active.points[{unload:'yard',share:'home',reflection:'water'}[phase]];
   if(point&&!root.ownerDocument.defaultView?.matchMedia('(prefers-reduced-motion: reduce)').matches)focus?.(point);
   stopCue?.();stopCue=null;
-  if(['unload','reflection','ripple','school'].includes(phase))stopCue=cue?.(phase);
+  if(['unload','reflection','ripple'].includes(phase))stopCue=cue?.(phase);
  }
 
  return {

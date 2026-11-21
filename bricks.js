@@ -1,6 +1,7 @@
 import {creatorReady} from './creator-materials.js';
 import {recordBuildingProduction} from './building-production-history.js';
 import {buildingKey,isOperational} from './definitions.js';
+import {advanceFishRack} from './fish-drying.js';
 import {weatherAt} from './environment.js';
 
 export const BRICK_RECIPE=Object.freeze({clay:4,reed:1,water:2});
@@ -33,6 +34,7 @@ export function advanceBricks(s,dt){
  if(!Number.isFinite(dt)||dt<=0)return;
  const rate={sunny:1,cloudy:.6,wind:.85,rain:0}[weatherAt(s).type]??0;
  for(const b of s.buildings||[]){
+  if(b.fishRack?.batch)advanceFishRack(b,dt,rate);
   const v=b.brickmaking;
   if(b.type!=='brickyard'||!isOperational(b)||!validBuffer(v,b.creatorDedication)||!v.wet)continue;
   v.drying=Math.min(BRICK_DRYING_TIME,v.drying+dt*rate);

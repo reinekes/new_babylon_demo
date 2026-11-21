@@ -2,7 +2,8 @@ import {cartHeading} from '../porter-cart-art.js';
 import {createPorterCarts,cartGrip} from './porter-cart.js';
 import {workRate} from '../wellbeing.js';
 import {freightGesture} from '../service-court.js';
-import {fishingHands,updateFishingTackle} from './harvest-gear.js';
+import {catchBasket,fishMesh} from './fishing-props.js';
+import {createFishingProps,fishingHands,updateFishingTackle} from './harvest-gear.js';
 import {carcassPosition} from '../harvest-handling.js';
 import {createHomeVisits} from './home-visits.js';
 import {waterCarrierAtBank,dipWaterVessel} from './water-carrier.js';
@@ -158,9 +159,11 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
  let faunaReady=Promise.resolve();if(!deferFauna)await loadFauna();else faunaReady=new Promise(resolve=>setTimeout(resolve,150)).then(()=>{if(!disposed)return loadFauna();});
  const vec=(x=0,y=0,z=0)=>new B.Vector3(x,y,z);
  function mat(name,color){const m=new B.PBRMaterial(`game-actor-${name}`,scene);m.albedoColor=B.Color3.FromHexString(color).toLinearSpace();m.roughness=.94;ownedMaterials.push(m);return m;}
- const wood=materials.wood||mat('wood','#82603e'),clay=materials.terracotta||mat('clay','#ad7051'),reed=materials.reed||mat('reed','#baa577'),linen=materials.linen||mat('linen','#d6c3a0'),fishSkin=mat('fish','#829e91'),copper=mat('copper','#a5754c'),stone=mat('stone','#b7ac92'),dark=mat('dark','#433a2e'),gold=mat('inspiration','#dfb952'),lapis=mat('relic-lapis','#276b94');
+ const wood=materials.wood||mat('wood','#82603e'),clay=materials.terracotta||mat('clay','#ad7051'),reed=materials.reed||mat('reed','#baa577'),linen=materials.linen||mat('linen','#d6c3a0'),fishSkin=mat('fish','#b5beb4'),wetFish=mat('river-fish','#b0c0b9'),willow=mat('basket-weave','#e2bf80'),copper=mat('copper','#a5754c'),stone=mat('stone','#b7ac92'),dark=mat('dark','#433a2e'),gold=mat('inspiration','#dfb952'),lapis=mat('relic-lapis','#276b94');
  const shadowShape=B.MeshBuilder.CreateCapsule('resident-shadow-shape',{height:1.7,radius:.26,tessellation:6,capSubdivisions:2,subdivisions:1},scene);shadowShape.isVisible=false;shadowShape.isPickable=false;shadowShape.material=linen;const shadowFilter=createActorShadowFilter();
  const taperEmber=mat('taper-ember','#ff893a');taperEmber.emissiveColor=B.Color3.FromHexString('#ff7a31');
+ wetFish.metallic=.08;wetFish.roughness=.31;wetFish.emissiveColor=B.Color3.FromHexString('#303d39').toLinearSpace();
+ fishSkin.roughness=.53;
  gold.emissiveColor=B.Color3.FromHexString('#77541c').toLinearSpace();
  function register(root){for(const m of root.getChildMeshes()){m.receiveShadows=true;m.isPickable=true;if(!meshes.includes(m))meshes.push(m);}}
  function prune(root){for(const m of root.getChildMeshes()){const i=meshes.indexOf(m);if(i>=0)meshes.splice(i,1);}}
@@ -352,10 +355,13 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   node.rotationQuaternion=B.Quaternion.FromRotationMatrix(B.Matrix.FromValues(x.x,x.y,x.z,0,y.x,y.y,y.z,0,z.x,z.y,z.z,0,0,0,0,1));node.computeWorldMatrix(true);
  }
  function workerTool(a,kind){
-  if(a.toolKind===kind){a.tool.setEnabled(!!kind);return;}
+  if(a.toolKind===kind){a.tool.setEnabled(!!kind);a.fishingProps?.setEnabled(kind==='fishing');return;}
   a.toolKind=kind;a.tool.scaling.setAll(1);const grip=kind==='hunting'?a.hands.l:a.hands.r;if(grip){a.tool.parent=grip;a.tool.position.set(0,kind==='hoe'||kind==='kiln-taper'?0:.045,0);a.tool.rotationQuaternion=B.Quaternion.Identity();}prune(a.tool);for(const n of a.tool.getChildren())n.dispose();
   if(a.fishingLine){const i=meshes.indexOf(a.fishingLine);if(i>=0)meshes.splice(i,1);a.fishingLine.dispose();a.fishingLine=null;}
-  if(a.caughtFish){prune(a.caughtFish);a.caughtFish.dispose();a.caughtFish=null;}
+  if(a.fishingProps){
+   prune(a.fishingProps);a.fishingProps.dispose();a.fishingProps=null;
+   a.caughtFish=a.cane=a.school=a.lineContact=a.catchBasket=a.schoolFactory=a.schoolFish=a.schoolFishSource=a.flankReflections=a.hookRipple=a.drops=null;
+  }
   if(a.shotArrow){prune(a.shotArrow);a.shotArrow.dispose();a.shotArrow=null;}
   if(a.fillJar){prune(a.fillJar);a.fillJar.dispose();a.fillJar=null;const i=meshes.indexOf(a.fillRope);if(i>=0)meshes.splice(i,1);a.fillRope.dispose();a.fillRope=null;}
   if(a.scribeTablet){prune(a.scribeTablet);a.scribeTablet.dispose();a.scribeTablet=null;}
@@ -411,14 +417,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    a.shotArrow=new B.TransformNode('hunter-shot',scene);a.shotArrow.parent=a.root;
    box('hunter-flight-shaft',a.shotArrow,reed,0,0,0,.018,.018,.70);box('hunter-flight-tip',a.shotArrow,stone,0,0,.37,.045,.025,.09);box('hunter-flight-feather',a.shotArrow,linen,0,0,-.28,.09,.018,.11);a.shotArrow.setEnabled(false);
   }else if(kind==='fishing'){
-   const rod=box('fishing-rod',a.tool,reed,0,.59,0,.026,1.45,.026);rod.rotation.x=.4;
-   a.rodTip=new B.TransformNode('fishing-rod-tip',scene);a.rodTip.parent=rod;a.rodTip.position.y=.725;
-   a.fishingLine=B.MeshBuilder.CreateLines('fishing-line',{points:[vec(),vec(0,-1,0)],updatable:true},scene);a.fishingLine.color=B.Color3.FromHexString('#d7c9a6');a.fishingLine.metadata={citizenId:a.root.metadata.citizenId};meshes.push(a.fishingLine);
-   a.caughtFish=new B.TransformNode('fish-on-line',scene);a.caughtFish.parent=a.root;
-   sphere('lifted-fish-body',a.caughtFish,fishSkin,0,-.15,0,.13,.34,.09);
-   const tail=box('lifted-fish-tail',a.caughtFish,fishSkin,0,-.34,0,.14,.10,.025);tail.rotation.z=.26;
-   for(const x of [-.051,.051])sphere('lifted-fish-eye',a.caughtFish,dark,x,-.075,-.018,.026,.025,.018);
-   a.caughtFish.setEnabled(false);
+   createFishingProps(B,scene,a,{reed,wicker:willow,fish:fishSkin,school:wetFish},meshes,reducedMotion);
   }else{
    box('worker-tool-handle',a.tool,wood,0,kind==='quarry'?.30:kind==='hoe'?.40:.16,0,.035,kind==='hoe'?1.04:kind==='quarry'?1.12:.66,.035);
    if(kind==='quarry')box('quarry-pick-head',a.tool,copper,0,.83,0,.40,.045,.055);
@@ -430,10 +429,11 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   }
  }
  function cargo(a,c,state,buildingTypes){
-  const source=c.carrying&&c.cargo?.food>0&&c.districtJob&&state.district?.jobs.find(j=>j.id===c.districtJob)?.source;
+  const shipment=c.carrying&&c.cargo?.food>0&&c.districtJob&&state.district?.jobs.find(j=>j.id===c.districtJob);
+  const source=shipment?.source,fromRack=!!shipment?.fishLot;
   const fromHunt=!!source&&buildingTypes.get(source)==='hunting';
   const activity=c.activity?.task;
-  const goods=c.carrying?Object.entries(c.cargo||{}).filter(([,n])=>n>0):[],key=goods.map(([k,n])=>`${k}:${n}`).sort().join('|')+`:${a.look?.work||''}:${!!c.relic}:${c.relicId||''}:${activity==='haul-game'||activity==='dress-game'?activity:''}:${!!fromHunt}:${c.freightCart||''}`;
+  const goods=c.carrying?Object.entries(c.cargo||{}).filter(([,n])=>n>0):[],key=goods.map(([k,n])=>`${k}:${n}`).sort().join('|')+`:${a.look?.work||''}:${!!c.relic}:${c.relicId||''}:${activity==='haul-game'||activity==='dress-game'?activity:''}:${!!fromHunt}:${fromRack}:${c.freightCart||''}`;
   if(a.cargoKey===key)return;a.cargoKey=key;prune(a.load);for(const m of a.load.getChildMeshes())m.dispose();
   a.towLine=null;
   if(c.freightCart){
@@ -480,9 +480,9 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
    box('carried-relic-linen',a.load,linen,0,-.18,.005,.43,.045,.16);return;
   }
   const k=goods[0]?.[0];if(!k)return;
-  if(k==='food'&&a.look.work==='fishing'){
-   for(let i=0;i<2;i++){sphere('cargo-fish',a.load,fishSkin,0,i*.10-.04,0,.43,.12,.12);const tail=box('cargo-fish-tail',a.load,fishSkin,.23,i*.10-.04,0,.10,.14,.025);tail.rotation.z=.4; sphere('cargo-fish-eye',a.load,dark,-.16,i*.10-.01,-.055,.02,.02,.02);}
-   box('cargo-fish-binding',a.load,reed,0,0,0,.025,.27,.14);
+  if(k==='food'&&(a.look.work==='fishing'||fromRack)){
+   const basket=catchBasket(B,scene,willow);basket.parent=a.load;basket.position.y=-.22;meshes.push(basket);
+   for(let i=0;i<2;i++){const fish=fishMesh(B,scene,fromRack?'cargo-dried-fish':'cargo-fish',fromRack?reed:fishSkin);fish.parent=a.load;fish.position.set(-.03,.11+.036*i,-.07+i*.14);fish.rotation.y=.34-i*.56;meshes.push(fish);}
   }else if(k==='food'&&a.look.work==='hunting'){sphere('cargo-game-bundle',a.load,dark,0,0,0,.47,.28,.28);box('cargo-game-binding',a.load,linen,0,0,0,.035,.29,.29);}
   else if(k==='basket'){
    box('cargo-basket-base',a.load,reed,0,-.11,0,.52,.07,.35);
@@ -921,7 +921,7 @@ export async function createGameActors(B,scene,materials,{includeFauna=true,incl
   attachClock(a);a.groups.get(a.clip)?.stop();
   a.poseSlot=undefined;a.poseSample=true;a.manualIdle=false;a.appearanceInputs=null;a.clip=null;a.walkFrame=undefined;a.hasModelPose=false;a.lastX=null;a.lastY=null;a.yaw=null;a.viewOffsetX=undefined;a.viewOffsetY=undefined;a.eventContactActive=undefined;a.ceremonyJoin=null;a.wasSeated=true;a.wasSwimming=true;a.lastHands={};a.lastPelvis=null;a.lastPelvisRotation=null;a.lastSpine=null;a.toolKind=null;
   for(const arm of a.armNodes)arm.last=null;for(const leg of Object.values(a.legs)){leg.lastPosition=null;leg.lastRotations=null;}
-  a.tool?.setEnabled(false);a.playProps?.setEnabled(false);a.playBoard?.setEnabled(false);a.playAnimal?.setEnabled(false);a.milkingSeat?.setEnabled(false);
+  a.fishingProps?.setEnabled(false);a.fishingLine?.setEnabled(false);a.tool?.setEnabled(false);a.playProps?.setEnabled(false);a.playBoard?.setEnabled(false);a.playAnimal?.setEnabled(false);a.milkingSeat?.setEnabled(false);
  }
  function resetPresentation(state=presentedState){
   if(disposed)return;presentedState=null;

@@ -1,8 +1,10 @@
 import {createLyreVoice,playStoneNote} from './music-audio.js';
 import {buildingKey,isOperational} from './definitions.js';
+import {fishingLandingSeconds} from './labor-life.js';
 
 const sounds={
- water:{radius:2.5,volume:.14,duration:.65},
+ water:{radius:2.5,volume:.14,duration:.65,once:true},
+ fish:{radius:3,volume:.19,duration:.85,once:true},
  reeds:{radius:2.5,volume:.075,duration:2.8},
  pottery:{radius:2.5,volume:.13,duration:1.6},
  market:{radius:2.8,volume:.13,duration:2.2}
@@ -25,6 +27,10 @@ export function workSoundSource(state,listener){
  }
  for(const c of state.citizens||[]){
   if(c.waterTrip?.phase==='fill')consider('water',c.waterTrip,c,c.id);
+  if(c.fishingLanding&&c.phase==='toWorkshop'){
+   const landing=c.fishingLanding,progress=landing.elapsed/fishingLandingSeconds(landing);
+   if(progress>=.32&&progress<.75)consider('fish',landing,c,c.id);
+  }
   if(c.phase!=='working'||!c.work)continue;
   const shop=workshops.find(b=>buildingKey(b)===c.work);
   if(shop&&Math.hypot(c.x-shop.x,c.y-shop.y)<=1.5)consider('pottery',shop,c,c.id);
@@ -48,6 +54,10 @@ function workBuffer(context,kind){
   if(kind==='water'){
    const envelope=Math.min(1,t*120)*Math.exp(-t*7)*(.65+.35*Math.sin(t*91)**2);
    samples[i]=envelope*(.65*previous+.16*(noise-previous)+.08*Math.sin(t*780-t*t*320));
+  }else if(kind==='fish'){
+   const slap=Math.min(1,t*200)*Math.exp(-t*13);
+   const droplets=t>.17?Math.exp(-15*(t-.17))*(.5+.5*Math.sin(t*80)):0;
+   samples[i]=slap*(.85*previous+.26*noise+.16*Math.sin(t*450-t*t*500))+.48*droplets*(noise-previous);
   }else if(kind==='reeds'){
    samples[i]=(noise-previous)*.65*Math.sin(Math.PI*i/frames)**2*(.35+.65*Math.sin(t*4.1)**2);
   }else{
@@ -86,16 +96,17 @@ export function createWorkAudio(createContext=()=>{
   if(active&&active.token!==source?.token)silence();
   if(!source)return;
   if(active){active.gain.gain.value=source.gain;return;}
-  if(source.kind==='water'&&heard.has(source.token))return;
+  const once=sounds[source.kind].once===true;
+  if(once&&heard.has(source.token))return;
   try{
    if(!buffers.has(source.kind))buffers.set(source.kind,workBuffer(context,source.kind));
    const node=context.createBufferSource(),gain=context.createGain(),voice={node,gain,token:source.token};
-   node.buffer=buffers.get(source.kind);node.loop=source.kind!=='water';gain.gain.value=source.gain;
+   node.buffer=buffers.get(source.kind);node.loop=!once;gain.gain.value=source.gain;
    node.connect(gain);gain.connect(context.destination);
    active=voice;
    node.onended=()=>{if(active===voice)active=null;release(voice);};
    node.start();
-   if(source.kind==='water')heard.add(source.token);
+   if(once)heard.add(source.token);
   }catch{silence();}
  }
  function stopRain(){

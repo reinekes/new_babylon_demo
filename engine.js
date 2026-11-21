@@ -1,6 +1,7 @@
 import {validateResidentReactions} from './resident-reactions.js';
 import {reviewWaterCrisisNeeds,validateWaterCrises} from './water-crisis.js';
 import {validateGrainOrigin} from './grain-origin.js';
+import {validateFishRacks} from './fish-drying.js';
 import {advanceRiverStores,validateRiverStores} from './river-stores.js';
 import {advanceCivicOrder,civicDayBoundary,finishCivicYear,validateCivicOrder} from './civic-order.js';
 import {advanceCampaignChapter,campaignChapterView,validateCampaignChapter,validateHearthEnding,validateWaterEnding,validateCraftEnding,advanceMonumentLife,validateCityEnding,validateMonumentLife,advanceForeignName,validateForeignName} from './campaign.js';
@@ -54,7 +55,7 @@ import {validateFieldSoil} from './field-soil.js';
 import {depositCanalSilt,validateCanalMaintenance} from './canal-maintenance.js';
 import {validateCityLabor} from './city-labor.js';
 import {initializeCatDiscovery,validateCatDiscovery,miraclePrice} from './miracle-discovery.js';
-import {calendarRateFor,DAYS_PER_MONTH,simulationSeconds,BASE_TIME_RATE} from './calendar.js';
+import {calendarRateFor,DAYS_PER_MONTH,simulationRate,simulationSeconds,BASE_TIME_RATE} from './calendar.js';
 import {initializeCatFishing,validateCatFishing,usesCatDiscovery} from './cat-fishing-ledger.js';
 import {buildingDefinition,buildingPresentation} from './building-presentation.js';
 import {legacyScenario,validateScenario,isStrictSumer} from './scenario-profiles.js';
@@ -449,9 +450,9 @@ function recordCivicDeath(s,citizen){
 export function advanceFrame(s,realSeconds,speed=1){
  const seconds=simulationSeconds(realSeconds,speed);
  if(s.funeral)return advanceTime(s,seconds,{funeralTimerRate:1/BASE_TIME_RATE});
- return advanceTime(s,ceremonyActive(s)?seconds/BASE_TIME_RATE:seconds);
+ return advanceTime(s,ceremonyActive(s)?seconds/BASE_TIME_RATE:seconds,{fishingTimerRate:1/simulationRate(speed)});
 }
-export function advanceTime(s,seconds,{calendarRate=calendarRateFor(s),funeralTimerRate=1}={}){
+export function advanceTime(s,seconds,{calendarRate=calendarRateFor(s),funeralTimerRate=1,fishingTimerRate=1/BASE_TIME_RATE}={}){
  if(!Number.isFinite(calendarRate)||calendarRate<=0||calendarRate>1)throw new RangeError('Invalid calendar rate');
  deferRelicEvent(s);
  if(s.godhood?.namelessEndingAt!==undefined&&s.event)resolveEvent(s,'skip');
@@ -463,7 +464,7 @@ export function advanceTime(s,seconds,{calendarRate=calendarRateFor(s),funeralTi
   advanceSupplyVow(s);
   advanceAutonomousHousing(s);
   const vowRemaining=s.supplyVows?.active?s.supplyVows.active.deadline-s.simTime:Infinity;
-  const dt=Math.min(remaining,(45-s.seasonElapsed)/calendarRate,vowRemaining,autonomousHousingBoundary(s),civicDayBoundary(s)),worked=advanceWorkers(s,dt,{stopForCeremony:true,cropRate:s.calendarDaysPerMonth===DAYS_PER_MONTH?calendarRate:1});syncSacredUnlocks(s);advanceSupplyVow(s);s.seasonElapsed+=worked*calendarRate;if(calendarRate!==1)s.calendarOffset=(s.calendarOffset||0)+worked*(1-calendarRate);remaining-=worked;advanced+=worked;
+  const dt=Math.min(remaining,(45-s.seasonElapsed)/calendarRate,vowRemaining,autonomousHousingBoundary(s),civicDayBoundary(s)),worked=advanceWorkers(s,dt,{stopForCeremony:true,fishingTimerRate,cropRate:s.calendarDaysPerMonth===DAYS_PER_MONTH?calendarRate:1});syncSacredUnlocks(s);advanceSupplyVow(s);s.seasonElapsed+=worked*calendarRate;if(calendarRate!==1)s.calendarOffset=(s.calendarOffset||0)+worked*(1-calendarRate);remaining-=worked;advanced+=worked;
   for(const camp of s.buildings.filter(b=>b.campSalvage?.reed===0)){
    const source=buildingKey(camp);
    if(!s.citizens.some(c=>c.home===source)&&!s.district.jobs.some(q=>q.campSalvage&&q.source===source&&q.remaining+transferCarried(s,q)>1e-7))
@@ -734,7 +735,7 @@ export function decode(raw){
 
   if(s.event?.id==='festival')s.event.text=festivalInvitation();
   if(oldLifeAnalytics)initializeLifeAnalytics(s);
-  if(!validateRiverStores(s)||!validateCivicOrder(s)||!validateLifeAnalytics(s)||!validateSupplyVows(s)||!validateHumanProjects(s)||!validateHouseholdInitiatives(s)||!validateCausalFacts(s)||!validateRevelationEvidence(s)||!validateStarObservations(s)||!validateDepthSupply(s)||!validateLandMemory(s)||!validateInannaDiscovery(s)||!validateBlessingDiscovery(s)||!validatePeaceDiscovery(s)||!validateResidentReactions(s)||!validateWaterCrises(s)||!validateGrainOrigin(s)||!validateFieldGrain(s)||!validateFishProvenance(s)||!validateRichCatch(s)||!validateCreatorMaterials(s)||!validateShapingProjects(s)||!validateShapingModel(s)||!validateShapingBatches(s)||!validateWindDelivery(s)||!validateAbundanceGift(s)||!validateAbundanceOrigin(s)||!validateAbundanceDiscovery(s))return null;
+  if(!validateFishRacks(s)||!validateRiverStores(s)||!validateCivicOrder(s)||!validateLifeAnalytics(s)||!validateSupplyVows(s)||!validateHumanProjects(s)||!validateHouseholdInitiatives(s)||!validateCausalFacts(s)||!validateRevelationEvidence(s)||!validateStarObservations(s)||!validateDepthSupply(s)||!validateLandMemory(s)||!validateInannaDiscovery(s)||!validateBlessingDiscovery(s)||!validatePeaceDiscovery(s)||!validateResidentReactions(s)||!validateWaterCrises(s)||!validateGrainOrigin(s)||!validateFieldGrain(s)||!validateFishProvenance(s)||!validateRichCatch(s)||!validateCreatorMaterials(s)||!validateShapingProjects(s)||!validateShapingModel(s)||!validateShapingBatches(s)||!validateWindDelivery(s)||!validateAbundanceGift(s)||!validateAbundanceOrigin(s)||!validateAbundanceDiscovery(s))return null;
   initializeRelicQuest(s,{reconcileUnusedSite:true});initializeSacredUnlocks(s);if(!validateCampaignChapter(s)||!validateHearthEnding(s)||!validateWaterEnding(s)||!validateCraftEnding(s)||!validateCityEnding(s)||!validateMonumentLife(s)||!validateForeignName(s)||!validateGodhood(s)||!validateExternalGuest(s)||!validateArrivalHospitality(s)||!validateRelicQuest(s)||!validateSacredUnlocks(s)||!validateMusic(s)||!validateCatFishing(s)||!validateCatDiscovery(s))return null;
   classifyLegacyRoads(s);s.version=VERSION;return s;
  }catch{return null;}

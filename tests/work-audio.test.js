@@ -2,6 +2,17 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createWorkAudio,workSoundSource} from '../work-audio.js';
 
+test('a real fish makes its local splash only while it is lifted from the water',()=>{
+ const landing={elapsed:0,firstBlessed:true},c={id:4,x:3,y:8,phase:'toWorkshop',fishingLanding:landing};
+ const s={citizens:[c]},near={x:3,y:8};
+ assert.equal(workSoundSource(s,near),null);
+ landing.elapsed=3;
+ assert.equal(workSoundSource(s,near).kind,'fish');
+ assert.equal(workSoundSource(s,{x:18,y:21}),null);
+ landing.elapsed=7;
+ assert.equal(workSoundSource(s,near),null);
+});
+
 test('only the nearest real water filling is audible at close zoom',()=>{
  const s={citizens:[{id:1,x:4,y:4,waterTrip:{phase:'deliver'}},{id:2,x:5,y:4,waterTrip:{phase:'fill'}},{id:3,x:4.2,y:4,waterTrip:{phase:'fill'}}]};
  assert.equal(workSoundSource(s,{x:4,y:4,proximity:1}).id,3);

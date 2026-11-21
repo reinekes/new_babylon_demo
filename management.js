@@ -148,6 +148,8 @@ export function canDemolish(s,b){
  // networkFor lazily materializes automatic roads; preview a private road array.
  if(b?.starterHut)s={...s,roads:[...(s.roads||[])]};
  const reason=blocked(s);if(reason)return reason;if(!b||!s.buildings.includes(b))return 'Выбери здание';if([s.relicQuest,s.landRelicQuest].some(q=>q?.artifact?.location==='temple'&&q.artifact.temple===buildingKey(b)))return 'Здесь хранится единственный артефакт бога';if(isTradePort(b)&&(((s.trade?.deliveries||[]).some(q=>q.market===buildingKey(b)&&q.delivered<q.amount)||(s.trade?.sales||[]).some(q=>q.market===buildingKey(b)&&q.loaded+q.cancelled<q.amount))||s.trade?.caravan?.market===buildingKey(b)))return 'Торговый двор занят купцами или оплаченными грузами';if(s.citizens.some(c=>c.memorialMove?.source===buildingKey(b)||c.memorialMove?.target===buildingKey(b)))return 'Дождись переноса семейной памяти';if(s.citizens.some(c=>c.commonMealTarget===buildingKey(b)))return 'Дождись работников, которые идут на общую трапезу';if(b.crop?.sheaves>0)return 'Сначала обмолоти снопы на току';if(!isComplete(b))return 'Незавершённую стройку можно отменить с полным возвратом';
+ if(b.fishRack?.batch)return 'Дождись окончания сушки рыбы';
+ if(b.dryFishLots?.length)return b.type==='granary'?'Сначала выдай сушёные пайки семьям':'Дождись вывоза сушёной рыбы в амбар';
  const riverReason=riverStoreDemolitionReason(s,b);if(riverReason)return riverReason;
  if(b.type==='bridge'&&s.citizens.some(c=>c.waterTrip))return 'Дождись возвращения жителей с водой';
  if(isArtisan(b)&&!['idle','ready'].includes(b.artisan.stage))return 'Дождись завершения ремесленной партии';

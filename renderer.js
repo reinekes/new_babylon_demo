@@ -38,6 +38,7 @@ import {buildingPlacement,canPlace} from './engine.js';
 import {generateStreets,sortScene,lightingAt} from './city-life.js';
 import {worldWidth,worldHeight,terrain,riverPoint,riverLocal,worldFromRiver,riverLength,riverFlowSign,signedRiverDistance,bridgeSpanAt,onBridge,isShore,nearDeposit,isDryPoint} from './world.js';
 import {visibleCitizens,networkFor} from './workforce.js';
+import {drawFishBasketLoad,drawFishingFrame,drawFishingWorker} from './fishing-yard-art.js';
 import {drawBuilding} from './architecture.js';
 import {ploughTeams} from './plough-team.js';
 import {fieldPatches} from './field-patches.js';
@@ -352,10 +353,11 @@ export class Renderer{
    this.line([[p.x+2*q,p.y-7*q],[p.x+(4.5*q+stroke),p.y-9.2*q]],'#a3835e',1.15*q);
    this.line([[p.x+(4.5*q+stroke),p.y-9.2*q],[p.x+4*q,p.y-7*q]],'#704c31',.7*q);
   }
+  else if(look.work==='fishing'&&(person.phase==='working'||person.fishingLanding))drawFishingWorker(this,person,p,q);
   else if(['weave','mould','harvest','carry','unload','stir','dance','chat','play','elder','peaceRelief'].includes(pose.kind))drawActorGesture(this,p,q,person,pose);
   else if(look.craft&&person.phase==='working'){const swing=this.reduce?0:Math.sin(person.step||0);this.line([[p.x+2*q,p.y-6*q],[p.x+(4+swing)*q,p.y-7*q]],'#a3835e',q);}
   else if(['working','manualGathering','constructing'].includes(person.phase)){const swing=this.reduce?0:Math.sin(person.step||0)*2;this.line([[p.x+3*q,p.y-5*q],[p.x+(7+swing)*q,p.y-11*q]],'#7b6548',1.2*q);this.line([[p.x+(5+swing)*q,p.y-12*q],[p.x+(10+swing)*q,p.y-10*q]],'#aaa17c',1.8*q);}
-  if(person.waterTrip?.load>0){for(const side of [-1,1]){const x=p.x+side*4*q,y=p.y-4*q;c.fillStyle='#b4784f';c.beginPath();c.ellipse(x,y,2.4*q,3.1*q,0,0,7);c.fill();this.line([[x-1.4*q,y-2.7*q],[x+1.4*q,y-2.7*q]],'#78aaa6',1.2*q);this.line([[p.x+side*1.5*q,p.y-7*q],[x,y-3*q]],'#a3835e',1.2*q);}}else if(person.freightCart){drawFreightCart(this,person.x,person.y,cartHeading(person),Object.keys(person.cargo||{}).find(k=>person.cargo[k]>0),person.onBridge?5:0);}else if(person.carrying){const cargo=typeof person.cargo==='string'?person.cargo:Object.keys(person.cargo||{})[0];const color={firedBrick:'#bd7550',brick:'#cba373',food:'#dfbf62',wood:'#9b7850',stone:'#aeb5a6',hides:'#b38a61',wool:'#e7dec0',cloth:'#91a58b',grain:'#dfbf62',clay:'#bd8059',reed:'#8eaa6a',faith:'#7bb6b3',prestige:'#dec47b'}[cargo]||'#d4b77d';this.box(p.x+3*q,p.y-3*q,2.6*q,1.3*q,3.5*q,color,'#9b7f51','#b99b65');this.line([[p.x+1.5*q,p.y-7*q],[p.x+4*q,p.y-8*q]],'#c5b085',.8*q);}
+  if(person.waterTrip?.load>0){for(const side of [-1,1]){const x=p.x+side*4*q,y=p.y-4*q;c.fillStyle='#b4784f';c.beginPath();c.ellipse(x,y,2.4*q,3.1*q,0,0,7);c.fill();this.line([[x-1.4*q,y-2.7*q],[x+1.4*q,y-2.7*q]],'#78aaa6',1.2*q);this.line([[p.x+side*1.5*q,p.y-7*q],[x,y-3*q]],'#a3835e',1.2*q);}}else if(person.freightCart){drawFreightCart(this,person.x,person.y,cartHeading(person),Object.keys(person.cargo||{}).find(k=>person.cargo[k]>0),person.onBridge?5:0);}else if(person.carrying&&person.cargo?.food>0&&(look.work==='fishing'||this.state?.lastFishLotId&&person.districtJob&&this.state.district?.jobs.find(job=>job.id===person.districtJob)?.fishLot))drawFishBasketLoad(this,p,q,look.work!=='fishing');else if(person.carrying){const cargo=typeof person.cargo==='string'?person.cargo:Object.keys(person.cargo||{})[0];const color={firedBrick:'#bd7550',brick:'#cba373',food:'#dfbf62',wood:'#9b7850',stone:'#aeb5a6',hides:'#b38a61',wool:'#e7dec0',cloth:'#91a58b',grain:'#dfbf62',clay:'#bd8059',reed:'#8eaa6a',faith:'#7bb6b3',prestige:'#dec47b'}[cargo]||'#d4b77d';this.box(p.x+3*q,p.y-3*q,2.6*q,1.3*q,3.5*q,color,'#9b7f51','#b99b65');this.line([[p.x+1.5*q,p.y-7*q],[p.x+4*q,p.y-8*q]],'#c5b085',.8*q);}
   c.restore();
  }
  riverScreen(across,along,z=0){const p=worldFromRiver(across,along,this.state);return this.point(p.x,p.y,z);}
@@ -601,6 +603,7 @@ export class Renderer{
      this.line([[x,y],[x+.27*this.s,y-.85*this.s]],'#ffbc56',this.s*.65*heat.flame);
     }
    }
+   if(e.type==='fishing'&&!e.construction)drawFishingFrame(this,e);
    if(availableFreightCarts(s,e)){const p=cartParking(e);drawFreightCart(this,p.x,p.y,p.angle,null);}
    drawCultSign(this,e,s);drawFestivalBuildingLights(this,e,s);}
   else if(e.kind==='catOffering')drawCatOffering(this,e);

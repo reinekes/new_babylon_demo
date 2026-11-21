@@ -41,6 +41,9 @@ function initializeDesertFuneral(s,deceased,{family=false,legacyRite=false}={}){
  const host=['ziggurat','shrine','house','communalHouse'].map(type=>s.buildings.find(b=>b.type===type&&b.construction?.kind!=='new')).find(Boolean),gather=host?{x:host.x,y:host.y}:copy(deceased[0]),nav=navigator(s,gather),edge=boundary(nav,gather);
  const dead=deceased.map((d,i)=>({id:d.id??i,name:String(d.name||`Житель ${1+(d.id??i)}`).slice(0,100),x:d.x,y:d.y}));
  const relatives=new Set(deceased.map(d=>d.id)),eligible=s.citizens.filter(c=>c.age>=16&&c.clothingTarget===undefined&&!c.waterTrip&&!c.craftSite&&!c.seedField&&!c.pantryTrip&&!Object.values(c.cargo||{}).some(n=>n>0)&&!Object.values(c.buildCargo||{}).some(n=>n>0)),participants=family?eligible.filter(c=>legacyRite||nav.route(c,gather).length).sort((a,b)=>Number(b.parents?.some(id=>relatives.has(id))||relatives.has(b.partner))-Number(a.parents?.some(id=>relatives.has(id))||relatives.has(a.partner))).slice(0,4):s.citizens;
+ // The procession moves participants away from their fishing stance. Their
+ // already-landed cargo stays with its owner until the usual delivery.
+ for(const c of participants){delete c.fishingLanding;delete c.hangingFishElapsed;}
  const f=s.funeral={...family?{scope:'family'}:{},style:'desert',stage:'gathering',deceased:dead,actors:participants.map(c=>({id:c.id,route:legacyRite?nav.route(c,gather):[],routeIndex:0,delay:0,departure:null,pending:false})),coffin:copy(gather),gather,boundary:edge,procession:nav.route(gather,edge),bierRouteIndex:0,timer:0};
  if(!f.procession.length)f.procession=[copy(gather)];navigation.set(f,nav);return true;
 }

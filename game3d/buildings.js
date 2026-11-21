@@ -324,7 +324,7 @@ export async function createGameBuildings(B,scene,materials,options={}){
    while(previewTemplates.size>8){const oldest=previewTemplates.keys().next().value;previewTemplates.delete(oldest);release(oldest);}
    const root=new B.TransformNode('game-building-preview',scene),parts=[];placeRoot(root,b);root.metadata={preview:true,tile:{x:b.x,y:b.y},type:b.type};
    for(const source of template.sources){
-    const mesh=source.clone(`preview-${source.name}`,null,true);mesh.parent=root;mesh.material=ghostMaterial(source.material,allowed);mesh.overrideMaterialSideOrientation=source.overrideMaterialSideOrientation;mesh.isVisible=true;mesh.isPickable=false;mesh.checkCollisions=false;mesh.receiveShadows=false;mesh.metadata={preview:true};mesh.computeWorldMatrix(true);parts.push(mesh);
+    const mesh=source.clone(`preview-${source.name}`,null,true);mesh.parent=root;mesh.material=ghostMaterial(source.material,allowed);mesh.overrideMaterialSideOrientation=source.overrideMaterialSideOrientation;mesh.isVisible=true;mesh.isPickable=false;mesh.checkCollisions=false;mesh.receiveShadows=false;mesh.metadata={preview:true};if(source.metadata?.fishRackPart)mesh.setEnabled(false);mesh.computeWorldMatrix(true);parts.push(mesh);
    }
    previewRecord={root,meshes:parts,signature,x:b.x,y:b.y,rotation:rotationOf(b),allowed};
   }else{
@@ -361,10 +361,11 @@ export async function createGameBuildings(B,scene,materials,options={}){
      // Buildings with torches receive local lights while sharing their geometry.
      const localLighting=b.type==='cityGate'&&b.construction?.kind!=='new'||b.type==='watchHouse'&&b.construction?.kind!=='new'&&(isStrictSumer(state)||sacredModels.ready(b,state));
      const mesh=localLighting?source.clone(`${key}-${source.name}`,null,true):source.createInstance(`${key}-${source.name}`);mesh.parent=root;mesh.isVisible=true;mesh.isPickable=true;mesh.checkCollisions=false;if(localLighting){mesh.receiveShadows=true;mesh.overrideMaterialSideOrientation=source.overrideMaterialSideOrientation;}
-     mesh.metadata={...root.metadata,potterWheel:!!source.metadata?.potterWheel,formingClay:!!source.metadata?.formingClay};mesh.computeWorldMatrix(true);mesh.freezeWorldMatrix();parts.push(mesh);
+     mesh.metadata={...root.metadata,potterWheel:!!source.metadata?.potterWheel,formingClay:!!source.metadata?.formingClay,fishRackPart:source.metadata?.fishRackPart};mesh.computeWorldMatrix(true);mesh.freezeWorldMatrix();parts.push(mesh);
     }
     const platform=template.sources.find(mesh=>mesh.metadata?.lift)?.metadata;
     record={root,meshes:parts,signature,x:b.x,y:b.y,rotation:rotationOf(view),platform,removeWalkway:walkways.add(view,platform),lampOrigin:template.lampOrigin,lampStart:parts.length};active.set(key,record);meshes.push(...parts);
+    if(b.type==='fishing')record.rackMeshes=parts.filter(m=>m.metadata.fishRackPart);
     if(ovenChambers[b.type])ovenFires.add(key,b,root,platform?.lift||0,workstationBuilding(b,state,stationContext).workCorner);
     if(b.type==='watchHouse'||b.type==='cityGate')watchHouseFire.add(key,root,parts);
    }
@@ -373,6 +374,11 @@ export async function createGameBuildings(B,scene,materials,options={}){
     for(const mesh of record.meshes)mesh.unfreezeWorldMatrix();placeRoot(record.root,view);for(const mesh of record.meshes){mesh.computeWorldMatrix(true);mesh.freezeWorldMatrix();}record.rotation=rotationOf(view);
    }
    if(ovenChambers[b.type])ovenFires.sync(key,b);
+   if(record.rackMeshes){
+    const frame=!!(b.fishRack?.enabled||b.fishRack?.batch||b.dryFishLots?.length),hanging=!!b.fishRack?.batch?.amount,ready=!!b.dryFishLots?.length;
+    const stage=Number(frame)+Number(hanging)*2+Number(ready)*4;
+    if(record.rackStage!==stage){for(const part of record.rackMeshes)part.setEnabled(({frame,hanging,ready})[part.metadata.fishRackPart]);record.rackStage=stage;}
+   }
    if(record.lampOrigin)syncHomeLamps(record,b,occupied.get(key)||0);
    // The courtyard architecture keeps its three shared templates. A tiny garden
    // owns its terrain-dependent geometry separately, so plant variety never

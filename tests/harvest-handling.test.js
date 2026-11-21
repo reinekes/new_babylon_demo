@@ -1,11 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createGame,build,advanceTime,encode,decode} from '../engine.js';
+import {createGame,build,advanceTime,advanceFrame,encode,decode} from '../engine.js';
 import {strictScenario} from '../scenario-profiles.js';
 import {invalidateAssignments,syncCitizens} from '../workforce.js';
 import {actorWorkActivity} from '../labor-life.js';
 import {stockStores} from '../inventory.js';
 import {animalsFor} from '../fauna.js';
+import {startRichCatch} from '../rich-catch.js';
 import {fishingLift} from '../game3d/harvest-gear.js';
 
 function settlement(type,x,y){
@@ -60,4 +61,22 @@ for(const [kind,x,y,stages] of [
  }
  assert.deepEqual([...seen],stages);
  assert.equal(s.district.jobs.find(j=>j.id===shipment)?.delivered,load);assert.ok(load>0);
+});
+
+test('confirmed first bite holds the real fisher for eight viewing seconds on 1× and 4×',()=>{
+ const {s,worker}=settlement('fishing',5,13),b=s.buildings.find(b=>b.type==='fishing');
+ startRichCatch(s,b);
+ let fisher=s.citizens.find(c=>c.id===worker);
+ for(let i=0;i<1000&&!fisher.fishingLanding;i++){s.event=null;advanceTime(s,.08);fisher=s.citizens.find(c=>c.id===worker);}
+ assert.ok(fisher.fishingLanding?.firstBlessed);assert.equal(b.richCatch.charges,5);
+ assert.equal(fisher.cargo.food,7.5);
+ for(const speed of [1,4]){
+  const state=structuredClone(s),c=state.citizens.find(person=>person.id===worker),yard=state.buildings.find(b=>b.type==='fishing');
+  const elapsed=c.fishingLanding.elapsed,start={x:c.x,y:c.y};
+  for(let i=0;i<30;i++)advanceFrame(state,.1,speed);
+  assert.ok(Math.abs(c.fishingLanding.elapsed-elapsed-3)<1e-6);
+  assert.equal(actorWorkActivity(state,c,[]).task,'land-fish');assert.deepEqual({x:c.x,y:c.y},start);
+  for(let i=0;i<55;i++)advanceFrame(state,.1,speed);
+  assert.equal(c.fishingLanding,undefined);assert.equal(yard.richCatch.charges,5);
+ }
 });

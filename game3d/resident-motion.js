@@ -52,7 +52,7 @@ export function residentViewPositions(state,citizens){
  for(const c of order){
   // Funeral rails and the solved palms share these exact presentation anchors.
   if(c.funeralContact||c.eventContact){const contact=c.funeralContact||c.eventContact;result.set(c.id,{x:contact.x,y:contact.y});continue;}
-  if(c.activity?.stand&&['take-rod','dress-game'].includes(c.activity.task)&&Math.hypot(c.x-c.activity.stand.x,c.y-c.activity.stand.y)<.22){result.set(c.id,c.activity.stand);continue;}
+  if(c.activity?.stand&&['take-rod','hang-fish','dress-game'].includes(c.activity.task)&&Math.hypot(c.x-c.activity.stand.x,c.y-c.activity.stand.y)<(c.activity.task==='hang-fish'?.31:.22)){result.set(c.id,c.activity.stand);continue;}
   if(c.freightHandoff){result.set(c.id,{x:c.x,y:c.y});continue;}
   if(c.festivalContact){result.set(c.id,{x:c.festivalContact.x,y:c.festivalContact.y});continue;}
   let p={x:c.x,y:c.y};

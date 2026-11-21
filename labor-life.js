@@ -138,7 +138,7 @@ export function workGathering(s,c,b,dt,rate,origin){
   f.health=Math.max(0,f.health-(b.type==='logging'?1:.2));if(f.health<1e-7){f.health=0;f.felledAt=s.simTime;f.recoverAt=s.simTime+(b.type==='logging'?120:180);}
  }
  // Collect at the target, then carry the actual load back over the same dry leg.
- g.jobs=g.jobs.filter(v=>v!==j);c.workElapsed=0;return j.kind==='fishing'?{...j.origin,fishery:fisheryKey(s,j.target)}:j.source?{...j.origin,source:j.source}:j.origin;
+ g.jobs=g.jobs.filter(v=>v!==j);c.workElapsed=0;return j.kind==='fishing'?{...j.origin,fishery:fisheryKey(s,j.target),bite:{x:j.target.x,y:j.target.y}}:j.source?{...j.origin,source:j.source}:j.origin;
 }
 export function advanceGathering(s){
  advanceReedBeds(s);
@@ -155,6 +155,14 @@ export function advanceGathering(s){
 /** Read-only renderer contract; no rewards, moves or writes occur in a view. */
 export function actorWorkActivity(s,c,pettingPairs,workplaces){
  if(c.activity)return c.activity;
+ if(c.hangingFishElapsed!==undefined&&c.phase==='working'){
+  const b=workplaces?.get(c.work)||s.buildings.find(b=>buildingKey(b)===c.work);
+  if(b?.fishRack?.batch){const mid=(footprintSize(b)-1)/2,a=harvestApron(b.x+mid,b.y+mid,c,c.id);
+   return {kind:'fishing',task:'hang-fish',stage:'working',progress:clamp(c.hangingFishElapsed/1.5),stand:{x:a.middle.x+a.dx*.18/6,y:a.middle.y+a.dy*.18/6},target:{x:a.middle.x+a.dx*.69/6,y:a.middle.y+a.dy*.69/6}};
+  }
+ }
+ const landing=c.fishingLanding;
+ if(landing&&c.phase==='toWorkshop')return {kind:'fishing',task:'land-fish',stage:'working',target:landing.target,progress:clamp(landing.elapsed/fishingLandingSeconds(landing)),firstBlessed:landing.firstBlessed,blessed:landing.blessed};
  const catchLoad=dressingClaim(s,c);
  if(catchLoad){
   if(c.phase==='blocked'||c.routeIndex<c.route.length)return {kind:'gathering',task:'haul-game',stage:'carry',prey:catchLoad.id};
@@ -178,9 +186,15 @@ export function actorWorkActivity(s,c,pettingPairs,workplaces){
  if(j)return {kind:j.source&&['clay','reed','garden'].includes(j.kind)?'gathering':j.kind,task:j.kind,target:j.target,progress:j.progress,stage:j.stage==='working'&&j.progress>.8?'strike':j.stage};
  const pair=(pettingPairs||catPettingPairs(s)).find(p=>p.citizenId===c.id);return pair?{kind:'petting',target:{x:pair.x,y:pair.y},progress:((s.simTime||0)%3)/3,stage:'working'}:null;
 }
+export function fishingLandingSeconds(landing){return landing.firstBlessed?8:1.8;}
 export function validateGathering(s){
  const g=s.gathering,finite=(n,min=0,max=1e9)=>Number.isFinite(n)&&n>=min&&n<=max,point=p=>p&&finite(p.x,-.5,worldWidth(s)-.5)&&finite(p.y,-.5,worldHeight(s)-.5),unique=a=>new Set(a).size===a.length;
  if(!g||!Array.isArray(s.citizens)||!Array.isArray(s.buildings)||!Array.isArray(g.features)||!Array.isArray(g.jobs)||!Array.isArray(g.kills)||g.features.length>worldWidth(s)*worldHeight(s)*4||g.jobs.length>s.population||g.kills.length>128)return false;
+ for(const c of s.citizens){
+  if(c.hangingFishElapsed!==undefined&&!finite(c.hangingFishElapsed,0,1.5))return false;
+  const q=c.fishingLanding;if(q===undefined)continue;
+  if(!q||!point(q.target)||typeof q.firstBlessed!=='boolean'||typeof q.blessed!=='boolean'||q.firstBlessed&&!q.blessed||!finite(q.elapsed,0,fishingLandingSeconds(q)))return false;
+ }
  if(!unique(g.features.map(f=>f.id))||!unique(g.jobs.map(j=>j.citizen))||!unique(g.kills.map(k=>k.id)))return false;
  if(g.features.some(f=>typeof f.id!=='string'||!/^((tree)|(rock)):\d+,\d+:[0-3]$/.test(f.id)||!['tree','rock'].includes(f.kind)||!point(f)||!finite(f.health,0,1)||(f.felledAt!==null&&!finite(f.felledAt,0,s.simTime+.1))||(f.recoverAt!==null&&!finite(f.recoverAt))||((f.health===0)!==(f.recoverAt!==null))))return false;
  if(g.kills.some(k=>typeof k.id!=='string'||!/^gazelle-\d+$/.test(k.id)||k.kind!=='gazelle'||!point(k)||!finite(k.time,0,s.simTime+.1)||!finite(k.respawnAt,k.time, k.time+180.001)||k.taken!==undefined&&k.taken!==true||k.hauler!==undefined&&(!k.taken||!Number.isInteger(k.hauler)||!s.citizens.some(c=>c.id===k.hauler))))return false;
