@@ -281,3 +281,27 @@ test('an arriving herd leaves the adult cow at the milking rail throughout the t
   assert.ok(incoming,'another livestock place was claimed by the approaching herd');
  }finally{view.dispose();for(const asset of shared.values())asset.dispose();scene.dispose();engine.dispose();}
 });
+
+test('25× flight and grazing follow the same routes as four shorter 4× updates, including on pause',async()=>{
+ const state=createGame({start:'established'}),engine=new B.NullEngine(),scene=new B.Scene(engine);
+ const views=[];
+ try{
+  for(let i=0;i<2;i++)views.push(await createAmbientFauna(B,scene,[],{includeShoreBirds:true,loadAsset:async f=>source(scene,f)}));
+  const snapshot=v=>v.roots().map(r=>[r.name,...r.position.asArray(),...r.rotation.asArray()]);
+  for(const v of views)v.update(state,0,{paused:true});
+  const start=snapshot(views[0]);
+  for(let frame=0;frame<12;frame++){
+   views[0].update(state,1/16,{speed:25});
+   for(let sub=0;sub<4;sub++)views[1].update(state,25/256,{speed:4});
+   assert.deepEqual(snapshot(views[0]),snapshot(views[1]));
+  }
+  const end=snapshot(views[0]);
+  for(const name of ['ambient-sky-birds-0','ambient-fox-0','ambient-seagull-0']){
+   const locate=rows=>rows.find(r=>r[0]===name)?.slice(1,4);
+   assert.ok(locate(end),name);
+   assert.notDeepEqual(locate(start),locate(end),name);
+  }
+  views[0].update(state,1/16,{speed:25,paused:true});
+  assert.deepEqual(snapshot(views[0]),end);
+ }finally{for(const view of views)view.dispose();scene.dispose();engine.dispose();}
+});

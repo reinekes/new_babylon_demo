@@ -82,7 +82,7 @@ import {extractionKinds,extractionPlacements,isExtractionCourt} from './extracti
 import {availableExtractionSources} from './extraction-stock.js';
 import {newFootprint,footprintCells,occupiesCell,insideFootprint} from './footprints.js';
 import {initializeGathering,validateGathering} from './labor-life.js';
-import {initializeFestival,validateFestival,festivalReason,orderFestival,festivalInvitation,advanceFestival} from './festival.js';
+import {initializeFestival,validateFestival,festivalReason,orderFestival,festivalInvitation,advanceFestival,festivalSecondsLeft} from './festival.js';
 import {initializeArtisans,validateArtisans} from './artisan.js';
 import {isRiverBank} from './river-trade.js';
 import {upgradeCost,legacyUpgradeCost} from './masonry.js';
@@ -104,6 +104,7 @@ import {residentMood,initializeWellbeing,validateWellbeing,affectResidents,mourn
 import {validateHouseholds} from './households.js';
 import {initializeDemography,advanceGenerations,validateDemography} from './demography.js';
 import {startFuneral,advanceFuneral,validateFuneral} from './funerals.js';
+import {stationaryFarewellSecondsLeft} from './desert-funeral.js';
 import {marketAccess,initializeTrade,advanceTrade,validateTrade} from './trading.js';
 import {classifyLegacyRoads,roadUpgradeCost,roadKey} from './roads.js';
 import {validateFootpaths} from './footpaths.js';
@@ -448,11 +449,10 @@ function recordCivicDeath(s,citizen){
 // Footsteps always use city simulation seconds. Ritual holds, lowering and the jackal
 // animation keep their authored real-time durations while the calendar is stopped.
 export function advanceFrame(s,realSeconds,speed=1){
- const seconds=simulationSeconds(realSeconds,speed);
- if(s.funeral)return advanceTime(s,seconds,{funeralTimerRate:1/BASE_TIME_RATE});
- return advanceTime(s,ceremonyActive(s)?seconds/BASE_TIME_RATE:seconds,{fishingTimerRate:1/simulationRate(speed)});
+ const frameRate=simulationRate(speed);
+ return advanceTime(s,simulationSeconds(realSeconds,speed),{frameRate,funeralTimerRate:1/BASE_TIME_RATE,fishingTimerRate:1/frameRate});
 }
-export function advanceTime(s,seconds,{calendarRate=calendarRateFor(s),funeralTimerRate=1,fishingTimerRate=1/BASE_TIME_RATE}={}){
+export function advanceTime(s,seconds,{calendarRate=calendarRateFor(s),funeralTimerRate=1,fishingTimerRate=1/BASE_TIME_RATE,frameRate=null}={}){
  if(!Number.isFinite(calendarRate)||calendarRate<=0||calendarRate>1)throw new RangeError('Invalid calendar rate');
  deferRelicEvent(s);
  if(s.godhood?.namelessEndingAt!==undefined&&s.event)resolveEvent(s,'skip');
@@ -460,7 +460,16 @@ export function advanceTime(s,seconds,{calendarRate=calendarRateFor(s),funeralTi
  initializeProductionAccounting(s);syncInventory(s);let remaining=Math.min(seconds,3600),advanced=0;
  while(remaining>1e-7&&(!s.lost||s.funeral)&&!s.event){
   if(s.funeral&&relicControlActive(s))interruptRelicForFuneral(s);
-  if(ceremonyActive(s)){const dt=Math.min(remaining,.1);if(s.miracleCelebration)advanceMiracleCelebration(s,dt);else if(s.funeral){advanceFestival(s,dt,{ceremony:true});advanceFuneral(s,dt,funeralTimerRate);}else advanceFestival(s,dt,{ceremony:true});remaining-=dt;advanced+=dt;continue;}
+  if(ceremonyActive(s)){
+   // Keep the frame budget in city seconds, including the part left after a ceremony.
+   const rate=frameRate&&!s.funeral?1/BASE_TIME_RATE:1,miracle=s.miracleCelebration;
+   const untilEnd=miracle?miracle.duration-miracle.elapsed:s.funeral?stationaryFarewellSecondsLeft(s.funeral)/funeralTimerRate:festivalSecondsLeft(s,s.festival);
+   const dt=Math.min(remaining*rate,.1,Math.max(1e-7,untilEnd));
+   if(miracle)advanceMiracleCelebration(s,dt);
+   else if(s.funeral){advanceFestival(s,dt,{ceremony:true});advanceFuneral(s,dt,funeralTimerRate);}
+   else advanceFestival(s,dt,{ceremony:true});
+   remaining-=dt/rate;advanced+=dt;continue;
+  }
   advanceSupplyVow(s);
   advanceAutonomousHousing(s);
   const vowRemaining=s.supplyVows?.active?s.supplyVows.active.deadline-s.simTime:Infinity;
@@ -474,6 +483,10 @@ export function advanceTime(s,seconds,{calendarRate=calendarRateFor(s),funeralTi
   advanceCivicOrder(s,citizen=>recordCivicDeath(s,citizen));
   if(s.waterCrises)reviewWaterCrisisNeeds(s);
   if(s.seasonElapsed>=45-1e-7*calendarRate){s.seasonElapsed=0;settleSeason(s);deferRelicEvent(s);}
+  if(frameRate&&ceremonyActive(s)){
+   // The UI selects 1× on entry. Apply it to the remaining fraction of this frame as well.
+   remaining*=BASE_TIME_RATE/frameRate;frameRate=BASE_TIME_RATE;fishingTimerRate=1/frameRate;
+  }
  }
  if(s.godhood?.namelessEndingAt!==undefined&&s.event)resolveEvent(s,'skip');
  advanceEcology(s);syncInventory(s);check(s);return advanced;

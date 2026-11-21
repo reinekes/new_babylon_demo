@@ -133,6 +133,7 @@ function connected(s,a){const net=networkFor(s);return a.route.every((p,i)=>net.
 function walk(s,c,a,dt){let remaining=dt;while(remaining>1e-8){const target=a.route[a.routeIndex];if(!target)return true;const d=distance(c,target),speed=1.05*roadSpeed(s,c,target),travel=d/speed;if(travel<=remaining+1e-8){c.x=target.x;c.y=target.y;a.routeIndex++;remaining-=travel;}else{c.x+=(target.x-c.x)*remaining/travel;c.y+=(target.y-c.y)*remaining/travel;return false;}}return a.routeIndex>=a.route.length;}
 const eveningAt=t=>hourOf(t)>=21||hourOf(t)<3;
 const elapsedFestival=(s,q)=>q.started===null?0:Math.max(q.elapsed||0,s.simTime-q.started);
+export const festivalSecondsLeft=(s,q)=>Math.max(0,FESTIVAL_SECONDS-elapsedFestival(s,q));
 export function advanceFestival(s,dt,{ceremony=false}={}){
  initializeFestival(s);if(!Number.isFinite(dt)||dt<=0)return;beginFirstBeer(s);const q=s.festival;if(!q)return;const cost=costFor(q),gatheringAt=t=>firstBeer(q)||eveningAt(t),gathering=()=>gatheringAt(s.simTime);
  const stores=new Set(stockStores(s).map(buildingKey));for(const [key,kind]of Object.entries(q.sourceKinds||{}))if(kind==='output'&&s.buildings.some(b=>buildingKey(b)===key&&readyBrewery(b)))stores.add(key);
@@ -180,7 +181,7 @@ function festivalProgress(s,q,{paused=false}={}){
  if(paused&&q.stage==='celebrating')return status('paused','Пир приостановлен. Продолжи, чтобы гости вернулись к празднику.');
  if(paused)return status('paused','Игра на паузе. Запусти время: носильщики доставят угощение автоматически, вручную наполнять храм не нужно.');
  if(s.event)return status('event','Заверши текущее событие, чтобы жители продолжили подготовку.');
- if(q.stage==='celebrating')return status('celebrating',`Идёт праздник. До конца обряда: ${Math.max(0,Math.ceil(FESTIVAL_SECONDS-elapsedFestival(s,q)))} с; городское время остановлено.`);
+ if(q.stage==='celebrating')return status('celebrating',`Идёт праздник. До конца обряда: ${Math.ceil(festivalSecondsLeft(s,q))} с; городское время остановлено.`);
  if(q.actors.some(a=>!connected(s,a)))return status('roadBlocked','Путь перекрыт. Нужен свободный проход от склада к месту праздника; отмена вернёт неиспользованное угощение.');
  if(q.stage==='supplying'){
   const carriers=q.actors.filter(a=>a.kind==='carrier');

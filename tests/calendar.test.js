@@ -2,7 +2,7 @@ import {advanceCalendar} from './helpers/calendar-time.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {calendarAt,monthTrackHTML,simulationSeconds,secondsToNextMonth} from '../calendar.js';
-import {createGame,advanceTime,encode,decode} from '../engine.js';
+import {createGame,advanceFrame,advanceTime,encode,decode} from '../engine.js';
 import {DAY_SECONDS} from '../city-life.js';
 test('a live month lasts three complete work days, including a mid-month save and reload',()=>{
  let s=createGame({start:'established'});s.calendarDaysPerMonth=3;const start=s.simTime;
@@ -17,6 +17,17 @@ test('twelve months preserve all four seasonal and annual boundaries',()=>{
 });
 test('1x takes eight real minutes per day while 2x/4x remain proportional',()=>{
  assert.equal(simulationSeconds(.2,1),.025);assert.equal(simulationSeconds(.2,2),.05);assert.equal(simulationSeconds(.2,4),.1);assert.equal(simulationSeconds(.2,10),.25);assert.equal(simulationSeconds(99,1),.03125);assert.equal(simulationSeconds(-1,1),0);
+});
+test('25× advances the live city exactly 2.5 times as far as the legacy 10× mode',()=>{
+ const saved=encode(createGame({start:'established'}));
+ const elapsed=speed=>{
+  const state=decode(saved),start=state.simTime;
+  for(const dt of [.0625,.125,.25])advanceFrame(state,dt,speed);
+  return state.simTime-start;
+ };
+ const legacy=elapsed(10);
+ assert.equal(legacy,.4375*1.25);
+ assert.ok(Math.abs(elapsed(25)-legacy*2.5)<1e-9);
 });
 test('calendar is derived without migrating identities, cargo, crops or saved elapsed time',()=>{
  const s=createGame({start:'established'});advanceTime(s,19);const raw=encode(s),copy=decode(raw);assert.ok(copy);const before=encode(copy);const c=calendarAt(copy);assert.equal(c.month,1);assert.equal(c.day,9);assert.equal(secondsToNextMonth(copy),11);assert.equal((monthTrackHTML(copy).match(/data-month=/g)||[]).length,12);assert.equal((monthTrackHTML(copy).match(/aria-current="date"/g)||[]).length,1);assert.equal(encode(copy),before);

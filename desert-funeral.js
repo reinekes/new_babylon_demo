@@ -163,6 +163,8 @@ function prepareTempleVisit(s,f){
  }
 }
 const farewellInPlace=f=>f.ritualVersion===3&&!f.bearers.length&&f.stage==='farewell'&&f.procession.length===1&&distance(f.gather,f.boundary)===0;
+const FAREWELL_SECONDS=5;
+export const stationaryFarewellSecondsLeft=f=>farewellInPlace(f)?Math.max(0,FAREWELL_SECONDS-f.timer):Infinity;
 function beginRiteStage(f,stage){f.stage=stage;f.timer=0;}
 function finishRite(s,f){s.funeral=null;if(f.scope==='family'){for(const a of f.actors){const c=s.citizens.find(c=>c.id===a.id);if(c){c.phase='home';c.route=[];c.routeIndex=0;}}}else rerouteCitizens(s);}
 // Small cohorts leave over the first few seconds of the same saved stage.
@@ -212,7 +214,7 @@ function prepareReturn(s,f,nav,toGather=false){
 export function advanceDesertFuneral(s,dt,timerRate=1){
  const f=s.funeral;if(!f||![2,3].includes(f.ritualVersion))return advanceLegacyDesertFuneral(s,dt);if(!Number.isFinite(dt)||dt<=0)return true;
  f.timer+=dt*timerRate;
- if(farewellInPlace(f)){if(f.timer>=5-1e-8)s.funeral=null;return true;}
+ if(farewellInPlace(f)){if(f.timer>=FAREWELL_SECONDS-1e-8)s.funeral=null;return true;}
  let nav=navigation.get(f);if(!nav){nav=navigator(s,f.gather,.19);navigation.set(f,nav);}const citizens=new Map(s.citizens.map(c=>[c.id,c]));
  if(['gathering','collecting','receding','returning'].includes(f.stage)){
   let done=true,budget=1;

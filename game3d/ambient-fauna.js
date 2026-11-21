@@ -346,6 +346,27 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
  }
 
  function seek(a,state){const p=ambientAnchor(state,a.species,a.index,actors.filter(other=>other!==a&&other.anchor&&other.enabled).map(other=>other.anchor));a.anchor=p;a.target=null;a.enabled=!!p;a.root.setEnabled(!!p);if(p)a.root.position.set(p.x*6,surfaceElevation(p.x,p.y,state),p.y*6);}
+ function walkGround(a,state,time,stepTime){
+   const x=a.root.position.x/6,y=a.root.position.z/6;
+   const config=AMBIENT_MODELS[a.species];let moved=0;
+   if(!a.target&&time>=a.restUntil){
+    const angle=(a.routeAttempt++ + a.index*2.1)*2.4,radius=.38+(a.routeAttempt%3)*.16,candidate={x:a.anchor.x+Math.cos(angle)*radius,y:a.anchor.y+Math.sin(angle)*radius};
+    if(ambientClearSegment(state,{x,y},candidate))a.target=candidate;else a.restUntil=time+.6;
+   }
+   if(a.target){
+    const pace=config.pace*(a.species==='boar'?.9+(a.index%3)*.12:1);
+    const stride=a.species==='donkey'?donkeySource.model.stride:config.stride;
+    const next=groundStep({x,y},a.target,a.root.rotation.y,stepTime*pace/6,stride*.64/6);
+    if(ambientClearSegment(state,{x,y},next)){
+     moved=Math.hypot(next.x-x,next.y-y)*6;
+     a.root.position.set(next.x*6,surfaceElevation(next.x,next.y,state),next.y*6);
+     a.root.rotation.y=next.yaw;
+     if(next.arrived){a.target=null;a.restUntil=time+1.2+a.index*.3+(a.species==='boar'?(a.routeAttempt+a.index)%3*.58:0);}
+    }else{a.target=null;a.restUntil=time+.8;}
+   }
+   if(moved>0)a.walkPhase=(a.walkPhase+moved/(a.species==='donkey'?donkeySource.model.stride:config.stride))%1;
+   return moved;
+ }
  function animate(a,t,walking=false){
   const name=a.groups.has('Walk')?(walking?'Walk':'Idle'):a.groups.keys().next().value,g=a.groups.get(name);if(!g)return;
   if(a.clip!==name){for(const other of a.groups.values())other.stop();g.start(true);g.pause();a.clip=name;a.clipClock=t;}
@@ -366,7 +387,12 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
   for(const [species]of groundModels){const desired=ecologyCount(state,species,2);for(let i=actors.filter(a=>!a.foldId&&a.species===species).length;i<desired;i++)imported(species,i);}
   for(const f of farms.values())if(!actors.some(a=>a.farm?.id===f.id))imported('cow',f.index,f);
   const skyKind=assets.has('sky-birds')?'sky-birds':'original-sky',skyDesired=options.includeSkyBirds===false?0:ecologyCount(state,'sky-birds',2);for(let i=actors.filter(a=>a.species===skyKind).length;i<skyDesired;i++){if(skyKind==='sky-birds')imported('sky-birds',i);else originalSky(i,{body:templates[0],wing:templates[1]});}
-  dt=Number.isFinite(dt)?Math.max(0,Math.min(.1,dt)):0;speed=Number.isFinite(speed)?Math.max(0,Math.min(4,speed)):1;const advancing=!paused&&dt>0&&speed>0;if(advancing)clock+=dt*speed;
+  dt=Number.isFinite(dt)?Math.max(0,Math.min(.1,dt)):0;speed=Number.isFinite(speed)?Math.max(0,Math.min(25,speed)):1;
+  const elapsed=paused?0:dt*speed,advancing=elapsed>0;
+  clock+=elapsed;
+  // Free-roaming animals steer and check obstacles along each short arc.
+  // Keep the longest step they took at 4×; sampled swimming and flight use the full clock.
+  const groundSteps=Math.max(1,Math.ceil(elapsed/.4)),groundStepTime=elapsed/groundSteps;
   const routeChanged=options.includeShoreBirds&&(stateChanged||routeBuildings!==state.buildings||routeCount!==state.buildings.length);
   if(routeChanged){
    routeBuildings=state.buildings;routeCount=routeBuildings.length;
@@ -442,23 +468,10 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
    const x=a.root.position.x/6,y=a.root.position.z/6;
    if(!a.anchor||!ambientDryPoint(state,x,y)){seek(a,state);continue;}
    if(!a.enabled)continue;
-   const config=AMBIENT_MODELS[a.species];let moved=0;
-   if(!a.target&&clock>=a.restUntil){
-    const angle=(a.routeAttempt++ + a.index*2.1)*2.4,radius=.38+(a.routeAttempt%3)*.16,candidate={x:a.anchor.x+Math.cos(angle)*radius,y:a.anchor.y+Math.sin(angle)*radius};
-    if(ambientClearSegment(state,{x,y},candidate))a.target=candidate;else a.restUntil=clock+.6;
+   let moved;
+   for(let step=1;step<=groundSteps;step++){
+    moved=walkGround(a,state,clock-(groundSteps-step)*groundStepTime,groundStepTime);
    }
-   if(a.target){
-    const pace=config.pace*(a.species==='boar'?.9+(a.index%3)*.12:1);
-    const stride=a.species==='donkey'?donkeySource.model.stride:config.stride;
-    const next=groundStep({x,y},a.target,a.root.rotation.y,dt*speed*pace/6,stride*.64/6);
-    if(ambientClearSegment(state,{x,y},next)){
-     moved=Math.hypot(next.x-x,next.y-y)*6;
-     a.root.position.set(next.x*6,surfaceElevation(next.x,next.y,state),next.y*6);
-     a.root.rotation.y=next.yaw;
-     if(next.arrived){a.target=null;a.restUntil=clock+1.2+a.index*.3+(a.species==='boar'?(a.routeAttempt+a.index)%3*.58:0);}
-    }else{a.target=null;a.restUntil=clock+.8;}
-   }
-   if(moved>0)a.walkPhase=(a.walkPhase+moved/(a.species==='donkey'?donkeySource.model.stride:config.stride))%1;
    animate(a,clock,moved>.00001);
 
   }
