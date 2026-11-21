@@ -1,0 +1,110 @@
+{
+  "release": "3d005050e15f0628454857432c190e78be686ac9",
+  "site": "https://reinekes.github.io/new_babylon_demo/",
+  "matched": {
+    "GAME_DESIGN.md": "4c2d56b6fd3bc16030da468f0b87d3bd608653df166f532f574cfa1ba85d233d",
+    "civic-entrance-bricks.js": "b0c7ab1a7ea2a3f4634b965fd9389cf0126277ec21f5ae6bd25a69ece1ca15e1",
+    "courtyard.html": "e80b9c81a4780b831d051c019e8d3ee622bc54c04c14c14ea168c9d279a88d86",
+    "crop-studio.html": "e674549c64003f541fb5214a2cf1599e8e94effe55c6505f5ebb36e251c3ccfa",
+    "district3d.html": "4b17e5f2998713fb8594ec606c94d763fba388e00aca08c80cc67f8d56012220",
+    "district3d/terrain.js": "5d3d23b17f79b13f47a9d0cedfab2d0e3c661b8ce5221a4c794e496cfb87856b",
+    "docs/benchmarks/2026-11-21-footpaths-and-slopes-4x.json": "3c6bb1d3d31961a791aad658376c744d95785894c7b591d8f2b10190b75858ea",
+    "docs/benchmarks/2026-11-21-footpaths-and-slopes-city.json.gz": "13da99eb172b38fee844eaba171090fe16f8229dbb2bb23d4549d37c5ddd16fc",
+    "docs/model-index.json": "0b4396cc5a23fdaa710fe409e008735b8a33891746fe70bf04f74f83388ec3d0",
+    "game3d/renderer.js": "9734e4a8c593fc43d97d4fa3619577b1ad8b72eda390578f2efbbb8aa0bc51a8",
+    "goat-studio.html": "60c71bf98981c2dfc067dc5c9f993381cd1bcef8d70107feaf8c09b774ef4019",
+    "index.html": "fd53f8009d63b2956d82be241282162af2b2db58a81c8d3f5db4d2bd44a7fb7e",
+    "mallards.html": "83c8bb86832b53ec2f4e7350f81e911f29dd3481a40524e7754f891c6575e334",
+    "model-atlas/index.html": "cbbdff0f34b86f881f6a3a3070487e8cac9ae31b483c9d10d8b58831db94cb27",
+    "renderer.js": "c851722bc068070b5a39a0c2d4bb4b324e3b356e1a3d785ed766d9416ec8a686",
+    "roadmap/evidence/2026-11-21/footpaths-and-hills/canvas-comparison.webp": "2c407bf51cb2dd88d346509aacc276633f75c8b62a95e5cd52bd2cd5eacffb96",
+    "roadmap/evidence/2026-11-21/footpaths-and-hills/checks.json": "a77d5b0dfe40d0c946d5fc1a8fb18e0ba4bd58c61ed9f8bb06dacf0c04c93f24",
+    "roadmap/evidence/2026-11-21/footpaths-and-hills/footpath-comparison.webp": "977245aff9e8b7338263125e662393f218672c416087ec04b98a10f93a8bd17d",
+    "roadmap/evidence/2026-11-21/footpaths-and-hills/footpath-save.json": "927af1fb0b2137e64e04f9527434b5cb897ebc2d5986910972b3d6d10d05e16a",
+    "roadmap/evidence/2026-11-21/footpaths-and-hills/hill-bend-and-dusk.webp": "7499f4fdcbb1aeb91cad23045cee2e5631dfd000096ca13b2e433a75703b9efc",
+    "roadmap/evidence/2026-11-21/footpaths-and-hills/hill-save.json": "8237f37f4c6eaf563f7d8d9a39e244aee3b5fbb3ecf922589e3ebbfe94cf1bab",
+    "roadmap/index.html": "8ce1c20292e7e12ab637a7f3d7f4b8b99fefe4d0e2596915d1fe9221fa9ff07e",
+    "roadmap/manifest.json": "0e687900eb613faf9ed5ef0df8a9b54081eef4cf989ef4838686db676178683d",
+    "roadmap/plan.md": "da375adaa626b3aeb0ba5a262b56f1049e59e2510d4886e4566743cd012a7df6",
+    "roadmap/reports/2026-11-21-footpaths-and-slopes.md": "19267aec73baa3d598c23d209194fd6e69a218c3634fb94a174f462dce90b3d7",
+    "roadmap/reports/2026-11-21-streets-quarries-pelican.md": "55055fb0982eda205f998cfecfd2ef8f2adfeed5e9d1e574bfb985f402a24280",
+    "scripts/sumer-building-studio.html": "768a984cde9c29d37b236649b47a0364f6a5c409ea5d358b2daa574fe18a8d7a",
+    "street-surfaces.js": "73db881f261119521dadb0d85c77393540a4a6d41c49da7e471a87891da57667",
+    "game3d/bootstrap-landscape.js": "7f615fadee211c1c6902b91086375caef3edc22034c6e33edfeb806f70cbcd32",
+    "game3d/landscape.js": "b8bf756f2730a9f4809f36159d3634788de6551069fdcd132435be306ea5f2ff",
+    "game3d/water.js": "a587f565e2fc4cc7e2e4b8e06b757df8df74877a8676c38aa64609647121ddc4",
+    "roadmap/evidence/2026-11-21/footpaths-and-hills/dusk-comparison.webp": "019184bb91c7deeb919565144bac09749ffd55bfc0a87d0d64245fc72d26ce23",
+    "roadmap/evidence/2026-11-21/footpaths-and-hills/hill-comparison.webp": "0606f14e241a2dbee52bb83868db9d41f19deb6eaf9a7fa5a19dafda9174f6d3",
+    "roadmap/snapshot.json": "d6b706c141c63ea16f8f9a2bc775a068d3f207333fbcbd246d83a64ce320690e",
+    "district3d/road-ground.js": "9e8f5d18c914ecab128e97b5b4b3ee25daf95024b3474ec4e8f6e8d70478096e"
+  },
+  "deployment": "https://github.com/reinekes/new_babylon_demo/actions/runs/44934833646",
+  "publicGame": {
+    "origin": "https://reinekes.github.io/new_babylon_demo",
+    "viewports": [
+      [
+        1120,
+        680
+      ]
+    ],
+    "groundChecks": {
+      "built": {
+        "total": 16397,
+        "buried": 0,
+        "min": 0.037999951726112036,
+        "max": 0.042000028063093
+      },
+      "tracks": {
+        "total": 9629,
+        "buried": 0,
+        "min": 0.01063574999564347,
+        "max": 0.049187729967644485
+      },
+      "activeMeshes": [
+        "road-region-3:1:47936:268435455:0:true:1",
+        "road-region-3:2:47936:268435455:0:true:1",
+        "road-region-4:2:47936:268435455:0:true:1",
+        "resident-footpaths"
+      ]
+    },
+    "settlement": {
+      "hill": 12,
+      "footpaths": 33
+    },
+    "footpathViews": [
+      {
+        "x": 6.35,
+        "y": 5.2,
+        "radius": 19,
+        "alpha": 1.21,
+        "beta": 0.8,
+        "light": "day"
+      },
+      {
+        "x": 6.92,
+        "y": 5.4,
+        "radius": 70,
+        "alpha": 1.21,
+        "beta": 0.77,
+        "light": "day"
+      },
+      {
+        "x": 6.35,
+        "y": 5.2,
+        "radius": 19,
+        "alpha": 1.21,
+        "beta": 0.8,
+        "light": "sunset"
+      },
+      {
+        "x": 6.92,
+        "y": 5.4,
+        "radius": 70,
+        "alpha": 1.21,
+        "beta": 0.77,
+        "light": "sunset"
+      }
+    ],
+    "canvas": "{ renderedPaths: 33, visible: 30 }"
+  }
+}

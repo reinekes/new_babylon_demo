@@ -56,7 +56,8 @@
 date: 2026-11-21
 type: release
 release: footpaths-and-slopes-20261121
-publication: pending
+commit: 3d005050e15f0628454857432c190e78be686ac9
+publication: verified
 groups: graphics; performance
 completed: footpaths-subtle-ground; road-slope-breaks
-source: roadmap/reports/2026-11-21-footpaths-and-slopes.md
+source: docs/versions/2026-11-21-07.md
