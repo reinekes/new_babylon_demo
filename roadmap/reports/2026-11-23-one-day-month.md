@@ -30,11 +30,14 @@
 
 В Ниппуре эпохи III династии Ура использовались лунные месяцы, в отдельные годы добавляли вставной месяц. Одни сутки на месяц и четыре равных сезона — игровой масштаб времени. [Исследование календарей](https://cdli.earth/articles/cdlj/2016-1) · [Шумерские названия месяцев](https://cdli.earth/postings/26).
 
+На опубликованной странице проверены все четыре кнопки. Полный год на 25× занял 48,01 с. Зафиксировано двенадцать полных солнечных циклов до весны второго года. [Проверка на GitHub Pages](../../docs/benchmarks/2026-11-23-one-day-month-pages.json).
+
 ## calendar-year-20m-20261123 | Год из двенадцати суток на 1× занимает 20 минут
 
 date: 2026-11-23
 type: release
 release: calendar-year-20m-20261123
-publication: pending
+commit: c8f426440c66de867fc3366c3cd922c64e4595c4
+publication: verified
 groups: simulation; ux; performance
-source: roadmap/reports/2026-11-23-one-day-month.md
+source: docs/versions/2026-11-23.md

@@ -1,0 +1,583 @@
+{
+  "files": {
+    "release": "c8f426440c66de867fc3366c3cd922c64e4595c4",
+    "site": "https://reinekes.github.io/new_babylon_demo/",
+    "matched": {
+      "GAME_DESIGN.md": "7460888bbc4bec7cfa6eebc1b977216e1599ca1c1611f5a3d79539668a03740a",
+      "app.js": "ac0b1c23e5e8f4daf9227158587704cbdddbaee22c36a6ad99a10a81141e7e3e",
+      "calendar.js": "6f082d2f02d90472dc7d1f945bf8918afb1c8bb4d3a34dce185d77dd3a1dfce7",
+      "courtyard.html": "b3008e8c6cdde15680ca99edfe548582c769a805ace8393798c2089e517648a6",
+      "crop-studio.html": "31e4a6aefaf7e8a528a8af1095b5ada78f03c1b05ce5b4c84121e26c57e303a9",
+      "district3d.html": "38da4ee5cb2faa56ad425cd702fa526187915b93ae215bc521a5e73305015617",
+      "district3d/app.js": "9221020c0ce16b09ecb808bd40d4cde7fb0e8819791bc1def19ce03ff68dc332",
+      "district3d/state.js": "417687b0fd599872e31bb48ddb2813756a03fe355612b60b25e42d6dcd06616e",
+      "docs/benchmarks/2026-11-23-calendar-year.json": "99e344baa5535dd549ea4a89f1a4465636f2b8693332f7181d94a3899710892d",
+      "docs/benchmarks/2026-11-23-one-day-month.json": "efdab660717aa3b290cbd9cd5b28718a06ed95dc82dbbf2b79069fa55a7866a1",
+      "engine.js": "0f47035e4bb1f16480869210bf1665987b45b07f3e551ee171da04e8473caefb",
+      "game3d/home-visits.js": "52e46490debc3f290848e2c058d7d54705c5f6d0b4b911e062b255afbc1283b5",
+      "game3d/house-lights.js": "5a9982967496ada2669cd2f0f6b53010832201992df3bdcbae1a7addc8b92096",
+      "goat-studio.html": "505a859b1d58ee55833b5bfda37ffdeef0996ef2f2a55f51a04dc7f74e964657",
+      "index.html": "70b76cf1e493091eb298aef1522c5178cf249cc1fe387e926e0e318a3cdddcf7",
+      "mallards.html": "a65111596863f9e4d380815373fcfb63ac43cde00d5be4a12fe37786383a1b7a",
+      "model-atlas/index.html": "f7256daebd733fdc50e9f95b1d127c98237fc440685f9d8a6e3477287c6a9132",
+      "navigation.js": "c116b51dd164776ec781d04bc7cefe354650d7c86ac5147c48730f3144110e2c",
+      "renderer.js": "16f104a30c02696ff5b116c57423b51ab19c50b6cfd7be8c4414c705f5e70011",
+      "roadmap/index.html": "0763cd4b24eabd040c73ec10676779850e96d9a239d7c604b141c1a5b9613a9f",
+      "roadmap/manifest.json": "3ab39b6a75c589e49bb3b52f1df2a8788dad43410772e0a47c569e8725e7b679",
+      "roadmap/reports/2026-11-23-one-day-month.md": "44cfa26f38e00563c359c2255aff1719bc92ec03bcca0f385a1aef667891aebd",
+      "roadmap/snapshot.json": "a61f65f503cafda68b7474726578d7bab33231cf983b6796e9ff3ea6ab4cefda",
+      "roads.js": "a6cb8b2809c8b507b2527c2797fb8fc45c5ad06e5299d07f7057c668d5d57227",
+      "scripts/sumer-building-studio.html": "84dcde94bc10a0ebe1ef8d7e5ad9a6e0461985a5bc92fe25dbf20a76ba22b063"
+    }
+  },
+  "publicWebGL": {
+    "tag": "public",
+    "base": "https://reinekes.github.io/new_babylon_demo/",
+    "fixtureSmall": {
+      "seed": 137,
+      "mode": "mature",
+      "people": 12,
+      "buildings": 5,
+      "publicStore": {
+        "key": "29,30",
+        "before": 20,
+        "added": 180,
+        "after": 200
+      },
+      "autoPauseEvents": false,
+      "year": 1,
+      "simTime": 0
+    },
+    "fixtures": {
+      "small": "15caf5ecfb4ec8505da7bc293104946507c0f747cec1f31482060f0a843e51c7",
+      "large": "06643e43309c504c7f1ffcae6b834f2086ab3f4e63a48a3b141676974b1c797b"
+    },
+    "trials": [
+      {
+        "city": "small",
+        "speed": 1,
+        "initial": {
+          "t": 0,
+          "year": 1,
+          "month": 1,
+          "day": 1,
+          "hour": 8,
+          "label": "День",
+          "light": 3.2600000000000002,
+          "phase": 0,
+          "mode": 1,
+          "paused": true,
+          "blocked": false,
+          "ceremony": false,
+          "population": 12,
+          "buildings": 5,
+          "lost": false
+        },
+        "end": {
+          "t": 4.210259999996411,
+          "year": 1,
+          "month": 1,
+          "day": 1,
+          "hour": 9.684103999998563,
+          "label": "День",
+          "light": 3.2600000000000002,
+          "phase": 0,
+          "mode": 1,
+          "paused": false,
+          "blocked": false,
+          "ceremony": false,
+          "population": 12,
+          "buildings": 5,
+          "lost": false
+        },
+        "wall": 7.0165,
+        "sampleStart": 0.0003599999964237213,
+        "simDelta": 4.209899999999987,
+        "projectedYearSeconds": 1200.0000000000039,
+        "elapsedToCompleteYear": null,
+        "frames": 360,
+        "fps": 51.30763201026153,
+        "frameP95": 33.39999999999418,
+        "longestFrame": 66.69999999999709,
+        "maxSimStep": 0.04001999999999826,
+        "months": [
+          {
+            "year": 1,
+            "month": 1,
+            "t": 0
+          }
+        ],
+        "rises": [],
+        "sets": [],
+        "seasons": [
+          0
+        ],
+        "minPeople": 12,
+        "maxPeople": 12,
+        "moved": 7,
+        "sunMin": 3.2600000000000002,
+        "sunMax": 3.2600000000000002,
+        "lightMode": "auto",
+        "ceremonyFrames": 0,
+        "changeRate": false,
+        "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+        "errors": []
+      },
+      {
+        "city": "small",
+        "speed": 2,
+        "initial": {
+          "t": 0,
+          "year": 1,
+          "month": 1,
+          "day": 1,
+          "hour": 8,
+          "label": "День",
+          "light": 3.2600000000000002,
+          "phase": 0,
+          "mode": 2,
+          "paused": true,
+          "blocked": false,
+          "ceremony": false,
+          "population": 12,
+          "buildings": 5,
+          "lost": false
+        },
+        "end": {
+          "t": 8.419679999999971,
+          "year": 1,
+          "month": 1,
+          "day": 1,
+          "hour": 11.367871999999991,
+          "label": "День",
+          "light": 3.2600000000000002,
+          "phase": 0,
+          "mode": 2,
+          "paused": false,
+          "blocked": false,
+          "ceremony": false,
+          "population": 12,
+          "buildings": 5,
+          "lost": false
+        },
+        "wall": 7.016400000000002,
+        "sampleStart": 0,
+        "simDelta": 8.419679999999971,
+        "projectedYearSeconds": 600.0000000000022,
+        "elapsedToCompleteYear": null,
+        "frames": 372,
+        "fps": 53.01864203865229,
+        "frameP95": 33.30000000000291,
+        "longestFrame": 83.30000000000291,
+        "maxSimStep": 0.09996000000000349,
+        "months": [
+          {
+            "year": 1,
+            "month": 1,
+            "t": 0
+          }
+        ],
+        "rises": [],
+        "sets": [],
+        "seasons": [
+          0
+        ],
+        "minPeople": 12,
+        "maxPeople": 12,
+        "moved": 7,
+        "sunMin": 3.2600000000000002,
+        "sunMax": 3.2600000000000002,
+        "lightMode": "auto",
+        "ceremonyFrames": 0,
+        "changeRate": false,
+        "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+        "errors": []
+      },
+      {
+        "city": "small",
+        "speed": 4,
+        "initial": {
+          "t": 0,
+          "year": 1,
+          "month": 1,
+          "day": 1,
+          "hour": 8,
+          "label": "День",
+          "light": 3.2600000000000002,
+          "phase": 0,
+          "mode": 4,
+          "paused": true,
+          "blocked": false,
+          "ceremony": false,
+          "population": 12,
+          "buildings": 5,
+          "lost": false
+        },
+        "end": {
+          "t": 16.83935999999999,
+          "year": 1,
+          "month": 1,
+          "day": 1,
+          "hour": 14.735743999999997,
+          "label": "День",
+          "light": 3.2600000000000002,
+          "phase": 0,
+          "mode": 4,
+          "paused": false,
+          "blocked": false,
+          "ceremony": false,
+          "population": 12,
+          "buildings": 5,
+          "lost": false
+        },
+        "wall": 7.016400000000009,
+        "sampleStart": 0,
+        "simDelta": 16.83935999999999,
+        "projectedYearSeconds": 300.00000000000057,
+        "elapsedToCompleteYear": null,
+        "frames": 371,
+        "fps": 52.876118807365536,
+        "frameP95": 33.39999999999418,
+        "longestFrame": 66.69999999999709,
+        "maxSimStep": 0.16007999999999303,
+        "months": [
+          {
+            "year": 1,
+            "month": 1,
+            "t": 0
+          }
+        ],
+        "rises": [],
+        "sets": [],
+        "seasons": [
+          0
+        ],
+        "minPeople": 12,
+        "maxPeople": 12,
+        "moved": 7,
+        "sunMin": 3.2600000000000002,
+        "sunMax": 3.2600000000000002,
+        "lightMode": "auto",
+        "ceremonyFrames": 0,
+        "changeRate": false,
+        "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+        "errors": []
+      },
+      {
+        "city": "small",
+        "speed": 25,
+        "initial": {
+          "t": 0,
+          "year": 1,
+          "month": 1,
+          "day": 1,
+          "hour": 8,
+          "label": "День",
+          "light": 3.2600000000000002,
+          "phase": 0,
+          "mode": 25,
+          "paused": true,
+          "blocked": false,
+          "ceremony": false,
+          "population": 12,
+          "buildings": 5,
+          "lost": false
+        },
+        "end": {
+          "t": 720.2205000000074,
+          "year": 2,
+          "month": 1,
+          "day": 1,
+          "hour": 8.088200000002928,
+          "label": "День",
+          "light": 3.2600000000000002,
+          "phase": 0,
+          "mode": 25,
+          "paused": false,
+          "blocked": false,
+          "ceremony": false,
+          "population": 14,
+          "buildings": 5,
+          "lost": false
+        },
+        "wall": 48.0147,
+        "sampleStart": 0,
+        "simDelta": 720.2205000000074,
+        "projectedYearSeconds": 47.9999999999995,
+        "elapsedToCompleteYear": 48.01179999999404,
+        "frames": 1968,
+        "fps": 40.987447594174284,
+        "frameP95": 33.40000000000873,
+        "longestFrame": 866.5999999999913,
+        "maxSimStep": 3.75,
+        "months": [
+          {
+            "year": 1,
+            "month": 1,
+            "t": 0
+          },
+          {
+            "year": 1,
+            "month": 2,
+            "t": 60.997500000000024
+          },
+          {
+            "year": 1,
+            "month": 3,
+            "t": 120.49650000000003
+          },
+          {
+            "year": 1,
+            "month": 4,
+            "t": 180.2430000000003
+          },
+          {
+            "year": 1,
+            "month": 5,
+            "t": 240.99150000000046
+          },
+          {
+            "year": 1,
+            "month": 6,
+            "t": 300.738
+          },
+          {
+            "year": 1,
+            "month": 7,
+            "t": 360.9869999999994
+          },
+          {
+            "year": 1,
+            "month": 8,
+            "t": 420.48299999999904
+          },
+          {
+            "year": 1,
+            "month": 9,
+            "t": 480.48149999999873
+          },
+          {
+            "year": 1,
+            "month": 10,
+            "t": 540.2294999999997
+          },
+          {
+            "year": 1,
+            "month": 11,
+            "t": 600.4770000000016
+          },
+          {
+            "year": 1,
+            "month": 12,
+            "t": 660.2235000000039
+          },
+          {
+            "year": 2,
+            "month": 1,
+            "t": 720.2205000000074
+          }
+        ],
+        "rises": [
+          {
+            "t": 55.247999999999976,
+            "hour": 6.099199999999989,
+            "month": 1,
+            "light": 0.07566043206248266
+          },
+          {
+            "t": 115.4954999999999,
+            "hour": 6.198199999999957,
+            "month": 2,
+            "light": 0.311606246729832
+          },
+          {
+            "t": 175.49250000000035,
+            "hour": 6.197000000000145,
+            "month": 3,
+            "light": 0.307804950068991
+          },
+          {
+            "t": 235.4910000000003,
+            "hour": 6.196400000000111,
+            "month": 4,
+            "light": 0.30591251369249717
+          },
+          {
+            "t": 295.2375,
+            "hour": 6.095000000000013,
+            "month": 5,
+            "light": 0.06923439191629507
+          },
+          {
+            "t": 355.23599999999925,
+            "hour": 6.094399999999695,
+            "month": 6,
+            "light": 0.04783826297261764
+          },
+          {
+            "t": 415.48499999999905,
+            "hour": 6.193999999999619,
+            "month": 7,
+            "light": 0.2983976987656378
+          },
+          {
+            "t": 475.4804999999986,
+            "hour": 6.1921999999994455,
+            "month": 8,
+            "light": 0.29281948151635917
+          },
+          {
+            "t": 535.2284999999997,
+            "hour": 6.091399999999879,
+            "month": 9,
+            "light": 0.06396015040349817
+          },
+          {
+            "t": 595.2270000000016,
+            "hour": 6.090800000000598,
+            "month": 10,
+            "light": 0.06310206401173336
+          },
+          {
+            "t": 655.2225000000038,
+            "hour": 6.089000000001533,
+            "month": 11,
+            "light": 0.04239458136368389
+          },
+          {
+            "t": 715.2210000000074,
+            "hour": 6.088400000002991,
+            "month": 12,
+            "light": 0.05972951634612622
+          }
+        ],
+        "sets": [
+          {
+            "t": 25.499999999999993,
+            "hour": 18.199999999999996,
+            "month": 1,
+            "light": 0.016142876976437744
+          },
+          {
+            "t": 85.24799999999998,
+            "hour": 18.09919999999999,
+            "month": 2,
+            "light": 0.004581054745545624
+          },
+          {
+            "t": 145.24499999999998,
+            "hour": 18.097999999999985,
+            "month": 3,
+            "light": 0.004477971993573901
+          },
+          {
+            "t": 208.2420000000004,
+            "hour": 19.296800000000147,
+            "month": 4,
+            "light": 0.08525236139469504
+          },
+          {
+            "t": 265.2390000000005,
+            "hour": 18.09560000000019,
+            "month": 5,
+            "light": 0.004274800730701288
+          },
+          {
+            "t": 325.4865,
+            "hour": 18.19459999999998,
+            "month": 6,
+            "light": 0.015408644740524275
+          },
+          {
+            "t": 385.2344999999992,
+            "hour": 18.093799999999675,
+            "month": 7,
+            "light": 0.0028875471503068233
+          },
+          {
+            "t": 445.481999999999,
+            "hour": 18.192799999999608,
+            "month": 8,
+            "light": 0.01516604455913711
+          },
+          {
+            "t": 505.2299999999988,
+            "hour": 18.09199999999953,
+            "month": 9,
+            "light": 0.003977625107606935
+          },
+          {
+            "t": 565.2285000000003,
+            "hour": 18.091400000000135,
+            "month": 10,
+            "light": 0.0039289905497697985
+          },
+          {
+            "t": 625.4760000000012,
+            "hour": 18.190400000000523,
+            "month": 11,
+            "light": 0.014844304531022279
+          },
+          {
+            "t": 685.2240000000057,
+            "hour": 18.089600000002292,
+            "month": 12,
+            "light": 0.002649245629259896
+          }
+        ],
+        "seasons": [
+          0,
+          1,
+          2,
+          3,
+          0
+        ],
+        "minPeople": 12,
+        "maxPeople": 14,
+        "moved": 12,
+        "sunMin": 8.418142583823029e-08,
+        "sunMax": 3.2600000000000002,
+        "lightMode": "auto",
+        "ceremonyFrames": 0,
+        "changeRate": false,
+        "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+        "errors": []
+      }
+    ],
+    "browserErrors": [],
+    "appHash": "ac0b1c23e5e8f4daf9227158587704cbdddbaee22c36a6ad99a10a81141e7e3e",
+    "small": {
+      "status": {
+        "t": 0,
+        "year": 1,
+        "month": 1,
+        "day": 1,
+        "hour": 8,
+        "label": "День",
+        "light": 3.2600000000000002,
+        "phase": 0,
+        "mode": 1,
+        "paused": true,
+        "blocked": false,
+        "ceremony": false,
+        "population": 12,
+        "buildings": 5,
+        "lost": false
+      },
+      "daysPerMonth": 1,
+      "buttons": [
+        1,
+        2,
+        4,
+        25
+      ],
+      "renderer": 2,
+      "lightMode": "auto",
+      "resolution": [
+        1440,
+        780
+      ]
+    },
+    "complete": true
+  }
+}
