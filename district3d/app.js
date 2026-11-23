@@ -1,9 +1,10 @@
+import {createFrameClock} from '../calendar.js';
 import {shoreWalkways} from '../game3d/building-foundations.js';
 import {fieldBorderSignature} from '../game3d/field-shore.js';
 import {buildingDefinition} from '../building-presentation.js';
 import {displayName} from '../citizen-epithets.js';
 import {residentLinkHTML,bindResidentLinks} from '../ui-resident-links.js';
-import {advanceTime,resolveEvent,eventReason,getCityEvent,eventSecondsLeft,yieldSummary} from '../engine.js';
+import {advanceFrame,resolveEvent,eventReason,getCityEvent,eventSecondsLeft,yieldSummary} from '../engine.js';
 import {RESOURCE_NAMES,buildingKey} from '../definitions.js';
 import {constructionProgress} from '../construction.js';
 import {DAY_SECONDS,lightingAt} from '../city-life.js';
@@ -20,6 +21,8 @@ const stageNames={idle:'Ожидание сырья',forming:'Формовка',
 const phaseName=c=>c.phase==='working'?'Работает':c.phase==='home'?'Дома':c.phase==='festival'?'На празднике':c.phase==='playing'?'Играет':c.phase==='blocked'?'Ожидает путь':'В пути';
 const number=n=>new Intl.NumberFormat('ru',{maximumFractionDigits:1}).format(n||0);
 let walkways,state,engine,scene,camera,terrain,actors,materials,sun,hemisphere,shadow,glow,paused=false,speed=1,light='day',views=new Map(),homeLights=new Map(),selected=null,following=null,activeSource='demo',last=0,lastUI=0,frames=0,windowStart=0,cpuSamples=[],frameSamples=[],noticeTimer,lastShadowCount=-1;
+const frameClock=createFrameClock();
+function resetFrameClock(){frameClock.reset();last=performance.now();}
 function notice(text){$('notice').textContent=text;$('notice').hidden=false;clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>$('notice').hidden=true,4000);}
 function fallback(error){$('loading').hidden=false;$('loading').querySelector('h2').textContent='Не удалось открыть 3D';$('loading').querySelector('p').textContent='Для объёмного квартала нужен работающий WebGL. Основная игра доступна по ссылке ниже. '+(error?.message||'');console.error('3D district:',error);}
 function home(){following=null;camera.setTarget(new B.Vector3(8.7*6,0,9.25*6));camera.alpha=Math.PI/4;camera.beta=.91;camera.radius=window.innerWidth<600?76:59;}
@@ -31,7 +34,7 @@ function refreshBuildings(){
 }
 function load(source){
  let next;if(source==='city'){let result;try{result=readCityCopy(localStorage);}catch{result={ok:false,reason:'Браузер не разрешил прочитать сохранение.'};}if(!result.ok){notice(result.reason);$('source').value=activeSource;return;}next=result.state;}else next=source==='stress'?makeStressDistrict():makeDemoDistrict();
- if(actors)actors.dispose();if(terrain)terrain.dispose();for(const v of views.values())v.dispose();views.clear();for(const l of homeLights.values())l.dispose();homeLights.clear();selected=null;following=null;$('detail').hidden=true;state=next;activeSource=source;terrain=createDistrictTerrain(B,scene,state,materials);walkways=shoreWalkways();actors=createDistrictActors(B,scene,materials,(x,y,ground)=>walkways.heightAt(x,y,terrain.mineralHeightAt(x,y,ground)));refreshBuildings();actors.update(state,state.simTime);lastShadowCount=-1;paused=false;home();last=performance.now();refreshUI();
+ if(actors)actors.dispose();if(terrain)terrain.dispose();for(const v of views.values())v.dispose();views.clear();for(const l of homeLights.values())l.dispose();homeLights.clear();selected=null;following=null;$('detail').hidden=true;state=next;resetFrameClock();activeSource=source;terrain=createDistrictTerrain(B,scene,state,materials);walkways=shoreWalkways();actors=createDistrictActors(B,scene,materials,(x,y,ground)=>walkways.heightAt(x,y,terrain.mineralHeightAt(x,y,ground)));refreshBuildings();actors.update(state,state.simTime);lastShadowCount=-1;paused=false;home();last=performance.now();refreshUI();
 }
 function lightScene(){
  const l=lightingAt(light==='auto'?state.simTime:({day:10,sunset:22.5,night:37.5}[light]));const n=l.night||0,warm=light==='sunset'?1:l.warm||0;
@@ -69,9 +72,9 @@ function refreshUI(){
  detail();
 }
 function quality(){const low=$('quality').value==='low';scene.shadowsEnabled=!low;glow.isEnabled=!low;engine.setHardwareScalingLevel(1/Math.min(devicePixelRatio||1,low?1:1.5));engine.resize();}
-function animate(now){const start=performance.now(),dt=Math.min(.15,Math.max(0,(now-(last||now))/1000));last=now;if(document.hidden)return;if(activeSource==='stress')state.event=null;
- if(!paused&&!state.event&&(!state.lost||state.funeral))advanceTime(state,dt*speed);
- actors.update(state,state.simTime,paused||state.event?0:dt,following);terrain.update(state,state.simTime);if(following){const actor=actors.rootFor(following);if(actor?.isEnabled())camera.target.set(actor.position.x,actor.position.y+.8,actor.position.z);else following=null;}lightScene();shadowList();
+function animate(now){const start=performance.now(),dt=Math.max(0,(now-(last||now))/1000);last=now;if(document.hidden)return;if(activeSource==='stress')state.event=null;
+ if(!paused&&!state.event&&(!state.lost||state.funeral))advanceFrame(state,frameClock.next(dt),speed);else frameClock.reset();
+ actors.update(state,state.simTime,paused||state.event?0:Math.min(dt,.15),following);terrain.update(state,state.simTime);if(following){const actor=actors.rootFor(following);if(actor?.isEnabled())camera.target.set(actor.position.x,actor.position.y+.8,actor.position.z);else following=null;}lightScene();shadowList();
  if(now-lastUI>500){refreshBuildings();refreshUI();lastUI=now;}scene.render();cpuSamples.push(performance.now()-start);if(dt>0)frameSamples.push(dt*1000);frames++;
  if(!windowStart)windowStart=now;if(now-windowStart>=2000){cpuSamples.sort((a,b)=>a-b);frameSamples.sort((a,b)=>a-b);const p95=cpuSamples[Math.floor(cpuSamples.length*.95)]||0;$('metrics').dataset.simTime=state.simTime.toFixed(1);$('metrics').textContent=`${Math.round(frames*1000/(now-windowStart))} FPS · CPU кадра p95 ${p95.toFixed(1)} мс · ${scene.getActiveMeshes().length} активных мешей · ${engine.webGLVersion===2?'WebGL 2':'WebGL'}`;windowStart=now;frames=0;cpuSamples=[];frameSamples=[];}
 }
@@ -83,9 +86,9 @@ async function main(){
  shadow=new B.ShadowGenerator(2048,sun);shadow.usePercentageCloserFiltering=true;shadow.filteringQuality=B.ShadowGenerator.QUALITY_MEDIUM;shadow.bias=.0004;shadow.normalBias=.03;shadow.setDarkness(.2);glow=new B.GlowLayer('lamps',scene,{blurKernelSize:32});glow.intensity=.22;
  materials=createDistrictMaterials(B,scene);const benchmark=new URLSearchParams(location.search).has('benchmark');if(benchmark){$('source').insertAdjacentHTML('beforeend','<option value="stress">Нагрузка · 200 жителей</option>');$('source').value='stress';speed=4;document.querySelector('[data-speed="1"]').classList.remove('active');document.querySelector('[data-speed="4"]').classList.add('active');}load(benchmark?'stress':'demo');quality();
  scene.onPointerObservable.add(info=>{if(info.type!==B.PointerEventTypes.POINTERPICK||!info.pickInfo?.hit)return;let m=info.pickInfo.pickedMesh;while(m&&!m.metadata)m=m.parent;if(m?.metadata){following=null;selected={...m.metadata};detail();}});
- $('pause').onclick=()=>{paused=!paused;refreshUI();};for(const b of document.querySelectorAll('[data-speed]'))b.onclick=()=>{speed=Number(b.dataset.speed);for(const el of document.querySelectorAll('[data-speed]'))el.classList.toggle('active',el===b);};$('source').onchange=e=>load(e.target.value);$('light').onchange=e=>light=e.target.value;$('quality').onchange=quality;$('home').onclick=home;$('zoom-in').onclick=()=>camera.radius=Math.max(12,camera.radius*.82);$('zoom-out').onclick=()=>camera.radius=Math.min(270,camera.radius/ .82);$('toggle-ui').onclick=()=>{document.body.classList.toggle('clean-view');$('toggle-ui').textContent=document.body.classList.contains('clean-view')?'Показать панели':'Скрыть панели';};$('overview').onclick=overview;
+ $('pause').onclick=()=>{resetFrameClock();paused=!paused;refreshUI();};for(const b of document.querySelectorAll('[data-speed]'))b.onclick=()=>{resetFrameClock();speed=Number(b.dataset.speed);for(const el of document.querySelectorAll('[data-speed]'))el.classList.toggle('active',el===b);};$('source').onchange=e=>load(e.target.value);$('light').onchange=e=>light=e.target.value;$('quality').onchange=quality;$('home').onclick=home;$('zoom-in').onclick=()=>camera.radius=Math.max(12,camera.radius*.82);$('zoom-out').onclick=()=>camera.radius=Math.min(270,camera.radius/ .82);$('toggle-ui').onclick=()=>{document.body.classList.toggle('clean-view');$('toggle-ui').textContent=document.body.classList.contains('clean-view')?'Показать панели':'Скрыть панели';};$('overview').onclick=overview;
  $('photo').onclick=()=>{scene.render();$('district').toBlob(blob=>{if(!blob){notice('Не удалось сохранить кадр');return;}const a=document.createElement('a'),url=URL.createObjectURL(blob);a.href=url;a.download=`new-babylon-3d-y${state.year}.png`;a.click();setTimeout(()=>URL.revokeObjectURL(url),10000);notice('Снимок сохранён');},'image/png');};
- document.addEventListener('keydown',e=>{if(['INPUT','SELECT','BUTTON'].includes(e.target.tagName))return;if(e.code==='Space'){e.preventDefault();paused=!paused;refreshUI();}if(e.key==='Escape'){document.body.classList.remove('clean-view');$('toggle-ui').textContent='Скрыть панели';selected=null;$('detail').hidden=true;}});window.addEventListener('resize',()=>engine.resize());document.addEventListener('visibilitychange',()=>{last=performance.now();windowStart=0;frames=0;cpuSamples=[];frameSamples=[];});
+ document.addEventListener('keydown',e=>{if(['INPUT','SELECT','BUTTON'].includes(e.target.tagName))return;if(e.code==='Space'){e.preventDefault();resetFrameClock();paused=!paused;refreshUI();}if(e.key==='Escape'){document.body.classList.remove('clean-view');$('toggle-ui').textContent='Скрыть панели';selected=null;$('detail').hidden=true;}});window.addEventListener('resize',()=>engine.resize());document.addEventListener('visibilitychange',()=>{resetFrameClock();windowStart=0;frames=0;cpuSamples=[];frameSamples=[];});
  await scene.whenReadyAsync();$('loading').hidden=true;last=performance.now();engine.runRenderLoop(()=>animate(performance.now()));
 }
 main().catch(fallback);

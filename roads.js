@@ -1,7 +1,7 @@
 import {fortificationAccess} from './navigation.js';
 import {buildingKnowledgeReason} from './godhood.js';
 import {cityCommandReason as relicCommandReason} from './city-command-lock.js';
-import {markRoadTopologyChanged} from './road-revisions.js';
+import {markRoadTopologyChanged,roadTopologyRevision} from './road-revisions.js';
 export {roadTopologyRevision} from './road-revisions.js';
 import {insideFootprint} from './footprints.js';
 import {reserveStock} from './inventory.js';
@@ -21,14 +21,47 @@ export function classifyLegacyRoads(s){
 export function roadIsBuilt(road){return road.level>1||road.built!==false;}
 export function ensureRoads(s,network){
  s.roads??=[];const net=network||generateStreets([...s.buildings,...s.roadAnchors||[]],s);
- const existing=new Set(s.roads.map(r=>r.id));
+ const count=s.roads.length,existing=new Set(s.roads.map(r=>r.id));
  for(const [a,b]of net.edges){const id=roadKey(a,b);if(existing.has(id))continue;if(onBridge(s.buildings,(a.x+b.x)/2,(a.y+b.y)/2,s)||[.25,.5,.75].some(t=>!isDryPoint(s,a.x+(b.x-a.x)*t,a.y+(b.y-a.y)*t)))continue;existing.add(id);s.roads.push({type:'road',id,x:(a.x+b.x)/2,y:(a.y+b.y)/2,a:{x:a.x,y:a.y,key:a.key},b:{x:b.x,y:b.y,key:b.key},level:1,built:false});}
+ if(s.roads.length!==count)roadCells.delete(s);
  return s.roads;
 }
 export function roadAt(s,x,y){return ensureRoads(s).map(r=>({r,d:Math.hypot(r.x-x,r.y-y)})).filter(v=>v.d<.8).sort((a,b)=>a.d-b.d)[0]?.r;}
 export const roadUpgradeCost=r=>r.level===1?{clay:3,reed:1}:{clay:6,reed:2,stone:2};
 export function upgradeRoad(s,roadOrId){const lock=relicCommandReason(s);if(lock)return {ok:false,reason:lock};const r=typeof roadOrId==='string'?ensureRoads(s).find(r=>r.id===roadOrId):roadOrId;const knowledge=buildingKnowledgeReason(s,'road',(r?.level||1)+1);if(knowledge)return {ok:false,reason:knowledge};let reason=s.event?'Сначала заверши событие':s.lost?'Поселение покинуто':!r||!ensureRoads(s).includes(r)?'Выбери существующую дорогу':r.construction?'Улучшение уже идёт':r.level>=3?'Достигнут третий уровень':'';if(reason)return {ok:false,reason};const order=nextOrder(s);if(order===null)return {ok:false,reason:'Достигнут предел номеров стройки'};const cost=roadUpgradeCost(r);if(Object.entries(cost).some(([k,n])=>(s.resources[k]||0)<n))return {ok:false,reason:'Не хватает материалов'};const sources=reserveStock(s,cost);if(!sources)return {ok:false,reason:'Не хватает материалов'};r.construction={...createOrder(cost,r.level+1,'upgrade'),sources,allocations:structuredClone(sources),order};s.nextConstructionOrder=order+1;return {ok:true};}
-export function roadSegment(s,a,b){return (s.roads||[]).find(r=>{const dx=r.b.x-r.a.x,dy=r.b.y-r.a.y;return Math.abs((a.x-r.a.x)*dy-(a.y-r.a.y)*dx)<1e-7&&Math.abs((b.x-r.a.x)*dy-(b.y-r.a.y)*dx)<1e-7&&[a,b].every(p=>p.x>=Math.min(r.a.x,r.b.x)-1e-7&&p.x<=Math.max(r.a.x,r.b.x)+1e-7&&p.y>=Math.min(r.a.y,r.b.y)-1e-7&&p.y<=Math.max(r.a.y,r.b.y)+1e-7);});}
+const roadCells=new WeakMap();
+const segmentEpsilon=1e-7;
+function indexRoadCells(roads,revision){
+ const cells=new Map();
+ for(const road of roads){
+  const {a,b}=road;
+  const maxX=Math.floor(Math.max(a.x,b.x)+segmentEpsilon),maxY=Math.floor(Math.max(a.y,b.y)+segmentEpsilon);
+  for(let x=Math.floor(Math.min(a.x,b.x)-segmentEpsilon);x<=maxX;x++){
+   for(let y=Math.floor(Math.min(a.y,b.y)-segmentEpsilon);y<=maxY;y++){
+    const key=x+','+y;
+    if(!cells.has(key))cells.set(key,[]);
+    cells.get(key).push(road);
+   }
+  }
+ }
+ return {roads,count:roads.length,revision,cells};
+}
+export function roadSegment(s,a,b){
+ const roads=s.roads;if(!roads?.length)return;
+ const revision=roadTopologyRevision(s);
+ let index=roadCells.get(s);
+ if(index?.roads!==roads||index.count!==roads.length||index.revision!==revision){
+  index=indexRoadCells(roads,revision);roadCells.set(s,index);
+ }
+ // A road containing both points must cover the destination cell. Lists keep
+ // save order so intersections and coincident segments retain the first match.
+ const nearby=index.cells.get(Math.floor(b.x)+','+Math.floor(b.y));
+ return nearby?.find(r=>{
+  const dx=r.b.x-r.a.x,dy=r.b.y-r.a.y;
+  return Math.abs((a.x-r.a.x)*dy-(a.y-r.a.y)*dx)<segmentEpsilon&&Math.abs((b.x-r.a.x)*dy-(b.y-r.a.y)*dx)<segmentEpsilon&&
+   [a,b].every(p=>p.x>=Math.min(r.a.x,r.b.x)-segmentEpsilon&&p.x<=Math.max(r.a.x,r.b.x)+segmentEpsilon&&p.y>=Math.min(r.a.y,r.b.y)-segmentEpsilon&&p.y<=Math.max(r.a.y,r.b.y)+segmentEpsilon);
+ });
+}
 export const roadPace=r=>(1+((r?.level||1)-1)*.2)*(r?.floodDamage ? .8 : 1);
 export const roadSpeed=(s,a,b)=>roadPace(roadSegment(s,a,b));
 

@@ -1,0 +1,1078 @@
+{
+  "release": "calendar-year-20m-20261123",
+  "baseline": "8f09c80a7b59e3d0cc7bc91d8d2f5fcc92af29b2",
+  "nominal": {
+    "daysInMonth": 1,
+    "monthsInYear": 12,
+    "secondsPerYear": {
+      "1": 1200,
+      "2": 600,
+      "4": 300,
+      "25": 48
+    }
+  },
+  "bigCityBefore": {
+    "tag": "previous-isolated",
+    "base": "http://127.0.0.1:51961/",
+    "fixtureSmall": {
+      "seed": 137,
+      "mode": "mature",
+      "people": 12,
+      "buildings": 5,
+      "publicStore": {
+        "key": "29,30",
+        "before": 20,
+        "added": 180,
+        "after": 200
+      },
+      "autoPauseEvents": false,
+      "year": 1,
+      "simTime": 0
+    },
+    "fixtures": {
+      "small": "15caf5ecfb4ec8505da7bc293104946507c0f747cec1f31482060f0a843e51c7",
+      "large": "06643e43309c504c7f1ffcae6b834f2086ab3f4e63a48a3b141676974b1c797b"
+    },
+    "trials": [
+      {
+        "city": "large",
+        "speed": 4,
+        "initial": {
+          "t": 0,
+          "year": 1,
+          "month": 1,
+          "day": 1,
+          "hour": 8,
+          "label": "День",
+          "light": 3.2600000000000002,
+          "phase": 0,
+          "mode": 4,
+          "paused": true,
+          "blocked": false,
+          "ceremony": false,
+          "population": 500,
+          "buildings": 250,
+          "lost": false
+        },
+        "end": {
+          "t": 9.966299999999995,
+          "year": 1,
+          "month": 1,
+          "day": 1,
+          "hour": 11.986519999999999,
+          "label": "День",
+          "light": 3.2600000000000002,
+          "phase": 0,
+          "mode": 4,
+          "paused": false,
+          "blocked": false,
+          "ceremony": false,
+          "population": 500,
+          "buildings": 250,
+          "lost": false
+        },
+        "wall": 20.082499999999996,
+        "sampleStart": 0.016700000000000728,
+        "simDelta": 9.949599999999995,
+        "projectedYearSeconds": 4359.7933585269775,
+        "elapsedToCompleteYear": null,
+        "frames": 268,
+        "fps": 13.344952072700115,
+        "frameP95": 100.09999999999854,
+        "longestFrame": 433.2999999999993,
+        "maxSimStep": 0.12499999999999999,
+        "months": [
+          {
+            "year": 1,
+            "month": 1,
+            "t": 0
+          }
+        ],
+        "rises": [],
+        "sets": [],
+        "seasons": [
+          0
+        ],
+        "minPeople": 500,
+        "maxPeople": 500,
+        "moved": 124,
+        "sunMin": 3.2600000000000002,
+        "sunMax": 3.2600000000000002,
+        "lightMode": "auto",
+        "ceremonyFrames": 0,
+        "changeRate": false,
+        "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+        "errors": []
+      }
+    ],
+    "browserErrors": [],
+    "appHash": "a48b6190ee0e578be3de5a59837b9a19121767f88c939d4c0820cedf6eb7a742",
+    "large": {
+      "status": {
+        "t": 0,
+        "year": 1,
+        "month": 1,
+        "day": 1,
+        "hour": 8,
+        "label": "День",
+        "light": 3.2600000000000002,
+        "phase": 0,
+        "mode": 1,
+        "paused": true,
+        "blocked": false,
+        "ceremony": false,
+        "population": 500,
+        "buildings": 250,
+        "lost": false
+      },
+      "daysPerMonth": 3,
+      "buttons": [
+        1,
+        2,
+        4,
+        25
+      ],
+      "renderer": 2,
+      "lightMode": "auto",
+      "resolution": [
+        1440,
+        780
+      ]
+    },
+    "complete": true
+  },
+  "bigCityAfter": {
+    "tag": "roads-final",
+    "base": "http://127.0.0.1:51151/",
+    "fixtureSmall": {
+      "seed": 137,
+      "mode": "mature",
+      "people": 12,
+      "buildings": 5,
+      "publicStore": {
+        "key": "29,30",
+        "before": 20,
+        "added": 180,
+        "after": 200
+      },
+      "autoPauseEvents": false,
+      "year": 1,
+      "simTime": 0
+    },
+    "fixtures": {
+      "small": "15caf5ecfb4ec8505da7bc293104946507c0f747cec1f31482060f0a843e51c7",
+      "large": "06643e43309c504c7f1ffcae6b834f2086ab3f4e63a48a3b141676974b1c797b"
+    },
+    "trials": [
+      {
+        "city": "large",
+        "speed": 4,
+        "initial": {
+          "t": 0,
+          "year": 1,
+          "month": 1,
+          "day": 1,
+          "hour": 8,
+          "label": "День",
+          "light": 3.2600000000000002,
+          "phase": 0,
+          "mode": 4,
+          "paused": true,
+          "blocked": false,
+          "ceremony": false,
+          "population": 500,
+          "buildings": 250,
+          "lost": false
+        },
+        "end": {
+          "t": 48.25583999998572,
+          "year": 1,
+          "month": 1,
+          "day": 1,
+          "hour": 3.3023359999942876,
+          "label": "Ночь",
+          "light": 0.16613961996174,
+          "phase": 0,
+          "mode": 4,
+          "paused": false,
+          "blocked": false,
+          "ceremony": false,
+          "population": 500,
+          "buildings": 250,
+          "lost": false
+        },
+        "wall": 20.0992,
+        "sampleStart": 0.017759999985693137,
+        "simDelta": 48.238080000000025,
+        "projectedYearSeconds": 299.99999999999983,
+        "elapsedToCompleteYear": null,
+        "frames": 144,
+        "fps": 7.164464257283872,
+        "frameP95": 300.09999999999854,
+        "longestFrame": 1183.2999999999956,
+        "maxSimStep": 0.6000000000000014,
+        "months": [
+          {
+            "year": 1,
+            "month": 1,
+            "t": 0
+          }
+        ],
+        "rises": [],
+        "sets": [
+          {
+            "t": 25.01711999998572,
+            "hour": 18.006847999994285,
+            "month": 1,
+            "light": 2.4487880071168594e-05
+          }
+        ],
+        "seasons": [
+          0
+        ],
+        "minPeople": 500,
+        "maxPeople": 500,
+        "moved": 87,
+        "sunMin": 2.4487880071168594e-05,
+        "sunMax": 3.2600000000000002,
+        "lightMode": "auto",
+        "ceremonyFrames": 0,
+        "changeRate": false,
+        "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+        "errors": []
+      }
+    ],
+    "browserErrors": [],
+    "appHash": "ac0b1c23e5e8f4daf9227158587704cbdddbaee22c36a6ad99a10a81141e7e3e",
+    "large": {
+      "status": {
+        "t": 0,
+        "year": 1,
+        "month": 1,
+        "day": 1,
+        "hour": 8,
+        "label": "День",
+        "light": 3.2600000000000002,
+        "phase": 0,
+        "mode": 1,
+        "paused": true,
+        "blocked": false,
+        "ceremony": false,
+        "population": 500,
+        "buildings": 250,
+        "lost": false
+      },
+      "daysPerMonth": 1,
+      "buttons": [
+        1,
+        2,
+        4,
+        25
+      ],
+      "renderer": 2,
+      "lightMode": "auto",
+      "resolution": [
+        1440,
+        780
+      ]
+    },
+    "complete": true
+  },
+  "starterCityAfter": {
+    "tag": "final-isolated",
+    "base": "http://127.0.0.1:51151/",
+    "fixtureSmall": {
+      "seed": 137,
+      "mode": "mature",
+      "people": 12,
+      "buildings": 5,
+      "publicStore": {
+        "key": "29,30",
+        "before": 20,
+        "added": 180,
+        "after": 200
+      },
+      "autoPauseEvents": false,
+      "year": 1,
+      "simTime": 0
+    },
+    "fixtures": {
+      "small": "15caf5ecfb4ec8505da7bc293104946507c0f747cec1f31482060f0a843e51c7",
+      "large": "06643e43309c504c7f1ffcae6b834f2086ab3f4e63a48a3b141676974b1c797b"
+    },
+    "trials": [
+      {
+        "city": "large",
+        "speed": 4,
+        "initial": {
+          "t": 0,
+          "year": 1,
+          "month": 1,
+          "day": 1,
+          "hour": 8,
+          "label": "День",
+          "light": 3.2600000000000002,
+          "phase": 0,
+          "mode": 4,
+          "paused": true,
+          "blocked": false,
+          "ceremony": false,
+          "population": 500,
+          "buildings": 250,
+          "lost": false
+        },
+        "end": {
+          "t": 48.18383999999292,
+          "year": 1,
+          "month": 1,
+          "day": 1,
+          "hour": 3.2735359999971685,
+          "label": "Ночь",
+          "light": 0.16760338143128437,
+          "phase": 0,
+          "mode": 4,
+          "paused": false,
+          "blocked": false,
+          "ceremony": false,
+          "population": 500,
+          "buildings": 250,
+          "lost": false
+        },
+        "wall": 20.065800000000003,
+        "sampleStart": 0.025919999992847442,
+        "simDelta": 48.157920000000075,
+        "projectedYearSeconds": 299.99999999999955,
+        "elapsedToCompleteYear": null,
+        "frames": 83,
+        "fps": 4.136391272712775,
+        "frameP95": 400,
+        "longestFrame": 1249.9000000000015,
+        "maxSimStep": 0.6000000000000014,
+        "months": [
+          {
+            "year": 1,
+            "month": 1,
+            "t": 0
+          }
+        ],
+        "rises": [],
+        "sets": [
+          {
+            "t": 25.145279999992866,
+            "hour": 18.058111999997145,
+            "month": 1,
+            "light": 0.0016572669153115166
+          }
+        ],
+        "seasons": [
+          0
+        ],
+        "minPeople": 500,
+        "maxPeople": 500,
+        "moved": 89,
+        "sunMin": 0.0016572669153115166,
+        "sunMax": 3.2600000000000002,
+        "lightMode": "auto",
+        "ceremonyFrames": 0,
+        "changeRate": false,
+        "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+        "errors": []
+      },
+      {
+        "city": "small",
+        "speed": 1,
+        "initial": {
+          "t": 0,
+          "year": 1,
+          "month": 1,
+          "day": 1,
+          "hour": 8,
+          "label": "День",
+          "light": 3.2600000000000002,
+          "phase": 0,
+          "mode": 1,
+          "paused": true,
+          "blocked": false,
+          "ceremony": false,
+          "population": 12,
+          "buildings": 5,
+          "lost": false
+        },
+        "end": {
+          "t": 4.2198600000000095,
+          "year": 1,
+          "month": 1,
+          "day": 1,
+          "hour": 9.687944000000002,
+          "label": "День",
+          "light": 3.2600000000000002,
+          "phase": 0,
+          "mode": 1,
+          "paused": false,
+          "blocked": false,
+          "ceremony": false,
+          "population": 12,
+          "buildings": 5,
+          "lost": false
+        },
+        "wall": 7.0331,
+        "sampleStart": 0,
+        "simDelta": 4.2198600000000095,
+        "projectedYearSeconds": 1199.9999999999973,
+        "elapsedToCompleteYear": null,
+        "frames": 351,
+        "fps": 49.906868948258946,
+        "frameP95": 33.399999999999636,
+        "longestFrame": 83.39999999999964,
+        "maxSimStep": 0.05003999999999979,
+        "months": [
+          {
+            "year": 1,
+            "month": 1,
+            "t": 0
+          }
+        ],
+        "rises": [],
+        "sets": [],
+        "seasons": [
+          0
+        ],
+        "minPeople": 12,
+        "maxPeople": 12,
+        "moved": 7,
+        "sunMin": 3.2600000000000002,
+        "sunMax": 3.2600000000000002,
+        "lightMode": "auto",
+        "ceremonyFrames": 0,
+        "changeRate": false,
+        "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+        "errors": []
+      },
+      {
+        "city": "small",
+        "speed": 2,
+        "initial": {
+          "t": 0,
+          "year": 1,
+          "month": 1,
+          "day": 1,
+          "hour": 8,
+          "label": "День",
+          "light": 3.2600000000000002,
+          "phase": 0,
+          "mode": 2,
+          "paused": true,
+          "blocked": false,
+          "ceremony": false,
+          "population": 12,
+          "buildings": 5,
+          "lost": false
+        },
+        "end": {
+          "t": 8.419679999999987,
+          "year": 1,
+          "month": 1,
+          "day": 1,
+          "hour": 11.367871999999991,
+          "label": "День",
+          "light": 3.2600000000000002,
+          "phase": 0,
+          "mode": 2,
+          "paused": false,
+          "blocked": false,
+          "ceremony": false,
+          "population": 12,
+          "buildings": 5,
+          "lost": false
+        },
+        "wall": 7.016400000000002,
+        "sampleStart": 0,
+        "simDelta": 8.419679999999987,
+        "projectedYearSeconds": 600.000000000001,
+        "elapsedToCompleteYear": null,
+        "frames": 354,
+        "fps": 50.453223875491695,
+        "frameP95": 33.39999999999782,
+        "longestFrame": 83.29999999999927,
+        "maxSimStep": 0.09995999999999913,
+        "months": [
+          {
+            "year": 1,
+            "month": 1,
+            "t": 0
+          }
+        ],
+        "rises": [],
+        "sets": [],
+        "seasons": [
+          0
+        ],
+        "minPeople": 12,
+        "maxPeople": 12,
+        "moved": 7,
+        "sunMin": 3.2600000000000002,
+        "sunMax": 3.2600000000000002,
+        "lightMode": "auto",
+        "ceremonyFrames": 0,
+        "changeRate": false,
+        "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+        "errors": []
+      },
+      {
+        "city": "small",
+        "speed": 4,
+        "initial": {
+          "t": 0,
+          "year": 1,
+          "month": 1,
+          "day": 1,
+          "hour": 8,
+          "label": "День",
+          "light": 3.2600000000000002,
+          "phase": 0,
+          "mode": 4,
+          "paused": true,
+          "blocked": false,
+          "ceremony": false,
+          "population": 12,
+          "buildings": 5,
+          "lost": false
+        },
+        "end": {
+          "t": 16.84416000002856,
+          "year": 1,
+          "month": 1,
+          "day": 1,
+          "hour": 14.73766400001142,
+          "label": "День",
+          "light": 3.2600000000000002,
+          "phase": 0,
+          "mode": 4,
+          "paused": false,
+          "blocked": false,
+          "ceremony": false,
+          "population": 12,
+          "buildings": 5,
+          "lost": false
+        },
+        "wall": 7.016299999999999,
+        "sampleStart": 0.005040000028608483,
+        "simDelta": 16.83911999999995,
+        "projectedYearSeconds": 300.00000000000085,
+        "elapsedToCompleteYear": null,
+        "frames": 365,
+        "fps": 52.02172085002067,
+        "frameP95": 33.30000000000291,
+        "longestFrame": 66.60000000000218,
+        "maxSimStep": 0.15984000000000523,
+        "months": [
+          {
+            "year": 1,
+            "month": 1,
+            "t": 0
+          }
+        ],
+        "rises": [],
+        "sets": [],
+        "seasons": [
+          0
+        ],
+        "minPeople": 12,
+        "maxPeople": 12,
+        "moved": 7,
+        "sunMin": 3.2600000000000002,
+        "sunMax": 3.2600000000000002,
+        "lightMode": "auto",
+        "ceremonyFrames": 0,
+        "changeRate": false,
+        "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+        "errors": []
+      },
+      {
+        "city": "small",
+        "speed": 25,
+        "initial": {
+          "t": 0,
+          "year": 1,
+          "month": 1,
+          "day": 1,
+          "hour": 8,
+          "label": "День",
+          "light": 3.2600000000000002,
+          "phase": 0,
+          "mode": 25,
+          "paused": true,
+          "blocked": false,
+          "ceremony": false,
+          "population": 12,
+          "buildings": 5,
+          "lost": false
+        },
+        "end": {
+          "t": 720.4695000000031,
+          "year": 2,
+          "month": 1,
+          "day": 1,
+          "hour": 8.187800000001289,
+          "label": "День",
+          "light": 3.2600000000000002,
+          "phase": 0,
+          "mode": 25,
+          "paused": false,
+          "blocked": false,
+          "ceremony": false,
+          "population": 12,
+          "buildings": 5,
+          "lost": false
+        },
+        "wall": 48.031299999999995,
+        "sampleStart": 0,
+        "simDelta": 720.4695000000031,
+        "projectedYearSeconds": 47.99999999999978,
+        "elapsedToCompleteYear": 48.02860000000596,
+        "frames": 1859,
+        "fps": 38.70392847997036,
+        "frameP95": 33.40000000000873,
+        "longestFrame": 783.4000000000015,
+        "maxSimStep": 3.75,
+        "months": [
+          {
+            "year": 1,
+            "month": 1,
+            "t": 0
+          },
+          {
+            "year": 1,
+            "month": 2,
+            "t": 60.49800000000005
+          },
+          {
+            "year": 1,
+            "month": 3,
+            "t": 120.49350000000011
+          },
+          {
+            "year": 1,
+            "month": 4,
+            "t": 180.4919999999999
+          },
+          {
+            "year": 1,
+            "month": 5,
+            "t": 240.49049999999994
+          },
+          {
+            "year": 1,
+            "month": 6,
+            "t": 300.4874999999998
+          },
+          {
+            "year": 1,
+            "month": 7,
+            "t": 361.2344999999992
+          },
+          {
+            "year": 1,
+            "month": 8,
+            "t": 420.23249999999933
+          },
+          {
+            "year": 1,
+            "month": 9,
+            "t": 480.23099999999926
+          },
+          {
+            "year": 1,
+            "month": 10,
+            "t": 540.2265000000001
+          },
+          {
+            "year": 1,
+            "month": 11,
+            "t": 600.4755000000018
+          },
+          {
+            "year": 1,
+            "month": 12,
+            "t": 660.2235000000024
+          },
+          {
+            "year": 2,
+            "month": 1,
+            "t": 720.4695000000031
+          }
+        ],
+        "rises": [
+          {
+            "t": 55.49700000000003,
+            "hour": 6.198800000000013,
+            "month": 1,
+            "light": 0.3135150909831343
+          },
+          {
+            "t": 116.74350000000011,
+            "hour": 6.697400000000044,
+            "month": 2,
+            "light": 2.0735016096539587
+          },
+          {
+            "t": 175.2419999999999,
+            "hour": 6.096799999999959,
+            "month": 3,
+            "light": 0.07195241291959
+          },
+          {
+            "t": 235.48949999999994,
+            "hour": 6.195799999999977,
+            "month": 4,
+            "light": 0.3040255625390682
+          },
+          {
+            "t": 295.2374999999998,
+            "hour": 6.094999999999928,
+            "month": 5,
+            "light": 0.06923439191616762
+          },
+          {
+            "t": 355.4849999999992,
+            "hour": 6.193999999999676,
+            "month": 6,
+            "light": 0.2088783891360703
+          },
+          {
+            "t": 415.4819999999991,
+            "hour": 6.192799999999664,
+            "month": 7,
+            "light": 0.29467335828028973
+          },
+          {
+            "t": 475.2299999999991,
+            "hour": 6.0919999999996435,
+            "month": 8,
+            "light": 0.06482422054592808
+          },
+          {
+            "t": 535.4775000000002,
+            "hour": 6.191000000000088,
+            "month": 9,
+            "light": 0.2891283524665262
+          },
+          {
+            "t": 595.4760000000019,
+            "hour": 6.190400000000778,
+            "month": 10,
+            "light": 0.28729111500596866
+          },
+          {
+            "t": 655.4730000000026,
+            "hour": 6.189200000000994,
+            "month": 11,
+            "light": 0.1985433315753644
+          },
+          {
+            "t": 715.2195000000031,
+            "hour": 6.087800000001266,
+            "month": 12,
+            "light": 0.058901318559673094
+          }
+        ],
+        "sets": [
+          {
+            "t": 25.247999999999955,
+            "hour": 18.099199999999982,
+            "month": 1,
+            "light": 0.004581054745544892
+          },
+          {
+            "t": 85.24650000000007,
+            "hour": 18.098600000000026,
+            "month": 2,
+            "light": 0.0045293892738983285
+          },
+          {
+            "t": 145.49400000000006,
+            "hour": 18.197600000000023,
+            "month": 3,
+            "light": 0.01581538169801089
+          },
+          {
+            "t": 208.2404999999999,
+            "hour": 19.29619999999997,
+            "month": 4,
+            "light": 0.08521444324754798
+          },
+          {
+            "t": 265.2390000000001,
+            "hour": 18.095600000000047,
+            "month": 5,
+            "light": 0.004274800730689349
+          },
+          {
+            "t": 325.2359999999999,
+            "hour": 18.09439999999995,
+            "month": 6,
+            "light": 0.004174724975681879
+          },
+          {
+            "t": 385.23299999999927,
+            "hour": 18.09319999999971,
+            "month": 7,
+            "light": 0.002852965016122233
+          },
+          {
+            "t": 445.23149999999947,
+            "hour": 18.092599999999806,
+            "month": 8,
+            "light": 0.0040265166263649295
+          },
+          {
+            "t": 505.2284999999995,
+            "hour": 18.091399999999794,
+            "month": 9,
+            "light": 0.003928990549742233
+          },
+          {
+            "t": 565.4775000000008,
+            "hour": 18.191000000000287,
+            "month": 10,
+            "light": 0.01492455212809083
+          },
+          {
+            "t": 625.2240000000016,
+            "hour": 18.0896000000007,
+            "month": 11,
+            "light": 0.003784636613101852
+          },
+          {
+            "t": 685.2210000000025,
+            "hour": 18.08840000000106,
+            "month": 12,
+            "light": 0.0025827900521436967
+          }
+        ],
+        "seasons": [
+          0,
+          1,
+          2,
+          3,
+          0
+        ],
+        "minPeople": 12,
+        "maxPeople": 12,
+        "moved": 10,
+        "sunMin": 1.1444855144979637e-06,
+        "sunMax": 3.2600000000000002,
+        "lightMode": "auto",
+        "ceremonyFrames": 0,
+        "changeRate": false,
+        "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+        "errors": []
+      }
+    ],
+    "browserErrors": [],
+    "appHash": "ac0b1c23e5e8f4daf9227158587704cbdddbaee22c36a6ad99a10a81141e7e3e",
+    "large": {
+      "status": {
+        "t": 0,
+        "year": 1,
+        "month": 1,
+        "day": 1,
+        "hour": 8,
+        "label": "День",
+        "light": 3.2600000000000002,
+        "phase": 0,
+        "mode": 1,
+        "paused": true,
+        "blocked": false,
+        "ceremony": false,
+        "population": 500,
+        "buildings": 250,
+        "lost": false
+      },
+      "daysPerMonth": 1,
+      "buttons": [
+        1,
+        2,
+        4,
+        25
+      ],
+      "renderer": 2,
+      "lightMode": "auto",
+      "resolution": [
+        1440,
+        780
+      ]
+    },
+    "small": {
+      "status": {
+        "t": 0,
+        "year": 1,
+        "month": 1,
+        "day": 1,
+        "hour": 8,
+        "label": "День",
+        "light": 3.2600000000000002,
+        "phase": 0,
+        "mode": 1,
+        "paused": true,
+        "blocked": false,
+        "ceremony": false,
+        "population": 12,
+        "buildings": 5,
+        "lost": false
+      },
+      "daysPerMonth": 1,
+      "buttons": [
+        1,
+        2,
+        4,
+        25
+      ],
+      "renderer": 2,
+      "lightMode": "auto",
+      "resolution": [
+        1440,
+        780
+      ]
+    },
+    "complete": true
+  },
+  "migration": {
+    "archived": [
+      "legacy-v1.json",
+      "legacy-v10-healer.json",
+      "legacy-v11-autumn.json",
+      "legacy-v12-harvest.json",
+      "legacy-v13-autumn.json",
+      "legacy-v14-warning-city.json",
+      "legacy-v15-districts.json",
+      "legacy-v16-textiles.json",
+      "legacy-v17-water-bricks.json",
+      "legacy-v18-kiln.json",
+      "legacy-v19-masonry.json",
+      "legacy-v2.json",
+      "legacy-v27-local-stock.json",
+      "legacy-v3.json",
+      "legacy-v4.json",
+      "legacy-v5.json",
+      "legacy-v6-city.json",
+      "legacy-v6-funeral.json",
+      "legacy-v7-city.json",
+      "legacy-v8-city.json"
+    ],
+    "active": [
+      {
+        "previousDays": null,
+        "people": 500,
+        "buildings": 250,
+        "simTime": 12.375,
+        "year": 1,
+        "month": 1,
+        "monthProgress": 0.825,
+        "displayedClock": "12:57",
+        "remainingOfferSeconds": 47.625,
+        "residentsWithCargo": 4,
+        "roundTripSHA256": "feabf6a302f6d138a843a071fa98e91469e5d1c64b41c00ff15949df38a3b60e"
+      },
+      {
+        "previousDays": 3,
+        "people": 500,
+        "buildings": 250,
+        "simTime": 12.375,
+        "year": 1,
+        "month": 1,
+        "monthProgress": 0.06875,
+        "displayedClock": "12:57",
+        "remainingOfferSeconds": 47.625,
+        "residentsWithCargo": 4,
+        "roundTripSHA256": "8ee0c9f7d6dc95965ca5ec7fa05f1504574bf7b10ee0ba40563b0704265768f9"
+      }
+    ]
+  },
+  "routing": {
+    "framesCompared": 210,
+    "encodedStateHashes": [
+      "c8723b13c8b4724261c52725968d43a9b43f23aefba4fac2572797a66c99c3e5",
+      "8ffceb09724ca6029f8e6185327d70ce000047f58004fba93bdd8d84bcbbb82b",
+      "9826ae9cd21408b9beac29e98c8a2ef3773ae8c31c5c5c3e78a5463ec8480491",
+      "99a865788f7cce08cd33eb8e42ed466e0dbc79994020d19109699d20ec0274c4",
+      "8e78f1bbd478f256b536b5deb42bfc6359d3b12253ba3b4c3d3e948cf7bdb4a9",
+      "12e6f636a1e9e3623b52da2a61aa7edf8c5c5665c946322f0b4207b64af817a9",
+      "1688c5a4abf4efc98980258ec41ef1cc9746a08799905daaeb4cc25dd7ba8efd",
+      "ef4fec6d7a701092fab65b705e3a5759e8144f7c6e43cb2bf92c0d9e813721ad",
+      "5f268cd48f07d6bbb689b964a6779f457767a674c00939c47d9a09ad3b4e092d",
+      "1b8a3bc05489a4ce9b3770739af5b18034e1fa9ef307673564e9f752fe535dff",
+      "a27eee754f30e7d161baebe05c3fff5b5681d9bd40bfc29b401e6deeb4c0c259",
+      "c76c0846956953e06b7fb9fa43ae4c544279642a95f57223945c935b15bd1e0c",
+      "8002cf327d2e99bad43828221194d03bcffba2ce234a57a2a8807415ad29e41c",
+      "f15ee34b26c175647cee2927746c782655a1c4dab62ead31fdce5f167b013594",
+      "6a83d06634efc73cd3e73bec4aa3f189f7a73bdfd97a0728cb406e02316dfc26",
+      "d8ce4e284f6a8ddd2ffe51da5fe463cc9700b3db9efe8dec5b041828b5322866",
+      "cd1a931d23b6dd89fb352390703b27439d9451237ce0ac293fedd7785ec9a02a",
+      "8792579985ad7b0b5810b15644bea07fad4bb3cfeeeb6ffae41c9ee7a557aa9d",
+      "439fab4b31df99cec3535514e227cf4aac646b79c8c164c8d6695cc33e038345",
+      "d4b71ac5fca21dc58e9a93eb5c85b485b3313bfcf36ea607d75b04f7545148ca",
+      "2fc50ef4259c33c1eb95c469d8b93e2a27bc1dbe851e07f1060b20200daf55a0"
+    ],
+    "routingTrialsBefore": [
+      {
+        "ms": 3430.299792,
+        "hash": "9186c85badb3d1b3c835a40746908dc9579c0539cfae348a345e70b7045734c9"
+      },
+      {
+        "ms": 3189.050375,
+        "hash": "9186c85badb3d1b3c835a40746908dc9579c0539cfae348a345e70b7045734c9"
+      },
+      {
+        "ms": 3068.23325,
+        "hash": "9186c85badb3d1b3c835a40746908dc9579c0539cfae348a345e70b7045734c9"
+      }
+    ],
+    "routingTrialsAfter": [
+      {
+        "ms": 1387.5985420000002,
+        "hash": "9186c85badb3d1b3c835a40746908dc9579c0539cfae348a345e70b7045734c9"
+      },
+      {
+        "ms": 1230.080625,
+        "hash": "9186c85badb3d1b3c835a40746908dc9579c0539cfae348a345e70b7045734c9"
+      },
+      {
+        "ms": 1155.8259170000001,
+        "hash": "9186c85badb3d1b3c835a40746908dc9579c0539cfae348a345e70b7045734c9"
+      }
+    ],
+    "roadGridPrevious": [
+      13015.259583000001,
+      15181.911834
+    ],
+    "roadGridCurrent": [
+      10907.114125,
+      11156.094125
+    ],
+    "roadGridSnapshots": [
+      "c8723b13c8b4724261c52725968d43a9b43f23aefba4fac2572797a66c99c3e5",
+      "8ffceb09724ca6029f8e6185327d70ce000047f58004fba93bdd8d84bcbbb82b",
+      "9826ae9cd21408b9beac29e98c8a2ef3773ae8c31c5c5c3e78a5463ec8480491",
+      "99a865788f7cce08cd33eb8e42ed466e0dbc79994020d19109699d20ec0274c4",
+      "8e78f1bbd478f256b536b5deb42bfc6359d3b12253ba3b4c3d3e948cf7bdb4a9",
+      "12e6f636a1e9e3623b52da2a61aa7edf8c5c5665c946322f0b4207b64af817a9",
+      "1688c5a4abf4efc98980258ec41ef1cc9746a08799905daaeb4cc25dd7ba8efd",
+      "ef4fec6d7a701092fab65b705e3a5759e8144f7c6e43cb2bf92c0d9e813721ad",
+      "5f268cd48f07d6bbb689b964a6779f457767a674c00939c47d9a09ad3b4e092d",
+      "1b8a3bc05489a4ce9b3770739af5b18034e1fa9ef307673564e9f752fe535dff",
+      "a27eee754f30e7d161baebe05c3fff5b5681d9bd40bfc29b401e6deeb4c0c259",
+      "c76c0846956953e06b7fb9fa43ae4c544279642a95f57223945c935b15bd1e0c",
+      "8002cf327d2e99bad43828221194d03bcffba2ce234a57a2a8807415ad29e41c",
+      "f15ee34b26c175647cee2927746c782655a1c4dab62ead31fdce5f167b013594",
+      "6a83d06634efc73cd3e73bec4aa3f189f7a73bdfd97a0728cb406e02316dfc26",
+      "d8ce4e284f6a8ddd2ffe51da5fe463cc9700b3db9efe8dec5b041828b5322866",
+      "cd1a931d23b6dd89fb352390703b27439d9451237ce0ac293fedd7785ec9a02a",
+      "8792579985ad7b0b5810b15644bea07fad4bb3cfeeeb6ffae41c9ee7a557aa9d",
+      "439fab4b31df99cec3535514e227cf4aac646b79c8c164c8d6695cc33e038345",
+      "d4b71ac5fca21dc58e9a93eb5c85b485b3313bfcf36ea607d75b04f7545148ca",
+      "2fc50ef4259c33c1eb95c469d8b93e2a27bc1dbe851e07f1060b20200daf55a0"
+    ]
+  },
+  "nodePass": 2260
+}

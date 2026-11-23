@@ -72,13 +72,13 @@ test('both shipped fish meshes face head first at multiple travel headings',asyn
  }finally{view.dispose();scene.dispose();engine.dispose();}
 });
 
-test('winter pelican swims bill first round both bends with its wake behind and dips its bill to feed',async()=>{
+for(const daysPerMonth of [1,3])test(`winter pelican swims bill first round both bends and feeds with ${daysPerMonth} day(s) per month`,async()=>{
  const {courtyardFauna}=await import('../game3d/ambient-fauna.js');
- const {calendarRateFor,useThreeDayCalendar}=await import('../calendar.js');
+ const {calendarRateFor,useOneDayCalendar,useThreeDayCalendar}=await import('../calendar.js');
  const {view,scene,engine}=await suppliedGeometryFixture(file=>file==='supplied-pelican-wasis.glb');
  const state=createGame({seed:137});
  try{
-  useThreeDayCalendar(state);
+  (daysPerMonth===1?useOneDayCalendar:useThreeDayCalendar)(state);
   state.season=3;
   const sample=seconds=>{
    state.seasonElapsed=5.85+seconds*calendarRateFor(state);

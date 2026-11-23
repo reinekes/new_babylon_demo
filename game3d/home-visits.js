@@ -1,7 +1,6 @@
 // Local coordinates are metres from the centre of the occupied plot.
 // The same door and furniture have different positions in the procedural fallback.
 import {buildingKey,isResidence} from '../definitions.js';
-import {BASE_TIME_RATE} from '../calendar.js';
 import {DAY_SECONDS} from '../city-life.js';
 import {weatherAt} from '../environment.js';
 import {canDepartForWork,residentDepartureHour,workHourAt} from '../work-schedule.js';
@@ -53,6 +52,9 @@ function layoutFor(kind,catalogue){
  const result={gate:point(gate,2.74),inner,door,sill,court,bench:benchWay,benchYaw,benchHeight,roof:roof.length?[inner,door,sill,court,...roof]:null,ground};
  layouts.set(key,result);return result;
 }
+// Doorways, ladder paths and pauses are timed together in the city's daily
+// routine. Twenty seconds on the visit timeline represent one in-game hour.
+const hourSeconds=20,simulationSecondsPerVisitSecond=DAY_SECONDS/(24*hourSeconds);
 const length=(a,b)=>Math.hypot(a.x-b.x,a.z-b.z,a.height-b.height);
 function track(points){
  const ends=[0];
@@ -125,7 +127,7 @@ function followVisit(out,back,elapsed,hold,seat){
  return null;
 }
 function visitAt(l,clock,b,id,drySince){
- const offset=houseOffset(b),cycle=Math.floor((clock+offset)/117),elapsed=clock+offset-cycle*117,start=(clock-elapsed)*BASE_TIME_RATE;
+ const offset=houseOffset(b),cycle=Math.floor((clock+offset)/117),elapsed=clock+offset-cycle*117,start=(clock-elapsed)*simulationSecondsPerVisitSecond;
  const startHour=workHourAt(start),endHour=b.type==='communalHouse'?communalDusk:19;
  if(startHour<6.15||startHour>=endHour||clock-elapsed<drySince||!canDepartForWork(undefined,id,start)||(startHour-residentDepartureHour(undefined,id))*hourSeconds<morningWindow)return null;
  const roof=!!l.roof&&((cycle+id+b.x+b.y)&1)===1,{out,back}=excursion(l,roof),hold=7+(hash(id+cycle)%6);
@@ -134,7 +136,7 @@ function visitAt(l,clock,b,id,drySince){
 }
 // A morning visit uses the simulation clock and stable resident ID. Reopening a
 // save halfway through the doorway reconstructs the same position and heading.
-const hourSeconds=DAY_SECONDS/(24*BASE_TIME_RATE),morningWindow=12,communalDusk=17.25,communalClose=23.95;
+const morningWindow=12,communalDusk=17.25,communalClose=23.95;
 const morningRoutes=new WeakMap();
 function morningVisit(l,id,elapsed,sheltered){
  let routes=morningRoutes.get(l);
@@ -182,7 +184,7 @@ function eveningVisit(layout,slot,clock){
 export function createHomeVisits(homeAsset=()=>true,homePlatform=()=>null){
  let previous=new Map(),transits=new Map(),seats=new Map(),evenings=new Map(),lastState=null,lastClock=-Infinity,wasWet=false,drySince=-Infinity,wetSince=-Infinity;
  return function homeVisits(s,people,weather){
-  const clock=(s.simTime||0)/BASE_TIME_RATE;
+  const clock=(s.simTime||0)/simulationSecondsPerVisitSecond;
   const reset=s!==lastState||clock<lastClock||clock-lastClock>40;
   const wet=(weather||weatherAt(s).type)==='rain';
   if(reset){previous.clear();transits.clear();seats.clear();evenings.clear();drySince=wetSince=-Infinity;}

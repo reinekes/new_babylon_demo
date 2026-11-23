@@ -7,6 +7,23 @@ import {harvestDemand} from "../city-labor.js";
 import {createNewCity} from "../new-game.js";
 import {createGame,decode,encode} from "../engine.js";
 import {adoptAutumnCrops} from "../management.js";
+import {DAY_SECONDS} from '../city-life.js';
+import {useOneDayCalendar,useThreeDayCalendar} from '../calendar.js';
+import {advanceCalendar} from './helpers/calendar-time.js';
+
+test('a watered field and the harvest forecast advance through the same season on both calendars',()=>{
+ for(const setCalendar of [useOneDayCalendar,useThreeDayCalendar]){
+  const s=setCalendar(createGame({start:'established',seed:137}));
+  const field=s.buildings.find(b=>b.type==='field');
+  s.season=s.tick=1;s.simTime=45;s.rain=1;
+  Object.assign(cropFor(s,field),{growth:0,sown:1,seedUsed:4});
+  const daysToHarvest=3*s.calendarDaysPerMonth;
+  assert.equal(foodForecast(s).secondsToHarvest,daysToHarvest*DAY_SECONDS);
+  advanceCalendar(s,DAY_SECONDS);
+  assert.ok(Math.abs(field.crop.growth-1/daysToHarvest)<1e-8);
+  assert.equal(foodForecast(s).secondsToHarvest,(daysToHarvest-1)*DAY_SECONDS);
+ }
+});
 
 test('an autumn crop retains its seed accounting into spring and matures exactly once',()=>{
  const field={type:'field',x:10,y:8,level:1};

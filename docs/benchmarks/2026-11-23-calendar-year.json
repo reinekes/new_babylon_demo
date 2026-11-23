@@ -1,0 +1,51 @@
+{
+  "date": "2026-11-23",
+  "revision": "8f09c80a7b59e3d0cc7bc91d8d2f5fcc92af29b2",
+  "fixture": "docs/benchmarks/2026-11-21-road-levels-city.json.gz",
+  "device": "Apple M5",
+  "renderer": "Chrome WebGL 2",
+  "viewport": [
+    1440,
+    780
+  ],
+  "residents": 500,
+  "buildings": 250,
+  "monthsPerYear": 12,
+  "daysPerMonth": 3,
+  "simulationSecondsPerDay": 60,
+  "method": "Same city save and camera at each speed. Four seconds of warm-up, then reload and measure at least 20 seconds of continuous play. Year projections use 2160 simulation seconds divided by the measured rate. Paused time and ceremonies are excluded.",
+  "runs": [
+    {
+      "speed": 1,
+      "measuredWallSeconds": 20.0659,
+      "measuredSimulationSeconds": 2.5082375,
+      "expectedSecondsPerYear": 17280.0,
+      "projectedSecondsPerYear": 17280.0,
+      "longestFrameMs": 199.9
+    },
+    {
+      "speed": 2,
+      "measuredWallSeconds": 20.0659,
+      "measuredSimulationSeconds": 5.016475,
+      "expectedSecondsPerYear": 8640.0,
+      "projectedSecondsPerYear": 8640.0,
+      "longestFrameMs": 200
+    },
+    {
+      "speed": 4,
+      "measuredWallSeconds": 20.0992,
+      "measuredSimulationSeconds": 10.0496,
+      "expectedSecondsPerYear": 4320.0,
+      "projectedSecondsPerYear": 4320.0,
+      "longestFrameMs": 149.9
+    },
+    {
+      "speed": 25,
+      "measuredWallSeconds": 20.0825,
+      "measuredSimulationSeconds": 47.446875,
+      "expectedSecondsPerYear": 691.2,
+      "projectedSecondsPerYear": 914.25,
+      "longestFrameMs": 1599.9
+    }
+  ]
+}

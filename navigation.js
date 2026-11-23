@@ -112,6 +112,18 @@ class MinHeap{
  pop(){const a=this.items,first=a[0],tail=a.pop();if(a.length){let i=0;while(i*2+1<a.length){let next=i*2+1;if(next+1<a.length&&this.before(a[next+1],a[next]))next++;if(!this.before(a[next],tail))break;a[i]=a[next];i=next;}a[i]=tail;}return first;}
 }
 const trafficCostFactor=(band,cohort)=>band>cohort?1-band*.0225:1;
+// The walking network is replaced when land or road topology changes. Store
+// its directed edges once; traffic bands are still read on each search.
+const walkingEdges=new WeakMap();
+function searchEdges(network,from,cache){
+ if(cache.has(from))return cache.get(from);
+ const a=network.nodes.get(from),edges=[];
+ for(const key of network.graph.get(from)||[]){
+  const b=network.nodes.get(key),id=pairKey(from,key);
+  edges.push({key,id,base:network.navigation?.costs.get(id)??Math.hypot(b.x-a.x,b.y-a.y)});
+ }
+ cache.set(from,edges);return edges;
+}
 function costToBeat(network,route,traffic,cohort){
  let total=0,canImprove=false;
  for(let i=1;i<route.length;i++){
@@ -132,14 +144,16 @@ export function shortestWalkingPath(network,from,to,traffic=null,cohort=0,usual=
  const minimumFactor=trafficCostFactor(traffic?.maxBand||0,cohort);
  const limit=usual&&traffic?costToBeat(network,usual,traffic,cohort):Infinity;
  if(!limit)return usual;
+ let edges=walkingEdges.get(network.navigation);
+ if(!edges){edges=new Map();if(network.navigation)walkingEdges.set(network.navigation,edges);}
  const goal=network.nodes.get(to),heuristic=key=>{const p=network.nodes.get(key);return Math.hypot(goal.x-p.x,goal.y-p.y)*minimumFactor/(network.navigation?.maxSpeed||1);},open=new MinHeap(),costs=new Map([[from,0]]),previous=new Map([[from,null]]);open.push(from,heuristic(from),0);
  while(open.items.length){const current=open.pop();if(current.cost>(costs.get(current.key)??Infinity)+EPS)continue;
   if(current.key===to){
    const path=[];for(let key=to;key!==null;key=previous.get(key))path.push(network.nodes.get(key));return path.reverse();
   }
-  for(const next of network.graph.get(current.key)||[]){const a=network.nodes.get(current.key),b=network.nodes.get(next),edge=pairKey(current.key,next);
-   const band=traffic?.bands.get(edge)||0,factor=trafficCostFactor(band,cohort);
-   const cost=current.cost+(network.navigation?.costs.get(edge)??Math.hypot(b.x-a.x,b.y-a.y))*factor;if(cost>=(costs.get(next)??Infinity)-EPS)continue;
+  for(const edge of searchEdges(network,current.key,edges)){const next=edge.key;
+   const band=traffic?.bands.get(edge.id)||0,factor=trafficCostFactor(band,cohort);
+   const cost=current.cost+edge.base*factor;if(cost>=(costs.get(next)??Infinity)-EPS)continue;
    // A*'s lower bound can rule out a branch before allocating a queue entry.
    const priority=cost+heuristic(next);if(priority>=limit-EPS)continue;
    costs.set(next,cost);previous.set(next,current.key);open.push(next,priority,cost);}

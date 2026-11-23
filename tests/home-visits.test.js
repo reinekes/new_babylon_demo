@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {BASE_TIME_RATE} from '../calendar.js';
+import {DAY_SECONDS} from '../city-life.js';
 import {legacyScenario,strictScenario} from '../scenario-profiles.js';
 import {createHomeVisits} from '../game3d/home-visits.js';
 import {workHourAt,residentDepartureHour} from '../work-schedule.js';
@@ -10,7 +10,8 @@ function city(b=house,scenario=strictScenario()){
  const home=b.x+','+b.y,c={id:7,x:b.x,y:b.y-1,age:41,phase:'home',home,cargo:{},route:[]};
  return {buildings:[{...b}],citizens:[c],simTime:0,scenario};
 }
-const seen=(s,view,time,street=[])=>{s.simTime=time*BASE_TIME_RATE;return view(s,street);};
+const simulationSecondsPerVisitSecond=DAY_SECONDS/(24*20);
+const seen=(s,view,time,street=[])=>{s.simTime=time*simulationSecondsPerVisitSecond;return view(s,street);};
 const distance=(a,b)=>Math.hypot((a.x-b.x)*6,(a.y-b.y)*6,a.homeVisit.height-b.homeVisit.height);
 
 test('all five house forms have reachable seating and an enclosed threshold; roofs use a ladder or eleven stairs',()=>{
@@ -138,7 +139,7 @@ test('a free resident sits at dusk and a late-returning housemate walks in befor
  s.citizens.push(late,ill,carrier,guard,infant,parent);
  let alone=false,entered=false,walkedOut=false,paired=0;
  for(let clock=183;clock<320;clock+=.2){
-  s.simTime=clock*BASE_TIME_RATE;
+  s.simTime=clock*simulationSecondsPerVisitSecond;
   if(clock>285)late.phase='home';
   const cast=visit(s,late.phase==='toHome'?[late]:[],'sunny'),courtyard=cast.filter(c=>c.homeVisit);
   assert.ok(courtyard.every(c=>c.id===first.id||c.id===late.id));
@@ -161,7 +162,7 @@ test('a separate family funeral leaves the communal bench open for nonparticipan
  const s=city({...house,type:'communalHouse'}),resident=s.citizens[0],mourner={...resident,id:42};
  s.citizens.push(mourner);s.funeral={scope:'family'};
  const visible={...mourner,phase:'mourning',funeralContact:{walking:true}},visit=createHomeVisits();
- s.simTime=235*BASE_TIME_RATE;const cast=visit(s,[visible],'sunny');
+ s.simTime=235*simulationSecondsPerVisitSecond;const cast=visit(s,[visible],'sunny');
  assert.equal(cast.find(c=>c.id===resident.id)?.homeVisit?.stage,'bench');
  assert.equal(cast.find(c=>c.id===mourner.id),visible);
  s.funeral={scope:'city'};assert.deepEqual(visit(s,[visible],'sunny'),[visible]);
@@ -170,7 +171,7 @@ test('a separate family funeral leaves the communal bench open for nonparticipan
 test('two housemates speak in turn from different places on the communal bench, another reaches the roof and walks down in rain',()=>{
  const b={...house,type:'communalHouse',footprint:2},s=city(b),visit=createHomeVisits();
  s.citizens=Array.from({length:8},(_,id)=>({...s.citizens[0],id}));
- const frame=(clock,wet=false)=>{s.simTime=clock*BASE_TIME_RATE;return visit(s,[],wet?'rain':'sunny');};
+ const frame=(clock,wet=false)=>{s.simTime=clock*simulationSecondsPerVisitSecond;return visit(s,[],wet?'rain':'sunny');};
  const speaks=new Set();let roof,previous,clock=219;
  for(;clock<272;clock+=.25){
   const actors=frame(clock),benches=actors.filter(p=>p.homeVisit.stage==='bench');roof=actors.find(p=>p.homeVisit.stage==='roof');
@@ -215,7 +216,7 @@ test('each free adult crosses their actual morning threshold, pauses in the cour
 
 test('a porch visitor continues out to a newly assigned job without going back through the room',()=>{
  const s=city(),view=createHomeVisits(),c=s.citizens[0],start=((residentDepartureHour(undefined,c.id)-8+24)%24)*20;
- const frame=t=>{s.simTime=t*BASE_TIME_RATE;return view(s,c.phase==='home'?[]:[{...c,walking:true}],'sunny').find(p=>p.id===c.id);};
+ const frame=t=>{s.simTime=t*simulationSecondsPerVisitSecond;return view(s,c.phase==='home'?[]:[{...c,walking:true}],'sunny').find(p=>p.id===c.id);};
  let t=start,prior;for(;t<start+6;t+=.1){prior=frame(t);if(prior?.homeVisit.stage==='courtyard')break;}
  assert.equal(prior.homeVisit.stage,'courtyard');c.phase='toWork';c.route=[{x:c.x,y:c.y},{x:c.x+1,y:c.y}];c.routeIndex=1;
  let onStreet=false;const sill=(prior.y-house.y)*6;
@@ -225,14 +226,14 @@ test('a porch visitor continues out to a newly assigned job without going back t
 
 test('an infant and the parent caring for them, a sick resident, a watchman and a loaded courier keep their duties',()=>{
  const s=city(),c=s.citizens[0],view=createHomeVisits();s.citizens=[{...c,id:0,age:1,parents:[1]},{...c,id:1},{...c,id:2,health:42},{...c,id:3,guardPost:'1,1'},{...c,id:4,cargo:{clay:2}},{...c,id:5},{...c,id:6,fireShelter:'s'}];const outside=new Set();
- for(let t=415;t<508;t+=.2){s.simTime=t*BASE_TIME_RATE;for(const actor of view(s,[],'sunny'))if(actor.homeVisit.morning)outside.add(actor.id);}
+ for(let t=415;t<508;t+=.2){s.simTime=t*simulationSecondsPerVisitSecond;for(const actor of view(s,[],'sunny'))if(actor.homeVisit.morning)outside.add(actor.id);}
  assert.deepEqual([...outside],[5]);
 });
 
 
 test('a rainy morning reaches just the covered door, and rain sends a courtyard visitor home on foot',()=>{
  const b={...house,rotation:1},s=city(b),c=s.citizens[0],start=((residentDepartureHour(undefined,c.id)-8+24)%24)*20;
- const run=(view,t,wet)=>{s.simTime=t*BASE_TIME_RATE;return view(s,[],wet?'rain':'sunny')[0];};
+ const run=(view,t,wet)=>{s.simTime=t*simulationSecondsPerVisitSecond;return view(s,[],wet?'rain':'sunny')[0];};
  const rainView=createHomeVisits();let found=false;
  for(let t=start-.2;t<start+12;t+=.1){
   const a=run(rainView,t,true);if(!a)continue;
@@ -259,7 +260,7 @@ test('the last morning starter crosses the actual sill of every house by nine',(
  for(const [b,sill] of [[house,.33],[{...house,level:2},-.46],[{...house,level:3},-.19],[{...house,reedCamp:true},1.40],[{...house,type:'communalHouse'},-1.92]]){
   const state=city(b);state.citizens[0].id=last;const view=createHomeVisits(),start=residentDepartureHour(undefined,last);let crossed=false;
   for(let h=start;h<=9;h+=.004){
-   state.simTime=((h-8+24)%24)*20*BASE_TIME_RATE;const [a]=view(state,[],'sunny');
+   state.simTime=((h-8+24)%24)*20*simulationSecondsPerVisitSecond;const [a]=view(state,[],'sunny');
    if(a?.homeVisit?.morning&&(a.y-b.y-(b.type==='communalHouse'?.5:0))*6>=sill){crossed=true;break;}
   }
   assert.ok(crossed,b.type+' '+b.level);

@@ -42,7 +42,8 @@ test('the same free resident covers the ordinary distance at 1× and 4× in the 
   const distance=[];
   for(const state of [normal,rite]){
    const c=state.citizens.find(c=>c.id===4);let travelled=0;
-   for(let i=0;i<45;i++){const {x,y}=c;advanceFrame(state,1/60,speed);travelled+=Math.hypot(c.x-x,c.y-y);}
+   // Fine samples measure the bend at a waypoint as well as the straight parts.
+   for(let i=0;i<180;i++){const {x,y}=c;advanceFrame(state,1/240,speed);travelled+=Math.hypot(c.x-x,c.y-y);}
    distance.push(travelled);assert.ok(decode(encode(state)));
   }
   assert.ok(distance[0]>.08&&Math.abs(distance[0]-distance[1])<.002,`ordinary/rite distances at ${speed}×: ${distance}`);

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {createGame,build,encode,decode,advanceTime} from '../engine.js';
 import {callHarvestWorkers,callUnloadWorkers} from '../management.js';
 import {activeLaborKind,harvestCallActive,harvestCandidates} from '../city-labor.js';
-import {useThreeDayCalendar} from '../calendar.js';
+import {useOneDayCalendar} from '../calendar.js';
 import {strictScenario} from '../scenario-profiles.js';
 import {trade} from '../trading.js';
 
@@ -14,7 +14,7 @@ test('a harvest call takes available adults from construction and survives a rel
   advanceTime(s,Math.min(1,122-s.simTime));
  }
  assert.equal(s.season,2);
- useThreeDayCalendar(s);
+ useOneDayCalendar(s);
  const field=s.buildings.find(b=>b.type==='field'),key=`${field.x},${field.y}`;
  Object.assign(field.crop,{sown:1,growth:1,seedUsed:4,total:40,remaining:40,harvested:0,sheaves:0,threshed:0,spoiled:0});
  for(const [x,y] of [[8,7],[8,9],[10,8]])assert.equal(build(s,'house',x,y).ok,true);

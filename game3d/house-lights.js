@@ -1,3 +1,4 @@
+import {BASE_TIME_RATE} from '../calendar.js';
 import {createLampPool} from './home-light-spill.js';
 import {isStrictSumer} from '../scenario-profiles.js';
 import {buildingKey,isResidence} from '../definitions.js';
@@ -62,7 +63,7 @@ function createFestivalLamps(B,scene,domestic=false){
     mesh.thinInstanceSetBuffer('matrix',matrices,16,true);mesh.thinInstanceRefreshBoundingInfo();mesh.metadata.lampCount=lampCount;if(mesh.isEnabled()!==!!lampCount)mesh.setEnabled(!!lampCount);
    }
   }
-  if(meshes.length){const pulse=1+.07*Math.sin((domestic?(state.simTime||0)*8:state.festival.elapsed||0)*8.1);materials[1].emissiveColor.set(pulse,.34*pulse,.035*pulse);materials[2].emissiveColor.set(1,.87,.48);}
+  if(meshes.length){const pulse=1+.07*Math.sin((domestic?(state.simTime||0)/BASE_TIME_RATE:state.festival.elapsed||0)*8.1);materials[1].emissiveColor.set(pulse,.34*pulse,.035*pulse);materials[2].emissiveColor.set(1,.87,.48);}
  }
  function dispose(){for(const mesh of meshes)mesh.dispose();for(const material of materials)material.dispose();lampCount=0;buildingCount=0;signature='';}
  return {update,dispose,meshes,get lampCount(){return lampCount;},get buildingCount(){return buildingCount;}};

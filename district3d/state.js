@@ -1,4 +1,5 @@
 import {createGame,decode,advanceTime} from '../engine.js';
+import {useOneDayCalendar} from '../calendar.js';
 import {terrain} from '../world.js';
 import {MATERIALS,housingOf} from '../definitions.js';
 import {syncCitizens} from '../workforce.js';
@@ -9,9 +10,9 @@ import {initializeBricks} from '../bricks.js';
 import {initializeKilns} from '../kilns.js';
 import {initializeCrops} from '../agriculture.js';
 export const DISTRICT_SOURCE_KEY='new-babylon-v1';
-export function readCityCopy(storage){try{const raw=storage.getItem(DISTRICT_SOURCE_KEY);if(!raw)return {ok:false,reason:'В этом браузере пока нет сохранённого города.'};const state=decode(raw);return state?{ok:true,state}:{ok:false,reason:'Не удалось прочитать город. Исходное сохранение не изменено.'};}catch{return {ok:false,reason:'Браузер не разрешил прочитать сохранение.'};}}
+export function readCityCopy(storage){try{const raw=storage.getItem(DISTRICT_SOURCE_KEY);if(!raw)return {ok:false,reason:'В этом браузере пока нет сохранённого города.'};const state=decode(raw);return state?{ok:true,state:useOneDayCalendar(state)}:{ok:false,reason:'Не удалось прочитать город. Исходное сохранение не изменено.'};}catch{return {ok:false,reason:'Браузер не разрешил прочитать сохранение.'};}}
 export function makeDemoDistrict(){
- const s=createGame({start:'established'});
+ const s=useOneDayCalendar(createGame({start:'established'}));
  const sites=[['house',7,8,1],['house',7,9,2],['house',8,10,1],['house',9,10,3],['granary',10,9,2],['pottery',7,10,2],['brewery',6,10,1],['weaver',8,11,1],['sheepfold',6,9,1],['brickyard',6,11,1],['kiln',7,11,1],['field',11,9,1],['harbor',11,11,1]];
  for(const [type,x,y,level]of sites)s.buildings.push({type,x,y,level});
  s.population=32;s.capacity=housingOf(s);syncCitizens(s);initializeArtisans(s);initializeTextiles(s);initializeBricks(s);initializeKilns(s);initializeCrops(s);

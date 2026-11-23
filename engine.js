@@ -477,7 +477,7 @@ export function advanceTime(s,seconds,{calendarRate=calendarRateFor(s),funeralTi
   advanceSupplyVow(s);
   advanceAutonomousHousing(s);
   const vowRemaining=s.supplyVows?.active?s.supplyVows.active.deadline-s.simTime:Infinity;
-  const dt=Math.min(remaining,(45-s.seasonElapsed)/calendarRate,vowRemaining,autonomousHousingBoundary(s),civicDayBoundary(s)),worked=advanceWorkers(s,dt,{stopForCeremony:true,fishingTimerRate,cropRate:s.calendarDaysPerMonth===DAYS_PER_MONTH?calendarRate:1});syncSacredUnlocks(s);advanceSupplyVow(s);s.seasonElapsed+=worked*calendarRate;if(calendarRate!==1)s.calendarOffset=(s.calendarOffset||0)+worked*(1-calendarRate);remaining-=worked;advanced+=worked;
+  const dt=Math.min(remaining,(45-s.seasonElapsed)/calendarRate,vowRemaining,autonomousHousingBoundary(s),civicDayBoundary(s)),worked=advanceWorkers(s,dt,{stopForCeremony:true,fishingTimerRate,cropRate:s.calendarDaysPerMonth===undefined?1:calendarRate});syncSacredUnlocks(s);advanceSupplyVow(s);s.seasonElapsed+=worked*calendarRate;if(calendarRate!==1)s.calendarOffset=(s.calendarOffset||0)+worked*(1-calendarRate);remaining-=worked;advanced+=worked;
   for(const camp of s.buildings.filter(b=>b.campSalvage?.reed===0)){
    const source=buildingKey(camp);
    if(!s.citizens.some(c=>c.home===source)&&!s.district.jobs.some(q=>q.campSalvage&&q.source===source&&q.remaining+transferCarried(s,q)>1e-7))
@@ -635,7 +635,7 @@ export function decode(raw){
   const integer=(v,min=0,max=1e6)=>Number.isInteger(v)&&v>=min&&v<=max;
   if(!integer(s.tick)||!integer(s.year,1)||s.year!==1+Math.floor(s.tick/4)||s.season!==s.tick%4||!integer(s.population)||!integer(s.capacity)||!finite(s.happiness,0,100))return null;
   for(const k of Object.keys(emptyResources()))if(!finite(s.resources?.[k])||!finite(s.delivered?.[k]))return null;
- if(s.calendarDaysPerMonth!==undefined&&s.calendarDaysPerMonth!==DAYS_PER_MONTH)return null;
+ if(s.calendarDaysPerMonth!==undefined&&s.calendarDaysPerMonth!==DAYS_PER_MONTH&&s.calendarDaysPerMonth!==3)return null;
  if(!finite(s.simTime)||!finite(s.seasonElapsed,0,44.99999999)||!finite(s.calendarOffset??0)||Math.abs(s.simTime-(s.tick*45+s.seasonElapsed+(s.calendarOffset||0)))>.001||!integer(s.deliveries))return null;
   if(!Array.isArray(s.buildings)||s.buildings.length>worldWidth(s)*worldHeight(s))return null;
   if(!oldInventory&&!validateTrade(s))return null;

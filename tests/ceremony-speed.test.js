@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as clock from '../ceremony-time.js';
+import {BASE_TIME_RATE,simulationRate} from '../calendar.js';
 import {advanceFrame,advanceTime,encode,decode,miracle} from '../engine.js';
 import {orderFestival,festivalView,FESTIVAL_SECONDS} from '../festival.js';
 import {advanceMiracleCelebration} from '../miracle-celebration.js';
@@ -69,7 +70,7 @@ test('the remainder of a frame after a miracle or feast resumes at city speed',(
   const start=city.simTime;
   advanceFrame(city,.125,25);
   assert.equal(clock.ceremonyActive(city),false);
-  assert.ok(Math.abs(city.simTime-start-(3.125-.375)*.125)<1e-6);
+  assert.ok(Math.abs(city.simTime-start-(3.125-.375)*BASE_TIME_RATE)<1e-6);
  }
 });
 
@@ -81,9 +82,10 @@ test('a feast starting mid-frame uses 1× for the unspent real time',()=>{
  const before=decode(initial);
  for(let i=1;i<steps;i++)advanceTime(before,.1);
  const split=decode(encode(before));
- advanceFrame(split,.1/3.125,25);
+ const firstPart=.1/simulationRate(25);
+ advanceFrame(split,firstPart,25);
  assert.equal(split.festival?.stage,'celebrating');
- advanceFrame(split,.25-.1/3.125,1);
+ advanceFrame(split,.25-firstPart,1);
  advanceFrame(before,.25,25);
  assert.equal(before.simTime,split.simTime);
  assert.ok(Math.abs(festivalView(before).elapsed-festivalView(split).elapsed)<1e-6);
@@ -99,5 +101,5 @@ test('the city resumes at 25× in the same frame that the farewell ends',()=>{
  assert.equal(city.simTime,start);assert.ok(Math.abs(city.funeral.timer-3.90625)<1e-6);
  advanceFrame(city,.125,25);
  assert.equal(city.funeral,null);
- assert.ok(Math.abs(city.simTime-start-((.15625+.125)*25-5)*.125)<1e-6);
+ assert.ok(Math.abs(city.simTime-start-((.15625+.125)*25-5)*BASE_TIME_RATE)<1e-6);
 });

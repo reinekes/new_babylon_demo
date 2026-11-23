@@ -1,3 +1,4 @@
+import {BASE_TIME_RATE} from './calendar.js';
 import {roadsideNature,sceneryObstacleKey} from './street-obstacles.js';
 import {resourceDisplayLayout} from './resource-layout.js';
 import {cartParking,cartHeading,drawFreightCart} from './porter-cart-art.js';
@@ -644,7 +645,7 @@ export class Renderer{
   if(e.kind==='bridgeRail')this.bridgeRail(e.across,e.end,e.along);
   else if(e.kind==='building'){if(e.construction)drawConstruction(this,e,s,t);else this.building(e,s,t);const heat=ovenHeat(e);
    if(heat?.flame&&!this.reduce){
-    const mouth={kiln:[0,-6],pottery:[-7,-4],bakery:[8,1],coppersmith:[10,-3]}[e.type],clock=(s.simTime||0)*8;
+    const mouth={kiln:[0,-6],pottery:[-7,-4],bakery:[8,1],coppersmith:[10,-3]}[e.type],clock=(s.simTime||0)/BASE_TIME_RATE;
     for(let i=0;i<4;i++){const age=(clock*(.57+i*.07)+i*.39)%1;if(age>.68)continue;
      const x=p.x+(mouth[0]+Math.sin(i+age*5)*2.2)*this.s,y=p.y+(mouth[1]-age*17)*this.s;
      this.line([[x,y],[x+.27*this.s,y-.85*this.s]],'#ffbc56',this.s*.65*heat.flame);

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createNewCity} from '../new-game.js';
 import {advanceTime,build,buildingPlacement,createGame,decode,encode,resolveEvent} from '../engine.js';
-import {useThreeDayCalendar} from '../calendar.js';
+import {useOneDayCalendar} from '../calendar.js';
 import {marketStatus,trade} from '../trading.js';
 import {strictScenario,legacyScenario,CAT_DISCOVERY_RULES} from '../scenario-profiles.js';
 import {isDryPoint,signedRiverDistance,worldWidth,worldHeight} from '../world.js';
@@ -38,7 +38,7 @@ test('new Sumerian cities import timber and stone while existing maps retain loc
 });
 
 test('a new city can build its first trade route and receive both imports with starting resources',()=>{
- let city=useThreeDayCalendar(createNewCity({mode:'mature',seed:137}));
+ let city=useOneDayCalendar(createNewCity({mode:'mature',seed:137}));
  const step=()=>{if(city.event)resolveEvent(city,'skip');advanceTime(city,.5);};
  for(const [type,x,y] of [['market',10,9],['granary',10,8]]){
   const result=build(city,type,x,y);
