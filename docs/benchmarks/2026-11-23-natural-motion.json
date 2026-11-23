@@ -1,0 +1,500 @@
+{
+  "date": "2026-11-23",
+  "sampling": "One save and fixed camera per comparison. Median instantaneous path speed during moving frames, in map cells per wall second. WebGL2 except the airborne bird sampled from the active Canvas2D draw. Frames from requestAnimationFrame. Pause sampled separately.",
+  "pace": {
+    "old": {
+      "1": {
+        "3d": {
+          "seconds": 4.6165,
+          "frames": 185,
+          "simDelta": 0.5770625,
+          "pauseSeconds": 0.6665999999999985,
+          "pauseDistance": 0,
+          "rates": {
+            "resident": {
+              "medianActive": 0.12905456256210476,
+              "totalDistance": 0.6299639257754617,
+              "movingFrames": 185
+            },
+            "jackal": {
+              "medianActive": 0.04624999999995899,
+              "totalDistance": 0.21351312500000574,
+              "movingFrames": 185
+            },
+            "gazelle": {
+              "medianActive": 0.03999999999996833,
+              "totalDistance": 0.017013216492728134,
+              "movingFrames": 18
+            },
+            "mallard": {
+              "medianActive": 0.09234802907451406,
+              "totalDistance": 0.4242125527254626,
+              "movingFrames": 185
+            }
+          }
+        },
+        "2d": {
+          "seconds": 4.6165,
+          "frames": 276,
+          "simDelta": 0.5770624999999965,
+          "pauseSeconds": 0.65,
+          "pauseDistance": 0,
+          "rates": {
+            "bird-1": {
+              "medianActive": 0.08124999999994315,
+              "totalDistance": 0.21195283505415574,
+              "movingFrames": 157
+            }
+          }
+        }
+      },
+      "4": {
+        "3d": {
+          "seconds": 2.3165999999999984,
+          "frames": 81,
+          "simDelta": 1.1582999999999983,
+          "pauseSeconds": 0.6665999999999985,
+          "pauseDistance": 0,
+          "rates": {
+            "resident": {
+              "medianActive": 0.5215234175536567,
+              "totalDistance": 1.2170237318489037,
+              "movingFrames": 81
+            },
+            "jackal": {
+              "medianActive": 0.18500000000000444,
+              "totalDistance": 0.42857099999999093,
+              "movingFrames": 81
+            },
+            "gazelle": {
+              "medianActive": 0.15999999999996345,
+              "totalDistance": 0.22901321649273143,
+              "movingFrames": 41
+            },
+            "mallard": {
+              "medianActive": 0.33074123772990643,
+              "totalDistance": 0.7639402522924322,
+              "movingFrames": 81
+            }
+          }
+        },
+        "2d": {
+          "seconds": 2.3,
+          "frames": 138,
+          "simDelta": 1.1499999999999972,
+          "pauseSeconds": 0.65,
+          "pauseDistance": 0,
+          "rates": {
+            "bird-1": {
+              "medianActive": 0.3249999999999952,
+              "totalDistance": 0.3999999999999986,
+              "movingFrames": 74
+            }
+          }
+        }
+      }
+    },
+    "before": {
+      "1": {
+        "3d": {
+          "seconds": 4.633100000000002,
+          "frames": 160,
+          "simDelta": 2.7798599999999967,
+          "pauseSeconds": 0.6666000000000022,
+          "pauseDistance": 0,
+          "rates": {
+            "resident": {
+              "medianActive": 0.6400933950948572,
+              "totalDistance": 2.954129397376343,
+              "movingFrames": 160
+            },
+            "jackal": {
+              "medianActive": 0.22199999999998,
+              "totalDistance": 1.028157309098614,
+              "movingFrames": 160
+            },
+            "gazelle": {
+              "medianActive": 0.19199999999997885,
+              "totalDistance": 0.7000000000000028,
+              "movingFrames": 135
+            },
+            "mallard": {
+              "medianActive": 0.09206840777038505,
+              "totalDistance": 0.4256299539227952,
+              "movingFrames": 160
+            }
+          }
+        },
+        "2d": {
+          "seconds": 4.6165,
+          "frames": 276,
+          "simDelta": 2.769900000000007,
+          "pauseSeconds": 0.6666999999999998,
+          "pauseDistance": 0,
+          "rates": {
+            "bird-1": {
+              "medianActive": 0.3899999999998973,
+              "totalDistance": 0.3999999999999986,
+              "movingFrames": 63
+            }
+          }
+        }
+      },
+      "4": {
+        "3d": {
+          "seconds": 2.333199999999997,
+          "frames": 82,
+          "simDelta": 5.599679999999992,
+          "pauseSeconds": 0.65,
+          "pauseDistance": 0,
+          "rates": {
+            "resident": {
+              "medianActive": 2.5356028197901734,
+              "totalDistance": 5.915426931082884,
+              "movingFrames": 82
+            },
+            "jackal": {
+              "medianActive": 0.8879999999999847,
+              "totalDistance": 2.0678284436582213,
+              "movingFrames": 82
+            },
+            "gazelle": {
+              "medianActive": 0.7679999999999262,
+              "totalDistance": 0.7000000000000028,
+              "movingFrames": 36
+            },
+            "mallard": {
+              "medianActive": 0.32640268953741686,
+              "totalDistance": 0.7692767426297844,
+              "movingFrames": 82
+            }
+          }
+        },
+        "2d": {
+          "seconds": 2.3165,
+          "frames": 139,
+          "simDelta": 5.559599999999987,
+          "pauseSeconds": 0.6666000000000004,
+          "pauseDistance": 0,
+          "rates": {
+            "bird-1": {
+              "medianActive": 1.5599999999999299,
+              "totalDistance": 0.6837677899365424,
+              "movingFrames": 27
+            }
+          }
+        }
+      }
+    },
+    "after": {
+      "1": {
+        "3d": {
+          "seconds": 4.616500000000002,
+          "frames": 132,
+          "simDelta": 2.7698999999999936,
+          "pauseSeconds": 0.6666999999999971,
+          "pauseDistance": 0,
+          "rates": {
+            "resident": {
+              "medianActive": 0.12903750400594474,
+              "totalDistance": 0.6594453771220901,
+              "movingFrames": 132
+            },
+            "jackal": {
+              "medianActive": 0.04624999999994985,
+              "totalDistance": 0.21351312499999864,
+              "movingFrames": 132
+            },
+            "gazelle": {
+              "medianActive": 0.03999999999998729,
+              "totalDistance": 0.015681216492730243,
+              "movingFrames": 10
+            },
+            "mallard": {
+              "medianActive": 0.07840521375039089,
+              "totalDistance": 0.36058028864316244,
+              "movingFrames": 132
+            }
+          }
+        },
+        "2d": {
+          "seconds": 4.6165,
+          "frames": 277,
+          "simDelta": 2.7699000000000096,
+          "pauseSeconds": 0.6665,
+          "pauseDistance": 0,
+          "rates": {
+            "bird-1": {
+              "medianActive": 0.08124999999994315,
+              "totalDistance": 0.20987283505342802,
+              "movingFrames": 155
+            }
+          }
+        }
+      },
+      "4": {
+        "3d": {
+          "seconds": 2.3165999999999984,
+          "frames": 70,
+          "simDelta": 5.55984,
+          "pauseSeconds": 0.65,
+          "pauseDistance": 0,
+          "rates": {
+            "resident": {
+              "medianActive": 0.5222379386073733,
+              "totalDistance": 1.2162491076326551,
+              "movingFrames": 70
+            },
+            "jackal": {
+              "medianActive": 0.18500000000000444,
+              "totalDistance": 0.42857099999999093,
+              "movingFrames": 70
+            },
+            "gazelle": {
+              "medianActive": 0.15999999999996345,
+              "totalDistance": 0.3116692164927315,
+              "movingFrames": 60
+            },
+            "mallard": {
+              "medianActive": 0.27436641739304346,
+              "totalDistance": 0.6489800427533797,
+              "movingFrames": 70
+            }
+          }
+        },
+        "2d": {
+          "seconds": 2.3165,
+          "frames": 139,
+          "simDelta": 5.559599999999989,
+          "pauseSeconds": 0.65,
+          "pauseDistance": 0,
+          "rates": {
+            "bird-1": {
+              "medianActive": 0.3249999999999952,
+              "totalDistance": 0.3999999999999986,
+              "movingFrames": 75
+            }
+          }
+        }
+      }
+    }
+  },
+  "fixtureSHA256": "f3fbcbedfcaafcc589275f49625c8868b239314dd2352be8136ca7bb5b51e045",
+  "saveCompatibility": {
+    "archives": 20,
+    "live": [
+      {
+        "previousDays": null,
+        "people": 500,
+        "buildings": 250,
+        "simTime": 12.375,
+        "year": 1,
+        "month": 1,
+        "monthProgress": 0.825,
+        "displayedClock": "12:57",
+        "remainingOfferSeconds": 47.625,
+        "residentsWithCargo": 4,
+        "roundTripSHA256": "7e54d35535f070f72cc7165b2ee689eaf9a2df872fe48f37ad78ff4222757149"
+      },
+      {
+        "previousDays": 3,
+        "people": 500,
+        "buildings": 250,
+        "simTime": 12.375,
+        "year": 1,
+        "month": 1,
+        "monthProgress": 0.06875,
+        "displayedClock": "12:57",
+        "remainingOfferSeconds": 47.625,
+        "residentsWithCargo": 4,
+        "roundTripSHA256": "f5e24e2bb4b622cc97cba4faffc437af45a256f43318fad8fbf1001b42030352"
+      },
+      {
+        "previousDays": 1,
+        "people": 500,
+        "buildings": 250,
+        "simTime": 12.375,
+        "year": 1,
+        "month": 1,
+        "monthProgress": 0.20625,
+        "displayedClock": "12:57",
+        "remainingOfferSeconds": 47.625,
+        "residentsWithCargo": 4,
+        "roundTripSHA256": "a24cde6c247270323a6db89a4b0822a760ff45bf784bb569cd64f6a98a7c13d0"
+      }
+    ]
+  },
+  "largeCity": {
+    "before": {
+      "runs": [
+        {
+          "run": "frames-before",
+          "receipt": "ac0b1c23e5e8f4daf9227158587704cbdddbaee22c36a6ad99a10a81141e7e3e",
+          "wallSeconds": 20.149099999999997,
+          "frames": 76,
+          "fps": 3.7718806299040657,
+          "frameP95ms": 483.29999999999563,
+          "longestFrameMs": 1833.300000000003,
+          "citySeconds": 44.43960000000006,
+          "projectedYearSeconds": 326.4510031593438,
+          "residentsMoving": 88,
+          "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+          "errors": [],
+          "camera": null,
+          "overview": false,
+          "quality": null,
+          "buffer": null,
+          "buildStage": "published baseline"
+        },
+        {
+          "run": "reverse-before",
+          "receipt": "ac0b1c23e5e8f4daf9227158587704cbdddbaee22c36a6ad99a10a81141e7e3e",
+          "wallSeconds": 20.065799999999996,
+          "frames": 86,
+          "fps": 4.285899391003599,
+          "frameP95ms": 566.5,
+          "longestFrameMs": 1066.7000000000007,
+          "citySeconds": 48.157920000000054,
+          "projectedYearSeconds": 299.9999999999996,
+          "residentsMoving": 84,
+          "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+          "errors": [],
+          "camera": [
+            41.6,
+            1.0471975511965976,
+            0.96
+          ],
+          "overview": false,
+          "quality": "high",
+          "buffer": [
+            1440,
+            630
+          ],
+          "buildStage": "published baseline"
+        },
+        {
+          "run": "final-before",
+          "receipt": "ac0b1c23e5e8f4daf9227158587704cbdddbaee22c36a6ad99a10a81141e7e3e",
+          "wallSeconds": 20.232500000000005,
+          "frames": 80,
+          "fps": 3.9540343506734206,
+          "frameP95ms": 450,
+          "longestFrameMs": 1166.5999999999985,
+          "citySeconds": 47.398320000000055,
+          "projectedYearSeconds": 307.34000698758916,
+          "residentsMoving": 90,
+          "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+          "errors": [],
+          "camera": [
+            41.6,
+            1.0471975511965976,
+            0.96
+          ],
+          "overview": false,
+          "quality": "high",
+          "buffer": [
+            1440,
+            630
+          ],
+          "buildStage": "published baseline"
+        }
+      ],
+      "fixtureSha256": "06643e43309c504c7f1ffcae6b834f2086ab3f4e63a48a3b141676974b1c797b",
+      "city": [
+        500,
+        250
+      ],
+      "speed": 4,
+      "viewport": [
+        1440,
+        780
+      ],
+      "method": "Independent Chrome WebGL2 sessions, the same city and home camera after snapshot restore, four-second warmup followed by 20 wall seconds of requestAnimationFrame measurements. Median across reported complete runs; each run includes all frames.",
+      "fps": 3.9540343506734206,
+      "frameP95ms": 483.29999999999563,
+      "projectedYearSeconds": 307.34000698758916
+    },
+    "after": {
+      "runs": [
+        {
+          "run": "frames-after",
+          "receipt": "ac0b1c23e5e8f4daf9227158587704cbdddbaee22c36a6ad99a10a81141e7e3e",
+          "wallSeconds": 20.049199999999995,
+          "frames": 254,
+          "fps": 12.668834666719873,
+          "frameP95ms": 150,
+          "longestFrameMs": 716.6999999999971,
+          "citySeconds": 48.11807999999999,
+          "projectedYearSeconds": 300,
+          "residentsMoving": 72,
+          "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+          "errors": [],
+          "camera": null,
+          "overview": false,
+          "quality": null,
+          "buffer": null,
+          "buildStage": "intermediate before trade logistics fix"
+        },
+        {
+          "run": "reverse-after",
+          "receipt": "ac0b1c23e5e8f4daf9227158587704cbdddbaee22c36a6ad99a10a81141e7e3e",
+          "wallSeconds": 20.0158,
+          "frames": 259,
+          "fps": 12.939777575715185,
+          "frameP95ms": 166.59999999999854,
+          "longestFrameMs": 833.4000000000015,
+          "citySeconds": 48.03791999999995,
+          "projectedYearSeconds": 300.0000000000003,
+          "residentsMoving": 91,
+          "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+          "errors": [],
+          "camera": null,
+          "overview": false,
+          "quality": null,
+          "buffer": null,
+          "buildStage": "intermediate before trade logistics fix"
+        },
+        {
+          "run": "final-after",
+          "receipt": "ac0b1c23e5e8f4daf9227158587704cbdddbaee22c36a6ad99a10a81141e7e3e",
+          "wallSeconds": 20.0325,
+          "frames": 200,
+          "fps": 9.98377636340946,
+          "frameP95ms": 166.70000000000437,
+          "longestFrameMs": 966.5999999999985,
+          "citySeconds": 48.077999999999946,
+          "projectedYearSeconds": 300.00000000000034,
+          "residentsMoving": 91,
+          "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5, Unspecified Version)",
+          "errors": [],
+          "camera": [
+            41.6,
+            1.0471975511965976,
+            0.96
+          ],
+          "overview": false,
+          "quality": "high",
+          "buffer": [
+            1440,
+            630
+          ],
+          "buildStage": "release candidate (final)"
+        }
+      ],
+      "fixtureSha256": "06643e43309c504c7f1ffcae6b834f2086ab3f4e63a48a3b141676974b1c797b",
+      "city": [
+        500,
+        250
+      ],
+      "speed": 4,
+      "viewport": [
+        1440,
+        780
+      ],
+      "method": "Independent Chrome WebGL2 sessions, the same city and home camera after snapshot restore, four-second warmup followed by 20 wall seconds of requestAnimationFrame measurements. Median across reported complete runs; each run includes all frames.",
+      "fps": 12.668834666719873,
+      "frameP95ms": 166.59999999999854,
+      "projectedYearSeconds": 300.0000000000003
+    }
+  }
+}

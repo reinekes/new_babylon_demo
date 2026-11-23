@@ -1,3 +1,4 @@
+import {motionRateFor} from './calendar.js';
 import {ensureBreweryEntityId} from './causal-facts.js';
 import {isStrictSumer} from './scenario-profiles.js';
 import {recordSunlightFeast} from './sunlight-gathering.js';
@@ -130,11 +131,11 @@ function enlist(s,q,c,kind,target,source=null,material=null){
  if(kind==='guest'){const net=networkFor(s),center=festivalCourtLayout(s,net,target)?.center,approach=center&&routeBetween(s,path.at(-1).key,center.key);if(!approach)return false;path.push(...approach.slice(1).map(p=>({x:p.x,y:p.y,key:p.key})));}
  q.actors.push({id:c.id,kind,stage:kind==='carrier'?'pickup':'arriving',source,material,load:0,route:path,routeIndex:0,role:c.role||'auto'});c.phase='festival';c.route=[];c.routeIndex=0;invalidateAssignments(s);return true;}
 function connected(s,a){const net=networkFor(s);return a.route.every((p,i)=>net.nodes.has(p.key)&&(!i||net.graph.get(a.route[i-1].key)?.has(p.key)));}
-function walk(s,c,a,dt){let remaining=dt;while(remaining>1e-8){const target=a.route[a.routeIndex];if(!target)return true;const d=distance(c,target),speed=1.05*roadSpeed(s,c,target),travel=d/speed;if(travel<=remaining+1e-8){c.x=target.x;c.y=target.y;a.routeIndex++;remaining-=travel;}else{c.x+=(target.x-c.x)*remaining/travel;c.y+=(target.y-c.y)*remaining/travel;return false;}}return a.routeIndex>=a.route.length;}
+function walk(s,c,a,dt){let remaining=dt*motionRateFor(s);while(remaining>1e-8){const target=a.route[a.routeIndex];if(!target)return true;const d=distance(c,target),speed=1.05*roadSpeed(s,c,target),travel=d/speed;if(travel<=remaining+1e-8){c.x=target.x;c.y=target.y;a.routeIndex++;remaining-=travel;}else{c.x+=(target.x-c.x)*remaining/travel;c.y+=(target.y-c.y)*remaining/travel;return false;}}return a.routeIndex>=a.route.length;}
 const eveningAt=t=>hourOf(t)>=21||hourOf(t)<3;
 const elapsedFestival=(s,q)=>q.started===null?0:Math.max(q.elapsed||0,s.simTime-q.started);
 export const festivalSecondsLeft=(s,q)=>Math.max(0,FESTIVAL_SECONDS-elapsedFestival(s,q));
-export function advanceFestival(s,dt,{ceremony=false}={}){
+export function advanceFestival(s,dt,{ceremony=false,walkSeconds=dt}={}){
  initializeFestival(s);if(!Number.isFinite(dt)||dt<=0)return;beginFirstBeer(s);const q=s.festival;if(!q)return;const cost=costFor(q),gatheringAt=t=>firstBeer(q)||eveningAt(t),gathering=()=>gatheringAt(s.simTime);
  const stores=new Set(stockStores(s).map(buildingKey));for(const [key,kind]of Object.entries(q.sourceKinds||{}))if(kind==='output'&&s.buildings.some(b=>buildingKey(b)===key&&readyBrewery(b)))stores.add(key);
  if(s.funeral||s.lost||!s.buildings.some(b=>buildingKey(b)===q.temple&&readyVenue(b,q))||Object.keys(q.allocations).some(k=>!stores.has(k))){finishFestival(s);return;}
@@ -156,7 +157,7 @@ export function advanceFestival(s,dt,{ceremony=false}={}){
   const limit=guestLimit(s,q);for(const c of s.citizens)if(q.actors.length<limit&&!q.rewarded.includes(c.id)&&eligibleGuest(c,q)&&(firstBeer(q)?['home','working','resting'].includes(c.phase)&&(c.hunger||0)<30:['home','resting'].includes(c.phase)&&c.mealEaten>=mealRation(c)*.95))enlist(s,q,c,'guest',q.temple);
  }
  for(const a of [...q.actors]){
-  const c=s.citizens.find(c=>c.id===a.id);if(!c)continue;if(a.stage==='dancing')continue;if(!walk(s,c,a,dt))continue;
+  const c=s.citizens.find(c=>c.id===a.id);if(!c)continue;if(a.stage==='dancing')continue;if(!walk(s,c,a,walkSeconds))continue;
   if(a.kind==='carrier'){
    if(a.stage==='pickup'){
     a.load=takeReserved(s,q.sources,a.source,a.material,6);if(a.load<=1e-7){release(s,a);q.actors=q.actors.filter(v=>v!==a);continue;}

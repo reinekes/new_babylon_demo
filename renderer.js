@@ -1,4 +1,4 @@
-import {BASE_TIME_RATE} from './calendar.js';
+import {BASE_TIME_RATE,motionTimeFor} from './calendar.js';
 import {roadsideNature,sceneryObstacleKey} from './street-obstacles.js';
 import {resourceDisplayLayout} from './resource-layout.js';
 import {cartParking,cartHeading,drawFreightCart} from './porter-cart-art.js';
@@ -214,7 +214,7 @@ export class Renderer{
   const next=e.route?.[e.routeIndex||0],previous=e.route?.[Math.max(0,(e.routeIndex||0)-1)];
   const direction=next&&Math.hypot(next.x-e.x,next.y-e.y)>.001?next:previous;
   const facing=direction?((next===direction?1:-1)*((direction.x-e.x)-(direction.y-e.y))>=0?1:-1):1;
-  const moving=['arriving','departing'].includes(e.phase),step=this.reduce||!moving?0:Math.sin((this.state.simTime||0)*6),bob=Math.abs(step)*q;
+  const moving=['arriving','departing'].includes(e.phase),step=this.reduce||!moving?0:Math.sin(motionTimeFor(this.state)*6),bob=Math.abs(step)*q;
   c.save();c.translate(p.x,p.y);c.scale(facing,1);
   c.fillStyle='#5d614632';c.beginPath();c.ellipse(-2*q,5*q,15*q,4*q,0,0,7);c.fill();
   for(const [x,offset]of [[-10,1],[0,-1]]){this.line([[x*q,-3*q],[(x+step*offset*2)*q,8*q]],'#8a7353',2*q);this.line([[(x+4)*q,-2*q],[(x+4-step*offset*2)*q,9*q]],'#a58b63',1.8*q);}
@@ -300,7 +300,7 @@ export class Renderer{
   }
  }
  animal(e){
-  const p=this.point(e.x,e.y),q=this.s,c=this.ctx,t=this.reduce?0:(this.state.simTime||0),step=this.reduce||e.walking===false?0:Math.sin(e.step??t*4),color={goat:'#c4bb96',gazelle:'#b99b6f',jackal:'#a39270'}[e.kind]||'#b99b6f';
+  const p=this.point(e.x,e.y),q=this.s,c=this.ctx,t=this.reduce?0:motionTimeFor(this.state),step=this.reduce||e.walking===false?0:Math.sin(e.step??t*4),color={goat:'#c4bb96',gazelle:'#b99b6f',jackal:'#a39270'}[e.kind]||'#b99b6f';
   c.save();
   if(e.kind!=='bird'){c.fillStyle='#3f57452b';c.beginPath();c.ellipse(p.x,p.y+1.5*q,(e.kind==='mouse'?2.5:e.kind==='cat'?5:7)*q,1.8*q,0,0,7);c.fill();}
   if(e.kind==='sheep'){
@@ -357,9 +357,9 @@ export class Renderer{
   const rain=this.rainReaction?.id===person.id?this.rainReaction.phase:null;
   const c=this.ctx,q=this.s*(person.age<16?.82:1.3),p=this.point(person.x,person.y,person.homeVisit?person.homeVisit.height*10:person.onBridge?5:0);
   const seated=Number.isFinite(person.homeVisit?.seatHeight);
-  const playTime=person.miracleContact?this.state?.miracleCelebration?.elapsed||0:(this.state?.simTime||0)+(person.celebrating||person.festivalTorch?this.state?.festival?.elapsed||0:person.mourningTorch?this.state?.funeral?.timer||0:0);
+  const playTime=person.miracleContact?this.state?.miracleCelebration?.elapsed||0:motionTimeFor(this.state)+(person.celebrating||person.festivalTorch?this.state?.festival?.elapsed||0:person.mourningTorch?this.state?.funeral?.timer||0:0);
   const dance=person.celebrating&&!this.reduce?Math.sin(playTime*4+(Number(person.id)||0))*.7:0;p.y-=Math.abs(dance)*q;
-  const stride=person.walking&&!this.reduce?Math.sin((person.festivalTorch?playTime*4:person.step||0)+(Number(person.id)||0))*1.45:0;
+  const stride=person.walking&&!this.reduce?Math.sin((person.festivalTorch||person.homeVisit?motionTimeFor(this.state)*4:person.step||0)+(Number(person.id)||0))*1.45:0;
   c.save();
   if(person.playing&&person.id%2===0){c.fillStyle='#b4804f';c.beginPath();c.arc(p.x+6*q,p.y-Math.abs(Math.sin(playTime*3))*3*q,1.8*q,0,7);c.fill();}
   c.fillStyle='#4e543b40';c.beginPath();c.ellipse(p.x+q,p.y+q,3.8*q,1.7*q,0,0,7);c.fill();

@@ -1,3 +1,4 @@
+import {motionRateFor} from './calendar.js';
 import {DAY_SECONDS} from './city-life.js';
 
 const window=(open,close)=>Object.freeze({open,close});
@@ -21,17 +22,18 @@ export function isWorkplaceOpen(type,time){
 }
 
 const residentMinute=id=>(Math.imul((id||0)>>>0,17)>>>0)%36;
-export function residentDepartureHour(type,id){
- // Reserve the final five minutes for the walk from the room to the real sill.
+export function residentDepartureHour(type,id,state){
+ // Leave the same walking time from the room to the furthest sill at either calendar pace.
  const person=(id||0)>>>0,minute=Math.imul(person,149)>>>0;
  const slot=minute%241,fraction=(Math.floor(person/241)*.6180339887498949)%1;
- return 5+(slot===240?slot-fraction:slot+fraction)*(235/240)/60;
+ const lastStartMinutes=240-5/motionRateFor(state);
+ return 5+(slot===240?slot-fraction:slot+fraction)*(lastStartMinutes/240)/60;
 }
 export function residentReturnHour(type,id){
  return (workplaceHours(type)||day).close-(residentMinute(id)%7)*.04;
 }
 
-export function canDepartForWork(type,id,time){
+export function canDepartForWork(type,id,time,state){
  const hour=workHourAt(time);
- return hour>=residentDepartureHour(type,id)&&hour<(workplaceHours(type)||day).close;
+ return hour>=residentDepartureHour(type,id,state)&&hour<(workplaceHours(type)||day).close;
 }

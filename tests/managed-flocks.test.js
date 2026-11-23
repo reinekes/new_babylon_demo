@@ -144,3 +144,24 @@ test('the flock changes shape on the move and sheep pause at different moments',
  assert.ok(mixedAtPasture,'some sheep graze while others are still moving');
  assert.ok(movingBeforePasture,'the gate departure is staggered');
 });
+
+test('short calendar gives the flock time to walk, graze near the gate and return by nightfall',async()=>{
+ const {useOneDayCalendar}=await import('../calendar.js');
+ const {lightingAt}=await import('../city-life.js');
+ const city=useOneDayCalendar(createGame({start:'established',seed:137}));
+ for(const footprint of [1,2]){
+  city.buildings=[{type:'sheepfold',x:13,y:7,footprint,level:3,rotation:1}];
+  const centerX=13+(footprint-1)/2,centerY=7+(footprint-1)/2,radius=footprint===2?5.5/6:2.5/6;
+  let previous,visits=new Set(),peak=0;
+  for(let n=0;n<=120;n++){
+   city.simTime=n*.5;
+   const hour=lightingAt(city.simTime).hour;
+   const sheep=animalsFor(city).find(a=>a.kind==='sheep');
+   if(hour<6.5||hour>=17.5)assert.ok(Math.abs(sheep.x-centerX)<=radius&&Math.abs(sheep.y-centerY)<=radius);
+   if(previous)peak=Math.max(peak,Math.hypot(previous.x-sheep.x,previous.y-sheep.y)*6*.6/.5);
+   visits.add(sheep.behavior);previous=sheep;
+  }
+  assert.deepEqual(visits,new Set(['resting','walking','grazing']));
+  assert.ok(peak>=.209&&peak<=.241,'walking pace in scene metres per real second: '+peak);
+ }
+});

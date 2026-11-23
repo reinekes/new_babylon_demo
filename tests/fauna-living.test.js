@@ -128,3 +128,17 @@ test('visual gazelles extend wild habitat herds without adding hunting targets',
   }
  }
 });
+
+test('free wildlife and huntable prey cover the same distance per wall second after calendar compression',async()=>{
+ const {useOneDayCalendar}=await import('../calendar.js');
+ const legacy=createGame({start:'established',seed:137}),fast=useOneDayCalendar(structuredClone(legacy));
+ for(const seconds of [0,1,4,12,37]){
+  legacy.simTime=seconds/8;fast.simTime=seconds*.6;
+  const previous=naturalAnimalsFor(legacy),current=naturalAnimalsFor(fast);
+  assert.deepEqual(current.map(p=>p.id),previous.map(p=>p.id));
+  for(const [i,p] of current.entries()){
+   assert.ok(Math.hypot(p.x-previous[i].x,p.y-previous[i].y)<1e-9,p.id);
+   assert.equal(p.walking,previous[i].walking);
+  }
+ }
+});

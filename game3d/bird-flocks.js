@@ -1,3 +1,4 @@
+import {motionTimeFor} from '../calendar.js';
 import {worldWidth,worldHeight,riverPoint,riverLocal,riverFlowSign,riverLength,isDryPoint} from '../world.js';
 import {surfaceElevation,TILE} from '../district3d/terrain.js';
 import {sceneryClear} from './nature.js';
@@ -80,7 +81,8 @@ export function createBirdFlocks(B,scene,{tier='balanced',state}={}){
   const root=new B.TransformNode(`valley-bird-${index++}`,scene);root.metadata={ambientSpecies:'valley-sky-bird',decorative:true};const torso=body.createInstance(`${root.name}-body`),left=wing.createInstance(`${root.name}-left`),right=wing.createInstance(`${root.name}-right`);
   for(const m of [torso,left,right]){m.setEnabled(true);m.parent=root;m.isPickable=false;meshes.push(m);}left.position.x=-.06;right.position.x=.06;left.scaling.x=-1;birds.push({root,left,right,flock,member});
  }}
- function update(s,time=s?.simTime||0){
+ function update(s,simTime=s?.simTime||0){
+  const time=motionTimeFor(s,simTime);
   if(disposed)return;
   rebuild(s);
   if(lastBuildings!==s?.buildings||lastBuildingCount!==(s?.buildings?.length??0)||landing.length!==plan[0].count){

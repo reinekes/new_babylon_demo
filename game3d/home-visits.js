@@ -1,6 +1,7 @@
 // Local coordinates are metres from the centre of the occupied plot.
 // The same door and furniture have different positions in the procedural fallback.
 import {buildingKey,isResidence} from '../definitions.js';
+import {motionRateFor,motionTimeFor} from '../calendar.js';
 import {DAY_SECONDS} from '../city-life.js';
 import {weatherAt} from '../environment.js';
 import {canDepartForWork,residentDepartureHour,workHourAt} from '../work-schedule.js';
@@ -52,8 +53,8 @@ function layoutFor(kind,catalogue){
  const result={gate:point(gate,2.74),inner,door,sill,court,bench:benchWay,benchYaw,benchHeight,roof:roof.length?[inner,door,sill,court,...roof]:null,ground};
  layouts.set(key,result);return result;
 }
-// Doorways, ladder paths and pauses are timed together in the city's daily
-// routine. Twenty seconds on the visit timeline represent one in-game hour.
+// Route lengths are metres. Walks and ladder climbs use the travel clock,
+// while departures and opening hours follow the day in the city.
 const hourSeconds=20,simulationSecondsPerVisitSecond=DAY_SECONDS/(24*hourSeconds);
 const length=(a,b)=>Math.hypot(a.x-b.x,a.z-b.z,a.height-b.height);
 function track(points){
@@ -126,12 +127,13 @@ function followVisit(out,back,elapsed,hold,seat){
  if(t<back.duration)return {...follow(back,t),stage:'in',returnPoints:back.points.slice(Math.max(1,back.ends.findIndex(end=>end>=t)))};
  return null;
 }
-function visitAt(l,clock,b,id,drySince){
- const offset=houseOffset(b),cycle=Math.floor((clock+offset)/117),elapsed=clock+offset-cycle*117,start=(clock-elapsed)*simulationSecondsPerVisitSecond;
+function visitAt(l,clock,b,id,drySince,s,secondsPerHour){
+ const offset=houseOffset(b),cycle=Math.floor((clock+offset)/117),elapsed=clock+offset-cycle*117,start=(s.simTime||0)-elapsed*DAY_SECONDS/(24*secondsPerHour);
  const startHour=workHourAt(start),endHour=b.type==='communalHouse'?communalDusk:19;
- if(startHour<6.15||startHour>=endHour||clock-elapsed<drySince||!canDepartForWork(undefined,id,start)||(startHour-residentDepartureHour(undefined,id))*hourSeconds<morningWindow)return null;
- const roof=!!l.roof&&((cycle+id+b.x+b.y)&1)===1,{out,back}=excursion(l,roof),hold=7+(hash(id+cycle)%6);
- if(startHour+(out.duration+hold+back.duration)/hourSeconds>=endHour)return null;
+ if(startHour<6.15||startHour>=endHour||clock-elapsed<drySince||!canDepartForWork(undefined,id,start,s)||(startHour-residentDepartureHour(undefined,id,s))*secondsPerHour<morningWindow)return null;
+ const roof=!!l.roof&&((cycle+id+b.x+b.y)&1)===1,{out,back}=excursion(l,roof),available=(endHour-startHour)*secondsPerHour-out.duration-back.duration;
+ const hold=Math.min(7+(hash(id+cycle)%6),available);
+ if(hold<2)return null;
  return followVisit(out,back,elapsed,hold,{yaw:roof?.12:l.benchYaw,stage:roof?'roof':l.roof?'bench':'mat',seatHeight:roof?.13:l.benchHeight-out.points.at(-1).height+.085});
 }
 // A morning visit uses the simulation clock and stable resident ID. Reopening a
@@ -184,7 +186,7 @@ function eveningVisit(layout,slot,clock){
 export function createHomeVisits(homeAsset=()=>true,homePlatform=()=>null){
  let previous=new Map(),transits=new Map(),seats=new Map(),evenings=new Map(),lastState=null,lastClock=-Infinity,wasWet=false,drySince=-Infinity,wetSince=-Infinity;
  return function homeVisits(s,people,weather){
-  const clock=(s.simTime||0)/simulationSecondsPerVisitSecond;
+  const clock=motionTimeFor(s)/simulationSecondsPerVisitSecond,secondsPerHour=hourSeconds*motionRateFor(s);
   const reset=s!==lastState||clock<lastClock||clock-lastClock>40;
   const wet=(weather||weatherAt(s).type)==='rain';
   if(reset){previous.clear();transits.clear();seats.clear();evenings.clear();drySince=wetSince=-Infinity;}
@@ -217,10 +219,12 @@ export function createHomeVisits(homeAsset=()=>true,homePlatform=()=>null){
    for(const [key,slot] of openings)seats.set(key,slot);
   }
   const hour=workHourAt(s.simTime||0),social=new Map();
-  const morning=hour>=5&&hour<=9+morningWindow/hourSeconds&&!s.funeral&&!s.miracleCelebration;
+  const morning=hour>=5&&hour<=9+morningWindow/secondsPerHour&&!s.funeral&&!s.miracleCelebration;
   let carers=morning?homeCaregivers(residents):null;
-  if(!wet&&hour>=communalDusk&&hour<communalClose&&(!s.funeral||s.funeral.scope==='family')){
-   const dusk=clock-(hour-communalDusk)*hourSeconds;
+  // On short days, leave enough time for the round trip to the communal roof.
+  const gatheringOpens=secondsPerHour<hourSeconds?communalDusk-1.5:communalDusk;
+  if(!wet&&hour>=gatheringOpens&&hour<communalClose&&(!s.funeral||s.funeral.scope==='family')){
+   const dusk=clock-(hour-communalDusk)*secondsPerHour;
    const day=Math.floor(((s.simTime||0)+DAY_SECONDS/3)/DAY_SECONDS);
    for(const [key,b] of homes){
     if(b.type!=='communalHouse')continue;
@@ -242,9 +246,11 @@ export function createHomeVisits(homeAsset=()=>true,homePlatform=()=>null){
      ids.sort((a,b)=>hash(a^Math.imul(day,0x9e3779b1))-hash(b^Math.imul(day,0x9e3779b1)));
      const used=new Set([...group.slots.values()].map(slot=>slot.index));
      for(const id of ids){if(group.slots.has(id)||used.size===3)continue;
-      const index=[0,1,2].find(i=>!used.has(i)),start=Math.max(drySince,dusk+1.2+index*1.6,reset?-Infinity:clock);
-      const finish=dusk+(communalClose-communalDusk)*hourSeconds-index*1.1;
+      const index=[0,1,2].find(i=>!used.has(i)),stagger=(1.2+index*1.6)*secondsPerHour/hourSeconds;
+      const finish=dusk+(communalClose-communalDusk)*secondsPerHour-index*1.1*secondsPerHour/hourSeconds;
       const {out,back}=socialRoute(houseLayout(homes.get(key)),index);
+      const scheduled=Math.min(dusk+stagger,finish-out.duration-back.duration-4);
+      const start=Math.max(drySince,scheduled,reset?-Infinity:clock);
       if(finish-start<out.duration+back.duration+3)break;
       group.slots.set(id,{start,finish,index});used.add(index);
      }
@@ -293,12 +299,12 @@ export function createHomeVisits(homeAsset=()=>true,homePlatform=()=>null){
    }else if(atHome&&!real&&!loaded(c)){
     const slot=social.get(c.home)?.slots.get(c.id);
     if(morning&&canStepOut&&clock>=indoorsUntil){
-     const elapsed=(hour-residentDepartureHour(undefined,c.id))*hourSeconds;
+     const elapsed=(hour-residentDepartureHour(undefined,c.id,s))*secondsPerHour;
      const sheltered=wet||prior?.p?.sheltered;
      if(elapsed>=0&&elapsed<morningWindow&&(prior?.p?.sheltered||clock-elapsed>=(wet?wetSince:drySince)))p=morningVisit(houseLayout(b),c.id,elapsed,sheltered);
     }
     if(slot)p=eveningVisit(houseLayout(b),slot,clock);
-    else if(!p&&!wet&&canStepOut&&clock>=indoorsUntil&&seats.get(c.home)?.id===c.id)p=visitAt(houseLayout(b),clock,b,c.id,drySince);
+    else if(!p&&!wet&&canStepOut&&clock>=indoorsUntil&&seats.get(c.home)?.id===c.id)p=visitAt(houseLayout(b),clock,b,c.id,drySince,s,secondsPerHour);
    }
    if(atHome||returning(c.phase)||p)next.set(c.id,{phase:c.phase,home:c.home,port:{x:c.x,y:c.y},indoorsUntil,p});
    if(!p)continue;

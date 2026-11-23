@@ -1,3 +1,4 @@
+import {motionTimeFor} from '../calendar.js';
 import {groundHeading} from '../game3d/ground-turn.js';
 import {visibleCitizens} from '../workforce.js';
 import {animalsFor} from '../fauna.js';
@@ -258,10 +259,11 @@ export function createDistrictActors(B,scene,materials,floorHeight=(x,y,ground)=
    if(!a){a=human(c,look);people.set(c.id,a);}a.root.setEnabled(true);poseHuman(a,c,t,look,s);
   }
   for(const [id,a]of people)if(!seen.has(id)){a.root.setEnabled(false);a.snap=true;}
+  const animalTime=motionTimeFor(s,t);
   for(const c of fauna){
    seenAnimals.add(c.id);let a=animals.get(c.id);
    if(focus?.animalId!==c.id&&!inView(c)){if(a){a.root.setEnabled(false);a.snap=true;}continue;}
-   if(!a){a=animal(c);animals.set(c.id,a);}a.root.setEnabled(true);poseAnimal(a,c,t,s);
+   if(!a){a=animal(c);animals.set(c.id,a);}a.root.setEnabled(true);poseAnimal(a,c,animalTime,s);
   }
   for(const [id,a]of animals)if(!seenAnimals.has(id)){a.root.setEnabled(false);a.snap=true;}
   // Residents at home keep their pooled meshes; departed citizens release theirs.

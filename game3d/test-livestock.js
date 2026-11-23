@@ -1,3 +1,4 @@
+import {ambientTravelRateFor} from '../fauna.js';
 import {groundHeading,groundStep} from './ground-turn.js';
 import {planPasture,segmentDistance} from './herd-pastures.js';
 import {loadModel} from './asset-loading.js';
@@ -384,6 +385,7 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map(),cl
  function update(state,dt,paused,speed,otherHerd=[]){
   if(!ready||disposed)return;
   const elapsed=paused?0:Math.min(.1,Math.max(0,dt))*speed;
+  const travelTime=elapsed*ambientTravelRateFor(state);
   clock+=elapsed;
   const changed=buildings!==state.buildings||count!==state.buildings.length||world!==state.world;
   if(changed){
@@ -430,7 +432,7 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map(),cl
     for(const member of herd.members){
      const i=transfer.members.indexOf(member);
      if(i<0){
-      if(herd.kind==='bull'&&member.index<herd.size)roam(herd,member,state,elapsed);
+      if(herd.kind==='bull'&&member.index<herd.size)roam(herd,member,state,travelTime);
       else member.root.setEnabled(false);
       continue;
      }
@@ -441,7 +443,7 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map(),cl
      if(herd.kind==='bull')for(const mesh of member.owned)if(mesh.name.endsWith('Udder and four teats'))mesh.setEnabled(!transfer.targets[i].young);
      const goal=path.points[path.next];
      if(goal&&elapsed&&clock>transfer.start+path.delay){
-      const next=groundStep(member.point,goal,member.root.rotation.y,elapsed*PACE,member.turnRadius/6);
+      const next=groundStep(member.point,goal,member.root.rotation.y,travelTime*PACE,member.turnRadius/6);
       // The approach was planned as straight segments. Check the bend too,
       // up to the outer gate. Inside the pen the stall is the intended target.
       if(path.next<path.outsideEndsAt&&!clear(state,member.point,next)){
@@ -479,13 +481,13 @@ export function createTestLivestock(B,scene,meshes,dry,clear,shared=new Map(),cl
     herd.pastureTrip=planPasture(herd,state,nearby,otherHerd,clearGround,zone=>zoneClear(state,zone,dry,clearGround));
     herd.grazeUntil=clock+8+herd.index;
    }
-   if(herd.pastureTrip){drivePasture(herd,state,elapsed);continue;}
+   if(herd.pastureTrip){drivePasture(herd,state,travelTime);continue;}
    for(const member of herd.members){
     if(member.index>=herd.size||!member.point&&clock-(herd.departedAt??-Infinity)<8){member.root.setEnabled(false);continue;}
     if(member.root.metadata.herdDestination&&herd.kind==='bull')for(const mesh of member.owned)if(mesh.name.endsWith('Udder and four teats'))mesh.setEnabled(true);
     delete member.root.metadata.herdDestination;
     member.root.scaling.setAll(1);
-    roam(herd,member,state,elapsed);
+    roam(herd,member,state,travelTime);
    }
 
   }

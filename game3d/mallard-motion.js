@@ -1,3 +1,4 @@
+import {ambientTravelRateFor} from '../fauna.js';
 import {riverLength,riverLocal,riverPoint,signedRiverDistance,onBridge} from '../world.js';
 import {TILE} from '../district3d/terrain.js';
 import {visualSurfaceElevation} from './lake-shore.js';
@@ -15,7 +16,7 @@ const stopKinds={feeding:{duration:2.8,delay:1.2},scanning:{duration:2.3,delay:1
 // and swim back along the same bend past two feeding patches.
 export function mallardRoute(state,isClear){
  const home=state.buildings.find(b=>b.type==='house')??{x:8,y:8};
- const length=riverLength(state),center=riverLocal(home.x,home.y,state).along;
+ const length=riverLength(state),center=riverLocal(home.x,home.y,state).along,pace=ambientTravelRateFor(state);
  const preferred=Math.sign(signedRiverDistance(home.x,home.y,state))||1;
  for(const reach of [4.8,3.7,2.8,1.7,1.05])for(const side of [preferred,-preferred])for(const shift of [0,3,-3,6,-6,9,-9,12,-12]){
   const along=Math.max(reach+1.55,Math.min(length-reach-2.55,center+shift));
@@ -32,7 +33,7 @@ export function mallardRoute(state,isClear){
    if(prev){
     const segment=TILE*Math.hypot(p.x-prev.x,p.y-prev.z);
     distance+=segment;
-    time+=segment/mix(.52,.77,floating);
+    time+=segment/(pace*mix(.52,.77,floating));
    }
    route.push({x:p.x,z:p.y,y,depth,time,distance});
   }

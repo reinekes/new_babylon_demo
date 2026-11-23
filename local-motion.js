@@ -1,3 +1,4 @@
+import {motionRateFor} from './calendar.js';
 import {canDepartForWork,residentDepartureHour,workHourAt} from './work-schedule.js';
 import {DAY_SECONDS} from './city-life.js';
 import {isDryPoint,terrain} from './world.js';
@@ -36,4 +37,20 @@ export function loopMotion(route,time,speed=.55,pause=1.2){
  }
  return {...route[0],walking:false,heading:1};
 }
-export function childPlay(s,c){if(c.age<3||c.age>=16||c.phase!=='home'||!canDepartForWork(undefined,c.id,s.simTime)||s.funeral?.actors.some(a=>a.id===c.id))return null;let cache=plans.get(s);if(cache?.buildings!==s.buildings||cache?.count!==s.buildings.length){cache={buildings:s.buildings,count:s.buildings.length,homes:new Map(),ports:new Map(networkFor(s).ports.map(p=>[`${p.building.x},${p.building.y}`,p]))};plans.set(s,cache);}if(!cache.homes.has(c.home)){const port=cache.ports.get(c.home)||c;cache.homes.set(c.home,safeLoop(s,port,.6));}const motion=loopMotion(cache.homes.get(c.home),(workHourAt(s.simTime)-residentDepartureHour(undefined,c.id))*DAY_SECONDS/24,.6+(c.id%3)*.06,1.3);return {...motion,playing:true,phase:'playing'};}
+export function childPlay(s,c){
+ if(c.age<3||c.age>=16||c.phase!=='home'||!canDepartForWork(undefined,c.id,s.simTime,s)||s.funeral?.actors.some(a=>a.id===c.id))return null;
+ let cache=plans.get(s);
+ if(cache?.buildings!==s.buildings||cache?.count!==s.buildings.length){
+  cache={buildings:s.buildings,count:s.buildings.length,homes:new Map(),ports:new Map(networkFor(s).ports.map(p=>[`${p.building.x},${p.building.y}`,p]))};
+  plans.set(s,cache);
+ }
+ if(!cache.homes.has(c.home)){
+  const port=cache.ports.get(c.home)||c;cache.homes.set(c.home,safeLoop(s,port,.6));
+ }
+ const elapsed=(workHourAt(s.simTime)-residentDepartureHour(undefined,c.id,s))*DAY_SECONDS/24;
+ // A child already outside when a saved city switches pace keeps their spot on the loop.
+ const beforeChange=Math.max(0,Math.min(elapsed,(s.motionTimeOrigin??-Infinity)-(s.simTime-elapsed)));
+ const playTime=beforeChange+(elapsed-beforeChange)*motionRateFor(s);
+ const motion=loopMotion(cache.homes.get(c.home),playTime,.6+(c.id%3)*.06,1.3);
+ return {...motion,playing:true,phase:'playing'};
+}

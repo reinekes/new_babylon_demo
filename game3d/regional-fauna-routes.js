@@ -1,5 +1,5 @@
 import {riverPoint,riverLength,onBridge} from '../world.js';
-import {calendarAt,calendarRateFor,MONTH_SECONDS} from '../calendar.js';
+import {calendarAt,calendarRateFor,motionRateFor,MONTH_SECONDS} from '../calendar.js';
 import {isStrictSumer} from '../scenario-profiles.js';
 import {surfaceElevation} from '../district3d/terrain.js';
 import {WATER_HEIGHT,waterDepth} from './water.js';
@@ -69,7 +69,10 @@ function pelicanPose(state,site){
  const edge=.13;
  const swim=Math.max(0,Math.min(1,(winter-edge)/(1-2*edge)));
  const swimSeconds=3*MONTH_SECONDS*(1-2*edge)/calendarRateFor(state);
- const phase=swim*swimSeconds;
+ const elapsed=swim*swimSeconds;
+ // A city opened mid-winter keeps the swimming position from that save.
+ const sinceChange=Math.max(0,(state.simTime||0)-(state.motionTimeOrigin||0));
+ const phase=elapsed-(1-motionRateFor(state))*Math.min(elapsed,sinceChange);
  const rhythm=phase*.63;
  // Paddle, glide, then slow briefly when the bill drops toward the water.
  const angle=(phase+.78*Math.sin(rhythm))/48*Math.PI*2;

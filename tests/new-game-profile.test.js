@@ -44,7 +44,19 @@ test('a new city can build its first trade route and receive both imports with s
   const result=build(city,type,x,y);
   assert.ok(result.ok,result.reason);
  }
- for(let i=0;i<1600&&marketStatus(city);i++)step();
+ let mixedLoad=false,builderLoad=false;
+ for(let i=0;i<1600&&marketStatus(city);i++){
+  step();
+  if(mixedLoad&&builderLoad)continue;
+  for(const c of city.citizens){
+   const load=Object.values(c.buildCargo||{}).filter(n=>n>0);
+   if(!load.length||!((!mixedLoad&&load.length>1)||(!builderLoad&&c.siteDuty==='builder')))continue;
+   assert.ok(load.reduce((sum,n)=>sum+n,0)<=(c.freightCart?12:6));
+   const raw=encode(city),saved=decode(raw);assert.ok(saved);assert.equal(encode(saved),raw);
+   mixedLoad||=load.length>1;builderLoad||=c.siteDuty==='builder';
+  }
+ }
+ assert.ok(mixedLoad&&builderLoad,'the city used mixed physical loads and a builder collected reserved stock');
  assert.equal(marketStatus(city),'');
  const before={wood:city.resources.wood,stone:city.resources.stone};
  for(const material of ['wood','stone']){

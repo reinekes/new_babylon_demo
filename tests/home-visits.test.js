@@ -255,14 +255,37 @@ test('a rainy morning reaches just the covered door, and rain sends a courtyard 
 });
 
 
-test('the last morning starter crosses the actual sill of every house by nine',()=>{
+test('the last morning starter crosses the actual sill of every house by nine in both calendars',async()=>{
+ const {useOneDayCalendar}=await import('../calendar.js');
  const last=Array.from({length:500},(_,id)=>id).sort((a,b)=>residentDepartureHour(undefined,b)-residentDepartureHour(undefined,a))[0];
- for(const [b,sill] of [[house,.33],[{...house,level:2},-.46],[{...house,level:3},-.19],[{...house,reedCamp:true},1.40],[{...house,type:'communalHouse'},-1.92]]){
-  const state=city(b);state.citizens[0].id=last;const view=createHomeVisits(),start=residentDepartureHour(undefined,last);let crossed=false;
+ for(const shortDay of [false,true])for(const [b,sill] of [[house,.33],[{...house,level:2},-.46],[{...house,level:3},-.19],[{...house,reedCamp:true},1.40],[{...house,type:'communalHouse'},-1.92]]){
+  const state=city(b);if(shortDay)useOneDayCalendar(state);state.citizens[0].id=last;const view=createHomeVisits(),start=residentDepartureHour(undefined,last,state);let crossed=false;
   for(let h=start;h<=9;h+=.004){
    state.simTime=((h-8+24)%24)*20*simulationSecondsPerVisitSecond;const [a]=view(state,[],'sunny');
    if(a?.homeVisit?.morning&&(a.y-b.y-(b.type==='communalHouse'?.5:0))*6>=sill){crossed=true;break;}
   }
   assert.ok(crossed,b.type+' '+b.level);
  }
+});
+
+
+test('the short day keeps metre-per-second doorway travel and leaves time to reach the communal roof at dusk',async()=>{
+ const {BASE_TIME_RATE,useOneDayCalendar}=await import('../calendar.js');
+ const s=useOneDayCalendar(city()),c=s.citizens[0],visit=createHomeVisits();
+ c.phase='toHome';visit(s,[c],'sunny');c.phase='home';
+ const [from]=visit(s,[],'sunny');
+ s.simTime+=.4*BASE_TIME_RATE;
+ const [to]=visit(s,[],'sunny');
+ assert.ok(Math.abs(distance(from,to)-.4*1.04)<1e-7);
+ const communal=useOneDayCalendar(city({...house,type:'communalHouse',footprint:2})),evening=createHomeVisits();
+ communal.citizens=[7,8,9].map(id=>({...communal.citizens[0],id}));
+ let conversations=0,roof=false;
+ for(let frame=0;frame<400;frame++){
+  communal.simTime=frame*.25*BASE_TIME_RATE;
+  const people=evening(communal,[],'sunny');
+  if(workHourAt(communal.simTime)<17.25)continue;
+  conversations+=Number(people.filter(p=>p.homeVisit.stage==='bench').length===2);
+  roof||=people.some(p=>p.homeVisit.stage==='roof');
+ }
+ assert.ok(conversations>8&&roof);
 });

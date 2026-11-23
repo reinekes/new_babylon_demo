@@ -1,3 +1,4 @@
+import {motionRateFor} from './calendar.js';
 import {householdAwaitingFamily} from './household-initiative.js';
 import {cityCommandReason} from './city-command-lock.js';
 import {affectResidents} from './wellbeing.js';
@@ -304,7 +305,7 @@ export function advanceArrivalGroup(s,dt,network){
   g.route=route.map(p=>p.key);g.routeIndex=0;
  }
  delete g.waiting;
- let remaining=dt;
+ let remaining=dt*motionRateFor(s);
  while(remaining>1e-8&&g.routeIndex<g.route.length){
   const p=network.nodes.get(g.route[g.routeIndex]),last=g.route[g.routeIndex-1];
   if(!p||last&&!network.graph.get(last)?.has(p.key))return wait('route');

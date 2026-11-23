@@ -1,3 +1,4 @@
+import {motionRateFor} from './calendar.js';
 import {recordWaterCrisisHarvest} from './water-crisis.js';
 import {recordStarHarvestDeadline} from './star-observations.js';
 import {takeGiftFood} from './abundance-origin.js';
@@ -37,9 +38,11 @@ export function canTillField(s,b){return tillageSeason(s,b)&&!(b.crop.tilled>=1-
 export function fieldActive(s,b){const c=cropFor(s,b),calendar=fieldCalendar(s,b);return isOperational(b)&&(canTillField(s,b)||s.season===calendar.sow&&!fieldResting(s,b)&&c.sown<1-1e-8||s.season===calendar.harvest&&c.remaining>1e-8||c.sheaves>1e-8);}
 export function workField(s,b,seconds,worker){
  const c=cropFor(s,b),calendar=fieldCalendar(s,b);if(!isOperational(b)||seconds<=0)return 0;
- if(canTillField(s,b)){c.tilled=Math.min(1,(c.tilled||0)+seconds/24);return 0;}
+ // One field hand has three short workdays in a season. Leave time to walk
+ // to the field even for the longer preparatory pass.
+ if(canTillField(s,b)){c.tilled=Math.min(1,(c.tilled||0)+seconds*Math.max(1/3,motionRateFor(s))/24);return 0;}
  if(c.sheaves>1e-8){const amount=Math.min(c.sheaves,7*outputMultiplier(b));c.sheaves=Math.max(0,c.sheaves-amount);c.threshed+=amount;if(c.humanSheaves!==undefined)c.humanSheaves=Math.max(0,c.humanSheaves-amount);return amount;}
- if(s.season===calendar.sow&&!fieldResting(s,b)){const delta=Math.max(0,Math.min(1-c.sown,seconds/12,c.seedStock/SEED_COST));c.sown+=delta;if(c.sown>=1-1e-8)c.sown=1;if(b.giftSeedStock)takeGiftFood(b,'giftSeedStock',delta*SEED_COST,c.seedStock);c.seedStock=Math.max(0,c.seedStock-delta*SEED_COST);c.seedUsed=c.sown*SEED_COST;return 0;}
+ if(s.season===calendar.sow&&!fieldResting(s,b)){const delta=Math.max(0,Math.min(1-c.sown,seconds*motionRateFor(s)/12,c.seedStock/SEED_COST));c.sown+=delta;if(c.sown>=1-1e-8)c.sown=1;if(b.giftSeedStock)takeGiftFood(b,'giftSeedStock',delta*SEED_COST,c.seedStock);c.seedStock=Math.max(0,c.seedStock-delta*SEED_COST);c.seedUsed=c.sown*SEED_COST;return 0;}
  if(s.season!==calendar.harvest||c.remaining<=0)return 0;
  const tool=b.sickle;
  if(sickleBlunt(b)&&tool.pottery>=1-1e-8){tool.pottery=0;tool.edge=SICKLE_EDGE;return 0;}

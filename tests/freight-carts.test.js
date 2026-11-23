@@ -123,3 +123,18 @@ test('only moving wheels form ruts; footsteps on the same edge do not keep old r
  for(let i=0;i<16;i++)recordFootsteps(s,a,b,1);
  assert.equal(visibleFootpaths(s)[0].cartTraffic,0);
 });
+
+test('a cart and a porter finish the same transfer across shorter days',async()=>{
+ const {useOneDayCalendar}=await import('../calendar.js');
+ const {s,granary}=depotCity();useOneDayCalendar(s);
+ putStock(s,'5,8','wood',36);
+ assert.ok(requestTransfer(s,'5,8','10,9','wood',36).ok);
+ const porter=until(s,()=>s.citizens.find(c=>c.freightCart==='5,8'&&c.cargo.wood===24));
+ assert.ok(until(s,()=>s.citizens.some(c=>!c.freightCart&&c.cargo.wood===12)));
+ const copy=decode(encode(s));assert.ok(copy);
+ const owner=copy.citizens.find(c=>c.id===porter.id);
+ until(copy,()=>owner.phase==='toReturnCart');
+ until(copy,()=>availableFreightCarts(copy,granary)===1);
+ assert.equal(storeStock(copy,'10,9','wood'),36);
+ assert.ok(decode(encode(copy)));
+});

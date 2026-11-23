@@ -113,8 +113,9 @@ export function foodAvailability(s,{reconcile=true}={}){
 }
 export const foodAvailableAt=(s,key)=>foodAvailability(s).get(key)||0;
 
-export function reserveStock(s,cost,{eligibleStores,creatorAllocations,giftReserve}={}){
+export function reserveStock(s,cost,{eligibleStores,creatorAllocations,giftReserve,near}={}){
  syncInventory(s);const stores=stockStores(s).filter(b=>!eligibleStores||eligibleStores.has(keyOf(b))),entries=Object.entries(cost).filter(([k])=>MATERIALS.includes(k)),food=entries.some(([k])=>k==='food')?foodAvailability(s):null;
+ if(near)stores.sort((a,b)=>Math.hypot(a.x-near.x,a.y-near.y)-Math.hypot(b.x-near.x,b.y-near.y));
  if(entries.some(([k,n])=>!Number.isFinite(n)||n<0||n>stores.reduce((total,b)=>total+(k==='food'?food.get(keyOf(b))||0:b.stock[k]),0)))return null;
  const sources={};for(const [k,n] of entries){let left=n;for(const b of stores){const taken=Math.min(left,k==='food'?food.get(keyOf(b))||0:b.stock[k]);if(taken>0){(sources[keyOf(b)]??={})[k]=taken;if(k==='food'){takeGrain(b,'grainStock',taken,b.stock[k]);if(b.fishStock)takeFish(b,'fishStock',taken,b.stock[k]);if(b.giftStock)addGiftFood(giftReserve,keyOf(b),takeGiftFood(b,'giftStock',taken,b.stock[k]),0);}if(b.creatorStock){const local=takeCreatorStock(b,k,taken);if(local&&creatorAllocations)(creatorAllocations[keyOf(b)]??={})[k]=local;}b.stock[k]-=taken;s.resources[k]-=taken;left-=taken;}if(left<=0)break;}}return sources;
 }

@@ -5,7 +5,19 @@ import {DAY_SECONDS,lightingAt} from './city-life.js';
 export const MONTH_SECONDS=15,DAYS_PER_MONTH=1;
 // A full day of city activity takes 100 real seconds at normal speed.
 export const BASE_TIME_RATE=DAY_SECONDS/100;
-export function useOneDayCalendar(s){s.calendarDaysPerMonth=DAYS_PER_MONTH;return s;}
+// Keep travel at the original normal-speed pace while the city clock advances faster.
+const TRAVEL_SECONDS_PER_REAL_SECOND=1/8;
+export const motionRateFor=s=>s?.calendarDaysPerMonth===DAYS_PER_MONTH?TRAVEL_SECONDS_PER_REAL_SECOND/BASE_TIME_RATE:1;
+export function motionTimeFor(s,simTime=s?.simTime??0){
+ const origin=s?.motionTimeOrigin??0;
+ return origin+(simTime-origin)*motionRateFor(s);
+}
+export function useOneDayCalendar(s){
+ // Start at the saved phase on first open and retain that anchor on subsequent loads.
+ s.motionTimeOrigin??=s.simTime??0;
+ s.calendarDaysPerMonth=DAYS_PER_MONTH;
+ return s;
+}
 export function useThreeDayCalendar(s){s.calendarDaysPerMonth=3;return s;}
 export const calendarRateFor=s=>s.calendarDaysPerMonth===undefined?1:MONTH_SECONDS/(s.calendarDaysPerMonth*DAY_SECONDS);
 export const MONTH_NUMERALS=['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];

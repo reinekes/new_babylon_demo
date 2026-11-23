@@ -1,3 +1,4 @@
+import {motionRateFor} from './calendar.js';
 import {moveGiftFood} from './abundance-origin.js';
 import {riverIsLow} from './irrigation.js';
 import {validateTradeSeal} from './scribes.js';
@@ -217,7 +218,7 @@ export function advanceTradeLogistics(s,dt){const c=s.trade?.caravan;if(!c)retur
  if(c.phase==='blocked'){const access=marketAccess(s,c.market);if(departing)routeCaravan(s,c,c.entry,'departing');else if(access)routeCaravan(s,c,access.p.key,'arriving');return;}
  if(c.phase==='trading'){if(!marketAccess(s,c.market))c.phase='blocked';return;}
  if(c.phase==='unloading'){c.unloadTime=Math.min(4,c.unloadTime+dt);if(c.unloadTime>=4)c.phase='trading';return;}
- if(!['arriving','departing'].includes(c.phase))return;const net=networkFor(s);let remaining=dt;
+ if(!['arriving','departing'].includes(c.phase))return;const net=networkFor(s);let remaining=dt*motionRateFor(s);
  while(remaining>1e-8){const p=c.route[c.routeIndex];if(!p){if(c.phase==='departing'){s.trade.caravan=null;news(s,'Караван покинул долину','Купцы вышли из долины по дороге.');}else {c.phase='unloading';c.unloadTime=0;}return;}const prev=c.route[c.routeIndex-1];if(!net.nodes.has(p.key)||prev&&prev.key!==p.key&&!net.graph.get(prev.key)?.has(p.key)){c.phase='blocked';return;}const distance=Math.hypot(p.x-c.x,p.y-c.y),travel=distance/1.1;if(travel<=remaining){c.x=p.x;c.y=p.y;c.routeIndex++;remaining-=travel;}else{const fraction=remaining/travel;c.x+=(p.x-c.x)*fraction;c.y+=(p.y-c.y)*fraction;return;}}
 }
 

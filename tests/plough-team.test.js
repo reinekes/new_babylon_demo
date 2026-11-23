@@ -102,3 +102,36 @@ test('both oxen and the driver fit the narrow dry slice of the single starter ba
   assert.ok(Math.hypot(last.x-start.x,last.y-start.y)*6>1.40);
  }
 });
+
+test('a nearby irrigated farm finishes the full plough pass and delivers its whole crop on the short calendar',async()=>{
+ const {useOneDayCalendar}=await import('../calendar.js');
+ const {assignWorkplace}=await import('../management.js');
+ const {syncCitizens}=await import('../workforce.js');
+ const {advanceMiracleCelebration}=await import('../miracle-celebration.js');
+ const s=useOneDayCalendar(createGame({start:'established'}));
+ const field=s.buildings.find(b=>b.type==='field'),home=s.buildings.find(b=>b.type==='house');
+ const store=s.buildings.find(b=>b.type==='shrine'),oldHome=home.x+','+home.y;
+ home.x=field.x-1;home.y=field.y+1;
+ store.x=field.x-1;store.y=field.y;
+ s.buildings.push({type:'canal',x:field.x,y:field.y-1,level:1});
+ for(const c of s.citizens)if(c.home===oldHome){
+  Object.assign(c,{home:home.x+','+home.y,x:home.x,y:home.y,work:null,phase:'home',route:[],routeIndex:0});
+ }
+ for(const b of s.buildings)if(b.type==='house'){b.pantry=80;b.pantryDelivered=80;}
+ syncCitizens(s);
+ for(const id of [0,1])assert.ok(assignWorkplace(s,id,field.x+','+field.y).ok);
+ field.crop.seedStock=4;
+ let latestPass=0,sownAt;
+ for(let n=0;n<2400&&s.season<3;n++){
+  s.event=null;advanceMiracleCelebration(s,60);advanceTime(s,.25);
+  if(s.season===0){
+   latestPass=Math.max(latestPass,ploughTeams(s)[0]?.progress??0);
+   if(field.crop.sown===1)sownAt??=s.simTime;
+  }
+ }
+ assert.ok(sownAt>0&&sownAt<180&&latestPass>.9);
+ assert.equal(field.crop.sown,1);
+ assert.ok(field.crop.seedStock<1e-7&&Math.abs(field.crop.seedUsed-4)<1e-7);
+ for(const amount of [field.crop.total,field.crop.harvested,field.crop.threshed,s.delivered.food])assert.ok(Math.abs(amount-84)<1e-6);
+ assert.equal(field.crop.spoiled,0);
+});

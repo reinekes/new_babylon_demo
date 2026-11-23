@@ -1,3 +1,4 @@
+import {motionRateFor} from './calendar.js';
 import {startDesertFuneral,advanceDesertFuneral,desertFuneralView,validateDesertFuneral} from './desert-funeral.js';
 import {registerLoss} from './divinity.js';
 import {networkFor,routeBetween,rerouteCitizens} from './workforce.js';
@@ -9,7 +10,7 @@ function nearest(net,p){let best=null,d=Infinity;for(const n of net.nodes.values
 function path(s,a,b){return (a&&b&&routeBetween(s,a.key,b.key)||[]).map(copy);}
 export function startFuneral(s,deceased,options){const started=startDesertFuneral(s,deceased,options);if(started&&!options?.family)registerLoss(s,deceased.length);return started;}
 function move(entity,actor,dt,s){
- let remaining=dt*.95;
+ let remaining=dt*motionRateFor(s)*.95;
  const net=networkFor(s);
  while(remaining>1e-8){const target=actor.route[actor.routeIndex];if(!target)return true;const prev=actor.route[actor.routeIndex-1];if(!net.nodes.has(target.key)||prev&&prev.key!==target.key&&!net.graph.get(prev.key)?.has(target.key))return false;const d=distance(entity,target);if(d<=remaining+1e-8){entity.x=target.x;entity.y=target.y;actor.routeIndex++;remaining-=d;}else{entity.x+=(target.x-entity.x)*remaining/d;entity.y+=(target.y-entity.y)*remaining/d;return false;}}
  return actor.routeIndex>=actor.route.length;

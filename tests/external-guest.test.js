@@ -140,3 +140,28 @@ test('a guest can keep his libation custom without drawing on the household rati
   const complete=encode(s);assert.equal(encode(decode(complete)),complete);
  }
 });
+
+test('walking to the pupil at the slower pace leaves the same time for the lesson',async()=>{
+ const {useOneDayCalendar}=await import('../calendar.js');
+ const {s}=fixture();
+ useOneDayCalendar(s);
+ assert.ok(inviteExternalMaster(s).ok);
+ const guest=s.externalGuest,net=networkFor(s),initial=guest.deadline;
+ const path=guest.route.map(key=>net.nodes.get(key));
+ const routeLength=path.slice(1).reduce((sum,p,i)=>sum+Math.hypot(p.x-path[i].x,p.y-path[i].y),0);
+ const motion=[];
+ for(let i=0;guest.phase==='arriving'&&i<1000;i++){
+  const x=guest.x,y=guest.y;
+  advanceExternalGuest(s,.1,net);s.simTime+=.1;
+  motion.push(Math.hypot(guest.x-x,guest.y-y));
+ }
+ assert.equal(guest.phase,'staying');
+ const distance=motion.reduce((a,b)=>a+b,0);
+ assert.ok(distance>1);
+ assert.ok(Math.max(...motion)<=.1*1.05*5/24+1e-8);
+ assert.ok(Math.abs(guest.deadline-initial-routeLength*(24/5-1)/1.05)<1e-8);
+ const deadline=guest.deadline;
+ advanceExternalGuest(s,1,net);
+ assert.equal(guest.progress,1);
+ assert.equal(guest.deadline,deadline);
+});

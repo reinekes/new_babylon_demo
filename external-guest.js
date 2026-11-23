@@ -1,3 +1,4 @@
+import {motionRateFor,motionTimeFor} from './calendar.js';
 import {affectResidents} from './wellbeing.js';
 import {waterSummary} from './water.js';
 import {recordArrivalHospitality} from './arrival-hospitality.js';
@@ -70,11 +71,15 @@ function walkGuest(s,g,network,target,dt){
  if(g.route.at(-1)!==target.key||g.routeIndex<g.route.length&&
    (!next||previous&&!network.graph.get(previous)?.has(next.key)))routeGuest(s,g,network,target);
  if(!g.route.length)return false;
- let remaining=dt*1.05;
+ const rate=motionRateFor(s);
+ let remaining=dt*1.05*rate;
  while(remaining>1e-8&&g.routeIndex<g.route.length){
   const p=network.nodes.get(g.route[g.routeIndex]),last=g.route[g.routeIndex-1];
   if(!p||last&&!network.graph.get(last)?.has(p.key)){g.route=[];g.routeIndex=0;return false;}
   const d=distance(g,p);
+  // Preserve the visit window spent at the destination. Only time actually lost
+  // to the slower walk is credited; waiting on a blocked route still expires.
+  if(g.phase==='arriving'&&rate<1)g.deadline+=Math.min(d,remaining)*(1/rate-1)/1.05;
   if(d>remaining){g.x+=(p.x-g.x)*remaining/d;g.y+=(p.y-g.y)*remaining/d;return false;}
   g.x=p.x;g.y=p.y;g.routeIndex++;remaining-=d;
  }
@@ -125,7 +130,7 @@ export function advanceExternalGuest(s,dt,network){
 export function externalGuestView(s){
  const g=s.externalGuest;
  return active(g)?{id:ACTOR_ID,name:g.name,age:43,sex:'m',lifeStage:'adult',kind:'person',visitor:true,
-  x:g.x,y:g.y,phase:'guest',walking:g.phase!=='staying'&&g.routeIndex<g.route.length,step:s.simTime*4,
+  x:g.x,y:g.y,phase:'guest',walking:g.phase!=='staying'&&g.routeIndex<g.route.length,step:motionTimeFor(s)*4,
   robe:'#b37b51',carrying:false,cargo:{}}:null;
 }
 export function protectsGuestBuilding(s,key){
@@ -248,7 +253,7 @@ export function visitorsView(s){
   const cargo=kind==='pilgrim'&&g.phase==='arriving'?{pottery:1}:
    kind==='envoy'&&g.phase==='returning'&&g.outcome==='accepted'?{cloth:1}:{};
   people.push({id:VISITORS[kind].id,name:g.name,age:40,sex:'m',lifeStage:'adult',kind:'person',visitor:true,
-   x:g.x,y:g.y,phase:'guest',walking:g.routeIndex<g.route.length,step:s.simTime*4,
+   x:g.x,y:g.y,phase:'guest',walking:g.routeIndex<g.route.length,step:motionTimeFor(s)*4,
    robe:kind==='pilgrim'?'#b3a478':'#6d889d',carrying:Object.keys(cargo).length>0,cargo});
  }
  return people;

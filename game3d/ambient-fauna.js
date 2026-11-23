@@ -1,16 +1,18 @@
+import {ambientTravelRateFor} from '../fauna.js';
 import {groundHeading,groundStep} from './ground-turn.js';
 import {createTestLivestock} from './test-livestock.js';
-import {planRegionalFauna,regionalFauna} from './regional-fauna-routes.js?v=living-fields-20261116';
+import {planRegionalFauna,regionalFauna} from './regional-fauna-routes.js?v=natural-motion-20261123';
 import {dairyHerd,dairyPose} from './dairy-herd.js';
 import {loadModel} from './asset-loading.js';
 import {acquireDonkey,DONKEY_MODELS} from './donkey.js';
+import {motionTimeFor} from '../calendar.js';
 import {ecologyCount} from '../ecology.js';
 import {skyFlightPose,SKY_BIRD_MODEL} from './sky-flight.js';
 import {worldWidth,worldHeight,riverPoint,riverLocal,riverLength,signedRiverDistance,onBridge} from '../world.js';
 import {loopMotion} from '../local-motion.js';
 import {footprintSize} from '../footprints.js';
 import {shoreDistance,surfaceElevation} from '../district3d/terrain.js';
-import {createMallardRig,mallardRoute,mallardPose,poseMallardRig} from './mallard-motion.js?v=living-fields-20261116';
+import {createMallardRig,mallardRoute,mallardPose,poseMallardRig} from './mallard-motion.js?v=natural-motion-20261123';
 import {WATER_HEIGHT,waterDepth} from './water.js';
 import {createPloughTeams} from './plough-teams.js';
 export const AMBIENT_MODELS=Object.freeze({
@@ -159,7 +161,7 @@ function courtyardPlan(state){
  }
  return plan;
 }
-export function courtyardFauna(state,time=state.simTime||0){
+export function courtyardFauna(state,time=motionTimeFor(state)){
  const plan=courtyardPlan(state);
  const animals=plan.routes.map(({kind,route,speed,pause})=>{
   const motion=loopMotion(route,time,speed,pause);
@@ -231,7 +233,7 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
  for(const r of results)if(r.status==='fulfilled')assets.set(r.value.species,r.value.asset);else warn('Ambient animal unavailable; remaining fauna continues.',r.reason);
  const draught=assets.get('draught-bull'),oxSource=draught||assets.get('bull');
  const ploughs=oxSource?createPloughTeams(B,scene,oxSource,meshes,!!draught):null;
- let disposed=false,clock=0,lastState=null;
+ let disposed=false,clock=0,travelClock=0,lastState=null;
  const foldSheep=new Map();
  const foldSheepAvailable=assets.get('sheep-kenchoo')?.animationGroups.some(g=>g.name==='Walk')&&assets.get('sheep-kenchoo')?.animationGroups.some(g=>g.name==='Idle');
  function register(a){a.owned=a.root.getChildMeshes().filter(mesh=>mesh!==a.wake);for(const m of a.owned){m.isPickable=false;if(!m.isAnInstance)m.receiveShadows=true;meshes.push(m);}actors.push(a);return a;}
@@ -339,7 +341,7 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
    return;
   }
   const path=t=>riverPoint(center+3*Math.sin(t),state,.65*Math.cos(t));
-  const t=clock*.15,point=path(t),next=path(t+.001);
+  const t=travelClock*.15,point=path(t),next=path(t+.001);
   a.root.position.set(point.x*6,5+.45*Math.sin(t*2),point.y*6);
   a.root.rotation.y=Math.atan2(next.x-point.x,next.y-point.y);
   a.root.rotation.z=.12;
@@ -389,7 +391,8 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
   const skyKind=assets.has('sky-birds')?'sky-birds':'original-sky',skyDesired=options.includeSkyBirds===false?0:ecologyCount(state,'sky-birds',2);for(let i=actors.filter(a=>a.species===skyKind).length;i<skyDesired;i++){if(skyKind==='sky-birds')imported('sky-birds',i);else originalSky(i,{body:templates[0],wing:templates[1]});}
   dt=Number.isFinite(dt)?Math.max(0,Math.min(.1,dt)):0;speed=Number.isFinite(speed)?Math.max(0,Math.min(25,speed)):1;
   const elapsed=paused?0:dt*speed,advancing=elapsed>0;
-  clock+=elapsed;
+  const travelRate=ambientTravelRateFor(state);
+  clock+=elapsed;travelClock+=elapsed*travelRate;
   // Free-roaming animals steer and check obstacles along each short arc.
   // Keep the longest step they took at 4×; sampled swimming and flight use the full clock.
   const groundSteps=Math.max(1,Math.ceil(elapsed/.4)),groundStepTime=elapsed/groundSteps;
@@ -433,7 +436,7 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
     const roam=yardPlaces[a.index];
     a.root.setEnabled(!!roam);
     if(roam){
-     const time=clock+roam.offset,place=loopMotion(roam.route,time,roam.pace,roam.rest);
+     const time=clock+roam.offset,place=loopMotion(roam.route,time,roam.pace*travelRate,roam.rest);
      a.root.metadata.pigBehavior=place.walking?'walking':place.pigBehavior||'resting';
      const dx=place.x*6-a.root.position.x,dz=place.y*6-a.root.position.z;
      const distance=Math.hypot(dx,dz);
@@ -462,7 +465,7 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
     continue;
    }
    if(a.farm){a.farm=farms.get(a.farm.id);const p=dairyPose(a.farm,clock);a.root.position.set(p.x*6,surfaceElevation(p.x,p.y,state),p.y*6);a.root.rotation.y=p.yaw;a.root.metadata.herdAnimal=true;animate(a,clock);continue;}const sky=a.species==='sky-birds'||a.species==='original-sky';
-   if(sky){if(!advancing&&a.skyPlaced)continue;const p=skyFlightPose(clock*.045,a.index,{state});a.root.position.set(p.x,p.y,p.z);a.root.rotation.y=p.yaw;a.root.rotation.z=p.bank;a.skyPlaced=true;if(a.wings){a.wings[0].rotation.z=.55*Math.sin(clock*7+a.phase);a.wings[1].rotation.z=Math.PI-.55*Math.sin(clock*7+a.phase);}animate(a,clock);continue;}
+   if(sky){if(!advancing&&a.skyPlaced)continue;const p=skyFlightPose(travelClock*.045,a.index,{state});a.root.position.set(p.x,p.y,p.z);a.root.rotation.y=p.yaw;a.root.rotation.z=p.bank;a.skyPlaced=true;if(a.wings){a.wings[0].rotation.z=.55*Math.sin(clock*7+a.phase);a.wings[1].rotation.z=Math.PI-.55*Math.sin(clock*7+a.phase);}animate(a,clock);continue;}
    if(!a.anchor)seek(a,state);
    if(stateChanged)animate(a,clock);if(!advancing)continue;
    const x=a.root.position.x/6,y=a.root.position.z/6;
@@ -470,7 +473,7 @@ export async function createAmbientFauna(B,scene,meshes=[],options={}){
    if(!a.enabled)continue;
    let moved;
    for(let step=1;step<=groundSteps;step++){
-    moved=walkGround(a,state,clock-(groundSteps-step)*groundStepTime,groundStepTime);
+    moved=walkGround(a,state,clock-(groundSteps-step)*groundStepTime,groundStepTime*travelRate);
    }
    animate(a,clock,moved>.00001);
 

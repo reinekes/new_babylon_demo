@@ -58,3 +58,24 @@ test('the stationary farewell still lasts five real seconds at 1×',async()=>{
  for(let i=0;i<19;i++)advanceFrame(s,.25);
  assert.equal(s.funeral.stage,'farewell');advanceFrame(s,.25);assert.equal(s.funeral,null);assert.equal(s.simTime,0);
 });
+
+test('a resident walks at the former real pace while the one-day calendar runs at the selected speed',async()=>{
+ const {advanceFrame}=await import('../engine.js');
+ const {useOneDayCalendar}=await import('../calendar.js');
+ const {assignWorkplace,setCitizenRole}=await import('../management.js');
+ for(const speed of [1,2,4,25]){
+  const s=useOneDayCalendar(createGame({start:'established',seed:137}));
+  const field=s.buildings.find(b=>b.type==='field');
+  for(const house of s.buildings.filter(b=>b.type==='house'))Object.assign(house,{pantry:50,pantryDelivered:50,water:20});
+  setCitizenRole(s,4,'production');assignWorkplace(s,4,`${field.x},${field.y}`);
+  advanceTime(s,1.8);
+  const c=s.citizens.find(c=>c.id===4),start=s.simTime;
+  assert.equal(c.phase,'toWork');
+  let distance=0;
+  for(let i=0;i<60;i++){
+   const {x,y}=c;advanceFrame(s,1/240,speed);distance+=Math.hypot(c.x-x,c.y-y);
+  }
+  assert.ok(Math.abs(distance-.25*speed*.125*1.05)<1e-6,`walk at ${speed}× covered ${distance} cells`);
+  assert.ok(Math.abs(s.simTime-start-.25*speed*.6)<1e-6);
+ }
+});

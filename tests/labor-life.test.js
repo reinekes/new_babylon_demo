@@ -47,3 +47,33 @@ test('mixed real extraction city survives repeated reloads with jobs, prey death
  for(let i=0;i<450;i++){s.event=null;advanceTime(s,.1);claims||=s.gathering.jobs.length>0;killed||=s.gathering.kills.length>0;loads||=s.citizens.some(c=>Object.values(c.cargo).some(n=>n>0));if(i%30===0){const snapshot=encode(s),restored=decode(snapshot);assert.ok(restored,`save ${i} rejected`);assert.deepEqual(restored.gathering,s.gathering);assert.deepEqual(restored.citizens.map(c=>[c.id,c.cargo]),s.citizens.map(c=>[c.id,c.cargo]));s=restored;}}
  assert.ok(claims);assert.ok(killed);assert.ok(loads);
 });
+
+test('short days allow distant hunters and fishers to reach the yard and work',async()=>{
+ const {useOneDayCalendar}=await import('../calendar.js');
+ const {workHourAt}=await import('../work-schedule.js');
+ const s=useOneDayCalendar(createGame({start:'established'}));
+ for(const b of s.buildings.filter(b=>b.type==='house'))Object.assign(b,{pantry:50,pantryDelivered:50,water:20});
+ const hunting={type:'hunting',x:5,y:15,level:1};s.buildings.push(hunting);
+ let fishing;
+ for(let y=3;y<14&&!fishing;y++)for(let x=9;x<17;x++)if(!canBuild(s,'fishing',x,y,true)){fishing={type:'fishing',x,y,level:1};break;}
+ s.buildings.push(fishing);
+ const adults=s.citizens.filter(c=>c.age>=16);
+ for(const [i,b] of [hunting,fishing].entries())adults[i+2].workplace=`${b.x},${b.y}`;
+ invalidateAssignments(s);syncCitizens(s);
+ let retrieved=false,landed=false,nightWork;
+ for(let i=0;i<2400&&!(retrieved&&landed);i++){
+  s.event=null;advanceTime(s,.1);
+  const hunter=adults[2],hour=workHourAt(s.simTime);
+  if(hour>=22&&s.gathering.jobs.some(j=>j.citizen===hunter.id&&j.stage==='working')){
+   nightWork??=hunter.workElapsed;
+   assert.equal(hunter.workElapsed,nightWork);
+   assert.equal(actorWorkActivity(s,hunter).stage,'waiting');
+  }
+  retrieved||=s.gathering.kills.some(k=>k.taken);
+  landed||=s.citizens.some(c=>c.fishingLanding||c.hangingFishElapsed!==undefined)||!!fishing.fishRack?.batch;
+ }
+ assert.ok(nightWork>0,'remote hunt paused overnight');
+ assert.ok(retrieved,'hunter recovered the fallen prey');
+ assert.ok(landed,'fisher landed the catch');
+ assert.ok(decode(encode(s)));
+});

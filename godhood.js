@@ -1,3 +1,4 @@
+import {motionRateFor} from './calendar.js';
 import {blessingUsesTrial} from './blessing-discovery.js';
 import {cityCommandReason} from './city-command-lock.js';
 import {mealCycle} from './wellbeing.js';
@@ -282,7 +283,7 @@ export function advanceGodhood(s,dt){
  if(g.stage!=='sign')return;
  const c=s.citizens.find(c=>c.id===g.witnessId);
  if(!c||c.phase!=='awakening'||s.funeral||cargo(c)||!signPathValid(s,c,g)){loseSign(s,c);return;}
- let left=dt;while(left>1e-8&&c.routeIndex<c.route.length){const p=c.route[c.routeIndex],d=Math.hypot(c.x-p.x,c.y-p.y);if(!clearSignSegment(s,c,c,p,c.routeIndex===1)){loseSign(s,c);return;}const moved=Math.min(d,left*.95);if(d>1e-8){c.x+=(p.x-c.x)*moved/d;c.y+=(p.y-c.y)*moved/d;}left-=moved/.95;if(d<=moved+1e-8)c.routeIndex++;else break;}
+ let left=dt*motionRateFor(s);while(left>1e-8&&c.routeIndex<c.route.length){const p=c.route[c.routeIndex],d=Math.hypot(c.x-p.x,c.y-p.y);if(!clearSignSegment(s,c,c,p,c.routeIndex===1)){loseSign(s,c);return;}const moved=Math.min(d,left*.95);if(d>1e-8){c.x+=(p.x-c.x)*moved/d;c.y+=(p.y-c.y)*moved/d;}left-=moved/.95;if(d<=moved+1e-8)c.routeIndex++;else break;}
  if(c.routeIndex<c.route.length)return;if(!samePoint(c,g.signTarget)){loseSign(s,c);return;}
  const route=[...c.route].reverse();c.phase='toHome';c.route=route;c.routeIndex=1;
  recognizeWitness(s,c,isRecoverySign(s)?'откликнулся на знак':'заметил знак и дошёл до источника');

@@ -1,3 +1,5 @@
+import {motionRateFor} from './calendar.js';
+import {isWorkplaceOpen} from './work-schedule.js';
 import {productionOutputFits} from './building-inventory.js';
 import {extractableCourts,extractionKinds,extractionSources,isExtractionCourt} from './extraction-courts.js';
 import {availableExtractionSources,extractionStock} from './extraction-stock.js';
@@ -94,7 +96,7 @@ function newJob(s,c,b,origin){
  const source=target.id.startsWith('deposit:')?{x:target.x,y:target.y}:null;
  const job={citizen:c.id,work:c.work,kind:b.type,target,stand,origin:{x:origin.x,y:origin.y},stage:b.type==='fishing'?'gear':'approach',progress:0,...source?{source}:{}};g.jobs.push(job);return job;
 }
-function move(c,to,dt,rate=1){const d=distance(c,to),step=Math.min(d,dt*.65*Math.max(.5,rate));if(d>1e-8){c.x+=(to.x-c.x)*step/d;c.y+=(to.y-c.y)*step/d;}return d-step<1e-6;}
+function move(s,c,to,dt,rate){const d=distance(c,to),step=Math.min(d,dt*motionRateFor(s)*.65*Math.max(.5,rate));if(d>1e-8){c.x+=(to.x-c.x)*step/d;c.y+=(to.y-c.y)*step/d;}return d-step<1e-6;}
 /** Actual local work trip. A load can only be collected once its target was worked. */
 export function workGathering(s,c,b,dt,rate,origin){
  const court=isExtractionCourt(b)&&extractableCourts.has(b.type);
@@ -108,7 +110,7 @@ export function workGathering(s,c,b,dt,rate,origin){
  if(j&&(j.work!==c.work||j.kind==='fishing'&&!fishAvailable(s,j.target)||stock&&(stock.resting||stock.stock<=1e-8))){g.jobs=g.jobs.filter(v=>v!==j);j=null;c.workElapsed=0;}
  if(!j)j=newJob(s,c,b,origin||c);if(!j)return false;
  if(j.stage==='gear'){
-  if(!move(c,j.origin,dt,rate))return false;
+  if(!move(s,c,j.origin,dt,rate))return false;
   j.progress=clamp(j.progress+dt*rate/.85);
   if(j.progress>=1){j.stage='approach';j.progress=0;}
   return false;
@@ -117,7 +119,7 @@ export function workGathering(s,c,b,dt,rate,origin){
   // A worker has to reach the fallen animal before its food and hide become cargo.
   const dx=j.stand.x-j.target.x,dy=j.stand.y-j.target.y,d=Math.hypot(dx,dy)||1;
   const pickup={x:j.target.x+dx/d*.065,y:j.target.y+dy/d*.065};
-  if(!move(c,pickup,dt,rate))return false;
+  if(!move(s,c,pickup,dt,rate))return false;
   j.progress=clamp(j.progress+dt*rate/.65);
   if(j.progress<1)return false;
   const kill=g.kills.find(k=>k.id===j.target.id&&!k.taken);
@@ -125,7 +127,7 @@ export function workGathering(s,c,b,dt,rate,origin){
   if(!kill)return false;
   return {...j.origin,prey:kill.id};
  }
- if(j.stage==='approach'){if(move(c,j.stand,dt,rate))j.stage='working';return false;}
+ if(j.stage==='approach'){if(move(s,c,j.stand,dt,rate))j.stage='working';return false;}
  c.workElapsed=Math.min(BUILDINGS[b.type].workTime,c.workElapsed+dt*rate*toolWorkMultiplier(b));j.progress=clamp(c.workElapsed/BUILDINGS[b.type].workTime);
  if(j.progress<1)return false;
  if(b.type==='hunting'){
@@ -173,6 +175,7 @@ export function actorWorkActivity(s,c,pettingPairs,workplaces){
  const manual=manualGatheringActivity(s,c);if(manual)return manual;
  const j=s.gathering?.jobs.find(j=>j.citizen===c.id&&j.work===c.work&&c.phase==='working');
  const building=j&&(workplaces?.get(j.work)||s.buildings.find(b=>buildingKey(b)===j.work));
+ if(j&&s.calendarDaysPerMonth===1&&GATHERING_TYPES.includes(j.kind)&&!isWorkplaceOpen(j.kind,s.simTime))return {kind:'gathering',task:j.kind,stage:'waiting'};
  if(j&&j.stage!=='approach'){
   const b=building;
   if(b?.workshopStock&&!productionOutputFits(s,b))return {kind:'gathering',task:b.type,stage:'waiting',target:b};

@@ -1,3 +1,4 @@
+import {motionTimeFor} from '../calendar.js';
 import {loadModel} from './asset-loading.js';
 import {WATER_HEIGHT} from './water.js';
 import {surfaceElevation} from '../district3d/terrain.js';
@@ -98,6 +99,7 @@ export async function createSuppliedFauna(B,scene,meshes,{loadAsset}={}){
   return {root,copy,owned,materials,wake,animation,frame:null,lastX:pose.x,lastY:pose.y,yaw:0,phaseShift:fish?Number(pose.id.split(':').at(-1))*2.39996:0};
  }
  function update(state,poses,fish=[]){
+  const bodyTime=motionTimeFor(state);
   for(const actor of actors.values())actor.visible=false;
   for(const pose of [...poses,...fish]){
    if(!supports(pose))continue;
@@ -117,7 +119,7 @@ export async function createSuppliedFauna(B,scene,meshes,{loadAsset}={}){
     }
     actor.lastX=pose.x;
     actor.lastY=pose.y;
-    const phase=(state.simTime||0)*5+actor.phaseShift;
+    const phase=bodyTime*5+actor.phaseShift;
     const depth=Math.min(WATER_HEIGHT-.14,(pose.waterLevel??WATER_HEIGHT)-(pose.swimDepth??.28));
     actor.root.position.set(pose.x*6,depth+Math.sin(phase*.4)*.018,pose.y*6);
     actor.root.rotation.set(0,actor.yaw+fishModels[actor.root.metadata.fishModel].yaw+Math.sin(phase)*.09,Math.sin(phase*.75)*.035);
@@ -136,7 +138,7 @@ export async function createSuppliedFauna(B,scene,meshes,{loadAsset}={}){
     actor.root.scaling.setAll(1-.62*catchProgress);
    }
    if(pose.kind==='white-pelican'){
-    const scoop=pose.scoop||0,stroke=pose.stroke??1,phase=state.simTime||0;
+    const scoop=pose.scoop||0,stroke=pose.stroke??1,phase=bodyTime;
     actor.root.position.y=WATER_HEIGHT+.012+Math.sin(phase*2.1)*.018-.045*scoop;
     actor.root.rotation.x=Math.sin(phase*1.4)*.018;
     actor.root.rotation.z=-scoop*.40+Math.sin(phase*1.7)*.022;

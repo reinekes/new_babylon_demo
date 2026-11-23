@@ -1,3 +1,4 @@
+import {motionRateFor} from './calendar.js';
 import {rememberResidentReaction} from './resident-reactions.js';
 import {isStrictSumer} from './scenario-profiles.js';
 import {log} from './engine.js';
@@ -257,7 +258,7 @@ function advanceTrip(s,c,dt,nav){
    if(!route)return;
    setRoute(t,route,t.phase,c);continue;
   }
-  if(next){const d=Math.hypot(next.x-c.x,next.y-c.y),speed=(t.station?1.35:1.05)*(s.buffs?.haste?1.5:1)*(t.station&&c.calling==='watercarrier'&&c.role==='watercarrier'?1.2:1),time=d/speed;recordFootsteps(s,c,next,Math.min(d,budget*speed),nav.footpaths);if(time>budget){c.x+=(next.x-c.x)*budget/time;c.y+=(next.y-c.y)*budget/time;return;}c.x=next.x;c.y=next.y;t.index++;budget-=time;continue;}
+  if(next){const d=Math.hypot(next.x-c.x,next.y-c.y),speed=motionRateFor(s)*(t.station?1.35:1.05)*(s.buffs?.haste?1.5:1)*(t.station&&c.calling==='watercarrier'&&c.role==='watercarrier'?1.2:1),time=d/speed;recordFootsteps(s,c,next,Math.min(d,budget*speed),nav.footpaths);if(time>budget){c.x+=(next.x-c.x)*budget/time;c.y+=(next.y-c.y)*budget/time;return;}c.x=next.x;c.y=next.y;t.index++;budget-=time;continue;}
   if(t.phase==='source'){t.phase='fill';t.elapsed=0;continue;}
   if(t.phase==='deliver'){
    if(t.fire){
@@ -334,7 +335,7 @@ export function advanceWater(s,dt){
    const station=buildingKey(work),candidates=targets.filter(b=>wanted(b)&&roadRoute(nav,station,buildingKey(b))).sort((a,b)=>targetStock(a)-targetStock(b)||Math.hypot(a.x-work.x,a.y-work.y)-Math.hypot(b.x-work.x,b.y-work.y));
    if(candidates[0])dispatch(c,candidates[0],station);continue;
   }
-  const homeDeparture=c.phase==='home'&&canDepartForWork('waterpoint',c.id,s.simTime);
+  const homeDeparture=c.phase==='home'&&canDepartForWork('waterpoint',c.id,s.simTime,s);
   if(c.phase==='home'&&wanted(home)){
    if(home.water<=eps||homeDeparture)dispatch(c,home);
    continue;

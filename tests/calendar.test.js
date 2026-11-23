@@ -1,7 +1,7 @@
 import {advanceCalendar} from './helpers/calendar-time.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {calendarAt,createFrameClock,monthTrackHTML,simulationSeconds,secondsToNextMonth,useOneDayCalendar} from '../calendar.js';
+import {calendarAt,createFrameClock,monthTrackHTML,motionRateFor,motionTimeFor,simulationSeconds,secondsToNextMonth,useOneDayCalendar} from '../calendar.js';
 import {createNewCity} from '../new-game.js';
 import {putStock,stockStores} from '../inventory.js';
 import {createGame,advanceFrame,advanceTime,encode,decode} from '../engine.js';
@@ -56,7 +56,7 @@ test('opening an older city changes future month length without changing its clo
   useOneDayCalendar(s);
   const after=calendarAt(s);
   assert.deepEqual(after,{...before,day:1});
-  const expected=JSON.parse(raw);expected.calendarDaysPerMonth=1;
+  const expected=JSON.parse(raw);expected.calendarDaysPerMonth=1;expected.motionTimeOrigin=original.simTime;
   assert.deepEqual(JSON.parse(encode(s)),expected);
   const remaining=(1-before.progress)*DAY_SECONDS;
   assert.ok(Math.abs(secondsToNextMonth(s)-remaining)<1e-7);
@@ -64,6 +64,25 @@ test('opening an older city changes future month length without changing its clo
   assert.equal(calendarAt(s).number,before.number+1);
   assert.equal(encode(decode(encode(s))),encode(s));
  }
+});
+
+test('movement keeps its phase when opening an existing city and resumes at its original real-time pace',()=>{
+ const s=createGame({start:'established'});
+ advanceTime(s,37.5);
+ assert.equal(motionRateFor(s),1);
+ s.calendarDaysPerMonth=1; // Save from the first twenty-minute-calendar release.
+ const start=s.simTime;
+ useOneDayCalendar(s);
+ assert.equal(motionTimeFor(s),start);
+ for(const speed of [1,2,4,25]){
+  const elapsed=simulationSeconds(.25,speed);
+  assert.ok(Math.abs(motionTimeFor(s,start+elapsed)-start-.25*speed/8)<1e-10);
+ }
+ advanceTime(s,2);
+ const restored=useOneDayCalendar(decode(encode(s)));
+ assert.equal(motionTimeFor(restored),motionTimeFor(s));
+ assert.equal(restored.motionTimeOrigin,start);
+ for(const bad of [-1,s.simTime+1,'0'])assert.equal(decode(encode({...s,motionTimeOrigin:bad})),null);
 });
 
 test('a year of continuous frames has twelve sunrises and twelve months at every live speed',()=>{

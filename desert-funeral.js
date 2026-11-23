@@ -1,3 +1,4 @@
+import {motionRateFor} from './calendar.js';
 import {worldWidth,worldHeight,isDryPoint,riverAxis,signedRiverDistance,onBridge} from './world.js';
 import {networkFor,rerouteCitizens,residentWalkingSpeed} from './workforce.js';
 import {footprintSize} from './footprints.js';
@@ -21,9 +22,9 @@ function navigator(s,gather,clearance=0,blockGather=false){
  }
  return {free,clear,nearest,route,state:s};
 }
-function move(entity,actor,dt){let remaining=dt*(actor.id===undefined?.85:.72+((actor.id*.61803398875)%1)*.22);while(remaining>1e-8){const target=actor.route[actor.routeIndex];if(!target)return true;const d=distance(entity,target);if(d<=remaining+1e-8){entity.x=target.x;entity.y=target.y;actor.routeIndex++;remaining-=d;}else{entity.x+=(target.x-entity.x)*remaining/d;entity.y+=(target.y-entity.y)*remaining/d;return false;}}return actor.routeIndex>=actor.route.length;}
+function move(s,entity,actor,dt){let remaining=dt*motionRateFor(s)*(actor.id===undefined?.85:.72+((actor.id*.61803398875)%1)*.22);while(remaining>1e-8){const target=actor.route[actor.routeIndex];if(!target)return true;const d=distance(entity,target);if(d<=remaining+1e-8){entity.x=target.x;entity.y=target.y;actor.routeIndex++;remaining-=d;}else{entity.x+=(target.x-entity.x)*remaining/d;entity.y+=(target.y-entity.y)*remaining/d;return false;}}return actor.routeIndex>=actor.route.length;}
 function walkRiteRoute(s,f,entity,actor,dt,crew){
- if(f.ritualVersion!==3)return move(entity,actor,dt);
+ if(f.ritualVersion!==3)return move(s,entity,actor,dt);
  const layout=ritualLayout(s,f),buildings=layout.buildings??=new Map(s.buildings.map(b=>[buildingKey(b),b]));
  let remaining=dt;
  while(actor.routeIndex<actor.route.length&&remaining>1e-9){
@@ -60,10 +61,10 @@ function advanceLegacyDesertFuneral(s,dt){const f=s.funeral;if(!f)return false;i
    if(nav.free(middle)){const first=nav.route(f.gather,middle),last=nav.route(middle,end);if(first.length&&last.length)a.departure=[...first,...last.slice(1)];}if(!a.departure.length)a.departure=nav.route(f.gather,end);
   }else if(f.stage==='returning'&&a.pending){budget--;const c=citizens.get(a.id),net=networkFor(s),home=c&&net.ports.find(p=>`${p.building.x},${p.building.y}`===c.home&&!p.building.siteKey);a.route=c&&home?nav.route(c,home):[];a.routeIndex=0;a.pending=false;}
  }
- let done=true;for(const a of f.actors){const c=citizens.get(a.id);if(a.pending||f.stage==='gathering'&&a.departure===null)done=false;if(c&&!a.pending&&!move(c,a,dt))done=false;}
+ let done=true;for(const a of f.actors){const c=citizens.get(a.id);if(a.pending||f.stage==='gathering'&&a.departure===null)done=false;if(c&&!a.pending&&!move(s,c,a,dt))done=false;}
  if(done&&f.timer>=1){if(f.stage==='returning'){s.funeral=null;if(f.scope==='family'){for(const a of f.actors){const c=citizens.get(a.id);if(c){c.phase='home';c.route=[];c.routeIndex=0;}}}else rerouteCitizens(s);}else{f.stage='procession';f.timer=0;for(const a of f.actors){const c=citizens.get(a.id);a.route=c&&distance(c,f.gather)<.01?a.departure:[];a.departure=null;a.routeIndex=0;a.delay=0;}}}
  }else if(f.stage==='procession'){
- const bier={route:f.procession,routeIndex:f.bierRouteIndex};let done=move(f.coffin,bier,dt);f.bierRouteIndex=bier.routeIndex;for(const a of f.actors){const c=citizens.get(a.id);if(c&&!move(c,a,dt))done=false;}if(done){f.stage='jackals';f.timer=0;}
+ const bier={route:f.procession,routeIndex:f.bierRouteIndex};let done=move(s,f.coffin,bier,dt);f.bierRouteIndex=bier.routeIndex;for(const a of f.actors){const c=citizens.get(a.id);if(c&&!move(s,c,a,dt))done=false;}if(done){f.stage='jackals';f.timer=0;}
  }else if(f.stage==='jackals'){
  const side=f.boundary.x<worldWidth(s)/2?-1:1,t=Math.max(0,Math.min(1,(f.timer-2)/4));f.coffin.x=f.boundary.x+side*3*t;f.coffin.y=f.boundary.y;
  if(f.timer>=6){f.stage='returning';f.timer=0;for(const a of f.actors){a.route=[];a.routeIndex=0;a.delay=0;a.pending=true;}}}
@@ -215,6 +216,7 @@ export function advanceDesertFuneral(s,dt,timerRate=1){
  const f=s.funeral;if(!f||![2,3].includes(f.ritualVersion))return advanceLegacyDesertFuneral(s,dt);if(!Number.isFinite(dt)||dt<=0)return true;
  f.timer+=dt*timerRate;
  if(farewellInPlace(f)){if(f.timer>=FAREWELL_SECONDS-1e-8)s.funeral=null;return true;}
+ const walkingElapsed=f.timer*motionRateFor(s)/timerRate;
  let nav=navigation.get(f);if(!nav){nav=navigator(s,f.gather,.19);navigation.set(f,nav);}const citizens=new Map(s.citizens.map(c=>[c.id,c]));
  if(['gathering','collecting','receding','returning'].includes(f.stage)){
   let done=true,budget=1;
@@ -232,7 +234,7 @@ export function advanceDesertFuneral(s,dt,timerRate=1){
    }
   }
   // A disconnected household must never hold the whole city indefinitely.
-  if((done&&f.timer>=1)||f.timer>=160*timerRate){
+  if((done&&f.timer>=1)||walkingElapsed>=160){
    if(f.stage==='returning'){finishRite(s,f);return true;}
    if(f.stage==='receding'){beginRiteStage(f,'jackals');return true;}
    if(f.stage==='collecting'){f.batch++;f.coffin=copy(f.gather);f.bierRouteIndex=0;}
@@ -260,7 +262,7 @@ export function advanceDesertFuneral(s,dt,timerRate=1){
    if(hold>=0)Object.assign(c,bearerStand(carriedAt,hold,crew.length));
    else if(c)walkRiteRoute(s,f,c,a,travelTime);
   }
-  if(done||f.timer>=160*timerRate){
+  if(done||walkingElapsed>=160){
    f.coffin=copy(f.boundary);
    beginRiteStage(f,'farewell');prepareFarewell(s,f,nav,citizens);
   }
@@ -271,7 +273,7 @@ export function advanceDesertFuneral(s,dt,timerRate=1){
    const hold=f.ritualVersion===3&&f.bearers.includes(a.id)?Math.min(dt,Math.max(0,(f.timer-1.2)/timerRate)):dt;
    if(c&&!walkRiteRoute(s,f,c,a,hold))settled=false;
   }
-  if(f.timer>=5&&(settled||f.timer>=12*timerRate)){f.laid=Math.min(f.deceased.length,(f.batch+1)*capacity(s,f));if(f.laid<f.deceased.length){beginRiteStage(f,'collecting');if(f.ritualVersion===3)prepareTempleVisit(s,f);else prepareReturn(s,f,nav,true);}else{beginRiteStage(f,'receding');prepareReturn(s,f,nav);}}
+  if(f.timer>=5&&(settled||walkingElapsed>=12)){f.laid=Math.min(f.deceased.length,(f.batch+1)*capacity(s,f));if(f.laid<f.deceased.length){beginRiteStage(f,'collecting');if(f.ritualVersion===3)prepareTempleVisit(s,f);else prepareReturn(s,f,nav,true);}else{beginRiteStage(f,'receding');prepareReturn(s,f,nav);}}
  }else if(f.stage==='jackals'&&f.timer>=(f.ritualVersion===3?7*Math.ceil(f.deceased.length/3):7)){beginRiteStage(f,'returning');}
  return true;
 }

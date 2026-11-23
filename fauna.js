@@ -1,6 +1,7 @@
 import {carcassPosition,harvestApron} from './harvest-handling.js';
 import {footprintSize} from './footprints.js';
 import {sheepfoldGateSide,sheepfoldLayout,sheepfoldWorldPoint} from './sheepfold-layout.js';
+import {motionRateFor,motionTimeFor} from './calendar.js';
 import {ecologyCount} from './ecology.js';
 import {flockSize,flockAdults} from './textiles.js';
 import {pestActors} from './pests.js';
@@ -10,6 +11,8 @@ import {DAY_SECONDS,lightingAt,seed} from './city-life.js';
 import {navigationSegmentClear,obstacleIndex} from './navigation.js';
 import {watchOnDuty,watchOnShift} from './watch-house.js';
 import {floodFootprint,floodPhase,floodProtectionRevision} from './river-flood.js';
+// These decorative actors already run on frame time; only a small pacing adjustment is needed.
+export const ambientTravelRateFor=s=>motionRateFor(s)===1?1:.85;
 const habitats=new WeakMap(),flockRoutes=new WeakMap();
 const FLOCK_SPEED=.28,FLOCK_STOP=3.5,PASTURE_BEGIN=6.5,PASTURE_END=17.5;
 const FLOCK_DURATION=(PASTURE_END-PASTURE_BEGIN)*DAY_SECONDS/24;
@@ -147,8 +150,8 @@ function planGoatHerd(s,places){
  }
 }
 export function naturalAnimalsFor(s,{displayGroups=false}={}){
- const time=s.simTime||0,result=[];
- const sentries=watchOnShift('night',time)?(s.citizens||[]).filter(c=>c.guardPost&&watchOnDuty(s,c)):[];
+ const time=motionTimeFor(s),result=[];
+ const sentries=watchOnShift('night',s.simTime||0)?(s.citizens||[]).filter(c=>c.guardPost&&watchOnDuty(s,c)):[];
  for(const {id,kind,route,packRoute,packIndex,herdIndex,decorative,...p} of habitatsFor(s)){
   if(decorative&&!displayGroups)continue;
   const phase=time+seed(p.x,p.y)*17+(herdIndex===undefined?0:.17+herdIndex*.095);
@@ -210,9 +213,10 @@ export function naturalAnimalsFor(s,{displayGroups=false}={}){
  return result;
 }
 function flockPlan(s,b,size){
+ const rate=motionRateFor(s),walkingSpeed=FLOCK_SPEED*rate;
  const nearby=s.buildings.filter(site=>site!==b&&Math.hypot(site.x-b.x,site.y-b.y)<8);
  const flood=floodPhase(s)==='active'?s.riverFlood:null;
- const signature=JSON.stringify([size,b.rotation,footprintSize(b),s.world?.river,s.world?.lakes,
+ const signature=JSON.stringify([size,rate,b.rotation,footprintSize(b),s.world?.river,s.world?.lakes,
   flood&&[flood.along,flood.bank,floodProtectionRevision(s)],nearby.map(site=>[site.x,site.y,footprintSize(site)])]);
  const cached=flockRoutes.get(b);
  if(cached?.signature===signature)return cached;
@@ -226,7 +230,11 @@ function flockPlan(s,b,size){
   const z=(Math.floor(i/columns)-(rows-1)/2)*Math.min(gateHalfWidth-.32,large?2.04:1.24);
   return {x:(x*c+z*sin)/6,y:(-x*sin+z*c)/6};
  });
- const outside=world(halfWidth+(columns-1)/2*spacing+.52,0);
+ const gateX=halfWidth+(columns-1)/2*spacing+(rate<1?.32:.52);
+ const outside=world(gateX,0);
+ // Short days leave less time for a round trip. Bed the flock near the opening
+ // and include the grazable strip outside it in the search.
+ const bed=rate<1?world(halfWidth-(columns-1)/2*spacing-.26,0):origin;
  const inPen=p=>Math.max(Math.abs(p.x-origin.x),Math.abs(p.y-origin.y))<(halfWidth+.24)/6;
  const flooded=flood?floodFootprint(s,flood):null;
  const free=p=>isDryPoint(s,p.x,p.y)&&!flooded?.has(`${Math.round(p.x)},${Math.round(p.y)}`)&&!nearby.some(site=>
@@ -245,7 +253,13 @@ function flockPlan(s,b,size){
  const shift=(point,slot)=>({x:point.x+slot.x,y:point.y+slot.y,flockStage:point.flockStage,pause:point.pause});
  const clearForFlock=(from,to,awayFromFence=true)=>slots.every(slot=>clear(shift(from,slot),shift(to,slot),awayFromFence));
  const candidates=[];
- if(clearForFlock(origin,outside,false)){
+ if(clearForFlock(bed,outside,false)){
+  if(rate<1)for(const reach of [.015,.10,.22,.40,.65,1]){
+   for(const side of [0,-reach,reach]){
+    const p=world(gateX+reach*6,side*6);
+    if(free(p)&&clearForFlock(outside,p))candidates.push(p);
+   }
+  }
   for(let dy=-6;dy<=6;dy++)for(let dx=-6;dx<=6;dx++){
    if(Math.hypot(dx,dy)<1.5||Math.hypot(dx,dy)>6)continue;
    const point={x:b.x+dx,y:b.y+dy};
@@ -253,19 +267,24 @@ function flockPlan(s,b,size){
   }
  }
  candidates.sort((a,z)=>Math.hypot(a.x-origin.x,a.y-origin.y)-Math.hypot(z.x-origin.x,z.y-origin.y));
- const pen={...origin,flockStage:'pen',pause:false},gate={...outside,pause:false};
+ const pen={...bed,flockStage:'pen',pause:false},gate={...outside,pause:false};
  const duration=route=>route.slice(1).reduce((seconds,to,i)=>{
   const from=route[i];
-  return seconds+Math.hypot(to.x-from.x,to.y-from.y)/FLOCK_SPEED+(to.pause===false?0:FLOCK_STOP);
+  return seconds+Math.hypot(to.x-from.x,to.y-from.y)/walkingSpeed+(to.pause===false?0:FLOCK_STOP);
  },0);
- const field=candidates.find(p=>terrain(p.x,p.y,s)==='fertile'&&slots.every(slot=>{
+ const fertile=p=>terrain(Math.round(p.x),Math.round(p.y),s)==='fertile'&&slots.every(slot=>{
   const q=shift(p,slot);
   return terrain(Math.round(q.x),Math.round(q.y),s)==='fertile';
- })&&duration([pen,gate,p,gate,pen])<=FLOCK_DURATION);
- const pasture=field&&{...field,flockStage:'pasture'};
- const watering=field&&candidates.find(p=>isShore(s,p.x,p.y)&&Math.hypot(p.x-field.x,p.y-field.y)>.6&&
+ });
+ const reachable=p=>duration([pen,gate,p,gate,pen])<=FLOCK_DURATION;
+ const field=candidates.find(p=>fertile(p)&&reachable(p));
+ // If the pasture is too far for the available daylight, let the sheep
+ // exercise at the gate and return without pretending to graze on sand.
+ const outing=field||(rate<1&&candidates.some(fertile)&&candidates.find(reachable));
+ const pasture=outing&&{...outing,flockStage:field?'pasture':'gate'};
+ const watering=field&&candidates.find(p=>isShore(s,Math.round(p.x),Math.round(p.y))&&Math.hypot(p.x-field.x,p.y-field.y)>.6&&
   clearForFlock(field,p)&&duration([pen,gate,pasture,p,field,gate,pen])<=FLOCK_DURATION);
- const route=field?[pen,gate,pasture,...(watering?[{...watering,flockStage:'water'},{...field,pause:false}]:[]),gate,pen]:[pen];
+ const route=outing?[pen,gate,pasture,...(watering?[{...watering,flockStage:'water'},{...field,pause:false}]:[]),gate,pen]:[pen];
  const natural=slots.map((_,i)=>{
   const angle=seed(b.x+i*29,b.y+53)*Math.PI*2;
   return {dx:Math.cos(angle),dy:Math.sin(angle),pace:seed(b.x+i*7,b.y+23),delay:seed(b.x+i*19,b.y+17)};
@@ -280,11 +299,11 @@ function flockPlan(s,b,size){
    return dry&&clear(base[j-1],q,true)&&clear(q,base[j+1],true)?q:p;
   });
   if(points.some((p,j)=>j>1&&j<points.length-1&&!clear(points[j-1],p,true)))return null;
-  const speed=FLOCK_SPEED*(1+variation*(.035+individual.pace*.105));
+  const speed=walkingSpeed*(1+variation*(.035+individual.pace*.105));
   return timedFlockRoute(points,speed,variation*(.25+individual.delay*.73),p=>FLOCK_STOP+variation*(individual.delay-.47)*(p.flockStage==='water'?1.1:2));
  });
  let paths;
- if(field)for(const variation of [1,.77,.55,.34,.17]){
+ if(outing)for(const variation of [1,.77,.55,.34,.17]){
   const candidate=buildPaths(variation);
   if(candidate.every(p=>p&&p.duration<=FLOCK_DURATION)&&flockSpacing(candidate)){paths=candidate;break;}
  }
@@ -318,17 +337,17 @@ export function animalsFor(s){
    }
    continue;
   }
-  if(kill){if(time-kill.time<8||jobs.some(j=>j.stage==='retrieve'&&j.target.id===kill.id))result.push({...actor,x:kill.x,y:kill.y,behavior:'dead',dead:true,walking:false,deathProgress:Math.min(1,Math.max(0,(time-kill.time)/.5))});continue;}
+  if(kill){if(time-kill.time<8||jobs.some(j=>j.stage==='retrieve'&&j.target.id===kill.id))result.push({...actor,x:kill.x,y:kill.y,behavior:'dead',dead:true,walking:false,deathProgress:Math.min(1,Math.max(0,(time-kill.time)*motionRateFor(s)/.5))});continue;}
   const hunt=jobs.find(j=>j.kind==='hunting'&&j.stage!=='return'&&j.target?.id===actor.id);
   result.push(hunt?{...actor,x:hunt.target.x,y:hunt.target.y,behavior:'looking',walking:false}:actor);
  }
- const hour=lightingAt(time).hour;
+ const hour=lightingAt(time).hour,bodyTime=motionTimeFor(s);
  for(const b of s.buildings){if(b.type!=='sheepfold'||b.construction?.kind==='new')continue;
   const size=flockSize(b),plan=flockPlan(s,b,size);
   for(let i=0;i<size;i++){
-   const phase=time+seed(b.x,b.y)*8-i*.39;
+   const phase=bodyTime+seed(b.x,b.y)*8-i*.39;
    const motion=flockMotion(plan,i,hour);
-   const behavior=motion.walking?'walking':motion.flockStage==='water'?'drinking':motion.flockStage==='pasture'?'grazing':'resting';
+   const behavior=motion.walking?'walking':motion.flockStage==='water'?'drinking':motion.flockStage==='pasture'?'grazing':motion.flockStage==='gate'?'looking':'resting';
    result.push({id:`sheep-${b.x}-${b.y}-${i}`,kind:'sheep',young:i>=flockAdults(b),...motion,step:phase*5,behavior,yaw:motion.walking?motion.yaw:plan.yaws[i]+Math.sin(phase*.24)*.24,headTurn:Math.sin(phase*.8)*.5});
   }
  }
