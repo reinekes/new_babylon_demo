@@ -8,8 +8,9 @@ export const needsCanalCleaning=b=>b?.type==='canal'&&isOperational(b)&&b.canalC
 
 export function depositCanalSilt(state,wet){
  if(!canalMaintenanceEnabled(state))return;
- for(const [key,canal] of wet.cells)if(wet.wet.has(key)||wet.outlets?.has(key)){
-  canal.silt=nextCanalSilt(canal);
+ for(const [key,canal] of wet.cells){
+  if(wet.wet.has(key)||wet.outlets?.has(key))canal.silt=nextCanalSilt(canal);
+  if(state.calendarDaysPerMonth===1&&(canal.silt||0)>=.48)canal.canalCleaning=true;
  }
 }
 

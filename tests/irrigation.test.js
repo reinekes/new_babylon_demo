@@ -95,3 +95,12 @@ test('the next silt forecast flags an active canal before it loses a share',asyn
  assert.ok(queueCanalCleaning(s,'13,6').ok);
  assert.deepEqual(canalSiltingForecast(s),[{...prediction[0],queued:true}]);
 });
+
+test('current calendar schedules maintenance before a working channel loses capacity',async()=>{
+ const {depositCanalSilt,canalShares}=await import('../canal-maintenance.js');
+ const canal={type:'canal',silt:.36};
+ const state={calendarDaysPerMonth:1,scenario:{history:'sumer-iii-v1'}};
+ depositCanalSilt(state,{cells:new Map([['a',canal]]),wet:new Set(['a'])});
+ assert.equal(canalShares(canal),3);
+ assert.equal(canal.canalCleaning,true);
+});
