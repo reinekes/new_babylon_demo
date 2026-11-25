@@ -4,6 +4,8 @@ dialog[data-kind=life]{width:min(1120px,96vw);max-width:96vw}dialog[data-kind=li
 
 .life-analytics h2{color:#344538}.life-analytics h3{color:#516548}.life-analytics h4{color:#756c52}
 
+.life-death-evidence .life-metrics{margin:8px 0}.life-death-evidence>small{display:block;line-height:1.5}
+
 .life-food-explanation{padding:10px 12px;border:1px solid #9d947755;border-radius:4px;background:#ece7d5;margin:12px 0;font-size:12px;color:#5a604e}.life-food-explanation p{margin:5px 0}.life-food-explanation span{line-height:1.5}
 
 /* Compact current-state charts and recorded seasonal trends. */

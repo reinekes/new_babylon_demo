@@ -39,23 +39,26 @@ export function mournResidents(s,ids,natural=false){const dead=new Set(ids);for(
 export function advanceWellbeing(s,dt){
  const day=mealCycle(s.simTime),night=isDinnerTime(s.simTime),evaluating=!night&&s.citizens.some(c=>c.mealDay===day&&c.mealEvaluated<day),gardenJoy=evaluating?s.buildings.filter(b=>b.type==='garden'&&b.construction?.kind!=='new').reduce((n,b)=>n+2+2*(b.level||1),0):0;
  if(night){
-  const families=new Map();
+  const households=new Map();
   let storyRecords;
   for(const c of s.citizens){
    if(c.mealDay!==day){c.mealDay=day;c.mealEaten=c.commonMealDay===day?COMMON_PORTION:0;c.familyMeal=false;}
    if(s.funeral?.actors.some(a=>a.id===c.id))continue;
    const home=supplyHome(c,{arrived:true});
-   if(!home||!c.floodShelter&&!c.fireShelter&&(!['home','resting'].includes(c.phase)||c.phase!=='resting'&&Object.values(c.cargo||{}).some(n=>n>0)||Object.values(c.buildCargo||{}).some(n=>n>0)))continue;
-   if(!families.has(home))families.set(home,[]);
-   families.get(home).push(c);
+   if(!home)continue;
+   if(!households.has(home))households.set(home,{members:[],diners:[]});
+   const household=households.get(home);
+   household.members.push(c);
+   if(!c.floodShelter&&!c.fireShelter&&(!['home','resting'].includes(c.phase)||c.phase!=='resting'&&Object.values(c.cargo||{}).some(n=>n>0)||Object.values(c.buildCargo||{}).some(n=>n>0)))continue;
+   household.diners.push(c);
   }
-  for(const b of s.buildings){const family=families.get(`${b.x},${b.y}`);if(!isResidence(b)||!family||!((b.pantry||0)+(b.householdStock?.milk||0)*.5>0))continue;const requests=family.map(c=>Math.max(0,Math.min(mealRation(c)-c.mealEaten,mealRation(c)*.4*dt))),total=requests.reduce((a,b)=>a+b,0);if(total<=1e-9)continue;const share=Math.min(1,((b.pantry||0)+(b.householdStock?.milk||0)*.5)/total);for(let i=0;i<family.length;i++){const amount=requests[i]*share;if(amount<=1e-9)continue;const c=family[i];c.mealEaten=Math.min(mealRation(c),c.mealEaten+amount);const milk=Math.min(b.householdStock?.milk||0,amount*2);if(milk)b.householdStock.milk-=milk;if(b.giftHome)takeGiftFood(b,'giftHome',amount-milk*.5,b.pantry);recordGrainDinner(s,b,amount-milk*.5);b.pantry=Math.max(0,(b.pantry||0)-(amount-milk*.5));c.hunger=clamp(c.hunger-45*amount/mealRation(c));c.health=clamp(c.health+2*amount/mealRation(c));c.diningUntil=s.simTime+2;c.familyMeal||=family.length>1;if(c.floodShelter)recordArrivalShelter(s,b,c,amount);}
+  for(const b of s.buildings){const key=`${b.x},${b.y}`,household=households.get(key),family=household?.diners||[],members=household?.members;if(!isResidence(b)||!members||!((b.pantry||0)+(b.householdStock?.milk||0)*.5>0))continue;const requests=members.map(c=>Math.max(0,Math.min(mealRation(c)-c.mealEaten,mealRation(c)*.4*dt))),total=requests.reduce((a,b)=>a+b,0);if(total<=1e-9)continue;const share=Math.min(1,((b.pantry||0)+(b.householdStock?.milk||0)*.5)/total),present=new Set(family.map(c=>c.id)),fedAtHome=[];for(let i=0;i<members.length;i++){const amount=requests[i]*share;if(amount<=1e-9)continue;const c=members[i];c.mealEaten=Math.min(mealRation(c),c.mealEaten+amount);const milk=Math.min(b.householdStock?.milk||0,amount*2);if(milk)b.householdStock.milk-=milk;if(b.giftHome)takeGiftFood(b,'giftHome',amount-milk*.5,b.pantry);recordGrainDinner(s,b,amount-milk*.5);b.pantry=Math.max(0,(b.pantry||0)-(amount-milk*.5));c.hunger=clamp(c.hunger-45*amount/mealRation(c));c.health=clamp(c.health+2*amount/mealRation(c));if(present.has(c.id)){c.diningUntil=s.simTime+2;c.familyMeal||=family.length>1;fedAtHome.push(c);}if(c.floodShelter)recordArrivalShelter(s,b,c,amount);}
    if(s.godhood?.firstWaterHelp?.deliveredAt!==undefined&&family.length>1){
     storyRecords??=new Map((s.lifeAnalytics?.people||[]).map(p=>[p.id,p]));
-    tellWaterStoryAtDinner(s,family.filter((_,i)=>requests[i]*share>1e-9),storyRecords);
+    tellWaterStoryAtDinner(s,fedAtHome,storyRecords);
    }
   }
-  for(const b of s.buildings)advanceEveningGame(s,b,families.get(`${b.x},${b.y}`));
+  for(const b of s.buildings)advanceEveningGame(s,b,households.get(`${b.x},${b.y}`)?.diners);
  }else if(evaluating){
   const furnished=new Map(s.buildings.filter(b=>isResidence(b)&&b.householdStock?.mat>=1&&!b.floodDamage).map(b=>[buildingKey(b),b.householdStock.mat]));
   const camps=new Set(s.buildings.filter(b=>b.reedCamp).map(buildingKey));

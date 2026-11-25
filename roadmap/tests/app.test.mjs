@@ -91,7 +91,7 @@ test('portable HTML and real-plan ZIP roundtrip retain remaining dependencies an
   const vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));
   const dom=new JSDOM(fs.readFileSync(new URL('../index.html',import.meta.url),'utf8'),{url:'file:///portable/index.html',runScripts:'dangerously',virtualConsole:vc,beforeParse(w){w.TextEncoder=TextEncoder;}});
   const api=dom.window.Roadmap,state=api.getData();
-  assert.equal(state.tasks.length,(fs.readFileSync(new URL('../plan.md',import.meta.url),'utf8').match(/^## /gm)||[]).length);assert.equal(state.history.length,13);
+  assert.equal(state.tasks.length,(fs.readFileSync(new URL('../plan.md',import.meta.url),'utf8').match(/^## /gm)||[]).length);assert.equal(state.history.length,(fs.readFileSync(new URL('../historical-review.md',import.meta.url),'utf8').match(/^## [a-zA-Z0-9][a-zA-Z0-9_-]* \| .+$/gm)||[]).length);
   assert.ok(state.releases.filter(x=>x.type==='release').length>=44);
   const transfer=api.createTransfer(state,['ux-new-player-playtest'],{date:'2026-11-04',note:'Проверка передачи UTF-8: город и жители'});
   const folder=mkdtempSync(join(tmpdir(),'babylon-roadmap-'));
