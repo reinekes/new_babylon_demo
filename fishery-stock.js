@@ -34,7 +34,8 @@ export function takeFish(state,key,requested){
  if(resting||stock<=0)return 0;
  const amount=Math.min(requested,stock);
  state.fisheries??={};
- state.fisheries[key]={stock:stock-amount};
+ const left=stock-amount;
+ state.fisheries[key]=state.calendarDaysPerMonth===1&&left===0?{stock:left,restUntil:state.simTime+DAY_SECONDS}:{stock:left};
  return amount;
 }
 
@@ -44,6 +45,12 @@ export function restFishery(state,key){
  if(resting||stock>=CAPACITY)return false;
  state.fisheries[key]={stock,restUntil:state.simTime+DAY_SECONDS};
  return true;
+}
+
+export function scheduleEmptyFisheries(state){
+ for(const entry of Object.values(state.fisheries||{})){
+  if(entry.stock===0&&entry.restUntil===undefined)entry.restUntil=state.simTime+DAY_SECONDS;
+ }
 }
 
 export function validateFisheries(state){

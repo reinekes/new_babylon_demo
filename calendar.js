@@ -1,4 +1,5 @@
 import {DAY_SECONDS,lightingAt} from './city-life.js';
+import {scheduleEmptyFisheries} from './fishery-stock.js';
 // Saved season progress retains its original units; calendarOffset accounts
 // for the difference between lived seconds and calendar progress.
 // Four equal seasons/12 numbered months are a game simplification of local lunar calendars.
@@ -16,6 +17,7 @@ export function useOneDayCalendar(s){
  // Start at the saved phase on first open and retain that anchor on subsequent loads.
  s.motionTimeOrigin??=s.simTime??0;
  s.calendarDaysPerMonth=DAYS_PER_MONTH;
+ scheduleEmptyFisheries(s);
  return s;
 }
 export function useThreeDayCalendar(s){s.calendarDaysPerMonth=3;return s;}

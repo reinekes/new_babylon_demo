@@ -16,7 +16,7 @@ test('saved road procession migrates to the desert ceremony without dropping car
  const {readFile}=await import('node:fs/promises');const raw=await readFile(new URL('./fixtures/legacy-v6-funeral.json',import.meta.url),'utf8'),old=JSON.parse(raw),s=decode(raw);assert.ok(s);assert.equal(s.funeral.style,'desert');assert.deepEqual(s.citizens.map(c=>c.cargo),old.citizens.map(c=>c.cargo));assert.ok(decode(encode(s)));
 });
 test('crowd path preparation is spread over simulation steps',()=>{
- const s=createGame({start:'established'});startFuneral(s,[{id:12,name:'Умерший',x:8,y:8}]);advanceFuneral(s,.1);assert.ok(s.funeral.actors.filter(a=>a.departure!==null).length<=2);assert.ok(s.funeral.actors.some(a=>a.departure!==null));assert.ok(decode(encode(s)));
+ const s=createGame({start:'established'});startFuneral(s,[{id:12,name:'Умерший',x:8,y:8}]);advanceFuneral(s,.1);assert.equal(s.funeral.actors.filter(a=>a.departure?.length).length,1);assert.ok(decode(encode(s)));
 });
 test('mourners spread into a crowd instead of overlapping repeated lanes',async()=>{
  const {syncCitizens}=await import('../workforce.js');const s=createGame({start:'established'});s.buildings.push(...[[6,10],[7,11],[8,10]].map(([x,y])=>({type:'house',x,y,level:1})));s.population=36;s.capacity=40;syncCitizens(s);startFuneral(s,[{id:36,name:'Умерший',x:8,y:8}]);for(let i=0;i<1500&&s.funeral.stage==='gathering';i++)advanceFuneral(s,.1);for(let i=0;i<40;i++)advanceFuneral(s,.1);const positions=new Set(s.citizens.map(c=>`${c.x.toFixed(2)},${c.y.toFixed(2)}`));assert.ok(positions.size>27,`${positions.size} distinct positions for 36 mourners`);

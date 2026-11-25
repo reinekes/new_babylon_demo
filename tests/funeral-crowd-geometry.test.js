@@ -10,7 +10,7 @@ function farewell(count=40){
  const state=createGame({start:'established'});
  state.buildings.push(...[3,4,5].map(x=>({type:'house',x,y:8,level:1})));state.capacity=40;state.population=count;syncCitizens(state);
  state.citizens.forEach(c=>{c.age=30;c.cargo={};c.buildCargo={};});
- startFuneral(state,[{id:9990,name:'Покойный',x:8,y:8}]);state.funeral.stage='farewell';state.funeral.timer=2.5;
+ startFuneral(state,[{id:9990,name:'Покойный',x:8,y:8}]);state.funeral.stage='farewell';state.funeral.timer=2.5;state.funeral.bierProgress.fill(1);
  return state;
 }
 

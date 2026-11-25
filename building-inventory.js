@@ -10,7 +10,7 @@ import {KILN_RECIPE,kilnNeeds,collectFired} from './kilns.js';
 import {craftBatch,flockCapacity,flockRation} from './textiles.js';
 import {isStrictSumer} from './scenario-profiles.js';
 import {toolResource,toolNeeds,workTool,putToolSupply,validateWorkTool} from './axe-kit.js';
-import {ration} from './households.js';
+import {ration,pantryStockTarget} from './households.js';
 const eps=1e-7,n=value=>Number.isFinite(value)?Math.max(0,value):0;
 const sum=(target,k,value)=>{if(value>0)target[k]=(target[k]||0)+value;};
 export const isProductionStore=b=>Object.keys(BUILDINGS[b?.type]?.output||{}).some(k=>MATERIALS.includes(k));
@@ -45,7 +45,7 @@ export function homeStockCapacity(s,b,k,households){
  const people=households?households.get(key)||[]:(s.citizens||[]).filter(c=>c.home===key);
  if(k==='mat')return people.length?2:0;
  if(!people.length)return 0;
- if(k==='food')return people.reduce((a,c)=>a+ration(c)*8/3,0);
+ if(k==='food')return pantryStockTarget(s,people.reduce((a,c)=>a+ration(c)*4/3,0));
  if(k==='water')return people.reduce((a,c)=>a+(c.age<16?.5:1)*3,0);
  return k==='clothing'?Math.min(4,Math.max(1,Math.ceil(people.length/2))):k==='milk'?Math.max(0,people.length*2):['pottery','beer'].includes(k)&&people.length?2:0;
 }

@@ -5,16 +5,22 @@ import {household,homeFoodCouriers,carriedMealFood} from './households.js';
 import {isResidence,buildingKey} from './definitions.js';
 import {networkFor,routeBetween} from './workforce.js';
 export function supplyOverview(s){
- const food=foodAvailability(s,{reconcile:false}),net=networkFor(s,{materializeRoads:false}),ctx={network:net},ports=new Map(net.ports.filter(p=>!p.building.siteKey).map(p=>[buildingKey(p.building),p.key]));
- let stores=stockStores(s);
+ const stores=stockStores(s),food=foodAvailability(s,{reconcile:false,stores});
+ const net=networkFor(s,{materializeRoads:false}),components=new Map(net.ports.filter(p=>!p.building.siteKey).map(p=>[buildingKey(p.building),net.components.get(p.key)]));
  const milk=projectedStoreStock(s,'milk',stores);
- if(!stores.length)stores=s.buildings.filter(b=>isResidence(b)&&b.construction?.kind!=='new').slice(0,1);
- const houses=s.buildings.filter(b=>isResidence(b)&&b.construction?.kind!=='new').map(b=>{const h=household(s,b),demand=h.demand*4/3,trips=homeFoodCouriers(s,buildingKey(b)),reachableStores=stores.filter(store=>routeBetween(s,ports.get(buildingKey(b)),ports.get(buildingKey(store)),ctx)),reachable=reachableStores.length>0;
- const localStaples=reachableStores.reduce((n,store)=>n+(food.get(buildingKey(store))||0),0);
- const localMilk=reachableStores.reduce((n,store)=>n+(milk.get(buildingKey(store))||0),0);
+ const warehouseByComponent=new Map();
+ for(const store of stores){
+  const key=buildingKey(store),component=components.get(key);
+  if(component===undefined)continue;
+  const totals=warehouseByComponent.get(component)||{staples:0,milk:0};
+  totals.staples+=food.get(key)||0;totals.milk+=milk.get(key)||0;
+  warehouseByComponent.set(component,totals);
+ }
+ const houses=s.buildings.filter(b=>isResidence(b)&&b.construction?.kind!=='new').map(b=>{const key=buildingKey(b),h=household(s,b),demand=h.demand*4/3,trips=homeFoodCouriers(s,key),local=warehouseByComponent.get(components.get(key)),reachable=!!local;
+ const localStaples=local?.staples||0,localMilk=local?.milk||0;
  const localFood=localStaples+localMilk*.5;
  let reason='Хватает на ближайший ужин';if(!h.residents.length)reason='Дом пуст';else if(h.food+1e-7<demand){if(trips.some(c=>c.phase==='blocked'))reason='Доставка еды не может пройти';else if(trips.length)reason=trips.some(c=>carriedMealFood(c)>0)?'Житель несёт еду домой':'Житель идёт за едой';else if(!reachable)reason='Нет пути к доступному складу';else if(localFood<=1e-7&&availableFood(s)+(s.resources.milk||0)*.5>1e-7)reason='Ближайшие доступные склады пусты. Проверь путь к складам с едой.';else if(availableFood(s)+(s.resources.milk||0)*.5<=0)reason=seedReserve(s)>0?'Еда осталась только в семенном резерве':'В общем запасе нет еды';else if(localStaples<=1e-7&&localMilk>1e-7)reason='На доступном складе есть молоко. Молоко доставляют носильщики. Проверь рейс в разделе «Склады и перевозки».';else if(!h.residents.some(c=>c.age>=16))reason='Нет взрослого дома: нужна помощь свободного соседа';else reason='Ждём свободного взрослого дома';}
- return {...h,localFood,reachable,key:buildingKey(b),homeId:b.waterEntityId,x:b.x,y:b.y,demand,dinners:demand?h.food/demand:0,shortfall:Math.max(0,demand-h.food),reason};});
+ return {...h,localFood,reachable,key,homeId:b.waterEntityId,x:b.x,y:b.y,demand,dinners:demand?h.food/demand:0,shortfall:Math.max(0,demand-h.food),reason};});
  return {houses,demand:houses.reduce((n,h)=>n+h.demand,0),atHome:houses.reduce((n,h)=>n+h.food,0),inTransit:houses.reduce((n,h)=>n+h.inTransit,0),hungry:houses.reduce((n,h)=>n+h.hungry,0),short:houses.filter(h=>h.shortfall>1e-7).length};
 }
 

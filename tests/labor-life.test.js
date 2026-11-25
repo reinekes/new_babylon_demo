@@ -49,8 +49,9 @@ test('mixed real extraction city survives repeated reloads with jobs, prey death
 });
 
 test('short days allow distant hunters and fishers to reach the yard and work',async()=>{
- const {useOneDayCalendar}=await import('../calendar.js');
- const {workHourAt}=await import('../work-schedule.js');
+ const {useOneDayCalendar,calendarRateFor}=await import('../calendar.js');
+ const {DAY_SECONDS}=await import('../city-life.js');
+ const {isWorkplaceOpen,workHourAt,workplaceHours}=await import('../work-schedule.js');
  const s=useOneDayCalendar(createGame({start:'established'}));
  for(const b of s.buildings.filter(b=>b.type==='house'))Object.assign(b,{pantry:50,pantryDelivered:50,water:20});
  const hunting={type:'hunting',x:5,y:15,level:1};s.buildings.push(hunting);
@@ -58,22 +59,50 @@ test('short days allow distant hunters and fishers to reach the yard and work',a
  for(let y=3;y<14&&!fishing;y++)for(let x=9;x<17;x++)if(!canBuild(s,'fishing',x,y,true)){fishing={type:'fishing',x,y,level:1};break;}
  s.buildings.push(fishing);
  const adults=s.citizens.filter(c=>c.age>=16);
- for(const [i,b] of [hunting,fishing].entries())adults[i+2].workplace=`${b.x},${b.y}`;
+ const [hunter,fisher]=adults.slice(2,4);
+ hunter.workplace=`${hunting.x},${hunting.y}`;
+ fisher.workplace=`${fishing.x},${fishing.y}`;
+ for(const c of adults)if(c!==hunter&&c!==fisher)c.role='builder';
  invalidateAssignments(s);syncCitizens(s);
- let retrieved=false,landed=false,nightWork;
- for(let i=0;i<2400&&!(retrieved&&landed);i++){
+ const hunt=()=>s.gathering.jobs.find(j=>j.citizen===hunter.id);
+ let landed=false;
+ const step=()=>{
   s.event=null;advanceTime(s,.1);
-  const hunter=adults[2],hour=workHourAt(s.simTime);
-  if(hour>=22&&s.gathering.jobs.some(j=>j.citizen===hunter.id&&j.stage==='working')){
-   nightWork??=hunter.workElapsed;
-   assert.equal(hunter.workElapsed,nightWork);
-   assert.equal(actorWorkActivity(s,hunter).stage,'waiting');
-  }
-  retrieved||=s.gathering.kills.some(k=>k.taken);
-  landed||=s.citizens.some(c=>c.fishingLanding||c.hangingFishElapsed!==undefined)||!!fishing.fishRack?.batch;
+  landed||=!!fisher.fishingLanding||fisher.hangingFishElapsed!==undefined;
+ };
+ for(let i=0;i<1200&&!(hunt()?.stage==='working'&&hunter.workElapsed>0);i++)step();
+ assert.equal(hunt()?.stage,'working','hunter reached the actual prey');
+ assert.ok(hunter.workElapsed>0);
+ const target=hunt().target.id;
+
+ // Place the hunt in progress just before closing, independent of commute timing.
+ const {close}=workplaceHours('hunting'),rate=calendarRateFor(s);
+ const setupSeconds=(close-workHourAt(s.simTime))*DAY_SECONDS/24-.2;
+ assert.ok(setupSeconds>=0);
+ s.simTime+=setupSeconds;
+ s.seasonElapsed+=setupSeconds*rate;
+ s.calendarOffset+=setupSeconds*(1-rate);
+ for(let i=0;i<10&&isWorkplaceOpen('hunting',s.simTime);i++)step();
+ assert.equal(isWorkplaceOpen('hunting',s.simTime),false);
+ const nightWork=hunter.workElapsed;
+ assert.ok(nightWork>0);
+ let checkedNight=false;
+ for(let i=0;i<400&&!isWorkplaceOpen('hunting',s.simTime);i++){
+  assert.equal(hunt()?.target.id,target);
+  assert.equal(hunt().stage,'working');
+  assert.equal(hunter.workElapsed,nightWork);
+  assert.equal(actorWorkActivity(s,hunter).stage,'waiting');
+  checkedNight||=workHourAt(s.simTime)>=22;
+  step();
  }
- assert.ok(nightWork>0,'remote hunt paused overnight');
- assert.ok(retrieved,'hunter recovered the fallen prey');
+ assert.ok(checkedNight,'remote hunt paused overnight');
+ assert.equal(isWorkplaceOpen('hunting',s.simTime),true);
+ step();
+ assert.equal(hunt()?.target.id,target);
+ assert.ok(hunter.workElapsed>nightWork,'the same hunt resumed after opening');
+ const retrieved=()=>s.gathering.kills.some(k=>k.id===target&&k.taken);
+ for(let i=0;i<1000&&!(retrieved()&&landed);i++)step();
+ assert.ok(retrieved(),'hunter recovered the same prey');
  assert.ok(landed,'fisher landed the catch');
  assert.ok(decode(encode(s)));
 });

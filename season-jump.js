@@ -1,5 +1,6 @@
 import {advanceTime} from './engine.js';
 import {DAY_SECONDS} from './city-life.js';
+import {calendarRateFor} from './calendar.js';
 import {skipFestival} from './festival.js';
 import {advanceMiracleCelebration} from './miracle-celebration.js';
 import {relicCommandReason} from './city-command-lock.js';
@@ -12,16 +13,18 @@ export function seasonJumpReason(s){
  return '';
 }
 
-/** One real working day, exactly one calendar season. Ceremonies spend neither. */
+/** Current cities live through the remaining days. Legacy calendars retain their one-day jump. */
 export function createSeasonJump(s){
  const target=s.tick+1,start=s.simTime,skipped=[];
+ const natural=s.calendarDaysPerMonth===1,rate=calendarRateFor(s);
+ const duration=natural?(45-s.seasonElapsed)/rate:DAY_SECONDS;
  let result=null,first=true;
  const finishCelebrations=(force=false)=>{
   if(s.festival&&(force||s.festival.stage==='celebrating')){const kind=s.festival.occasion||'nightLights';if(skipFestival(s).ok)skipped.push(kind);}
   if(force&&s.firstBeerFeast?.status==='pending'){s.firstBeerFeast.status='skipped';skipped.push('firstBeer');}
   if(s.miracleCelebration){skipped.push(s.miracleCelebration.kind);advanceMiracleCelebration(s,s.miracleCelebration.duration);}
  };
- const snapshot=()=>({done:!!result,progress:Math.min(1,Math.max(0,(s.simTime-start)/DAY_SECONDS)),result});
+ const snapshot=()=>({done:!!result,progress:Math.min(1,Math.max(0,(s.simTime-start)/duration)),result});
  const fail=reason=>{result={ok:false,reason,skipped:[...new Set(skipped)]};return snapshot();};
  return {step(seconds=1){
   if(result)return snapshot();
@@ -29,7 +32,8 @@ export function createSeasonJump(s){
   const reason=seasonJumpReason(s);if(reason)return fail(reason);
   finishCelebrations(first);first=false;
   const before=s.simTime;
-  const remaining=start+DAY_SECONDS-s.simTime,calendarRate=(45-s.seasonElapsed)/remaining;
+  const remaining=natural?(45-s.seasonElapsed)/rate:start+duration-s.simTime;
+  const calendarRate=natural?rate:(45-s.seasonElapsed)/remaining;
   advanceTime(s,Math.min(seconds,remaining),{calendarRate});
   if(s.tick>=target){finishCelebrations(true);result={ok:true,skipped:[...new Set(skipped)],year:s.year,season:s.season};return snapshot();}
   const blocked=seasonJumpReason(s);if(blocked)return fail(blocked);

@@ -2,6 +2,7 @@ import {appendGrain,takeGrain} from './grain-origin.js';
 import {addGiftFood,takeGiftFood} from './abundance-origin.js';
 import {takeCreatorStock,addCreatorStock,markCreatorCargo} from './creator-materials.js';
 import {appendFish,takeFish} from './fish-provenance.js';
+import {seedTarget} from './food-planning.js';
 import {isResidence,MATERIALS,isOperational,levelOf} from './definitions.js';
 const keyOf=b=>`${b.x},${b.y}`;
 const empty=()=>Object.fromEntries(MATERIALS.map(k=>[k,0]));
@@ -92,14 +93,11 @@ export function projectedStoreStock(s,resource,stores=stockStores(s)){
  return result;
 }
 export function warehouseSeedTarget(s){
- if(s.foodPlan?.protectSeeds===false)return 0;
- let target=0;
- for(const b of s.buildings||[])if(b.type==='field'&&isOperational(b))target+=Math.max(0,4-(b.crop?.seedStock||0)-(s.season===0?(b.crop?.sown||0)*4:0));
- return Math.max(0,target-(s.citizens||[]).reduce((n,c)=>n+(c.seedFood||0),0));
+ return s.foodPlan?.protectSeeds===false?0:seedTarget(s);
 }
-export function foodAvailability(s,{reconcile=true}={}){
+export function foodAvailability(s,{reconcile=true,stores}={}){
  if(reconcile)syncInventory(s);
- const stores=stockStores(s);
+ stores??=stockStores(s);
  const projected=reconcile?null:projectedStoreStock(s,'food',stores);
  const cityFood=!reconcile&&!s.inventory?Math.max(amount(s.resources.food),stores.reduce((n,b)=>n+(b.stock?.food||0),0)):amount(s.resources.food);
  let target=Math.min(cityFood,warehouseSeedTarget(s));

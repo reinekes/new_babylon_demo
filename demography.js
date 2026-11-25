@@ -43,11 +43,24 @@ export function advanceGenerations(s,recover=()=>{}){
  if(deceased.length)news(s,'Завершилась жизнь',`${deceased.map(c=>c.name).join(', ')} умерли от старости. Их дети и дела остаются в городе.`,'info');
  const living=new Map(s.citizens.map(c=>[c.id,c]));for(const c of s.citizens)if(c.partner!==null&&!living.has(c.partner))c.partner=null;
  const homes=new Map();for(const c of s.citizens){if(!homes.has(c.home))homes.set(c.home,[]);homes.get(c.home).push(c);}
+ const courtyardRule=usesCourtyardBirthFood(s);
+ let housingNetwork,housingPorts;
+ const districtAt=home=>{
+  if(!housingNetwork){housingNetwork=networkFor(s);housingPorts=new Map(housingNetwork.ports.map(p=>[buildingKey(p.building),p]));}
+  return housingNetwork.components.get(housingPorts.get(home)?.key);
+ };
+ const canMeet=(a,b)=>{
+  if(!courtyardRule||a.home===b.home)return true;
+  const component=districtAt(a.home);
+  return component!==undefined&&districtAt(b.home)===component;
+ };
  // Young adults can form a household in a newly available house.
  const singles=s.citizens.filter(c=>c.age>=16&&c.age<45&&c.partner===null);
- for(const a of singles){if(a.partner!==null)continue;const partner=singles.find(c=>c!==a&&c.partner===null&&c.sex!==a.sex&&!a.parents.includes(c.id)&&!c.parents.includes(a.id)&&!a.parents.some(id=>c.parents.includes(id)));if(partner){a.partner=partner.id;partner.partner=a.id;}}
- // Housing needs reachability, not a route. Topology is stable throughout this pass.
- let housingNetwork,housingPorts;
+ for(const a of singles){
+  if(a.partner!==null)continue;
+  const partner=singles.find(c=>c!==a&&c.partner===null&&c.sex!==a.sex&&!a.parents.includes(c.id)&&!c.parents.includes(a.id)&&!a.parents.some(id=>c.parents.includes(id))&&canMeet(a,c));
+  if(partner){a.partner=partner.id;partner.partner=a.id;}
+ }
  const reservedHomes=new Map(),communalHomes=new Set(),privateHomes=new Map();
  for(const b of s.buildings){
   if(b.type==='communalHouse')communalHomes.add(buildingKey(b));
@@ -62,8 +75,6 @@ export function advanceGenerations(s,recover=()=>{}){
   const reserved=reservedHomes.get(a.id)||reservedHomes.get(partner.id);
   if(!reserved&&!communalHomes.has(a.home)&&a.home===partner.home&&!current.some(c=>c.sex==='f'&&c.partner!==null&&c.id!==a.id))continue;
   const family=householdMovingFamily(s,a,partner);
-  if(!housingNetwork){housingNetwork=networkFor(s);housingPorts=new Map(housingNetwork.ports.map(p=>[buildingKey(p.building),p.key]));}
-  const districtAt=home=>housingNetwork.components.get(housingPorts.get(home));
   const component=districtAt(a.home);
   if(!reserved&&(component===undefined||family.some(c=>districtAt(c.home)!==component)))continue;
   const available=b=>b.type==='house'&&!b.reedCamp&&!(homes.get(buildingKey(b))||[]).length&&buildingKey(b)!==a.home&&capacityOf(b)-reservedArrivalBeds(s,buildingKey(b))>=family.length&&districtAt(buildingKey(b))===component;
@@ -85,7 +96,7 @@ export function advanceGenerations(s,recover=()=>{}){
   if(!house||householdMoveActivityReason(s,family,buildingKey(house)))continue;
   const destination=buildingKey(house);for(const c of family){
    if(c.home===destination)continue;
-   const source=housingNetwork.ports.find(p=>p.key===housingPorts.get(c.home));
+   const source=housingPorts.get(c.home);
    if(source&&Math.hypot(c.x-source.x,c.y-source.y)<.05)prepareMemorialMove(s,c,house);
    homes.set(c.home,(homes.get(c.home)||[]).filter(p=>p.id!==c.id));c.home=destination;c.rehousing=true;if(!homes.has(destination))homes.set(destination,[]);homes.get(destination).push(c);}
   if(reserved)reserved.householdInitiative.settled=true;
@@ -102,7 +113,7 @@ export function advanceGenerations(s,recover=()=>{}){
   const father=living.get(pair.partner),thriving=!reserved&&!b.floodDamage&&thrivingFamily(residents,pair,father);
   // A missed meal elsewhere in town does not take a delivered dinner away
   // from a healthy private household. Legacy towns retain their city food gate.
-  if(s.hungry&&!(thriving&&usesCourtyardBirthFood(s)))continue;
+  if(s.hungry&&!(thriving&&courtyardRule))continue;
   const cooldown=thriving?4:8,chance=thriving?.6:.25;
   if(s.tick-(d.lastBirth[home]??-8)<cooldown||random(s)>=chance)continue;
   const id=d.nextId++,baby={id,home,age:0,sex:id%2?'f':'m',parents:[pair.id,father.id],partner:null,generation:1+Math.max(pair.generation,father.generation)};

@@ -114,7 +114,7 @@ import {uiIcon} from './ui-icons.js';
 import {clothingStatus} from './clothing.js';
 import {stockStores,storeCapacity,storeStock} from './inventory.js';
 import {districtReport,storeMinimum,setStoreMinimum,setStoreExports,requestTransfer,cancelTransfer} from './district-logistics.js';
-import {foodForecast,foodWarnings,seedReserve,availableFood,setSeedProtection} from './food-planning.js';
+import {foodForecast,foodWarnings,availableFood,setSeedProtection} from './food-planning.js';
 import {pestReport,isPestStore,catReason} from './pests.js';
 import {districtSupplyRoute,householdShoreRoute,householdSupplyRoute,supplyOverview} from './supply.js';
 import {medicalLevel,healingSpeed,healingQuality,healingCost,STUDY_SECONDS} from './education.js';
@@ -493,7 +493,18 @@ function cropCalendarPanel(){
  if(state.cropCalendar===AUTUMN_CROPS)return '<p>Календарь ячменя · осенний посев и весенняя жатва.</p>';
  return '<p>Календарь ячменя · весенний посев и осенняя жатва.</p><button type="button" data-adopt-autumn-crops>Перейти на осенний посев</button><small>Уже посеянные поля завершат прежний цикл. Выбор сохраняется в этом городе.</small>';
 }
-function forecastPanel(f=foodForecast(state)){return `<section class="food-forecast ${f.balance<0?'food-shortage':''}"><h3>До следующей жатвы · ${Math.ceil(f.secondsToHarvest)} с</h3><strong>${f.balance>=0?`Готовой еды хватит · остаток около ${foodAmount(f.balance)}`:`Не хватает около ${foodAmount(-f.balance)} еды`}</strong><p>Готово к питанию: ${foodAmount(f.ready)} · расход до жатвы: ${foodAmount(f.demand)}<br>Запас на потери от мышей без защиты: ${foodAmount(f.pestRisk)}<br>Семена на складе: ${foodAmount(f.reserve)} / ${foodAmount(f.target)} · на полях: ${foodAmount(f.seedAtFields)}<br>Ещё не еда: снопы ${foodAmount(f.unthreshed)} · несрезанный урожай ${foodAmount(f.standing)}<br>Ожидаемый будущий урожай: до ${foodAmount(f.cropPotential)}</p>${cropCalendarPanel()}<button data-seed-policy>${f.protected?'Разрешить съесть семена':'Защитить семенной резерв'}</button><small>${f.protected?'Семена не расходуются на ужины, продажу и лечение.':'ВНИМАНИЕ: семена можно съесть или продать; будущему посеву может не хватить зерна.'}<br>Прогноз по нынешним жителям с запасом на рост мышей без постоянной защиты, без будущих уловов и покупок. Снопы и ожидаемый урожай не включены в готовую еду; им нужны работа, вода и доставка. Общий достаток не заменяет доставку каждой семье.</small></section>`;}
+function forecastPanel(f=foodForecast(state)){
+ const stockBalance=f.balance>=0?`Расчётный остаток ${foodAmount(f.balance)}`:`Без новых поставок не хватит ${foodAmount(-f.balance)} ед. еды`;
+ return `<section class="food-forecast ${f.balance<0?'food-shortage':''}">
+  <h3>До следующей жатвы · ${Math.ceil(f.secondsToHarvest/60)} игр. дн.</h3><strong>${stockBalance}</strong>
+  <p>На складах с доступом к дворам · ${foodAmount(f.accessible)}<br>В запасах заселённых дворов · ${foodAmount(f.homes)}<br>Расход до жатвы · ${foodAmount(f.demand)} · возможные потери от мышей · ${foodAmount(f.pestRisk)}</p>
+  <p>Семена на складах · ${foodAmount(f.reserve)} / ${foodAmount(f.target)} · на полях · ${foodAmount(f.seedAtFields)}${f.isolated>1e-7?`<br>Запасы без пути к заселённым дворам · ${foodAmount(f.isolated)}`:''}
+  <br>Еда в пути · ${foodAmount(f.inTransit)} · у производителей · ${foodAmount(f.workshop)}
+  <br>Снопы · ${foodAmount(f.unthreshed)} · несрезанное зерно · ${foodAmount(f.standing)} · будущий урожай · до ${foodAmount(f.cropPotential)}</p>
+  ${cropCalendarPanel()}<button data-seed-policy>${f.protected?'Разрешить съесть семена':'Защитить семенной резерв'}</button>
+  <small>${f.protected?'Семена сохранены для посева.':'Семенной резерв открыт. Следующему посеву может не хватить зерна.'}<br>Расчёт по запасам на местах. Складскую еду ещё нужно развезти по дворам. Грузы, выпуск мастерских и будущий урожай учтены отдельно.</small>
+ </section>`;
+}
 function bindFoodPlan(root){
  root.querySelectorAll('[data-adopt-autumn-crops]').forEach(el=>el.onclick=()=>{el.blur();if(mutate(adoptAutumnCrops(state),'Город перешёл на осенний посев'))renderSupply();});
  root.querySelectorAll('[data-seed-policy]').forEach(el=>el.onclick=()=>{const protect=!state.foodPlan.protectSeeds;mutate(setSeedProtection(state,protect),protect?'Семена снова защищены':'Резерв открыт: следующий посев под угрозой');el.blur();if(modalKind==='supply')renderSupply();else updateDetail();});}
@@ -641,8 +652,10 @@ function renderFoodWarnings(){
   if(alert?.homeKey&&showSupplyHome(alert.homeKey))return;
   showSupply(alert?.id==='families'?'risk':'all');
  };
- $('open-supply').textContent=w.alerts.length?`Снабжение · ! ${w.alerts.length}`:'Снабжение';
+ $('open-supply').textContent=w.dinner.total?`Снабжение · ужин ${w.dinner.covered}/${w.dinner.total}`:'Снабжение';
+ $('open-supply').title=`Ужин обеспечен едой дома у ${w.dinner.covered} из ${w.dinner.total} дворов. В пути — для ${w.dinner.inTransit}.`;
  $('open-supply').classList.toggle('needs-attention',!!w.alerts.length);
+ return w;
 }
 const vowOutcomes={fulfilled:'Исполнен',partial:'Исполнен частично',broken:'Нарушен',renegotiated:'Срок пересогласован'};
 const vowDraft=new Set();
@@ -720,9 +733,9 @@ function renderSupply(){
  }[w.dinner.status];
  const harvestStatus=w.forecast.balance<0
   ?`Без новых поставок не хватит ${foodAmount(-w.forecast.balance)} ед. еды.`
-  :`Готового запаса хватит, останется около ${foodAmount(w.forecast.balance)} ед. еды.`;
+  :`По запасам на местах расчётный остаток ${foodAmount(w.forecast.balance)} ед. еды.`;
  const horizons=`<section class="food-forecast" aria-label="Еда сегодня и до жатвы">
-  <p><b>${isDinnerTime(state.simTime)?'Текущий ужин':'Ближайший ужин'}</b> · ${dinnerStatus} ${w.riskFamilies.length?'<button type="button" data-supply-filter="risk">Проверить дворы</button>':''}</p>
+  <p><b>${isDinnerTime(state.simTime)?'Текущий ужин':'Ближайший ужин'}</b> · дома обеспечено ${w.dinner.covered} из ${w.dinner.total} · в пути для ${w.dinner.inTransit} · нужно пополнить ${w.dinner.short}<br>${dinnerStatus} ${w.riskFamilies.length?'<button type="button" data-supply-filter="risk">Проверить дворы</button>':''}</p>
   <p><b>До жатвы</b> · ${Math.ceil(w.forecast.secondsToHarvest/60)} игр. дн. · ${harvestStatus} <button type="button" data-supply-filter="all">Показать расчёт</button></p>
  </section>`;
  const summary=w.alerts.length?`<section class="supply-alerts" aria-label="Предупреждения">${w.alerts.filter(a=>supplyFilter==='all'||a.id==='families').map(a=>`<article class="supply-alert ${a.severity}"><b>${esc(a.title)}</b><p>${esc(a.text)}</p></article>`).join('')}</section>`:'<p class="supply-safe">Признаков недоедания, риска до жатвы и нехватки семян сейчас нет.</p>';
@@ -1791,10 +1804,10 @@ function update(){
  for(const id of ['lay-roads','open-roads']){const reason=buildingKnowledgeReason(state,'road');$(id).disabled=!!reason;$(id).title=reason||'Проложить или улучшить путь';}
  $('test-resources').disabled=false;$('test-resources').title='Открыть вкладку тестирования: события, ресурсы, улучшения и похороны';
  document.body.classList.toggle('relic-control-active',relicControlActive(state));for(const el of document.querySelectorAll('.build-panel,#miracles,.time-controls [data-speed],#next-season,#day-cycle,#open-photo'))el.inert=relicControlActive(state);relicUI.refresh();
- renderFoodWarnings();
+ const foodReport=renderFoodWarnings();
  const r=state.resources,stats=workforceStats(state),marketPorters=state.citizens.filter(c=>c.tradeJob||c.saleJob).length,quarterPorters=state.citizens.filter(c=>c.districtJob).length;
  const balance=seasonBalance(state);
- resourceBar.render(state,balance,storage(state),seedReserve(state));
+ resourceBar.render(state,balance,storage(state),foodReport.forecast.reserve,foodReport);
  $('population').title=`Дети: ${state.citizens.filter(c=>c.age<16).length} · взрослые: ${state.citizens.filter(c=>c.age>=16&&c.age<55).length} · пожилые: ${state.citizens.filter(c=>c.age>=55).length}`;$('population').textContent=`${state.population} / ${state.capacity}`;$('happiness').textContent=`☀ ${Math.round(state.happiness)}%`;$('happiness').style.color=state.happiness<40?'#aa654a':'';
  const efficiency=workers(state);const ground=!state.buildings.some(b=>b.type==='granary'&&(!b.construction||b.construction.kind==='upgrade'));$('ground-storage-note').hidden=!ground;$('ground-storage-note').textContent=state.buildings.some(b=>b.starterHut)?'Запасы и припасы хранятся внутри домов':'Без амбара · запасы на земле у разгрузки';$('workers').textContent=`${stats.employed+stats.builders+(stats.carriers??0)+(stats.manualGatherers??0)+marketPorters+quarterPorters} / ${state.population}`;$('labor-meter').style.width=`${efficiency*100}%`;
  $('labor-note').textContent=state.funeral&&state.funeral.scope!=='family'?'Траурная процессия. Назначения и все грузы сохранены; работа продолжится после возвращения.':stats.disconnected?`Нет пути к ${stats.disconnected} рабочим зданиям. Нужен мост или склад на этом берегу.`:`Строители: ${stats.builders} · носильщики: ${stats.carriers??0} · площадки: ${stats.sites} · рынок: ${marketPorters} · склады: ${quarterPorters}. Собирают: ${stats.working} · несут груз: ${stats.carrying}. Ресурсы поступают только после доставки.`;
@@ -2063,7 +2076,7 @@ function healingSpecializationHTML(){
 }
 function harvestSpecializationHTML(){
  const forecast=foodForecast(state,{includeCrops:false});
- const food=forecast.balance < -1e-7?`До жатвы не хватает около ${Math.ceil(-forecast.balance)} еды.`:'По городскому прогнозу еды хватит до жатвы.';
+ const food=forecast.balance < -1e-7?`До жатвы не хватает около ${Math.ceil(-forecast.balance)} еды.`:`Расчётный остаток к жатве ${foodAmount(forecast.balance)} ед. при доставке во дворы.`;
  const missing=Math.max(0,forecast.target-state.resources.food);
  const seeds=missing>1e-7?`Для следующего посева не хватает ${Math.ceil(missing*10)/10} еды на семена.`
   :forecast.target<=1e-7?'Дополнительный семенной резерв пока не нужен.'

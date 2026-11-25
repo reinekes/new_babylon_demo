@@ -58,6 +58,7 @@ test('a new city can build its first trade route and receive both imports with s
  }
  assert.ok(mixedLoad&&builderLoad,'the city used mixed physical loads and a builder collected reserved stock');
  assert.equal(marketStatus(city),'');
+ assert.ok(decode(encode(city)),'opening the market preserves active water routes');
  const before={wood:city.resources.wood,stone:city.resources.stone};
  for(const material of ['wood','stone']){
   const result=trade(city,material,'buy',2);

@@ -34,8 +34,8 @@ export function createResourceBar(root){
   if(id==='help'){
    setHTML(panel,`<h3>Ресурсы города</h3><p>Значок и число показывают текущий запас. Выбери ресурс, чтобы закрепить прогноз.</p><dl>${RESOURCE_GROUPS.map(({name},i)=>`<div><dt>${name}</dt><dd>${['Сырьё и еда','Изделия мастерских','Вера и престиж'][i]}</dd></div>`).join('')}</dl><p>Кнопка «…» открывает полный список.</p>`);
   }else{
-   const {resources,balance,seeds}=model,v=balance[id];
-   setHTML(panel,`<h3>${resourceIcon(id,{decorative:true})} ${resourceLabel(id)}</h3><dl><div><dt>Текущий запас</dt><dd>${amount.format(resources[id])}</dd></div>${id==='food'?`<div><dt>Запас на посев</dt><dd>${amount.format(seeds)}</dd></div>`:''}</dl><h4>Прогноз на сезон</h4><dl><div><dt>Поступит</dt><dd>≈ ${amount.format(v.income)}</dd></div><div><dt>Расход</dt><dd>≈ ${amount.format(v.outgo)}</dd></div><div><dt>Баланс</dt><dd>${signed(v.net)}</dd></div></dl><p>${forecastNote}</p>`);
+   const {resources,balance,seeds,foodReport}=model,v=balance[id],food=id==='food';
+   setHTML(panel,`<h3>${resourceIcon(id,{decorative:true})} ${resourceLabel(id)}</h3><dl><div><dt>Текущий запас</dt><dd>${amount.format(resources[id])}</dd></div>${food?`<div><dt>Запас на посев</dt><dd>${amount.format(seeds)}</dd></div>${foodReport?`<div><dt>Доступно дворам с учётом молока</dt><dd>${amount.format(foodReport.forecast.accessible)}</dd></div><div><dt>Дворов с ужином дома</dt><dd>${foodReport.dinner.covered} / ${foodReport.dinner.total}</dd></div>`:''}`:''}</dl><h4>${food?'Потенциал за сезон':'Прогноз на сезон'}</h4><dl><div><dt>${food?'Производство':'Поступит'}</dt><dd>≈ ${amount.format(v.income)}</dd></div><div><dt>Расход</dt><dd>≈ ${amount.format(v.outgo)}</dd></div><div><dt>Расчётный баланс</dt><dd>${signed(v.net)}</dd></div></dl><p>${food?'Вылов ограничен остатком рыбы в открытых местах лова. Для ужинов нужны поставки во дворы.':forecastNote}</p>`);
   }
   panel.hidden=false;
   const rect=anchor.getBoundingClientRect();
@@ -62,9 +62,9 @@ export function createResourceBar(root){
  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&key){close();event.preventDefault();event.stopPropagation();}},true);
  window.addEventListener('resize',close);
  root.addEventListener('scroll',close);
- return {render(state,balance,capacity,seeds){
+ return {render(state,balance,capacity,seeds,foodReport){
   const {resources}=state;
-  model={resources,balance,seeds};
+  model={resources,balance,seeds,foodReport};
   setHTML(root,'<header class="resource-ledger-title"><h2>Запасы города</h2><p>Текущий запас · баланс за сезон</p></header>'+RESOURCE_GROUPS.map(group=>`<section class="resource-frame resource-frame-${group.id}" aria-label="${group.name}"><span class="resource-group-label">${group.name}</span><div class="resource-group-items">${group.keys.filter(id=>!strictOnly.has(id)||isStrictSumer(state)).map(id=>
    `<button type="button" class="resource${pinned.has(id)?' resource-pinned':widePinned.has(id)?' resource-wide':''}" data-resource="${id}" aria-controls="resource-info" aria-expanded="false"><span class="resource-icon" aria-hidden="true">${resourceIcon(id,{decorative:true})}</span><span class="resource-value"><strong></strong><em class="season-delta"></em></span><small>${resourceLabel(id)}</small></button>`
   ).join('')}</div></section>`).join(''));
@@ -77,7 +77,7 @@ export function createResourceBar(root){
    value.classList.toggle('overflow',MATERIALS.includes(id)&&resources[id]>capacity);
    const displayDelta=delta==='0'?'—':delta;
    if(trend.textContent!==displayDelta)trend.textContent=displayDelta;
-   button.setAttribute('aria-label',`${resourceLabel(id)} · запас ${count} · баланс за сезон ${delta}`);
+   button.setAttribute('aria-label',`${resourceLabel(id)} · запас ${count} · ${id==='food'?'расчётный ':''}баланс за сезон ${delta}`);
    trend.className=`season-delta ${balance[id].net>.05?'surplus':balance[id].net<-.05?'deficit':'balanced'}`;
   }
   if(key)show(key,locked);

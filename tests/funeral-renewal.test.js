@@ -12,14 +12,14 @@ test('each deceased has a stable white-shrouded bier, adult carrier associations
  assert.equal(new Set(carried.flatMap(b=>b.carriers.map(c=>c.id))).size,carried.flatMap(b=>b.carriers).length);
 });
 test('scarce adults transport batches, set down, bow, recede before jackals, and all save stages roundtrip',()=>{
- const s=createGame({start:'established'});s.citizens=s.citizens.slice(0,2);s.citizens.forEach(c=>c.age=30);s.population=2;startFuneral(s,bodies(3));const stages=new Set(),seenBatches=new Set();
+ const s=createGame({start:'established'});s.citizens=s.citizens.slice(0,2);s.citizens.forEach(c=>c.age=30);s.population=2;startFuneral(s,bodies(3),{sequentialRite:true});const stages=new Set(),seenBatches=new Set();
  for(let i=0;i<20000&&s.funeral;i++){const f=s.funeral;stages.add(f.stage);seenBatches.add(f.batch);assert.equal(validateFuneral(s),true);const view=funeralView(s);assert.equal(view.biers.length,3);if(f.stage==='farewell'){if(view.participants.some(p=>p.bow>0))stages.add('bow');assert.equal(view.jackals.length,0);if(f.timer>=1.2)assert.ok(Math.abs(view.biers.find(b=>b.deceasedId===100+f.batch).height-.0225)<1e-8);}if(f.stage==='jackals')assert.ok(view.participants.every(p=>Math.hypot(p.x-f.boundary.x,p.y-f.boundary.y)>.8));if(!stages.has(`save:${f.stage}`)){assert.ok(decode(encode(s)),f.stage);stages.add(`save:${f.stage}`);}advanceFuneral(s,.2);}
  assert.equal(s.funeral,null);assert.equal(seenBatches.size,3);assert.ok(stages.has('bow'));assert.ok(stages.has('collecting'));assert.ok(stages.has('farewell'));assert.ok(stages.has('receding'));assert.ok(stages.has('jackals'));
 });
 test('unattended funeral completes, leaves no simulated cargo mutation, and pauses exactly',()=>{
  const s=createGame({start:'established'});s.citizens=[];s.population=0;startFuneral(s,bodies(4));const before=JSON.stringify(s.funeral);advanceFuneral(s,0);assert.equal(JSON.stringify(s.funeral),before);for(let i=0;i<20000&&s.funeral;i++)advanceFuneral(s,.5);assert.equal(s.funeral,null);
 });
-test('malformed ceremony counters cannot skip deceased or fabricate completed batches',()=>{const s=createGame({start:'established'});startFuneral(s,bodies(3));for(const change of [{batch:2},{laid:2},{deceased:null},{actors:null}]){const bad=structuredClone(s);Object.assign(bad.funeral,change);assert.equal(validateFuneral(bad),false);}});
+test('malformed ceremony counters cannot skip deceased or fabricate completed batches',()=>{const s=createGame({start:'established'});startFuneral(s,bodies(3));for(const change of [{batch:2},{laid:2},{deceased:null},{actors:null},{bierProgress:[]},{bierProgress:[0,.5,0]},{bierProgress:[0,0,1.5]}]){const bad=structuredClone(s);Object.assign(bad.funeral,change);assert.equal(validateFuneral(bad),false);}});
 test('large casualty layouts keep one unique bounded bier per deceased',()=>{const s=createGame({start:'established'});s.citizens=s.citizens.slice(0,2);s.population=2;startFuneral(s,bodies(1000));const view=funeralView(s);assert.equal(view.biers.length,1000);assert.equal(new Set(view.biers.map(b=>`${b.x},${b.y}`)).size,1000);assert.ok(view.biers.every(b=>b.x>=.5&&b.x<40&&b.y>=.5&&b.y<30));});
 test('carried biers follow dry routes outside occupied building footprints',async()=>{const {isDryPoint}=await import('../world.js'),{footprintSize}=await import('../footprints.js'),s=createGame({start:'established'});s.citizens.forEach(c=>{c.age=30;c.cargo={};c.buildCargo={};});startFuneral(s,bodies(3));while(s.funeral.stage!=='procession')advanceFuneral(s,.2);for(let n=0;n<25&&s.funeral.stage==='procession';n++){for(const b of funeralView(s).biers.filter(b=>b.carriers.length)){assert.ok(isDryPoint(s,b.x,b.y));assert.ok(!s.buildings.some(p=>{if(['field','garden','bridge'].includes(p.type))return false;const size=footprintSize(p);return Math.abs(b.x-p.x-(size-1)/2)<size/2-.04&&Math.abs(b.y-p.y-(size-1)/2)<size/2-.04;}),`${b.id} outside occupied footprints`);}advanceFuneral(s,.2);}});
 test('forty farewell mourners stand on separate dry clear stations around an occupied boundary house',async()=>{const {isDryPoint}=await import('../world.js'),{footprintSize}=await import('../footprints.js'),s=createGame({start:'established'}),base=s.citizens[0];s.citizens=Array.from({length:40},(_,id)=>({...structuredClone(base),id,age:30,cargo:{},buildCargo:{}}));s.population=40;s.buildings.push({type:'house',x:3,y:8,level:1});startFuneral(s,bodies(1));s.funeral.stage='farewell';s.funeral.timer=2;const before=JSON.stringify(s),view=funeralView(s),points=view.participants;assert.equal(points.length,40);assert.equal(new Set(points.map(p=>`${p.x},${p.y}`)).size,40);for(const p of points){assert.ok(isDryPoint(s,p.x,p.y));assert.ok(!s.buildings.some(b=>{if(['field','garden','bridge'].includes(b.type))return false;const size=footprintSize(b);return Math.abs(p.x-b.x-(size-1)/2)<size/2+.08&&Math.abs(p.y-b.y-(size-1)/2)<size/2+.08;}),`mourner ${p.id} clears every building`);}assert.equal(JSON.stringify(s),before);});
@@ -44,7 +44,7 @@ test('only four free adult bearers retrieve the dead, while neighbours wait outs
  const s=createGame({start:'established'}),load=s.citizens[0];
  load.cargo={clay:2};load.phase='toStore';
  const ids=s.citizens.map(c=>c.id),stock=JSON.stringify(s.resources);
- startFuneral(s,bodies(2));const f=s.funeral;
+ startFuneral(s,bodies(2),{sequentialRite:true});const f=s.funeral;
  const throughTemple=a=>a.route.some(p=>Math.abs(p.x-f.gather.x)<.46&&Math.abs(p.y-f.gather.y)<.46);
  const team=f.actors.filter(throughTemple).map(a=>a.id);
  assert.equal(team.length,4);
@@ -72,13 +72,62 @@ test('only four free adult bearers retrieve the dead, while neighbours wait outs
  assert.deepEqual(s.citizens.map(c=>c.id),ids);assert.deepEqual(load.cargo,{clay:2});assert.equal(JSON.stringify(s.resources),stock);
 });
 
+test('new funerals move independent crews together and resume each moving bier from a save',()=>{
+ const s=createGame({start:'established'}),busy=s.citizens[0];
+ busy.cargo={clay:2};busy.phase='toStore';
+ assert.ok(startFuneral(s,bodies(4)));
+ const stages=new Set();
+ for(let step=0;step<2000&&s.funeral.stage!=='procession';step++)advanceFuneral(s,.2);
+ const before=funeralView(s).biers;
+ assert.ok(before.every(b=>b.carriers.length>0));
+ const carriers=before.flatMap(b=>b.carriers.map(c=>c.id));
+ assert.equal(new Set(carriers).size,carriers.length);
+ assert.ok(!carriers.includes(busy.id));
+ advanceFuneral(s,2);
+ assert.ok(funeralView(s).biers.every((b,i)=>Math.hypot(b.x-before[i].x,b.y-before[i].y)>0));
+ const saved=encode(s),loaded=decode(saved);
+ assert.ok(loaded);
+ assert.equal(encode(loaded),saved);
+ assert.deepEqual(funeralView(loaded),funeralView(s));
+ for(let step=0;step<2000&&s.funeral;step++){
+  stages.add(s.funeral.stage);
+  if(s.funeral.stage==='procession'){
+   const biers=funeralView(s).biers;
+   for(const [i,bier] of biers.entries())for(const other of biers.slice(i+1)){
+    assert.ok(Math.hypot(bier.x-other.x,bier.y-other.y)>.39,'separate teams have room for the full length of their litters');
+   }
+  }
+  advanceFuneral(s,.2);advanceFuneral(loaded,.2);
+ }
+ assert.equal(s.funeral,null);
+ assert.equal(encode(loaded),encode(s));
+ assert.ok(stages.has('procession')&&stages.has('farewell')&&stages.has('jackals'));
+ assert.ok(!stages.has('collecting'));
+ assert.deepEqual(busy.cargo,{clay:2});
+});
+
+test('a single reachable adult pulls a grounded bier and other bodies receive a stationary farewell',()=>{
+ const s=createGame({start:'established'});s.citizens=s.citizens.slice(0,1);s.citizens[0].age=30;s.population=1;
+ assert.ok(startFuneral(s,bodies(3)));
+ const initial=funeralView(s).biers;
+ for(let step=0;step<2000&&s.funeral.stage!=='procession';step++)advanceFuneral(s,.2);
+ advanceFuneral(s,2);
+ for(const [i,b] of funeralView(s).biers.entries()){
+  assert.equal(b.height,.0225);
+  if(!i){assert.equal(b.transport,'sledge');assert.equal(b.carriers.length,1);assert.notDeepEqual([b.x,b.y],[initial[i].x,initial[i].y]);}
+  else {assert.equal(b.transport,'stationary');assert.equal(b.carriers.length,0);assert.deepEqual([b.x,b.y],[initial[i].x,initial[i].y]);}
+ }
+ for(let step=0;step<2000&&s.funeral.stage!=='jackals';step++)advanceFuneral(s,.2);
+ assert.deepEqual(funeralView(s).jackals.map(j=>j.bundleId),[initial[0].id]);
+});
+
 test('jackals approach the foot, pull along the laid shroud and the body never returns to the bier',()=>{
  const s=createGame({start:'established'});startFuneral(s,bodies(1));
  while(s.funeral.stage!=='jackals')advanceFuneral(s,.2);
  const f=s.funeral;
  let previous,resting;
  for(const t of [0,2,3.65,4,4.25,5,6.95]){
-  f.timer=t;const {biers:[b],jackals:[j]}=funeralView(s);
+  f.timer=2*t;const {biers:[b],jackals:[j]}=funeralView(s);
   resting??=b.yaw;assert.equal(b.yaw,resting);
   assert.equal(j.bundleId,b.id);
   const d=(b.x-j.x)*Math.sin(b.yaw)+(b.y-j.y)*Math.cos(b.yaw);
@@ -87,7 +136,7 @@ test('jackals approach the foot, pull along the laid shroud and the body never r
   if(t>4){assert.ok(d>previous);assert.equal(j.pulling,true);}
   previous=d;
  }
- advanceFuneral(s,.1);
+ advanceFuneral(s,.2);
  assert.equal(f.stage,'returning');assert.ok(funeralView(s).biers.every(b=>b.visible===false));
 });
 

@@ -29,10 +29,11 @@ export function waterCarrierAtBank(s,c){
  return {...c,x:c.x+(saved.stand.x-end.x)*blend,y:c.y+(saved.stand.y-end.y)*blend,walking:t.phase!=='fill',waterDip:saved.water};
 }
 export function dipWaterVessel(B,a,waterHeight){
- if(!a.fillJar)return;
+ const progress=a.c.activity?.progress;
+ if(!a.fillJar||!Number.isFinite(progress))return;
  const inverse=a.root.computeWorldMatrix(true).clone().invert(),p=a.c.waterDip,hand=a.hands.r;
  hand.computeWorldMatrix(true);const grip=hand.getAbsolutePosition();
- const lower=Math.sin(Math.PI*Math.min(1,Math.max(0,a.c.activity.progress)))**.7;
+ const lower=Math.sin(Math.PI*Math.min(1,Math.max(0,progress)))**.7;
  const start=grip.add(new B.Vector3(0,-.22,0)),end=p?new B.Vector3(p.x*6,waterHeight-.008,p.y*6):start;
  const jar=B.Vector3.Lerp(start,end,lower);
  a.fillJar.position.copyFrom(B.Vector3.TransformCoordinates(jar,inverse));a.fillJar.computeWorldMatrix(true);

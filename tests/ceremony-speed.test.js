@@ -5,7 +5,7 @@ import {BASE_TIME_RATE,simulationRate} from '../calendar.js';
 import {advanceFrame,advanceTime,encode,decode,miracle} from '../engine.js';
 import {orderFestival,festivalView,FESTIVAL_SECONDS} from '../festival.js';
 import {advanceMiracleCelebration} from '../miracle-celebration.js';
-import {startFuneral} from '../funerals.js';
+import {startFuneral,advanceFuneral,funeralView} from '../funerals.js';
 import {testingCity,advanceUntil,clockOf} from './helpers/testing-ceremonies.js';
 
 function controller(){assert.equal(typeof clock.createCeremonySpeedControl,'function','ceremonies need a one-time speed reset');return clock.createCeremonySpeedControl();}
@@ -58,6 +58,26 @@ test('a funeral resets 25× once, then respects the same manual speed as the cit
  assert.ok(legacy.funeral.timer>0);
  assert.ok(Math.abs(s.funeral.timer-legacy.funeral.timer*2.5)<1e-6);
  assert.deepEqual(clockOf(s),before);
+});
+
+test('all crews cover the same route positions when procession time is accelerated to 25×',()=>{
+ const normal=testingCity(),sync=controller();
+ startFuneral(normal,[{id:1000,name:'Покойный',x:8,y:8},{id:1001,name:'Покойная',x:8,y:8}]);
+ assert.equal(sync(normal,25),1);
+ for(let i=0;i<2000&&normal.funeral.stage!=='procession';i++)advanceFuneral(normal,.1);
+ assert.equal(normal.funeral.stage,'procession');
+ const fast=decode(encode(normal));assert.ok(fast);
+ const before=clockOf(normal),old=funeralView(normal).biers;
+ for(let i=0;i<25;i++)advanceFrame(normal,.125,1);
+ const resumed=controller();assert.equal(resumed(fast,25),1);
+ advanceFrame(fast,.125,resumed(fast,25));
+ assert.equal(normal.funeral.stage,'procession');assert.equal(fast.funeral.stage,'procession');
+ const positions=funeralView(normal).biers;
+ for(const [i,bier] of funeralView(fast).biers.entries()){
+  assert.ok(Math.hypot(bier.x-positions[i].x,bier.y-positions[i].y)<.005);
+  assert.ok(Math.hypot(bier.x-old[i].x,bier.y-old[i].y)>.1);
+ }
+ assert.deepEqual(clockOf(fast),before);assert.deepEqual(clockOf(normal),before);
 });
 
 test('the remainder of a frame after a miracle or feast resumes at city speed',()=>{

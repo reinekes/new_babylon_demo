@@ -42,6 +42,20 @@ test('lake stock is separate and a save without fishery records keeps its first 
  assert.equal(validateFisheries({...s,fisheries:{'river:999':{stock:5}}}),false);
 });
 
+test('current calendar lets a depleted reach recover after a full day without a new order',()=>{
+ const s={scenario:strictScenario(),simTime:30,calendarDaysPerMonth:1};
+ const key=fisheryKey(s,{x:12,y:8});
+ assert.equal(takeFish(s,key,48),48);
+ assert.equal(takeFish(s,key,5),0);
+ s.simTime=89.99;
+ assert.equal(fisheryStock(s,key).resting,true);
+ s.simTime=90;
+ assert.equal(fisheryStock(s,key).stock,18);
+ assert.equal(takeFish(s,key,5),5);
+ assert.equal(fisheryStock(s,key).stock,13);
+ assert.ok(validateFisheries(s));
+});
+
 test('a working fishing yard lists reachable grounds and can save and reload its closure',()=>{
  const s=createGame({mode:'mature',seed:137,scenario:strictScenario()});
  const b={type:'fishing',x:16,y:7,level:1};

@@ -8,6 +8,8 @@ import {stockStores} from '../inventory.js';
 import {animalsFor} from '../fauna.js';
 import {startRichCatch} from '../rich-catch.js';
 import {fishingLift} from '../game3d/harvest-gear.js';
+import {useOneDayCalendar} from '../calendar.js';
+import {setFishRackEnabled} from '../fish-drying.js';
 
 function settlement(type,x,y){
  const s=createGame({start:'established',scenario:strictScenario(),seed:137});
@@ -79,4 +81,43 @@ test('confirmed first bite holds the real fisher for eight viewing seconds on 1�
   for(let i=0;i<55;i++)advanceFrame(state,.1,speed);
   assert.equal(c.fishingLanding,undefined);assert.equal(yard.richCatch.charges,5);
  }
+});
+
+test('landing and hanging a catch consume equal work time at 1× and 25× in the one-day calendar',()=>{
+ const {s,worker}=settlement('fishing',5,13),yard=s.buildings.find(b=>b.type==='fishing');
+ useOneDayCalendar(s);
+ assert.ok(setFishRackEnabled(s,yard,true).ok);
+ startRichCatch(s,yard);
+ const fisherIn=state=>state.citizens.find(c=>c.id===worker);
+ const fishUntil=predicate=>{
+  for(let i=0;i<2600&&!predicate(fisherIn(s));i++)advanceTime(s,.1);
+  assert.ok(predicate(fisherIn(s)));
+ };
+ const compareHeldPose=(task,steps,isHeld)=>{
+  const normal=structuredClone(s),fast=structuredClone(s);
+  const start={x:fisherIn(s).x,y:fisherIn(s).y};
+  for(let i=0;i<steps;i++){
+   advanceFrame(normal,.125,1);
+   advanceFrame(fast,.125/25,25);
+  }
+  const a=fisherIn(normal),b=fisherIn(fast),normalPose=actorWorkActivity(normal,a,[]),fastPose=actorWorkActivity(fast,b,[]);
+  assert.ok(Math.abs(normal.simTime-fast.simTime)<1e-7);
+  assert.equal(normalPose.task,task);
+  assert.equal(fastPose.task,task);
+  assert.ok(Math.abs(normalPose.progress-fastPose.progress)<1e-7);
+  assert.deepEqual({x:a.x,y:a.y},start);
+  assert.deepEqual({x:b.x,y:b.y},start);
+  for(let i=0;i<100&&isHeld(a);i++){
+   advanceFrame(normal,.125,1);
+   advanceFrame(fast,.125/25,25);
+   assert.equal(isHeld(b),isHeld(a));
+  }
+  assert.equal(isHeld(a),false);
+  assert.deepEqual(a.cargo,b.cargo);
+ };
+
+ fishUntil(c=>!!c.fishingLanding?.firstBlessed);
+ compareHeldPose('land-fish',24,c=>!!c.fishingLanding);
+ fishUntil(c=>c.hangingFishElapsed!==undefined);
+ compareHeldPose('hang-fish',6,c=>c.hangingFishElapsed!==undefined);
 });

@@ -3,7 +3,7 @@ import {appendGrain,takeGrain} from './grain-origin.js';
 import {toolResource} from './axe-kit.js';
 import {isStrictSumer} from './scenario-profiles.js';
 import {harvestNameEvidence} from './causal-facts.js';
-import {supplyHome,residentsByHome} from './households.js';
+import {supplyHome,residentsByHome,ration,homeMealFood,pantryRestockTarget} from './households.js';
 import {findShapingBatch,loadShapingBatch} from './shaping-batch.js';
 import {markWindCargo} from './wind-delivery.js';
 import {markCreatorCargo} from './creator-materials.js';
@@ -148,7 +148,9 @@ export function syncDistrictJobs(s){
   if(home&&!harvestRecipients.has(home))harvestRecipients.set(home,c.id);
  }
  for(const b of destinations)if(isResidence(b)){
-  const target=buildingKey(b),need=buildingInputRoom(s,b,'food',pass.households);
+  const target=buildingKey(b);
+  const dinner=(pass.households.get(target)||[]).reduce((sum,c)=>sum+ration(c)*4/3,0);
+  const need=s.calendarDaysPerMonth===1?Math.max(0,pantryRestockTarget(s,dinner)-homeMealFood(b)):buildingInputRoom(s,b,'food',pass.households);
   const incoming=pending(s,target,'food',pass),wanted=need-incoming-(pass.extra.get(entry(target,'food'))||0);
   const recipient=harvestRecipients.get(target);
   if(wanted>=1&&incoming<=eps&&recipient!==undefined&&!credited.some(f=>f.home===target||f.recipientId===recipient)){

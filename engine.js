@@ -450,7 +450,9 @@ function recordCivicDeath(s,citizen){
 // animation keep their authored real-time durations while the calendar is stopped.
 export function advanceFrame(s,realSeconds,speed=1){
  const frameRate=simulationRate(speed);
- return advanceTime(s,simulationSeconds(realSeconds,speed),{frameRate,funeralTimerRate:1/BASE_TIME_RATE,fishingTimerRate:1/frameRate});
+ // A fisher's landing and drying gestures take the same share of a short workday at every speed.
+ const fishingTimerRate=1/(s.calendarDaysPerMonth===DAYS_PER_MONTH?BASE_TIME_RATE:frameRate);
+ return advanceTime(s,simulationSeconds(realSeconds,speed),{frameRate,funeralTimerRate:1/BASE_TIME_RATE,fishingTimerRate});
 }
 export function advanceTime(s,seconds,{calendarRate=calendarRateFor(s),funeralTimerRate=1,fishingTimerRate=1/BASE_TIME_RATE,frameRate=null}={}){
  if(!Number.isFinite(calendarRate)||calendarRate<=0||calendarRate>1)throw new RangeError('Invalid calendar rate');

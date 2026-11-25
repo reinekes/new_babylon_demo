@@ -3,6 +3,9 @@ import assert from 'node:assert/strict';
 import {createGame,advanceTime,encode,decode} from '../engine.js';
 import {invalidateAssignments,syncCitizens,recoverCitizenCargo} from '../workforce.js';
 import {newMedicalSkill} from '../education.js';
+import {useOneDayCalendar} from '../calendar.js';
+import {buildingKey} from '../definitions.js';
+import {syncInventory} from '../inventory.js';
 
 function clinicCity(){
  const s=createGame({start:'established'});s.buildings=s.buildings.filter(b=>['house','shrine'].includes(b.type));s.buildings.push({type:'healer',x:6,y:15,level:1});
@@ -11,6 +14,28 @@ function clinicCity(){
  for(const b of s.buildings.filter(b=>b.type==='house')){b.pantry=0;b.water=100;b.waterDelivered=100;}
  s.resources.reed=0;s.resources.food=200;invalidateAssignments(s);syncCitizens(s);return {s,patient};
 }
+test('a full household carries three dinners from surplus and round-trips a load over six',()=>{
+ const s=useOneDayCalendar(createGame({start:'established'}));
+ const home=s.buildings.find(b=>b.type==='house'),key=buildingKey(home);
+ s.buildings=s.buildings.filter(b=>['house','shrine'].includes(b.type));
+ s.citizens=s.citizens.slice(0,4);
+ for(const c of s.citizens)Object.assign(c,{age:24,home:key,role:'builder'});
+ s.population=4;
+ home.pantry=0;home.pantryDelivered=0;
+ s.resources.food=100;
+ syncCitizens(s);
+ syncInventory(s);
+ let sourceBefore;
+ for(let i=0;i<250&&!s.citizens.some(c=>c.pantryFood>6);i++){
+  sourceBefore=s.resources.food;
+  advanceTime(s,.1);
+ }
+ const courier=s.citizens.find(c=>c.pantryFood>6);
+ assert.ok(courier);
+ assert.equal(courier.pantryFood,8);
+ assert.ok(Math.abs(s.resources.food+courier.pantryFood-sourceBefore)<.005);
+ assert.equal(decode(encode(s))?.citizens.find(c=>c.id===courier.id)?.pantryFood,8);
+});
 test('sick sole household supplier collects real groceries before an unproductive clinic visit',()=>{
  const {s,patient}=clinicCity();let carried=false,treated=false;
  for(let i=0;i<1250;i++){s.event=null;advanceTime(s,.1);carried ||= (patient.pantryFood||0)>0;treated ||= patient.phase==='treatment';if(i%100===0)assert.ok(decode(encode(s)),`save at ${s.simTime}`);}

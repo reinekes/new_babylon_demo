@@ -3,7 +3,11 @@ import {sickleBlunt} from './agriculture.js';
 import {fieldCalendar} from './crop-calendar.js';
 import {kilnNeedsRepair,KILN_RECIPE,FIRING_SECONDS,COOLING_SECONDS} from './kilns.js';
 import {dairyRate,dairyRation} from './dairy.js';
-import {calendarRateFor} from './calendar.js';
+import {calendarRateFor,motionRateFor} from './calendar.js';
+import {fisheryStock} from './fishery-stock.js';
+import {fisheryOptions} from './labor-life.js';
+import {isStrictSumer} from './scenario-profiles.js';
+import {workplaceHours} from './work-schedule.js';
 import {knowsPresence} from './godhood.js';
 import {isArtisan,artisanOutput,artisanRecipe} from './artisan.js';
 import {seedReserve} from './food-planning.js';
@@ -11,7 +15,7 @@ import {weatherAt} from './environment.js';
 import {orchardMaturity} from './orchard-layout.js';
 import {MATERIALS,BUILDINGS,buildingKey,isOperational,outputMultiplier} from './definitions.js';
 import {workRate,mealRation,beliefMultiplier} from './wellbeing.js';
-import {networkFor,routeBetween} from './workforce.js';
+import {networkFor,cachedWalkingRoute} from './workforce.js';
 import {stockStores,storeCapacity} from './inventory.js';
 import {craftBatch,craftResource,craftState,craftLoad,fleeceGrowth} from './textiles.js';
 export const RESOURCE_GROUPS=[
@@ -21,20 +25,44 @@ export const RESOURCE_GROUPS=[
 ];
 // Analytical estimate over a full current season, not a second simulation.
 // Local stores and current workers constrain processing; trade, building and miracles are one-offs.
+const fishingGroundsByNetwork=new WeakMap();
+function fishingGrounds(s,network,port){
+ let grounds=fishingGroundsByNetwork.get(network);
+ if(!grounds){grounds=new Map();fishingGroundsByNetwork.set(network,grounds);}
+ if(!grounds.has(port))grounds.set(port,fisheryOptions(s,port).map(({key})=>key));
+ return grounds.get(port);
+}
 export function seasonBalance(s){
- const seasonSeconds=45/calendarRateFor(s);
- const keys=RESOURCE_GROUPS.flatMap(g=>g.keys),r=Object.fromEntries(keys.map(k=>[k,{income:0,outgo:0,net:0}])),net=networkFor(s),ports=new Map(net.ports.filter(p=>!p.building.siteKey).map(p=>[buildingKey(p.building),p])),buildings=new Map(s.buildings.map(b=>[buildingKey(b),b])),stocks=new Map(),capacities=new Map(),byComponent=new Map(),incomeByComponent=new Map(),townFuneral=s.funeral&&s.funeral.scope!=='family';
+ const seasonSeconds=45/calendarRateFor(s),speed=1.05*motionRateFor(s)*(s.buffs?.haste?1.5:1),strict=isStrictSumer(s);
+ const keys=RESOURCE_GROUPS.flatMap(g=>g.keys),r=Object.fromEntries(keys.map(k=>[k,{income:0,outgo:0,net:0}])),net=networkFor(s,{materializeRoads:false}),ports=new Map(net.ports.filter(p=>!p.building.siteKey).map(p=>[buildingKey(p.building),p])),buildings=new Map(s.buildings.map(b=>[buildingKey(b),b])),stocks=new Map(),capacities=new Map(),byComponent=new Map(),incomeByComponent=new Map(),townFuneral=s.funeral&&s.funeral.scope!=='family';
  const component=key=>net.components.get(ports.get(key)?.key),empty=()=>Object.fromEntries(MATERIALS.map(k=>[k,0]));
  for(const b of s.buildings)if(b.stock&&isOperational(b)){const id=component(buildingKey(b));if(id===undefined)continue;if(!stocks.has(id)){stocks.set(id,empty());capacities.set(id,empty());}for(const k of MATERIALS){stocks.get(id)[k]+=b.stock[k]||0;capacities.get(id)[k]+=storeCapacity(b);}}
- const production=new Map(),groups=new Map();
+ const production=new Map(),groups=new Map(),fishing=[];
  for(const c of s.citizens){if(c.age<16||!c.work||c.guardPost||c.site||c.clinic||c.school||c.tradeJob||c.saleJob||c.districtJob||townFuneral||s.funeral?.actors.some(a=>a.id===c.id))continue;const b=buildings.get(c.work),id=component(c.work);if(!b||!isOperational(b)||id===undefined||!stocks.has(id)||component(c.home)!==id)continue;if(!groups.has(c.work))groups.set(c.work,[]);groups.get(c.work).push(c);}
  const flow=(id,k,n)=>{if(!byComponent.has(id))byComponent.set(id,empty());byComponent.get(id)[k]+=n;};
  const credit=(id,k,n)=>{n=Math.max(0,n);r[k].income+=n;if(MATERIALS.includes(k)){flow(id,k,n);if(!incomeByComponent.has(id))incomeByComponent.set(id,empty());incomeByComponent.get(id)[k]+=n;}};
  const debit=(id,k,n)=>{n=Math.max(0,n);r[k].outgo+=n;if(MATERIALS.includes(k)&&id!==undefined)flow(id,k,-n);};
  for(const [key,people] of groups){const b=buildings.get(key),def=BUILDINGS[b.type],id=component(key);let trips=0;
   if(b.type==='musicHouse'){const musicians=people.filter(c=>c.workplace===key&&c.calling==='musician'&&c.role==='production');credit(id,'prestige',seasonSeconds*13/24*musicians.reduce((n,c)=>n+workRate(c,'musicHouse',buildings.get(c.home)),0)/def.workTime*def.output.prestige*outputMultiplier(b));continue;}
-  for(const c of people){const from=ports.get(key),to=ports.get(c.store),route=from&&to&&routeBetween(s,from.key,to.key);if(!route)continue;const rate=workRate(c,b.type,buildings.get(c.home)),distance=Math.max(0,route.length-1),travel=2*distance/(1.05*(s.buffs?.haste?1.5:1)*Math.max(.15,workRate(c,b.type,buildings.get(c.home)))),inputTravel=isArtisan(b)?travel*4:['weaver','tailor','kiln'].includes(b.type)?travel*(b.type==='kiln'?3:Math.ceil(craftBatch(b)/3)):0;trips+=seasonSeconds*13/24/((def.workTime||4)/(rate*(isArtisan(b)?outputMultiplier(b):1))+travel+inputTravel);}
+  const fish=b.type==='fishing',hours=fish&&s.calendarDaysPerMonth===1?workplaceHours('fishing'):null,workHours=hours?hours.close-hours.open:13;
+  const from=ports.get(key);
+  for(const c of people){
+   const to=ports.get(c.store);
+   if(!to||component(c.store)!==id)continue;
+   const route=cachedWalkingRoute(s,from.key,to.key);
+   if(route===null)continue;
+   const distance=route?route.length-1:Math.hypot(to.x-from.x,to.y-from.y);
+   const rate=workRate(c,b.type,buildings.get(c.home)),travel=2*distance/(speed*Math.max(.15,rate));
+   const inputTravel=isArtisan(b)?travel*4:['weaver','tailor','kiln'].includes(b.type)?travel*(b.type==='kiln'?3:Math.ceil(craftBatch(b)/3)):0;
+   const work=((def.workTime||4)+(fish?.85:0))/(rate*(isArtisan(b)?outputMultiplier(b):1));
+   trips+=seasonSeconds*workHours/24/(work+travel+inputTravel);
+  }
   production.set(key,trips);
+  if(fish&&strict){
+   const amount=def.output.food*outputMultiplier(b)*foodYieldMultiplier(s,b,{includeRichCatch:false})*(trips+richCatchBonus(s,b,trips));
+   if(amount>0)fishing.push({id,amount,grounds:fishingGrounds(s,net,ports.get(key))});
+   continue;
+  }
   if(isArtisan(b)||['kiln','brickyard','waterpoint','weaver','tailor','healer','depot','cowshed'].includes(b.type))continue;
   if(b.type==='field'){
    const crop=b.crop||{},calendar=fieldCalendar(s,b),batch=7*outputMultiplier(b);
@@ -48,6 +76,18 @@ export function seasonBalance(s){
   }
   if(b.type==='sheepfold'){credit(id,'wool',Math.min(trips*2*outputMultiplier(b),(b.flock?.fleece||0)+fleeceGrowth(b)*seasonSeconds));continue;}
   for(const [k,base]of Object.entries(def.output)){let mult=outputMultiplier(b);if(k==='food')mult*=foodYieldMultiplier(s,b,{includeRichCatch:false})*(b.type==='garden'?orchardMaturity(s,b).yield:1);if(['clay','reed'].includes(k))mult*=s.buffs?.inspiration?1.75:1;if(['faith','prestige'].includes(k))mult*=s.buffs?.sunlight?1.8:1;if(k==='faith')mult*=beliefMultiplier(s);credit(id,k,base*mult*(trips+(k==='food'?richCatchBonus(s,b,trips):0)));}
+ }
+ const fishLeft=new Map();
+ for(const {id,amount,grounds} of fishing.sort((a,b)=>a.grounds.length-b.grounds.length)){
+  let remaining=amount;
+  for(const key of grounds){
+   if(!fishLeft.has(key)){const {stock,resting}=fisheryStock(s,key);fishLeft.set(key,resting?0:stock);}
+   const taken=Math.min(remaining,fishLeft.get(key));
+   remaining-=taken;
+   fishLeft.set(key,fishLeft.get(key)-taken);
+   if(remaining<=1e-7)break;
+  }
+  credit(id,'food',amount-remaining);
  }
  for(const [key,people]of groups){const b=buildings.get(key);if(b.type!=='cowshed'||!b.dairy?.cows)continue;const id=component(key),d=b.dairy,ration=dairyRation(b),buffer=Math.max(0,d.reed-ration),feed=Math.max(0,stocks.get(id).reed+(byComponent.get(id)?.reed||0)-Math.max(0,ration-d.reed))+buffer,batches=Math.min(seasonSeconds*13/24*people.reduce((n,c)=>n+workRate(c,'cowshed',buildings.get(c.home)),0)*outputMultiplier(b)*dairyRate(b)/8,feed,Math.max(0,d.water-ration)/4);debit(id,'reed',Math.max(0,batches-buffer));credit(id,'milk',batches*3);}
  // Finish each link before budgeting the next; never borrow from another bank.

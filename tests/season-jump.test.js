@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createGame,advanceTime,encode,decode} from '../engine.js';
+import {createGame,advanceTime,encode,decode,setEventAutoPause} from '../engine.js';
 import {seasonJumpReason,advanceToNextSeason,createSeasonJump} from '../season-jump.js';
 import {orderFestival,skipFestival,advanceFestival,validateFestival} from '../festival.js';
 import {startMiracleCelebration} from '../miracle-celebration.js';
@@ -11,6 +11,7 @@ import {workArtisan} from '../artisan.js';
 import {collectReadyOutputs} from '../building-inventory.js';
 import {eventMusicTheme} from '../city-audio.js';
 import {testingCity,brewingCity,advanceUntil} from './helpers/testing-ceremonies.js';
+import {useOneDayCalendar} from '../calendar.js';
 
 function feast(){
  const s=testingCity();
@@ -19,6 +20,15 @@ function feast(){
  return s;
 }
 const clone=s=>decode(encode(s));
+test('current calendar season jumps live through the actual remaining days',()=>{
+ const s=useOneDayCalendar(testingCity());
+ setEventAutoPause(s,false);
+ advanceTime(s,17);
+ assert.equal(advanceToNextSeason(s).ok,true);
+ assert.equal(s.tick,1);
+ assert.ok(Math.abs(s.simTime-180)<1e-6);
+ assert.ok(clone(s));
+});
 function assertSeasonResidents(s,originalIds,birthsBefore){
  const original=new Set(originalIds);
  assert.deepEqual(s.citizens.filter(c=>original.has(c.id)).map(c=>c.id),originalIds);
