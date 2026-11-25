@@ -29,6 +29,6 @@
 date: 2026-11-23
 type: investigation
 release: starvation-stock-diagnosis-20261123-01
-publication: local
+publication: github-pages
 groups: simulation; reliability; people
 source: GAME_DESIGN.md; roadmap/historical-review.md
