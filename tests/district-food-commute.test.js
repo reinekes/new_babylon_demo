@@ -55,3 +55,35 @@ test('one nearby porter continues a distant grain pickup overnight and delivers 
  assert.equal(saved.buildings.find(b=>b.x===source.x&&b.y===source.y).workshopStock.output.food,0);
  assert.ok(decode(encode(saved)));
 });
+
+test('a distant clay pickup reaches the quarry and delivers across a short night',()=>{
+ const s=useOneDayCalendar(createGame({start:'established'}));
+ const quarry={type:'clay',x:10,y:17,level:1};
+ s.buildings.push(quarry);
+ for(const home of s.buildings.filter(b=>b.type==='house'))home.pantry=home.pantryDelivered=18;
+ initializeBuildingInventory(s);
+ assert.ok(putProductionOutput(s,quarry,{clay:6}));
+ const adults=s.citizens.filter(c=>c.age>=16);
+ const porter=adults.find(c=>c.home==='9,9');
+ for(const c of adults)assert.ok(setCitizenRole(s,c.id,c===porter?'carrier':'builder').ok);
+ const {ok,id}=requestTransfer(s,'10,17','9,8','clay',6);
+ assert.ok(ok);
+
+ let waited=false;
+ for(let step=0;step<150&&s.simTime<60;step++){
+  advanceFrame(s,.1,25);
+  if(porter.phase==='toDistrictSupply'&&porter.routeIndex===porter.route.length&&workHourAt(s.simTime)<6){
+   waited=true;
+   break;
+  }
+ }
+ assert.ok(waited,'a material porter reaches the closed quarry without restarting the route');
+ assert.equal(porter.cargo.clay||0,0);
+ const saved=decode(encode(s));
+ assert.ok(saved);
+ const job=saved.district.jobs.find(q=>q.id===id);
+ for(let step=0;step<150&&job.delivered<6;step++)advanceFrame(saved,.1,25);
+ assert.equal(job.delivered,6);
+ assert.equal(job.cancelled,0);
+ assert.equal(saved.buildings.find(b=>b.x===10&&b.y===17).workshopStock.output.clay,0);
+});

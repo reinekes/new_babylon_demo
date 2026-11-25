@@ -1219,9 +1219,9 @@ function advanceCitizen(s,c,dt,ctx,constructionWork,fishingTimerRate){
  const watchOpen=watch&&watchOnShift(watch,s.simTime);
  // A distant first commute can span a whole short day. Reach the yard and wait
  // for it to open, otherwise the worker retraces the same half-route every day.
- const foodPickup=c.phase==='toDistrictSupply'&&s.district.jobs.some(q=>q.id===c.districtJob&&['food','milk'].includes(q.resource));
+ const freightPickup=c.districtJob&&['toDistrictSupply','toCollectCart'].includes(c.phase);
  const finishCommute=s.calendarDaysPerMonth===1&&!watch&&
-  (foodPickup||c.phase==='toMarket'&&c.tradeJob||c.phase==='toWork'&&!c.seedField&&!c.craftSite||c.phase==='toSite'&&c.siteDuty==='builder');
+  (freightPickup||c.phase==='toMarket'&&c.tradeJob||c.phase==='toWork'&&!c.seedField&&!c.craftSite||c.phase==='toSite'&&c.siteDuty==='builder');
  // A remote gathering trip keeps its chosen tree, prey or fishing spot overnight.
  // Opening hours below still pause work, and the worker returns with the actual load.
  const finishFieldTrip=s.calendarDaysPerMonth===1&&c.phase==='working'&&GATHERING_TYPES.includes(ctx.buildings.get(c.work)?.type)&&
