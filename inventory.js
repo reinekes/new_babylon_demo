@@ -23,7 +23,10 @@ export function stockStores(s){
   if(!isOperational(b))continue;
   if(b.type==='shrine')central.push(b);
   else if(b.type==='granary'||b.type==='depot')others.push(b);
-  else if(isResidence(b)||b.recoveryOnly===true){if(isResidence(b))home??=b;if(b.stock&&(MATERIALS.some(k=>b.stock[k]>0)||(refs??=referencedStores(s)).has(keyOf(b))))ground.push(b);}
+  else if(isResidence(b)||b.recoveryOnly===true){
+   if(isResidence(b))home??=b;
+   if(b.stock&&(b.stockMinimum!==undefined||b.noExport===true||MATERIALS.some(k=>b.stock[k]>0)||(refs??=referencedStores(s)).has(keyOf(b))))ground.push(b);
+  }
  }
  const stores=central.concat(others);
  if(!stores.length&&home&&!ground.includes(home))ground.unshift(home);

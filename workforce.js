@@ -67,7 +67,7 @@ import {initializeTextiles,advanceTextiles,gatherWool,weaveCloth,weavingBatch,ma
 import {initializeClothing,advanceClothing,equipClothing,REPLACE_CLOTHING_AT} from './clothing.js';
 import {stockStores,storeStock,storeCapacity,syncInventory,putStock,putRecoveryStock,takeStock,foodAvailableAt,foodAvailability,warehouseSeedTarget,takeReserved} from './inventory.js';
 import {initializeDistricts,syncDistrictJobs,districtPickup,districtExportable,districtReceiptRoom,connectedStores,logisticsDeposit,logisticsRoom,createDistrictPass} from './district-logistics.js';
-import {initializeBuildingInventory,collectReadyOutputs,isProductionStore,putProductionOutput,productionOutputFits,outputRoom} from './building-inventory.js';
+import {initializeBuildingInventory,collectReadyOutputs,isProductionStore,putProductionOutput,productionOutputFits,outputCapacity,outputRoom} from './building-inventory.js';
 import {SEED_COST,seedTarget} from './food-planning.js';
 import {advancePests,syncPestSites} from './pests.js';
 import {cropFor,workField,advanceCrops,canTillField,fieldActive} from './agriculture.js';
@@ -481,14 +481,19 @@ export function syncCitizens(s){
     depotStaff.get(c.workplace).push(c);
    }else if(!reserved.has(c.id)&&['auto','carrier'].includes(c.role)&&(c.phase!=='working'||c.role==='auto'&&!c.workplace))free.push(c);
   }
-  const urgentFood=q=>{
-   if(q.resource!=='food'||q.remaining<=1e-8)return false;
-   const b=ctx.buildings.get(q.target);
-   if(isResidence(b))return homeMealFood(b)+1e-7<houseDemand(s,ctx,q.target)*4/3;
-   return s.resources.food<1.6*citizens.length&&isProductionStore(ctx.buildings.get(q.source));
+  const dinner=0.8*citizens.length;
+  const transferPriority=q=>{
+   if(q.remaining<=1e-8||!['food','milk'].includes(q.resource))return 2;
+   const home=ctx.buildings.get(q.target);
+   if(q.targetKind==='input'&&isResidence(home)&&homeMealFood(home)+1e-7<houseDemand(s,ctx,q.target)*4/3)return 0;
+   const producer=ctx.buildings.get(q.source);
+   if(!isProductionStore(producer))return 2;
+   // Leave time for the subsequent warehouse-to-home leg before the reserve runs out.
+   const filling=(producer.workshopStock?.output?.[q.resource]||0)>=outputCapacity(producer)/2;
+   return s.resources.food<2*dinner||s.resources.food<4*dinner&&filling?1:2;
   };
-  const queues=s.calendarDaysPerMonth===1?[[],[]]:[s.district.jobs];
-  if(queues.length===2)for(const q of s.district.jobs)queues[urgentFood(q)?0:1].push(q);
+  const queues=s.calendarDaysPerMonth===1?[[],[],[]]:[s.district.jobs];
+  if(queues.length===3)for(const q of s.district.jobs)queues[transferPriority(q)].push(q);
   for(const q of queues.flat()){
    if(q.remaining<=1e-8||q.targetKind!=='votive'&&(districtReceiptRoom(s,q,ctx.buildings.get(q.target),districtPass)<=1e-8||districtExportable(s,q,districtPass)<=1e-8)||!connectedStores(s,q.source,q.target,districtPass))continue;
    const pair=q.source+'>'+q.target,source=ctx.ports.get(q.source);
