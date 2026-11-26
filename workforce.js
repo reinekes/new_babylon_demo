@@ -1219,7 +1219,8 @@ function advanceCitizen(s,c,dt,ctx,constructionWork,fishingTimerRate){
  }
  if(!day&&c.clothingTarget!==undefined&&!c.clothingLoad){delete c.clothingTarget;delete c.clothingLoad;invalidateAssignments(s);startTrip(s,c,c.home,'toHome',ctx);}
  if(!day&&c.craftSite&&!craftLoad(c)){delete c.craftSite;delete c.craftWool;delete c.craftCloth;delete c.craftMaterial;delete c.craftAmount;}
- if(!day&&c.seedField&&!c.seedFood){delete c.seedField;delete c.seedFood;}
+ // On the short calendar a farmer may reach the seed store after sunset.
+ if(!day&&c.seedField&&!c.seedFood&&!(s.calendarDaysPerMonth===1&&c.phase==='toStore')){delete c.seedField;delete c.seedFood;}
  const watch=c.guardPost&&c.guardPost===c.work?watchShift(s,c,ctx.buildings.get(c.work)):null;
  const watchOpen=watch&&watchOnShift(watch,s.simTime);
  // A distant first commute can span a whole short day. Reach the yard and wait
