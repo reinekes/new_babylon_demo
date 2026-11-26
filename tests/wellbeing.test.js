@@ -21,3 +21,14 @@ test('daily prayers scale with personal belief and are credited only once',()=>{
 test('migration rejects a fabricated old grocery trip that would discard non-food cargo',async()=>{const {readFileSync}=await import('node:fs');const old=JSON.parse(readFileSync(new URL('./fixtures/legacy-v8-city.json',import.meta.url)));const c=old.citizens.find(c=>c.pantryTrip);assert.ok(c);c.cargo={clay:3};assert.equal(decode(JSON.stringify(old)),null);});
 test('initial children have a child-sized previous meal and invalid oversized portions are rejected',()=>{const s=createGame({start:'established'}),c=s.citizens.find(c=>c.age<16);assert.equal(c.mealEaten,mealRation(c));c.mealEaten=.8;assert.equal(decode(encode(s)),null);});
 test('mood affects the actual carrying work of porters as well as production',async()=>{const {build}=await import('../engine.js');function carry(mood){const s=createGame({start:'established'});for(const b of s.buildings.filter(b=>b.type==='house')){b.pantry=100;b.pantryDelivered=100;}for(const c of s.citizens){c.mood=mood;if(c.age>=16)c.role='carrier';}assert.ok(build(s,'house',10,9).ok);advanceTime(s,3.5);return s.buildings.at(-1).construction.delivered.clay;}assert.ok(carry(100)>carry(10));});
+
+test('family mourners receive only their own household ration and stay out of the dinner gathering',()=>{
+ const s=homeCity(),[a,b]=s.buildings.filter(h=>h.type==='house');
+ const fed=s.citizens.find(c=>c.home===a.x+','+a.y),hungry=s.citizens.find(c=>c.home===b.x+','+b.y);
+ s.citizens=[fed,hungry];a.pantry=2;b.pantry=0;
+ s.funeral={scope:'family',actors:[{id:fed.id},{id:hungry.id}]};
+ evening(s);
+ assert.ok(Math.abs(a.pantry-(2-mealRation(fed)))<1e-7);
+ assert.equal(fed.missedMeals,0);assert.equal(fed.familyMeal,false);assert.equal(fed.diningUntil,0);
+ assert.equal(hungry.missedMeals,1);
+});

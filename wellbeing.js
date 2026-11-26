@@ -43,12 +43,14 @@ export function advanceWellbeing(s,dt){
   let storyRecords;
   for(const c of s.citizens){
    if(c.mealDay!==day){c.mealDay=day;c.mealEaten=c.commonMealDay===day?COMMON_PORTION:0;c.familyMeal=false;}
-   if(s.funeral?.actors.some(a=>a.id===c.id))continue;
+   const mourning=s.funeral?.actors.some(a=>a.id===c.id);
+   if(mourning&&s.funeral.scope!=='family')continue;
    const home=supplyHome(c,{arrived:true});
    if(!home)continue;
    if(!households.has(home))households.set(home,{members:[],diners:[]});
    const household=households.get(home);
    household.members.push(c);
+   if(mourning)continue;
    if(!c.floodShelter&&!c.fireShelter&&(!['home','resting'].includes(c.phase)||c.phase!=='resting'&&Object.values(c.cargo||{}).some(n=>n>0)||Object.values(c.buildCargo||{}).some(n=>n>0)))continue;
    household.diners.push(c);
   }
