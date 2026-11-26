@@ -1,9 +1,10 @@
 import {isResidence,buildingKey,capacityOf} from './definitions.js';
-export function residentsByHome(citizens){
+export function residentsByHome(citizens,homeOf=c=>c.home){
  const homes=new Map();
  for(const c of citizens){
-  let residents=homes.get(c.home);
-  if(!residents){residents=[];homes.set(c.home,residents);}
+  const key=homeOf(c);
+  let residents=homes.get(key);
+  if(!residents){residents=[];homes.set(key,residents);}
   residents.push(c);
  }
  return homes;

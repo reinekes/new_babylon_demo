@@ -77,3 +77,20 @@ test('milk batches share their own route and marked harvest stays in its origina
  scan(marked.s);
  assert.deepEqual(routes(marked.s).map(q=>q.amount),[7,7]);
 });
+
+test('unloaded food at a producer can be dispatched to a hungry home with empty warehouses',()=>{
+ const {s,source}=settlement();
+ for(const b of s.buildings){if(b.stock)b.stock.food=0;if(b.pantry)b.pantry=0;}
+ s.resources.food=0;
+ syncInventory(s);
+ const home=s.buildings.find(b=>s.citizens.some(c=>c.home===`${b.x},${b.y}`));
+ assert.ok(home);
+ assert.ok(putProductionOutput(s,source,{food:18}));
+ const warehouse=requestTransfer(s,from,to,'food',18,{automatic:true});
+ assert.ok(warehouse.ok);
+ scan(s);
+ const direct=s.district.jobs.find(q=>q.source===from&&q.target===`${home.x},${home.y}`&&q.targetKind==='input');
+ assert.ok(direct?.remaining>0);
+ assert.equal(source.workshopStock.output.food,18);
+ assert.ok(validateDistricts(s));
+});

@@ -10,7 +10,7 @@ import {KILN_RECIPE,kilnNeeds,collectFired} from './kilns.js';
 import {craftBatch,flockCapacity,flockRation} from './textiles.js';
 import {isStrictSumer} from './scenario-profiles.js';
 import {toolResource,toolNeeds,workTool,putToolSupply,validateWorkTool} from './axe-kit.js';
-import {ration,pantryStockTarget} from './households.js';
+import {ration,pantryStockTarget,supplyHome} from './households.js';
 const eps=1e-7,n=value=>Number.isFinite(value)?Math.max(0,value):0;
 const sum=(target,k,value)=>{if(value>0)target[k]=(target[k]||0)+value;};
 export const isProductionStore=b=>Object.keys(BUILDINGS[b?.type]?.output||{}).some(k=>MATERIALS.includes(k));
@@ -42,7 +42,7 @@ export function initializeBuildingInventory(s){
 export function homeStockCapacity(s,b,k,households){
  if(k==='mat'&&(!isStrictSumer(s)||b.floodDamage))return 0;
  const key=buildingKey(b);
- const people=households?households.get(key)||[]:(s.citizens||[]).filter(c=>c.home===key);
+ const people=households?households.get(key)||[]:(s.citizens||[]).filter(c=>(k==='food'?supplyHome(c):c.home)===key);
  if(k==='mat')return people.length?2:0;
  if(!people.length)return 0;
  if(k==='food')return pantryStockTarget(s,people.reduce((a,c)=>a+ration(c)*4/3,0));
