@@ -372,8 +372,8 @@ export function syncCitizens(s){
  }
  for(const c of citizens)if(!canWork(c)){c.work=null;c.site=null;c.sitePort=null;c.siteDuty=null;c.store=null;}
  if(s.funeral?.scope==='family')for(const a of s.funeral.actors)locked.add(a.id);
- // A load already in someone's hands belongs to its old destination.
- for(const c of citizens)if((c.freightCart||waterBusy(c)||c.clothingTarget!==undefined||c.craftSite||c.districtJob||c.seedField||c.pantryTrip||hasCargo(c)||hasBuildCargo(c))&&((!c.work||ctx.buildings.has(c.work))&&(!c.site||ctx.buildings.get(c.site)?.construction))){
+ // Keep owned loads and committed trips to construction reserves with their original jobs.
+ for(const c of citizens)if((c.freightCart||waterBusy(c)||c.clothingTarget!==undefined||c.craftSite||c.districtJob||c.seedField||c.pantryTrip||s.calendarDaysPerMonth===1&&c.site&&c.phase==='toSupply'||hasCargo(c)||hasBuildCargo(c))&&((!c.work||ctx.buildings.has(c.work))&&(!c.site||ctx.buildings.get(c.site)?.construction))){
   locked.add(c.id);if(c.site){c.siteDuty??='carrier';assignments.set(c.id,{site:c.site,sitePort:c.sitePort,store:c.store,siteDuty:c.siteDuty});}
  }
  const laborAccess=(c,key)=>{
@@ -875,7 +875,7 @@ function arrival(s,c,ctx){
  if(c.phase==='toSupply'){
   const q=ctx.buildings.get(c.site)?.construction;
   if(!q){startTrip(s,c,c.home,'toHome',ctx);return;}
-  if(!shiftOpen(s,c,ctx)){startTrip(s,c,c.home,'toHome',ctx);return;}
+  if(!shiftOpen(s,c,ctx)){if(s.calendarDaysPerMonth!==1)startTrip(s,c,c.home,'toHome',ctx);return;}
   const k=MATERIALS.find(k=>q.remaining[k]>0&&(!q.sources||(q.sources[c.store]?.[k]||0)>0));
   if(k){
    if(c.siteDuty==='carrier')collectCartForLoad(s,c,ctx,c.store,Math.min(q.remaining[k],q.sources?.[c.store]?.[k]??q.remaining[k]));
@@ -1226,7 +1226,7 @@ function advanceCitizen(s,c,dt,ctx,constructionWork,fishingTimerRate){
  // for it to open, otherwise the worker retraces the same half-route every day.
  const freightPickup=c.districtJob&&['toDistrictSupply','toCollectCart'].includes(c.phase);
  const finishCommute=s.calendarDaysPerMonth===1&&!watch&&
-  (freightPickup||c.phase==='toMarket'&&c.tradeJob||c.phase==='toWork'&&!c.seedField&&!c.craftSite||c.phase==='toSite'&&c.siteDuty==='builder');
+  (freightPickup||c.site&&c.phase==='toSupply'||c.phase==='toMarket'&&c.tradeJob||c.phase==='toWork'&&!c.seedField&&!c.craftSite||c.phase==='toSite'&&c.siteDuty==='builder');
  // A remote gathering trip keeps its chosen tree, prey or fishing spot overnight.
  // Opening hours below still pause work, and the worker returns with the actual load.
  const finishFieldTrip=s.calendarDaysPerMonth===1&&c.phase==='working'&&GATHERING_TYPES.includes(ctx.buildings.get(c.work)?.type)&&
