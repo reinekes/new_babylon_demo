@@ -8,7 +8,7 @@ import {relicCommandReason} from './city-command-lock.js';
 export function seasonJumpReason(s){
  const lock=relicCommandReason(s);if(lock)return lock;
  if(s.event)return 'Сначала реши судьбу события';
- if(s.funeral)return 'Дождись возвращения траурной процессии';
+ if(s.funeral&&s.funeral.scope!=='family')return 'Дождись возвращения траурной процессии';
  if(s.lost)return 'Поселение покинуто';
  return '';
 }

@@ -8,7 +8,13 @@ const copy=p=>({x:p.x,y:p.y,key:p.key});
 const distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
 function nearest(net,p){let best=null,d=Infinity;for(const n of net.nodes.values()){const next=distance(n,p);if(next<d){d=next;best=n;}}return best;}
 function path(s,a,b){return (a&&b&&routeBetween(s,a.key,b.key)||[]).map(copy);}
-export function startFuneral(s,deceased,options){const started=startDesertFuneral(s,deceased,options);if(started&&!options?.family)registerLoss(s,deceased.length);return started;}
+export function startFuneral(s,deceased,options={}){
+ const crisis=options.cause==='starvation'||options.cause==='disaster';
+ const family=options.cause?!(crisis&&deceased.length>=5):options.family;
+ const started=startDesertFuneral(s,deceased,{...options,family});
+ if(started&&!options.family&&options.cause!=='oldAge')registerLoss(s,deceased.length);
+ return started;
+}
 function move(entity,actor,dt,s){
  let remaining=dt*motionRateFor(s)*.95;
  const net=networkFor(s);

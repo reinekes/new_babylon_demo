@@ -13,9 +13,9 @@ test('funeral advances participants while calendar, needs, resources and product
  assert.deepEqual(calendarAt(s),calendar);assert.deepEqual(s.resources,resources);assert.deepEqual(s.citizens.map(c=>c.hunger),hunger);
  assert.notDeepEqual(s.citizens.map(c=>[c.x,c.y]),positions);assert.ok(s.funeral.timer>0);assert.ok(decode(encode(s)));
 });
-test('family funeral also freezes calendar and ends without leaving the game stuck',()=>{
+test('family funeral advances calendar and ends without leaving the game stuck',()=>{
  const s=createGame({start:'established'});startFuneral(s,dead,{family:true});const clock=s.simTime;
- advanceTime(s,5);assert.equal(s.simTime,clock);assert.ok(s.funeral);assert.ok(decode(encode(s)));
+ advanceTime(s,1);assert.ok(s.simTime>clock);assert.ok(s.funeral);assert.ok(decode(encode(s)));
  for(let n=0;n<500&&s.funeral;n++)advanceTime(s,.5);
  assert.equal(s.funeral,null);const before=s.simTime;advanceTime(s,.1);assert.ok(s.simTime>before);
 });
@@ -77,5 +77,20 @@ test('a resident walks at the former real pace while the one-day calendar runs a
   }
   assert.ok(Math.abs(distance-.25*speed*.125*1.05)<1e-6,`walk at ${speed}× covered ${distance} cells`);
   assert.ok(Math.abs(s.simTime-start-.25*speed*.6)<1e-6);
+ }
+});
+
+test('four crisis victims have a family farewell, five stop the calendar, old age always stays local',async()=>{
+ const {ceremonyActive,createCeremonySpeedControl}=await import('../ceremony-time.js');
+ for(const cause of ['starvation','disaster','oldAge'])for(const count of [1,2,4,5,6]){
+  const s=createGame({start:'established'}),victims=Array.from({length:count},(_,i)=>({...dead[0],id:1000+i,partner:i===0?s.citizens[0].id:null}));
+  startFuneral(s,victims,{cause});
+  const city=cause!=='oldAge'&&count>=5;
+  assert.equal(ceremonyActive(s),city);
+  assert.equal(createCeremonySpeedControl()(s,25),city?1:25);
+  if(!city)assert.deepEqual(s.funeral.actors.map(a=>a.id),[s.citizens[0].id]);
+  advanceTime(s,.1);
+  assert.equal(s.simTime>0,!city);
+  assert.ok(decode(encode(s)));
  }
 });

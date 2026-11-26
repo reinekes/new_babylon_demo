@@ -1,6 +1,7 @@
 /** Calendar time and ceremony time are separate. No hidden global state. */
-export const ceremonyActive=s=>!!s?.miracleCelebration||!!s?.funeral||s?.festival?.stage==='celebrating';
-export function ceremonyLabel(s){return s?.miracleCelebration?.kind==='inanna'?'Встреча у порога · календарь остановлен':s?.miracleCelebration?'Чудо · календарь остановлен':s?.funeral?'Похороны · календарь остановлен':s?.festival?.stage==='celebrating'?'Пир · календарь остановлен':'';}
+export const cityFuneral=s=>s?.funeral?.scope!=='family'?s?.funeral:null;
+export const ceremonyActive=s=>!!s?.miracleCelebration||!!cityFuneral(s)||s?.festival?.stage==='celebrating';
+export function ceremonyLabel(s){return s?.miracleCelebration?.kind==='inanna'?'Встреча у порога · календарь остановлен':s?.miracleCelebration?'Чудо · календарь остановлен':cityFuneral(s)?'Похороны · календарь остановлен':s?.festival?.stage==='celebrating'?'Пир · календарь остановлен':'';}
 
 const funeralStages={
  gathering:'Жители собираются',procession:'Несут носилки',collecting:'Возвращаются за умершими',
@@ -16,7 +17,7 @@ export function funeralStageLabel(funeral){
 export function createCeremonySpeedControl(){
  let previous=null;
  return (state,selectedSpeed)=>{
-  const current=state?.miracleCelebration||state?.funeral||(state?.festival?.stage==='celebrating'?state.festival:null);
+  const current=state?.miracleCelebration||cityFuneral(state)||(state?.festival?.stage==='celebrating'?state.festival:null);
   const started=!!current&&current!==previous;previous=current;
   return started?1:selectedSpeed;
  };

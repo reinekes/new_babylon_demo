@@ -73,7 +73,7 @@ import {createSaveLibrary} from './save-library.js';
 import {createSaveLibraryUI} from './ui-saves.js';
 import {runSeasonJump,seasonJumpReason} from './season-jump.js';
 import {festivalBlessingFrame} from './festival-blessing.js';
-import {ceremonyActive,ceremonyLabel,funeralStageLabel,createCeremonySpeedControl} from './ceremony-time.js';
+import {cityFuneral,ceremonyActive,ceremonyLabel,funeralStageLabel,createCeremonySpeedControl} from './ceremony-time.js';
 import {funeralView} from './funerals.js';
 import {cityEventDefinition,fearTension,cityThreatQuote,threatSiteLabel} from './city-events.js';
 import {buildingKnowledgeReason,miracleKnowledgeReason,beginFirstSign,beginFirstWaterHelp,namelessEndingReason,recordNamelessEnding,gameMode,builderTeachingPair,builderTeachingCandidates,builderLevel,PRACTICE_PER_PROJECT} from './godhood.js';
@@ -1858,7 +1858,7 @@ function update(){
  if(foreignButton)foreignButton.onclick=showForeignEnding;
  $('goal-number').textContent=`${g.filter(v=>v.done).length} / ${g.length}`;
  for(const [id,m]of Object.entries(MIRACLES)){
-  if(!shouldShowMiracle(state,id)){const old=$(`miracle-${id}`);if(old)old.closest('details').hidden=true;continue;}const el=$(`miracle-${id}`)||makeMiracleCard(id,m),price=miraclePrice(state,id);const gift=id==='abundance'&&state.abundanceGift?abundanceQuote(state,lastMiracleTarget):null;let fishing;const reason=relicControlActive(state)?'Ты ведёшь избранного':miracleKnowledgeReason(state,id)||miracleLockReason(state,id)||((state.miracleCelebration||['cat','fertility'].includes(id))?miracleCelebrationReason(state):'')|| (state.funeral?'Город провожает умерших':state.lost?'Поселение покинуто':state.event?'Реши событие':state.cooldowns[id]?`Через ${state.cooldowns[id]} сез.`:r.faith<price?`Нужно ${price} веры`:id==='cat'&&catReason(state)?catReason(state):id==='abundance'?(gift?.reason||(!gift&&r.food>=storage(state)?'Амбары полны':'')):id==='richCatch'?(fishing=richCatchQuote(state,lastMiracleTarget)).reason:state.happiness>=100?populationMiracleQuote(state,id)?.reason||'':'');
+  if(!shouldShowMiracle(state,id)){const old=$(`miracle-${id}`);if(old)old.closest('details').hidden=true;continue;}const el=$(`miracle-${id}`)||makeMiracleCard(id,m),price=miraclePrice(state,id);const gift=id==='abundance'&&state.abundanceGift?abundanceQuote(state,lastMiracleTarget):null;let fishing;const reason=relicControlActive(state)?'Ты ведёшь избранного':miracleKnowledgeReason(state,id)||miracleLockReason(state,id)||((state.miracleCelebration||['cat','fertility'].includes(id))?miracleCelebrationReason(state):'')|| (cityFuneral(state)?'Город провожает умерших':state.lost?'Поселение покинуто':state.event?'Реши событие':state.cooldowns[id]?`Через ${state.cooldowns[id]} сез.`:r.faith<price?`Нужно ${price} веры`:id==='cat'&&catReason(state)?catReason(state):id==='abundance'?(gift?.reason||(!gift&&r.food>=storage(state)?'Амбары полны':'')):id==='richCatch'?(fishing=richCatchQuote(state,lastMiracleTarget)).reason:state.happiness>=100?populationMiracleQuote(state,id)?.reason||'':'');
   if(id==='abundance')quotedAbundance=gift?.store?{expectedStore:gift.store,expectedAmount:gift.amount}:undefined;
   const card=el.closest('details'),branch=card.querySelector('[data-revelation-branch]');
   if(id==='richCatch'){
@@ -1908,7 +1908,7 @@ function update(){
  const clock=lightingAt(state.simTime);
  $('day-cycle').textContent=`${clock.night>.5?'☾':'☀'} ${clock.label} · ${clockText(state.simTime)}\n${calendar.monthName} · день ${calendar.day}`;
  $('day-cycle').setAttribute('aria-label',`${clock.label} ${clockText(state.simTime)}. ${calendar.monthName}, день ${calendar.day}. Дождаться ${isWorkday(state.simTime)?'ужина':'утра'}. Время и хозяйство действительно продвинутся.`);$('day-cycle').disabled=state.lost&&!state.funeral||!!state.event||ceremonyActive(state);
- $('street-life').textContent=state.funeral?'Все жители провожают умерших · работы и доставки приостановлены':`Строят ${stats.builders} · доставляют на стройки ${stats.carriers??0} · с рынка ${marketPorters} · между складами ${quarterPorters} · на работе ${stats.working} · с грузом ${stats.carrying} · дома ${stats.atHome}`;
+ $('street-life').textContent=cityFuneral(state)?'Все жители провожают умерших · работы и доставки приостановлены':`Строят ${stats.builders} · доставляют на стройки ${stats.carriers??0} · с рынка ${marketPorters} · между складами ${quarterPorters} · на работе ${stats.working} · с грузом ${stats.carrying} · дома ${stats.atHome}`;
  setHTML($('delivery-log'),state.lastDelivery?`${resident(state.lastDelivery.citizen)} ${state.lastDelivery.source==='market'?'доставил покупку':'доставил'}: ${esc(resourceText(state.lastDelivery.cargo))}`:'Ресурсы поступают, когда груз доходит до склада');
  $('city').parentElement.classList.toggle('is-night',clock.night>.45);updateRationScene();updateDetail();renderManagement();renderSupply();refreshCityOverview();refreshLifeAnalytics();renderFestival();for(const el of document.querySelectorAll('[data-cost]'))setHTML(el,costs(BUILDINGS[el.dataset.cost]));$('open-construction').textContent=`Стройки · ${orderedSites(state).length}`;$('open-trade').textContent=state.trade.caravan?`● Торговля · ${state.trade.silver}`:`Торговля · ${state.trade.silver}`;$('open-trade').classList.toggle('caravan-here',state.trade.caravan?.phase==='trading');$('open-trade').title=marketStatus(state);
 }
@@ -2001,7 +2001,7 @@ function showNamelessEnding(){
 }
 function checkDialogs(){
  if(relicControlActive(state))return;
- if(dialog.open||state.funeral&&!state.event)return;
+ if(dialog.open||cityFuneral(state)&&!state.event)return;
  if(state.lost||state.godhood?.namelessEndingAt===undefined&&state.won&&!state.continued){
   openDialog('end',`<span class="eyebrow">${state.lost?'ИСТОРИЯ ОСТАЛАСЬ В ГЛИНЕ':'ТВОЯ ПЕРВАЯ ЛЕГЕНДА'}</span><span class="dialog-emblem">${state.lost?'☾':'▲'}</span><h2>${state.lost?'В долине погасли огни.':'Город коснулся неба.'}</h2><p>${state.lost?'Люди покинули город. У новой истории может быть другое начало.':`Долина знает тебя как «${esc(state.name)}». Через руки твоих жителей прошло ${state.deliveries} доставок.`}</p><div class="dialog-stats"><div><strong>${state.year}</strong><small>ГОД ИСТОРИИ</small></div><div><strong>${state.population}</strong><small>ЖИТЕЛЕЙ</small></div><div><strong>${state.miracleCount}</strong><small>ЧУДЕС</small></div></div><div class="dialog-actions">${state.lost?'':'<button class="primary" id="continue-game">Продолжить историю</button>'}<button class="secondary" id="end-new">Новая долина</button></div>`);
   if($('continue-game'))$('continue-game').onclick=()=>{state.continued=true;closeDialog();save();update();checkDialogs();};$('end-new').onclick=askReset;return;
@@ -2246,7 +2246,7 @@ function ceremonyPresentation(){
  if(lastBeerStatus!==state.firstBeerFeast?.status){lastBeerStatus=state.firstBeerFeast?.status;if(lastBeerStatus==='pending')toast('Первая партия пива выпущена! Жители готовят малый пир у пивоварни.');}
  const funeral=state.funeral;
  const text=funeral?funeralStageLabel(funeral):festivalBlessingFrame(festivalView(state))?'Ночь огней · Бог услышал их':ceremonyLabel(state);
- const status=funeral?`${text} · ${speed}× · ${paused?'На паузе':'Календарь остановлен'}`:'';
+ const status=funeral?`${text} · ${speed}× · ${paused?'На паузе':funeral.scope==='family'?'Семейное прощание':'Календарь остановлен'}`:'';
  ceremonyControls.hidden=!text;
  ceremonyControls.classList.toggle('funeral-notice',!!funeral);
  ceremonyStatus.hidden=!funeral;

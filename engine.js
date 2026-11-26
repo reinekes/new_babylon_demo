@@ -269,7 +269,7 @@ export function miracle(s,id,target,confirmation){
  if((s.miracleCelebration||['cat','fertility'].includes(id))&&miracleCelebrationReason(s))return {ok:false,reason:miracleCelebrationReason(s)};
  if(relicControlActive(s))return {ok:false,reason:relicCommandReason(s)};const lock=miracleKnowledgeReason(s,id)||miracleLockReason(s,id);if(lock)return {ok:false,reason:lock};
  const m=MIRACLES[id],price=miraclePrice(s,id);if(!m)return {ok:false,reason:'Неизвестное чудо'};if(s.event||s.lost)return {ok:false,reason:'Сначала заверши текущее событие'};if(s.cooldowns[id])return {ok:false,reason:`Будет доступно через ${s.cooldowns[id]} сез.`};if(s.resources.faith<price)return {ok:false,reason:`Нужно ${price} веры`};if(id==='cat'&&catReason(s))return {ok:false,reason:catReason(s)};if(id==='abundance'&&!s.abundanceGift&&s.resources.food>=storage(s))return {ok:false,reason:'Амбары уже полны'};
- if(s.funeral&&['bless','healing'].includes(id))return {ok:false,reason:'Дождись возвращения траурной процессии'};
+ if(s.funeral&&s.funeral.scope!=='family'&&['bless','healing'].includes(id))return {ok:false,reason:'Дождись возвращения траурной процессии'};
  const populationQuote=populationMiracleQuote(s,id);
  if(populationQuote?.reason)return {ok:false,reason:populationQuote.reason};
  if(['cat','fertility'].includes(id)){const reason=miracleCelebrationTargetReason(s,id==='fertility'?target:null);if(reason)return {ok:false,reason};}
@@ -410,8 +410,8 @@ function settleSeason(s){
  s.happiness=s.citizens.length?s.citizens.reduce((n,c)=>n+residentMood(c,dwellings.get(c.home)),0)/s.citizens.length:0;
  if(hungry.length)log(s,'Голод в семьях',`${hungry.length} жителей недоедают. Проверь домашние запасы и доставку еды.`,'bad');
  const victims=!s.funeral?s.citizens.filter(c=>c.health<=0&&c.missedMeals>=3&&recoverCitizenCargo(s,c.id)!==false):[];
- if(victims.length){const deceased=victims.map(c=>({id:c.id,name:citizenName(c.id),x:c.x,y:c.y}));mournResidents(s,victims.map(c=>c.id));for(const c of victims)recordLifeDeath(s,c,'starvation');const ids=new Set(victims.map(c=>c.id));s.citizens=s.citizens.filter(c=>!ids.has(c.id));s.population=s.citizens.length;s.deaths+=victims.length;syncCitizens(s);startFuneral(s,deceased);log(s,'Смерть от голода',`Погибли ${victims.length} жителей из семей, которым не хватало еды. Город провожает умерших.`,'bad');}
- if(!s.funeral||s.funeral.scope==='family'){const report=advanceGenerations(s,id=>{const citizen=s.citizens.find(c=>c.id===id);if(recoverCitizenCargo(s,id)===false)return false;if(citizen)recordLifeDeath(s,citizen,'oldAge');return true;});for(const c of report.newborns)recordLifeBirth(s,c);syncCitizens(s);if(report.deceased.length)startFuneral(s,report.deceased,{family:true});}
+ if(victims.length){const deceased=victims.map(c=>({id:c.id,name:citizenName(c.id),x:c.x,y:c.y,parents:c.parents,partner:c.partner}));mournResidents(s,victims.map(c=>c.id));for(const c of victims)recordLifeDeath(s,c,'starvation');const ids=new Set(victims.map(c=>c.id));s.citizens=s.citizens.filter(c=>!ids.has(c.id));s.population=s.citizens.length;s.deaths+=victims.length;syncCitizens(s);startFuneral(s,deceased,{cause:'starvation'});log(s,'Смерть от голода',`Погибли ${victims.length} жителей из семей, которым не хватало еды. Город провожает умерших.`,'bad');}
+ if(!s.funeral||s.funeral.scope==='family'){const report=advanceGenerations(s,id=>{const citizen=s.citizens.find(c=>c.id===id);if(recoverCitizenCargo(s,id)===false)return false;if(citizen)recordLifeDeath(s,citizen,'oldAge');return true;});for(const c of report.newborns)recordLifeBirth(s,c);syncCitizens(s);if(report.deceased.length)startFuneral(s,report.deceased,{cause:'oldAge'});}
  if(s.funeral&&s.funeral.scope!=='family'){syncCitizens(s);snapshotLifeAnalytics(s);check(s);return;}
  if(s.buffs.earthMemory>0){
   const land=s.landMemoryCast;
@@ -437,7 +437,7 @@ function settleSeason(s){
 }
 function recordCivicDeath(s,citizen){
  if(s.funeral||recoverCitizenCargo(s,citizen.id)===false)return false;
- const deceased={id:citizen.id,name:citizenName(citizen.id),x:citizen.x,y:citizen.y};
+ const deceased={id:citizen.id,name:citizenName(citizen.id),x:citizen.x,y:citizen.y,parents:citizen.parents,partner:citizen.partner};
  mournResidents(s,[citizen.id]);
  recordLifeDeath(s,citizen,'violence');
  s.citizens=s.citizens.filter(c=>c.id!==citizen.id);s.population=s.citizens.length;s.deaths++;
@@ -462,17 +462,17 @@ export function advanceTime(s,seconds,{calendarRate=calendarRateFor(s),funeralTi
  if(s.lost&&!s.funeral||s.event||!Number.isFinite(seconds)||seconds<=0)return 0;
  initializeProductionAccounting(s);syncInventory(s);let remaining=Math.min(seconds,3600),advanced=0;
  while(remaining>1e-7&&(!s.lost||s.funeral)&&!s.event){
-  if(s.funeral&&relicControlActive(s))interruptRelicForFuneral(s);
+  if(s.funeral&&s.funeral.scope!=='family'&&relicControlActive(s))interruptRelicForFuneral(s);
   if(ceremonyActive(s)){
    // Keep the frame budget in city seconds, including the part left after a ceremony.
-   const rate=frameRate&&!s.funeral?1/BASE_TIME_RATE:1,miracle=s.miracleCelebration;
+   const rate=frameRate&&(!s.funeral||s.funeral.scope==='family')?1/BASE_TIME_RATE:1,miracle=s.miracleCelebration;
    let dt=Math.min(remaining*rate,.1);
    if(frameRate!==null){
-    const untilEnd=miracle?miracle.duration-miracle.elapsed:s.funeral?stationaryFarewellSecondsLeft(s.funeral)/funeralTimerRate:festivalSecondsLeft(s,s.festival);
+    const untilEnd=miracle?miracle.duration-miracle.elapsed:s.funeral&&s.funeral.scope!=='family'?stationaryFarewellSecondsLeft(s.funeral)/funeralTimerRate:festivalSecondsLeft(s,s.festival);
     dt=Math.min(dt,Math.max(1e-7,untilEnd));
    }
    if(miracle)advanceMiracleCelebration(s,dt);
-   else if(s.funeral){advanceFestival(s,dt,{ceremony:true});advanceFuneral(s,dt,funeralTimerRate);}
+   else if(s.funeral&&s.funeral.scope!=='family'){advanceFestival(s,dt,{ceremony:true});advanceFuneral(s,dt,funeralTimerRate);}
    else advanceFestival(s,dt,{ceremony:true,walkSeconds:s.calendarDaysPerMonth===1?dt/rate:dt});
    remaining-=dt/rate;advanced+=dt;continue;
   }

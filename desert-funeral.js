@@ -65,7 +65,14 @@ function initializeDesertFuneral(s,deceased,{family=false,legacyRite=false}={}){
  if(s.funeral||!deceased?.length)return false;
  const host=['ziggurat','shrine','house','communalHouse'].map(type=>s.buildings.find(b=>b.type===type&&b.construction?.kind!=='new')).find(Boolean),gather=host?{x:host.x,y:host.y}:copy(deceased[0]),nav=navigator(s,gather);
  const dead=deceased.map((d,i)=>({id:d.id??i,name:String(d.name||`Житель ${1+(d.id??i)}`).slice(0,100),x:d.x,y:d.y}));
- const relatives=new Set(deceased.map(d=>d.id)),eligible=s.citizens.filter(c=>c.age>=16&&c.clothingTarget===undefined&&!c.waterTrip&&!c.craftSite&&!c.seedField&&!c.pantryTrip&&!Object.values(c.cargo||{}).some(n=>n>0)&&!Object.values(c.buildCargo||{}).some(n=>n>0)),participants=family?eligible.filter(c=>legacyRite||nav.route(c,gather).length).sort((a,b)=>Number(b.parents?.some(id=>relatives.has(id))||relatives.has(b.partner))-Number(a.parents?.some(id=>relatives.has(id))||relatives.has(a.partner))).slice(0,4):s.citizens;
+ const deadIds=new Set(dead.map(d=>d.id));
+ const parents=new Set(deceased.flatMap(d=>d.parents||[]));
+ const partners=new Set(deceased.map(d=>d.partner).filter(id=>id!=null));
+ const participants=family?s.citizens.filter(c=>
+  c.age>=16&&(parents.has(c.id)||partners.has(c.id)||deadIds.has(c.partner)||c.parents?.some(id=>deadIds.has(id)||parents.has(id)))&&
+  c.clothingTarget===undefined&&!c.waterTrip&&!c.craftSite&&!c.seedField&&!c.pantryTrip&&
+  !Object.values(c.cargo||{}).some(n=>n>0)&&!Object.values(c.buildCargo||{}).some(n=>n>0)&&
+  (legacyRite||nav.route(c,gather).length)).slice(0,4):s.citizens;
  // The procession moves participants away from their fishing stance. Their
  // already-landed cargo stays with its owner until the usual delivery.
  for(const c of participants){delete c.fishingLanding;delete c.hangingFishElapsed;}
