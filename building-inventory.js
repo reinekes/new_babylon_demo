@@ -84,7 +84,12 @@ export function buildingInputStock(b,k){return isResidence(b)?k==='food'?n(b.pan
 export function buildingInputRoom(s,b,k,households){
  if(!isOperational(b))return 0;
  if(toolResource(b)&&!isStrictSumer(s))return 0;
- if(isResidence(b))return Math.max(0,homeStockCapacity(s,b,k,households)-buildingInputStock(b,k));
+ if(isResidence(b)){
+  const capacity=homeStockCapacity(s,b,k,households);
+  // During shortages limit reservations to three meals per household.
+  const reservable=k==='food'&&s.calendarDaysPerMonth===1&&s.resources.food<1.6*s.population?capacity/4:capacity;
+  return Math.max(0,reservable-buildingInputStock(b,k));
+ }
  if(b.type==='cowshed'&&b.dairy?.shortage!==undefined&&k==='reed')return Math.max(0,dairyInputCapacity(b).reed-b.dairy.reed);
  if(b.type==='sheepfold'&&b.flock?.adults!==undefined&&k==='reed')return Math.max(0,inputRecipe(b).reed-b.flock.reed);
  return Math.max(0,inputNeeds(b)[k]||0);

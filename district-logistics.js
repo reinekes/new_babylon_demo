@@ -320,7 +320,28 @@ export function districtPickup(s,c){
  const issue=eligible&&fromStock&&c.basketCondition===undefined&&surplus('basket')>=1;
  const repair=eligible&&fromStock&&c.basketCondition===0&&surplus('reed')>=2;
  const basket=eligible&&(c.basketCondition>0||issue||repair);
- const key=entry(q.target,q.resource),n=Math.min(c.freightCart?24:basket?16:12,q.remaining,districtExportable(s,q,pass),Math.max(0,logisticsRoom(s,target,q.resource,q.targetKind,pass)-(pass.carriedTo.get(key)||0)-(pass.extra.get(key)||0)));if(n<=eps)return 0;const beforeOutput=source?.workshopStock?.output?.food||0,actual=q.campSalvage?n:q.shapingBatch?loadShapingBatch(s,c,q.shapingBatch,q.resource,n):fromStock?takeStock(s,q.source,q.resource,n,{fishTo:c,giftTo:c,creatorTo:c,grainTo:c}):takeBuildingOutput(source,q.resource,n);if(basket&&actual>12+eps){
+ const mealLoad=s.calendarDaysPerMonth===1&&q.resource==='food'&&!q.shapingBatch?1.25:1;
+ const handLimit=12*mealLoad,loadLimit=(c.freightCart?24:basket?16:12)*mealLoad;
+ // At pickup the porter can top up a small household order with spare food.
+ if(s.calendarDaysPerMonth===1&&s.resources.food>=1.6*s.population&&q.automatic&&q.resource==='food'&&q.targetKind==='input'&&isResidence(target)&&!q.shapingBatch){
+  const dinner=s.citizens.reduce((sum,person)=>supplyHome(person)===q.target?sum+mealRation(person):sum,0);
+  const room=Math.min(logisticsRoom(s,target,'food','input',pass),pantryRestockTarget(s,dinner)-homeMealFood(target));
+  const key=entry(q.target,'food');
+  const wanted=Math.min(loadLimit-q.remaining,room-(pass.incoming.get(key)||0)-(pass.extra.get(key)||0),1e9-q.amount);
+  let free=surplus('food');
+  if(wanted>eps&&wanted>free&&looseMeal('food',source)){
+   for(const shipment of s.district.jobs){
+    if(!shipment.automatic||shipment.source!==q.source||shipment.resource!=='food'||shipment.targetKind||shipment.shapingBatch||shipment.fishLot||shipment.campSalvage||pass.owners.has(shipment.id)||shipment.remaining<=eps)continue;
+    if(s.civicOrder?.case?.aid===shipment.id||s.civicOrder?.history?.some(h=>h.aid===shipment.id||h.restitution?.job===shipment.id))continue;
+    const released=Math.min(shipment.remaining,wanted-free);
+    shipment.remaining-=released;shipment.cancelled+=released;free+=released;
+    if(free>=wanted-eps)break;
+   }
+  }
+  const extra=Math.min(wanted,free);
+  if(extra>eps){q.amount+=extra;q.remaining+=extra;}
+ }
+ const key=entry(q.target,q.resource),n=Math.min(loadLimit,q.remaining,districtExportable(s,q,pass),Math.max(0,logisticsRoom(s,target,q.resource,q.targetKind,pass)-(pass.carriedTo.get(key)||0)-(pass.extra.get(key)||0)));if(n<=eps)return 0;const beforeOutput=source?.workshopStock?.output?.food||0,actual=q.campSalvage?n:q.shapingBatch?loadShapingBatch(s,c,q.shapingBatch,q.resource,n):fromStock?takeStock(s,q.source,q.resource,n,{fishTo:c,giftTo:c,creatorTo:c,grainTo:c}):takeBuildingOutput(source,q.resource,n);if(basket&&actual>handLimit+eps){
   if(issue)takeStock(s,q.source,'basket',1);
   if(repair)takeStock(s,q.source,'reed',2);
   c.basketCondition=(issue||repair?6:c.basketCondition)-1;

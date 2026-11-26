@@ -94,3 +94,25 @@ test('unloaded food at a producer can be dispatched to a hungry home with empty 
  assert.equal(source.workshopStock.output.food,18);
  assert.ok(validateDistricts(s));
 });
+
+test('a porter collecting a small household order fills the load while honoring another reservation',()=>{
+ const {s,source}=settlement();
+ assert.ok(putProductionOutput(s,source,{food:18}));
+ assert.ok(requestTransfer(s,from,to,'food',5).ok);
+ const order=requestTransfer(s,from,'8,8','food',1,{automatic:true,targetKind:'input'});
+ assert.ok(order.ok);
+ const carrier=s.citizens.find(c=>c.age>=16);
+ Object.assign(carrier,{districtJob:order.id,work:null,site:null,phase:'home'});
+ assert.equal(districtPickup(s,carrier),13);
+ carrier.phase='toDistrictStore';
+ assert.equal(source.workshopStock.output.food,5);
+ assert.ok(decode(encode(s)));
+});
+
+test('a household pantry holds twelve full family dinners in the one-day calendar',async()=>{
+ const {homeStockCapacity}=await import('../building-inventory.js');
+ const {mealRation}=await import('../wellbeing.js');
+ const {s}=settlement(),home=s.buildings.find(b=>b.x===8&&b.y===8);
+ const dinner=s.citizens.filter(c=>c.home==='8,8').reduce((n,c)=>n+mealRation(c),0);
+ assert.equal(homeStockCapacity(s,home,'food'),12*dinner);
+});

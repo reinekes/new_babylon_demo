@@ -23,7 +23,7 @@ export function supplyHome(c,{arrived=false}={}){
 }
 export const ration=c=>c.age<16?.3:.6;
 export const PANTRY_LOAD_LIMIT=24;
-export const pantryStockTarget=(s,dinner)=>dinner*(s.calendarDaysPerMonth===1?3:2);
+export const pantryStockTarget=(s,dinner)=>dinner*(s.calendarDaysPerMonth?12*s.calendarDaysPerMonth:3);
 export function pantryRestockTarget(s,dinner){
  // Keep a first meal available to every household before stocking reserves.
  if(s.calendarDaysPerMonth===1&&s.resources.food<.8*s.population*2)return dinner;
