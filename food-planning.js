@@ -2,7 +2,7 @@ import {AUTUMN_CROPS,fieldCalendar,nextSowingYear} from './crop-calendar.js';
 import {fieldResting,nextSaltYieldFactor} from './field-soil.js';
 import {calendarRateFor} from './calendar.js';
 import {cityCommandReason as relicCommandReason} from './city-command-lock.js';
-import {homeMealFood,carriedMealFood} from './households.js';
+import {homeMealFood,carriedMealFood,supplyHome,totalFood} from './households.js';
 import {isResidence,buildingKey,isOperational,outputMultiplier} from './definitions.js';
 import {mealRation,mealCycle,isDinnerTime,hourOf} from './wellbeing.js';
 import {fieldWater,lowWaterYear} from './irrigation.js';
@@ -50,7 +50,7 @@ export function foodForecast(s,{includeCrops=true}={}){
  const secondsToHarvest=harvestAt-time;
  const daily=s.citizens.reduce((n,c)=>n+mealRation(c),0);let meals=0;for(let at=30+Math.floor((time-30)/60+1)*60;at<=harvestAt+1e-7;at+=60)meals++;
  const outstanding=isDinnerTime(time)?s.citizens.reduce((n,c)=>n+Math.max(0,mealRation(c)-(c.mealDay===mealCycle(time)?c.mealEaten:0)),0):0;
- const occupied=new Set(s.citizens.map(c=>c.home)),access=foodStoreAccess(s,occupied);
+ const occupied=new Set(s.citizens.map(c=>supplyHome(c))),access=foodStoreAccess(s,occupied);
  const homes=s.buildings.reduce((n,b)=>n+(occupied.has(buildingKey(b))&&isResidence(b)&&isOperational(b)?homeMealFood(b):0),0);
  const inTransit=s.citizens.reduce((n,c)=>n+(c.pantryFood||0)+(!c.saleJob?(c.cargo?.food||0)+(c.cargo?.milk||0)*.5:0),0);
  const workshop=s.buildings.reduce((n,b)=>n+(b.workshopStock?.output?.food||0)+(b.workshopStock?.output?.milk||0)*.5,0);
@@ -63,6 +63,15 @@ export function foodForecast(s,{includeCrops=true}={}){
 }
 export function validateFoodPlan(s){return !!s.foodPlan&&typeof s.foodPlan.protectSeeds==='boolean';}
 
+// Even the most favorable redistribution cannot cover this citywide deficit.
+export function dinnerFoodBalance(s,houses){
+ const demand=houses.reduce((sum,home)=>sum+home.need,0);
+ const missingAtHomes=houses.reduce((sum,home)=>sum+Math.max(0,home.need-home.food),0);
+ const seedCargo=s.citizens.reduce((sum,c)=>sum+(c.seedFood||0),0);
+ const stillDrying=s.buildings.reduce((sum,b)=>sum+(b.fishRack?.batch?.amount||0),0);
+ const ready=totalFood(s)-seedReserve(s)-seedCargo-stillDrying;
+ return {missingAtHomes,missingInCity:Math.max(0,demand-ready)};
+}
 // Read-only diagnostics: no news, save fields, route searches or simulation mutations.
 export function foodWarnings(s,forecast=foodForecast(s,{includeCrops:false})){
  const night=isDinnerTime(s.simTime),day=mealCycle(s.simTime),nearDinner=hourOf(s.simTime)>=16||night,byHome=new Map(),byTarget=new Map();
@@ -70,7 +79,8 @@ export function foodWarnings(s,forecast=foodForecast(s,{includeCrops:false})){
  for(const c of s.citizens){
   const key=c.pantryTrip?(c.pantryTarget||c.home):deliveries.get(c.districtJob);
   if(key){if(!byTarget.has(key))byTarget.set(key,[]);byTarget.get(key).push(c);}
-  if(!byHome.has(c.home))byHome.set(c.home,[]);byHome.get(c.home).push(c);
+  const address=supplyHome(c);
+  if(!byHome.has(address))byHome.set(address,[]);byHome.get(address).push(c);
  }
  const houses=[];
  for(const b of s.buildings){if(!isResidence(b)||!isOperational(b))continue;const key=buildingKey(b),residents=byHome.get(key)||[],couriers=byTarget.get(key)||[];if(!residents.length)continue;

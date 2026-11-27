@@ -45,13 +45,15 @@ function waitFor(s,predicate,seconds){
 test('a resident passing a granary mid-segment carries its food home after reloading',()=>{
  const {s,resident,source}=fixture('granary');
  const before=source.stock.food;
- assert.ok(waitFor(s,()=>resident.pantryFood>0,18),'pickup must occur before the long street ends');
- const load=resident.pantryFood;
+ // The same warehouse can already have an order addressed to this family.
+ const carried=c=>c.pantryFood||c.cargo.food||0;
+ assert.ok(waitFor(s,()=>carried(resident)>0,18),'pickup must occur before the long street ends');
+ const load=carried(resident);
  assert.equal(source.stock.food,before-load);
  assert.equal(at(s,homeKey).pantryDelivered,0);
  const saved=decode(encode(s));assert.ok(saved);
  const walker=saved.citizens.find(c=>c.id===resident.id);
- assert.equal(walker.pantryFood,load);
+ assert.equal(carried(walker),load);
  const home=at(saved,homeKey);
  assert.ok(waitFor(saved,()=>home.pantryDelivered>=load,55));
  assert.equal(home.lastRation.carrier,resident.id);

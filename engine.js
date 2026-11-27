@@ -100,7 +100,7 @@ import {depthCanalTarget,fieldWater,irrigationFor,lowWaterYear} from './irrigati
 import {initializeClothing,validateClothing} from './clothing.js';
 import {ROLES,validateEducation,newMedicalSkill,advanceMedicalYear} from './education.js';
 import {PROFESSION_IDS,professionRole,canStaffBuilding,hasWorkplace,validateCareerRules} from './professions.js';
-import {residentMood,initializeWellbeing,validateWellbeing,affectResidents,mournResidents,mealRation} from './wellbeing.js';
+import {residentMood,initializeWellbeing,validateWellbeing,affectResidents,mournResidents,mealRation,createEmergencyMealContext,tryEmergencyMeal,canWaitForDinner} from './wellbeing.js';
 import {validateHouseholds} from './households.js';
 import {initializeDemography,advanceGenerations,validateDemography} from './demography.js';
 import {startFuneral,advanceFuneral,validateFuneral} from './funerals.js';
@@ -409,7 +409,16 @@ function settleSeason(s){
  const dwellings=new Map(s.buildings.filter(isResidence).map(b=>[buildingKey(b),b]));
  s.happiness=s.citizens.length?s.citizens.reduce((n,c)=>n+residentMood(c,dwellings.get(c.home)),0)/s.citizens.length:0;
  if(hungry.length)log(s,'Голод в семьях',`${hungry.length} жителей недоедают. Проверь домашние запасы и доставку еды.`,'bad');
- const victims=!s.funeral?s.citizens.filter(c=>c.health<=0&&c.missedMeals>=3&&recoverCitizenCargo(s,c.id)!==false):[];
+ const victims=[];
+ let mealContext;
+ if(!s.funeral)for(const c of s.citizens){
+  if(c.health>0||c.missedMeals<3)continue;
+  if(s.calendarDaysPerMonth===1){
+   mealContext??=createEmergencyMealContext(s);
+   if(tryEmergencyMeal(s,c,mealContext)||canWaitForDinner(s,c,mealContext))continue;
+  }
+  if(recoverCitizenCargo(s,c.id)!==false)victims.push(c);
+ }
  if(victims.length){const deceased=victims.map(c=>({id:c.id,name:citizenName(c.id),x:c.x,y:c.y,parents:c.parents,partner:c.partner}));mournResidents(s,victims.map(c=>c.id));for(const c of victims)recordLifeDeath(s,c,'starvation');const ids=new Set(victims.map(c=>c.id));s.citizens=s.citizens.filter(c=>!ids.has(c.id));s.population=s.citizens.length;s.deaths+=victims.length;syncCitizens(s);startFuneral(s,deceased,{cause:'starvation'});log(s,'Смерть от голода',`Погибли ${victims.length} жителей из семей, которым не хватало еды. Город провожает умерших.`,'bad');}
  if(!s.funeral||s.funeral.scope==='family'){const report=advanceGenerations(s,id=>{const citizen=s.citizens.find(c=>c.id===id);if(recoverCitizenCargo(s,id)===false)return false;if(citizen)recordLifeDeath(s,citizen,'oldAge');return true;});for(const c of report.newborns)recordLifeBirth(s,c);syncCitizens(s);if(report.deceased.length)startFuneral(s,report.deceased,{cause:'oldAge'});}
  if(s.funeral&&s.funeral.scope!=='family'){syncCitizens(s);snapshotLifeAnalytics(s);check(s);return;}

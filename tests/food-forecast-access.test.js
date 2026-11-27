@@ -53,3 +53,22 @@ test('fishing potential shares the remaining stock across yards and ignores exha
  s.fisheries['river:2'].stock=0;
  assert.equal(seasonBalance(s).food.income,0);
 });
+
+test('dinner separates missing deliveries from a citywide shortage and counts people at their shelter',async()=>{
+ const {dinnerFoodBalance}=await import('../food-planning.js');
+ const s=createGame({start:'established'});
+ const homes=s.buildings.filter(b=>b.type==='house');
+ const keys=homes.map(b=>b.x+','+b.y);
+ for(const c of s.citizens)if(c.home===keys[0])c.floodShelter=keys[1];
+ for(const b of homes)b.pantry=0;
+ s.resources.food=s.resources.milk=0;
+ const homesToday=foodWarnings(s).houses;
+ assert.equal(homesToday.length,1);
+ assert.equal(homesToday[0].key,keys[1]);
+ const meal=homesToday[0].need;
+ const yard=s.buildings.find(b=>b.type==='field');
+ yard.workshopStock.output.food=meal;
+ assert.deepEqual(dinnerFoodBalance(s,homesToday),{missingAtHomes:meal,missingInCity:0});
+ yard.workshopStock.output.food=0;
+ assert.equal(dinnerFoodBalance(s,homesToday).missingInCity,meal);
+});

@@ -114,7 +114,7 @@ import {uiIcon} from './ui-icons.js';
 import {clothingStatus} from './clothing.js';
 import {stockStores,storeCapacity,storeStock} from './inventory.js';
 import {districtReport,storeMinimum,setStoreMinimum,setStoreExports,requestTransfer,cancelTransfer} from './district-logistics.js';
-import {foodForecast,foodWarnings,availableFood,setSeedProtection} from './food-planning.js';
+import {foodForecast,foodWarnings,dinnerFoodBalance,availableFood,setSeedProtection} from './food-planning.js';
 import {pestReport,isPestStore,catReason} from './pests.js';
 import {districtSupplyRoute,householdShoreRoute,householdSupplyRoute,supplyOverview} from './supply.js';
 import {medicalLevel,healingSpeed,healingQuality,healingCost,STUDY_SECONDS} from './education.js';
@@ -731,11 +731,15 @@ function renderSupply(){
   risk:`Дворов под угрозой: ${w.dinner.houseCount}.`,
   empty:'Нет заселённых дворов.'
  }[w.dinner.status];
+ const {missingAtHomes,missingInCity}=dinnerFoodBalance(state,w.houses);
+ const missingDinner=missingInCity>1e-7
+  ?`Даже по всему городу до полного ужина не хватает минимум ${foodAmount(missingInCity)} ед. готовой еды.`
+  :missingAtHomes>1e-7?`До полного ужина в кладовые ещё должно поступить ${foodAmount(missingAtHomes)} ед. В пищевых дворах готово ${foodAmount(w.forecast.workshop)} ед.`:'';
  const harvestStatus=w.forecast.balance<0
   ?`Без новых поставок не хватит ${foodAmount(-w.forecast.balance)} ед. еды.`
   :`По запасам на местах расчётный остаток ${foodAmount(w.forecast.balance)} ед. еды.`;
  const horizons=`<section class="food-forecast" aria-label="Еда сегодня и до жатвы">
-  <p><b>${isDinnerTime(state.simTime)?'Текущий ужин':'Ближайший ужин'}</b> · дома обеспечено ${w.dinner.covered} из ${w.dinner.total} · в пути для ${w.dinner.inTransit} · нужно пополнить ${w.dinner.short}<br>${dinnerStatus} ${w.riskFamilies.length?'<button type="button" data-supply-filter="risk">Проверить дворы</button>':''}</p>
+  <p><b>${isDinnerTime(state.simTime)?'Текущий ужин':'Ближайший ужин'}</b> · дома обеспечено ${w.dinner.covered} из ${w.dinner.total} · в пути для ${w.dinner.inTransit} · нужно пополнить ${w.dinner.short}<br>${dinnerStatus} ${missingDinner} ${w.riskFamilies.length?'<button type="button" data-supply-filter="risk">Проверить дворы</button>':''}</p>
   <p><b>До жатвы</b> · ${Math.ceil(w.forecast.secondsToHarvest/60)} игр. дн. · ${harvestStatus} <button type="button" data-supply-filter="all">Показать расчёт</button></p>
  </section>`;
  const summary=w.alerts.length?`<section class="supply-alerts" aria-label="Предупреждения">${w.alerts.filter(a=>supplyFilter==='all'||a.id==='families').map(a=>`<article class="supply-alert ${a.severity}"><b>${esc(a.title)}</b><p>${esc(a.text)}</p></article>`).join('')}</section>`:'<p class="supply-safe">Признаков недоедания, риска до жатвы и нехватки семян сейчас нет.</p>';

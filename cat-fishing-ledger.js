@@ -56,6 +56,13 @@ export function moveFishingCargoToOutput(s,b,c,n,beforeOutput,beforeCargo){
  if(!b?.catFishingSiteId){discardFishingCargo(s,c);return;}
  move(s.catFishing,cargo(c),output(b),n,beforeCargo,beforeOutput);
 }
+// A meal eaten at the fishing yard consumes the catch without a warehouse receipt.
+export function eatFishingOutput(s,b,n,before){
+ const ledger=s.catFishing,key=output(b);
+ if(!ledger?.flows[key])return;
+ const parts=take(ledger,key,n,before);
+ removeReceipts(ledger,new Set(parts.filter(p=>p.id).map(p=>p.id)));
+}
 export function pickupFishingOutput(s,b,c,n,beforeOutput){
  if(!usesCatDiscovery(s)||!s.catFishing||!b?.catFishingSiteId||!amount(n))return;
  move(s.catFishing,output(b),cargo(c),n,beforeOutput,0);

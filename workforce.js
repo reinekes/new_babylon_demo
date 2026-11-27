@@ -535,7 +535,7 @@ export function syncCitizens(s){
     if(n>=2||!source)continue;
     const food=s.calendarDaysPerMonth===1&&['food','milk'].includes(q.resource);
     const owners=districtPass.owners.get(q.id)||[];
-    const waiting=food?owners.filter(c=>!hasCargo(c)).length:0;
+    const waiting=food?owners.filter(c=>!hasCargo(c)&&c.phase!=='blocked'&&!shelterHome(c)).length:0;
     const limit=food?Math.min(2,n+Math.max(0,Math.ceil(q.remaining/6)-waiting)):2;
     if(n>=limit)continue;
     // Order, home food decisions, and routes stay fixed during this assignment

@@ -215,22 +215,59 @@ export function syncDistrictJobs(s){
  }
  // Warehouse food can be eaten or reserved for seed after a household order
  // is issued. An uncollectable promise must not block a replacement delivery.
- if(s.calendarDaysPerMonth===1&&s.resources.food<.8*s.population){
-  for(const q of s.district.jobs){
+ if(s.calendarDaysPerMonth===1){
+  for(let i=s.district.jobs.length-1;i>=0;i--){
+   const q=s.district.jobs[i];
    if(!q.automatic||q.targetKind!=='input'||q.resource!=='food'||q.fishLot||q.shapingBatch||civicJobs.has(q.id)||q.remaining<=eps||
-    !isResidence(store(s,q.target,pass))||!central(s,store(s,q.source,pass),pass)||districtExportable(s,q,pass)>eps)continue;
-   const uncollected=q.remaining;
-   q.cancelled+=uncollected;q.remaining=0;
+    !isResidence(store(s,q.target,pass))||!central(s,store(s,q.source,pass),pass))continue;
+   const promised=pass.queued.get(entry(q.source,'food'))||0;
+   const uncollected=Math.min(q.remaining,promised-districtExportable(s,q,pass));
+   if(uncollected<=eps)continue;
+   q.cancelled+=uncollected;q.remaining-=uncollected;
    add(pass.queued,entry(q.source,'food'),-uncollected);
    add(pass.incoming,entry(q.target,'food'),-uncollected);
-   if(!transferCarried(s,q,pass))pass.active--;
+   if(q.remaining<=eps&&!transferCarried(s,q,pass))pass.active--;
    invalidateAssignments(s);
   }
  }
  if(s.calendarDaysPerMonth===1&&isDinnerTime(s.simTime))stockOwnDinners(s,pass);
  const stores=pass.stores,destinations=[...pass.endpoints.values()].filter(b=>isBuildingStore(b)&&!b.campSalvage),donors=new Map();
  const nearest=(b,metric='round')=>{const target=buildingKey(b),id=target+metric;if(!donors.has(id))donors.set(id,stores.filter(a=>a!==b&&connectedStores(s,buildingKey(a),target,pass)).sort((a,c)=>metric==='round'?Math.hypot(a.x-b.x,a.y-b.y)-Math.hypot(c.x-b.x,c.y-b.y):Math.abs(a.x-b.x)+Math.abs(a.y-b.y)-Math.abs(c.x-b.x)-Math.abs(c.y-b.y)));return donors.get(id);};
- const inbound=(b,k,need)=>{const target=buildingKey(b),wanted=need-pending(s,target,k,pass)-(pass.extra.get(entry(target,k))||0);if(wanted<(isResidence(b)&&k==='food'?Math.min(1,homeStockCapacity(s,b,'food',pass.mealHouseholds)/2):.01))return;for(const a of nearest(b)){const source=buildingKey(a),amount=Math.min(wanted,Math.max(0,exportable(s,source,k,pass)-(pass.queued.get(entry(source,k))||0)));if(amount>=.01&&requestTransfer(s,source,target,k,amount,{automatic:true,targetKind:'input'},pass).ok)break;}};
+ const homes=destinations.filter(isResidence);
+ const dinnerNeeds=new Map();
+ if(s.calendarDaysPerMonth===1)for(const b of homes){
+  const key=buildingKey(b),family=pass.mealHouseholds.get(key)||[];
+  dinnerNeeds.set(key,family.reduce((n,c)=>n+mealRation(c),0)-homeMealFood(b));
+ }
+ const unreservedDinner=key=>Math.max(0,dinnerNeeds.get(key)-pending(s,key,'food',pass)-(pass.extra.get(entry(key,'food'))||0));
+ const inbound=(b,k,need)=>{
+  const target=buildingKey(b);
+  let wanted=need-pending(s,target,k,pass)-(pass.extra.get(entry(target,k))||0);
+  if(wanted<=eps)return;
+  const householdFood=k==='food'&&dinnerNeeds.has(target);
+  const dinner=householdFood?unreservedDinner(target):0;
+  const donors=nearest(b);
+  if(householdFood&&wanted>dinner+eps){
+   // A reserve order may use only the stock left after unreserved first dinners on this bank.
+   const free=donors.reduce((sum,a)=>{const key=buildingKey(a);return sum+Math.max(0,exportable(s,key,k,pass)-(pass.queued.get(entry(key,k))||0));},0);
+   if(free<wanted+.8*s.population){
+    let otherDinners=0;
+    for(const key of dinnerNeeds.keys())if(key!==target&&connectedStores(s,key,target,pass))otherDinners+=unreservedDinner(key);
+    wanted=Math.min(wanted,Math.max(dinner,free-otherDinners));
+   }
+  }
+  const minimum=dinner>eps?eps:isResidence(b)&&k==='food'?Math.min(1,homeStockCapacity(s,b,'food',pass.mealHouseholds)/2):.01;
+  if(wanted<minimum)return;
+  for(const a of donors){
+   const source=buildingKey(a),free=exportable(s,source,k,pass)-(pass.queued.get(entry(source,k))||0);
+   const amount=Math.min(wanted,free);
+   if(amount<=eps||dinner<=eps&&amount<.01)continue;
+   if(requestTransfer(s,source,target,k,amount,{automatic:true,targetKind:'input'},pass).ok){
+    wanted-=amount;
+    if(dinner<=eps||wanted<=eps)break;
+   }
+  }
+ };
  if(s.lastFishLotId)scheduleDryFish(s,pass,destinations,nearest);
  const markedFields=s.earthDiscovery?.qualifiedAt!=null&&!harvestNameEvidence(s)?
   destinations.filter(b=>b.type==='field'&&b.grainEvidence?.inspired):[];
@@ -247,7 +284,6 @@ export function syncDistrictJobs(s){
   if(!reroutable.has(q.source))reroutable.set(q.source,[]);
   reroutable.get(q.source).push(q);
  }
- const homes=destinations.filter(isResidence);
  if(emergency){
   const coverage=b=>{
    const key=buildingKey(b),dinner=(pass.mealHouseholds.get(key)||[]).reduce((n,c)=>n+mealRation(c),0);
