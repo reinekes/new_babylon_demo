@@ -5,6 +5,7 @@ import {useOneDayCalendar} from '../calendar.js';
 import {initializeBuildingInventory,putProductionOutput} from '../building-inventory.js';
 import {districtPickup,indexDistrictJobs,requestTransfer,syncDistrictJobs,validateDistricts} from '../district-logistics.js';
 import {syncInventory} from '../inventory.js';
+import {strictScenario} from '../scenario-profiles.js';
 
 function settlement(type='fishing'){
  const s=useOneDayCalendar(createGame({start:'established'}));
@@ -109,10 +110,34 @@ test('a porter collecting a small household order fills the load while honoring 
  assert.ok(decode(encode(s)));
 });
 
-test('a household pantry holds twelve full family dinners in the one-day calendar',async()=>{
+test('a household pantry holds fifteen full family dinners in the one-day calendar',async()=>{
  const {homeStockCapacity}=await import('../building-inventory.js');
  const {mealRation}=await import('../wellbeing.js');
+ const {pantryRestockTarget}=await import('../households.js');
  const {s}=settlement(),home=s.buildings.find(b=>b.x===8&&b.y===8);
  const dinner=s.citizens.filter(c=>c.home==='8,8').reduce((n,c)=>n+mealRation(c),0);
- assert.equal(homeStockCapacity(s,home,'food'),12*dinner);
+ assert.ok(Math.abs(homeStockCapacity(s,home,'food')-15*dinner)<1e-7);
+ s.resources.food=0;
+ assert.ok(Math.abs(homeStockCapacity(s,home,'food')-15*dinner)<1e-7);
+ assert.equal(pantryRestockTarget(s,dinner),dinner);
+});
+
+test('food freight uses larger physical loads on foot, with a basket and with a cart',()=>{
+ for(const [equipment,expected] of [[{},18.75],[{basketCondition:1},25],[{freightCart:'10,9'},37.5]]){
+  const s=useOneDayCalendar(createGame({start:'established',scenario:strictScenario()}));
+  s.buildings.push({type:'depot',x:10,y:9,level:1});
+  syncInventory(s);
+  const order=requestTransfer(s,'9,8','10,9','food',40);
+  assert.ok(order.ok);
+  const carrier=s.citizens[0];
+  Object.assign(carrier,{role:'carrier',districtJob:order.id,work:null,site:null},equipment);
+  const before=s.resources.food;
+  assert.equal(districtPickup(s,carrier),expected);
+  carrier.phase='toDistrictStore';
+  assert.equal(s.resources.food+carrier.cargo.food,before);
+  const restored=decode(encode(s));
+  assert.ok(restored);
+  assert.equal(restored.citizens[0].cargo.food,expected);
+  assert.equal(restored.district.jobs.find(q=>q.id===order.id).remaining,40-expected);
+ }
 });

@@ -14,7 +14,7 @@ function clinicCity(){
  for(const b of s.buildings.filter(b=>b.type==='house')){b.pantry=0;b.water=100;b.waterDelivered=100;}
  s.resources.reed=0;s.resources.food=200;invalidateAssignments(s);syncCitizens(s);return {s,patient};
 }
-test('a full household carries three dinners from surplus and round-trips a load over six',()=>{
+test('a household shopper physically collects and round-trips thirty food from surplus',()=>{
  const s=useOneDayCalendar(createGame({start:'established'}));
  const home=s.buildings.find(b=>b.type==='house'),key=buildingKey(home);
  s.buildings=s.buildings.filter(b=>['house','shrine'].includes(b.type));
@@ -32,9 +32,9 @@ test('a full household carries three dinners from surplus and round-trips a load
  }
  const courier=s.citizens.find(c=>c.pantryFood>6);
  assert.ok(courier);
- assert.equal(courier.pantryFood,8);
+ assert.equal(courier.pantryFood,30);
  assert.ok(Math.abs(s.resources.food+courier.pantryFood-sourceBefore)<.005);
- assert.equal(decode(encode(s))?.citizens.find(c=>c.id===courier.id)?.pantryFood,8);
+ assert.equal(decode(encode(s))?.citizens.find(c=>c.id===courier.id)?.pantryFood,30);
 });
 test('sick sole household supplier collects real groceries before an unproductive clinic visit',()=>{
  const {s,patient}=clinicCity();let carried=false,treated=false;

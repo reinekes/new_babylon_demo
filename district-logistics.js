@@ -320,8 +320,11 @@ export function districtPickup(s,c){
  const issue=eligible&&fromStock&&c.basketCondition===undefined&&surplus('basket')>=1;
  const repair=eligible&&fromStock&&c.basketCondition===0&&surplus('reed')>=2;
  const basket=eligible&&(c.basketCondition>0||issue||repair);
- const mealLoad=s.calendarDaysPerMonth===1&&q.resource==='food'&&!q.shapingBatch?1.25:1;
- const handLimit=12*mealLoad,loadLimit=(c.freightCart?24:basket?16:12)*mealLoad;
+ const mealFreight=s.calendarDaysPerMonth===1&&q.resource==='food'&&!q.shapingBatch;
+ const handLimit=mealFreight?18.75:12;
+ const basketLimit=mealFreight?25:16;
+ const cartLimit=mealFreight?37.5:24;
+ const loadLimit=c.freightCart?cartLimit:basket?basketLimit:handLimit;
  // At pickup the porter can top up a small household order with spare food.
  if(s.calendarDaysPerMonth===1&&s.resources.food>=1.6*s.population&&q.automatic&&q.resource==='food'&&q.targetKind==='input'&&isResidence(target)&&!q.shapingBatch){
   const dinner=s.citizens.reduce((sum,person)=>supplyHome(person)===q.target?sum+mealRation(person):sum,0);
