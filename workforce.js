@@ -951,6 +951,16 @@ function criticalFoodTrip(s,c,ctx){
  if(store){c.store=store;c.pantryTrip=true;c.pantryFood=0;}
  return true;
 }
+function timelyFamilyPickup(s,c,ctx,order,deficit){
+ const amount=Math.min(order.remaining,ctx.buildings.get(order.source)?.workshopStock?.output?.food||0);
+ if(amount<=1e-7)return false;
+ if(amount+1e-7>=Math.min(deficit,ration(c)*4/3))return true;
+ const home=ctx.ports.get(c.home),source=ctx.ports.get(order.source);
+ const route=home&&source&&routeBetween(s,home.key,source.key,ctx);
+ if(!route)return false;
+ const length=route.slice(1).reduce((sum,point,i)=>sum+distance(route[i],point),0);
+ return 2*length<=DAY_SECONDS/2*motionRateFor(s)*1.05;
+}
 // A household's next meal takes precedence over elective care/study. This also
 // permits a late returning worker to fetch dinner, keeping their other load.
 function urgentHouseholdSupply(s,c,ctx){
@@ -969,7 +979,7 @@ function urgentHouseholdSupply(s,c,ctx){
  // would otherwise compete with other families for the last warehouse stock.
  if(s.calendarDaysPerMonth===1&&s.resources.food<s.population*.8&&!hasCargo(c)&&!c.guardPost&&!c.waterTrip&&!c.site){
   const q=s.district.jobs.find(q=>q.automatic&&q.target===c.home&&q.targetKind==='input'&&q.resource==='food'&&q.remaining>1e-7&&
-   isProductionStore(ctx.buildings.get(q.source))&&!s.citizens.some(p=>p.districtJob===q.id));
+   isProductionStore(ctx.buildings.get(q.source))&&!s.citizens.some(p=>p.districtJob===q.id)&&timelyFamilyPickup(s,c,ctx,q,needed-homeMealFood(b)));
   if(q){
    c.work=null;c.workElapsed=0;c.districtJob=q.id;c.store=q.source;
    startTrip(s,c,q.source,'toDistrictSupply',ctx);
@@ -1010,7 +1020,9 @@ function waitForHomeMeal(s,c,ctx){
  // resident with a portion at home also rests until dinner instead of making
  // an optional long refill that repeatedly misses the eating window.
  const dining=isDinnerTime(s.simTime)&&(c.mealDay!==mealCycle(s.simTime)||c.mealEaten+1e-7<portion);
- const waiting=dining||c.hunger>=70&&(c.missedMeals>0||isStrictSumer(s))&&food+1e-7>=portion;
+ const foodShift=s.calendarDaysPerMonth===1&&s.resources.food<.8*s.population&&
+  ['fishing','garden','field','hunting'].includes(ctx.buildings.get(c.work)?.type)&&shiftOpen(s,c,ctx);
+ const waiting=dining||!foodShift&&c.hunger>=70&&(c.missedMeals>0||isStrictSumer(s))&&food+1e-7>=portion;
  // Working loads are retained at home in the established resting phase;
  // wellbeing deliberately refuses to dine in a cargo-bearing home phase.
  if(waiting&&c.phase==='home'&&hasCargo(c))c.phase='resting';
@@ -1288,7 +1300,9 @@ function advanceCitizen(s,c,dt,ctx,constructionWork,fishingTimerRate){
   (freightPickup||c.site&&c.phase==='toSupply'||c.phase==='toMarket'&&c.tradeJob||c.phase==='toWork'&&!c.seedField&&!c.craftSite||c.phase==='toSite'&&c.siteDuty==='builder');
  // A remote gathering trip keeps its chosen tree, prey or fishing spot overnight.
  // Opening hours below still pause work, and the worker returns with the actual load.
- const finishFieldTrip=s.calendarDaysPerMonth===1&&c.phase==='working'&&GATHERING_TYPES.includes(ctx.buildings.get(c.work)?.type)&&
+ const finishingFood=s.calendarDaysPerMonth===1&&s.resources.food<.8*s.population&&c.phase==='working'&&
+  ['fishing','hunting'].includes(ctx.buildings.get(c.work)?.type)&&s.gathering?.jobs.some(j=>j.citizen===c.id&&j.work===c.work);
+ const finishFieldTrip=finishingFood||s.calendarDaysPerMonth===1&&c.phase==='working'&&GATHERING_TYPES.includes(ctx.buildings.get(c.work)?.type)&&
   (!day||!shiftOpen(s,c,ctx))&&distance(c,ctx.ports.get(c.home)||c)>DAY_SECONDS/4*motionRateFor(s)*1.05&&
   s.gathering?.jobs.some(j=>j.citizen===c.id&&j.work===c.work);
  if(watchOpen&&c.phase==='blocked')startTrip(s,c,c.work,'toWork',ctx);
@@ -1326,7 +1340,7 @@ function advanceCitizen(s,c,dt,ctx,constructionWork,fishingTimerRate){
  let remaining=dt;
  for(let transition=0;transition<12&&remaining>1e-8;transition++){
   // Early commuters reach their workplace and wait there until it opens.
-  if(['working','waiting','constructing'].includes(c.phase)&&!watchOpen&&!isWorkplaceOpen(shiftType(c,ctx),s.simTime)&&!urgentShift(s,c,ctx))return;
+  if(['working','waiting','constructing'].includes(c.phase)&&!finishingFood&&!watchOpen&&!isWorkplaceOpen(shiftType(c,ctx),s.simTime)&&!urgentShift(s,c,ctx))return;
   if(c.phase==='manualGathering'){if(workManualGathering(s,c,remaining,workRate(c,null,ctx.buildings.get(c.home)))){recordCitizenHarvest(s,c,c.cargo);const resource=Object.keys(c.cargo)[0];markCreatorCargo(s,c,resource,c.cargo[resource]);startTrip(s,c,c.store,'toStore',ctx);}return;}
   if(c.phase==='waiting'||c.phase==='constructing'){
    const q=ctx.buildings.get(c.site)?.construction;if(!q){startTrip(s,c,c.home,'toHome',ctx);continue;}
