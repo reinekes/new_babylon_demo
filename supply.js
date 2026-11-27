@@ -24,6 +24,12 @@ export function supplyOverview(s){
  return {houses,demand:houses.reduce((n,h)=>n+h.demand,0),atHome:houses.reduce((n,h)=>n+h.food,0),inTransit:houses.reduce((n,h)=>n+h.inTransit,0),hungry:houses.reduce((n,h)=>n+h.hungry,0),short:houses.filter(h=>h.shortfall>1e-7).length};
 }
 
+export function neighborFoodActivity(c){
+ if(!c?.neighborPantry)return null;
+ if(c.phase==='toPantrySupply')return 'Идёт к соседям за едой';
+ if(c.phase==='toPantryHome')return 'Несёт еду от соседей домой';
+ return null;
+}
 export function householdSupplyRoute(s,key,resource){
  const home=s.buildings.find(b=>isResidence(b)&&buildingKey(b)===key&&b.construction?.kind!=='new');
  if(!home)return null;
@@ -35,7 +41,7 @@ export function householdSupplyRoute(s,key,resource){
   const source=water?trip.station:job?.source||courier.pantryOrigin||courier.store;
   const loaded=water?trip.load:carriedMealFood(courier);
   return {home,source,courier:courier.id,amount:loaded,grain:water?undefined:job?courier.grainCargo:courier.grainPantry,remainder:water||job?undefined:courier.pantryRemainder,points:points(courier,trip?.route||courier.route||[],trip?.index??courier.routeIndex??0),
-   status:loaded>0?(water?'Несёт воду во двор':'Несёт еду во двор'):(water?'Идёт за водой':'Идёт за едой')};
+   status:(!water&&neighborFoodActivity(courier))||(loaded>0?(water?'Несёт воду во двор':'Несёт еду во двор'):(water?'Идёт за водой':'Идёт за едой'))};
  }
  const net=networkFor(s,{materializeRoads:false}),ctx={network:net};
  const ports=new Map(net.ports.filter(p=>!p.building.siteKey).map(p=>[buildingKey(p.building),p.key])),target=ports.get(key);

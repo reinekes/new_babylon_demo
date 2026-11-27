@@ -74,7 +74,7 @@ import {cropFor,workField,advanceCrops,canTillField,fieldActive} from './agricul
 import {fieldWater} from './irrigation.js';
 import {medicalLevel,qualifiedHealer,newMedicalSkill,STUDY_SECONDS,healingSpeed,healingQuality,healingCost} from './education.js';
 import {initializeWellbeing,advanceWellbeing,workRate,beliefMultiplier,isDinnerTime,mealCycle} from './wellbeing.js';
-import {homeFoodInTransit,ration,homeMealFood,supplyHome,recordHomeRation,residentsByHome,pantryRestockTarget,PANTRY_LOAD_LIMIT} from './households.js';
+import {homeFoodInTransit,ration,homeMealFood,supplyHome,recordHomeRation,residentsByHome,pantryStockTarget,pantryRestockTarget,PANTRY_LOAD_LIMIT} from './households.js';
 import {childPlay} from './local-motion.js';
 import {canWork,initializeDemography,lifeStage} from './demography.js';
 import {advanceFuneral} from './funerals.js';
@@ -87,7 +87,7 @@ import {isComplete,materialsReady,finishConstruction,orderedSites,constructionEn
 import {housingPriority,isResidence,BUILDINGS,buildingKey,guardCapacity,capacityOf,levelOf,outputMultiplier,storageOf,isOperational,MATERIALS,citizenName} from './definitions.js';
 import {generateStreets,DAY_SECONDS} from './city-life.js';
 import {onBridge,isDryPoint} from './world.js';
-import {createWalkingNetwork,shortestWalkingPath,nearestWalkingNode,navigationSegmentClear} from './navigation.js';
+import {createWalkingNetwork,shortestWalkingPath,nearestWalkingNode,navigationSegmentClear,navigationDistance} from './navigation.js';
 
 const caches=new WeakMap();
 const hasCargo=c=>Object.values(c.cargo).some(v=>v>0);
@@ -415,7 +415,16 @@ export function syncCitizens(s){
  for(const c of citizens)if(c.clothingTarget!==undefined&&!citizens.some(p=>p.id===c.clothingTarget&&p.home===c.home))recoverCitizenCargo(s,c.id);
  for(const c of citizens)if(c.rehousing&&!['relic','relicGuest','awakening'].includes(c.phase)){delete c.rehousing;startTrip(s,c,c.home,'toHome',ctx);}
  // District orders retain their endpoints even while a flood closes the route.
- for(const c of citizens){if(c.districtJob)continue;const home=ctx.ports.get(c.home),store=ctx.ports.get(c.store);if(c.store&&!ctx.buildings.has(c.store)||(hasCargo(c)||c.pantryTrip)&&(!store||!home||!routeBetween(s,home.key,store.key,ctx)))c.store=closestStore(s,ctx,c.home);}
+ for(const c of citizens){
+  if(c.districtJob)continue;
+  const home=ctx.ports.get(c.home),store=ctx.ports.get(c.store);
+  if(c.store&&!ctx.buildings.has(c.store)||(hasCargo(c)||c.pantryTrip)&&(!store||!home||!routeBetween(s,home.key,store.key,ctx))){
+   if(c.neighborPantry&&!c.pantryFood){
+    finishNeighborTrip(s,c,ctx);delete c.pantryTrip;delete c.pantryFood;
+    if(!shelterHome(c))startTrip(s,c,c.home,'toHome',ctx);
+   }else c.store=closestStore(s,ctx,c.home);
+  }
+ }
  for(const c of citizens)if(c.school&&(!['shrine','ziggurat'].includes(ctx.buildings.get(c.school)?.type)||!isComplete(ctx.buildings.get(c.school))||c.role!=='healer'||medicalLevel(c)>0)){delete c.school;startTrip(s,c,c.home,'toHome',ctx);}
  for(const c of citizens)if(c.workplace&&(!ctx.buildings.has(c.workplace)||!isComplete(ctx.buildings.get(c.workplace))||!canStaffBuilding(c,ctx.buildings.get(c.workplace))))delete c.workplace;
  for(const c of citizens)if(c.guardPost){const b=ctx.buildings.get(c.guardPost);if(!guardCapacity(b?.type)||!isComplete(b)||!canWork(c)||!['auto','production'].includes(c.role))delete c.guardPost;}
@@ -895,22 +904,25 @@ function arrival(s,c,ctx){
  if(c.phase==='toPantrySupply'){
   const target=c.pantryTarget||c.home;
   const house=ctx.buildings.get(target);
-  const plentiful=s.resources.food>=1.6*s.population;
-  const incoming=(plentiful||c.walkPantryPickup)?homeFoodInTransit(s,target):s.citizens.reduce((sum,p)=>sum+(p.pantryTrip&&(p.pantryTarget||p.home)===target?p.pantryFood||0:0),0);
-  const room=pantryRestockTarget(s,houseDemand(s,ctx,target)*4/3)-homeMealFood(house)-incoming;
-  const available=c.walkPantryPickup?freePantryFood(s,c.store):foodAvailableAt(s,c.store);
-  delete c.walkPantryPickup;
-  const amount=Math.min(s.calendarDaysPerMonth?PANTRY_LOAD_LIMIT:6,Math.max(0,room),available);
-  if(amount>1e-8){
-   const before=storeStock(s,c.store,'food');
-   c.pantryFood=takeStock(s,c.store,'food',amount,{fishTo:c,fishKey:'fishPantry',giftTo:c,giftKey:'giftPantry',grainTo:c,grainKey:'grainPantry'});
-   if(c.pantryFood>0){
-    c.pantryOrigin=c.store;
-    c.pantryRemainder=Math.max(0,before-c.pantryFood);
-    startTrip(s,c,target,'toPantryHome',ctx);
-    return;
+  if(c.neighborPantry)takeNeighborFood(s,c,ctx,house);
+  else{
+   const plentiful=s.resources.food>=1.6*s.population;
+   const incoming=(plentiful||c.walkPantryPickup)?homeFoodInTransit(s,target):s.citizens.reduce((sum,p)=>sum+(p.pantryTrip&&(p.pantryTarget||p.home)===target?p.pantryFood||0:0),0);
+   const room=pantryRestockTarget(s,houseDemand(s,ctx,target)*4/3)-homeMealFood(house)-incoming;
+   const available=c.walkPantryPickup?freePantryFood(s,c.store):foodAvailableAt(s,c.store);
+   delete c.walkPantryPickup;
+   const amount=Math.min(s.calendarDaysPerMonth?PANTRY_LOAD_LIMIT:6,Math.max(0,room),available);
+   if(amount>1e-8){
+    const before=storeStock(s,c.store,'food');
+    c.pantryFood=takeStock(s,c.store,'food',amount,{fishTo:c,fishKey:'fishPantry',giftTo:c,giftKey:'giftPantry',grainTo:c,grainKey:'grainPantry'});
+    if(c.pantryFood>0){
+     c.pantryOrigin=c.store;
+     c.pantryRemainder=Math.max(0,before-c.pantryFood);
+    }
    }
   }
+  if(c.pantryFood>1e-8){startTrip(s,c,target,'toPantryHome',ctx);return;}
+  finishNeighborTrip(s,c,ctx);
   delete c.pantryTrip;delete c.pantryFood;delete c.pantryOrigin;delete c.pantryRemainder;delete c.pantryTarget;
   startTrip(s,c,c.home,hasCargo(c)?'toRest':'toHome',ctx);
   return;
@@ -920,7 +932,7 @@ function arrival(s,c,ctx){
    appendGrain(b,'grainPantry',grain,b.pantry-amount);
    recordHomeRation(s,b,c,amount,c.pantryOrigin??null,grain);recordCitizenDelivery(s,c,{food:amount});recordVowDelivery(s,b,c,amount);recordNeighborFoodFact(s,c,b,amount);
    const gift=moveGiftFood(c,'giftPantry',b,'giftHome',amount,amount,b.pantry-amount);
-   recordAbundanceHome(s,b,c,ctx.buildings.get(c.store),amount,gift);
+   if(!c.neighborPantry)recordAbundanceHome(s,b,c,ctx.buildings.get(c.store),amount,gift);
    if(c.fishPantry)recordHomeFish(s,b,takeFishEvidence(c,'fishPantry',amount,amount),c);
   }else{
    const accepted=putStock(s,c.store,'food',amount,{overflow:true}),store=ctx.buildings.get(c.store);
@@ -928,7 +940,7 @@ function arrival(s,c,ctx){
    moveGiftFood(c,'giftPantry',store,'giftStock',accepted,amount,(store?.stock?.food||0)-accepted);
    if(c.fishPantry)appendFish(store,'fishStock',takeFishEvidence(c,'fishPantry',accepted,amount),(store?.stock?.food||0)-accepted);
   }
-  delete c.fishPantry;delete c.giftPantry;
+  delete c.fishPantry;delete c.giftPantry;finishNeighborTrip(s,c,ctx);
   delete c.pantryTrip;delete c.pantryFood;delete c.pantryOrigin;delete c.pantryRemainder;delete c.pantryTarget;if(target!==c.home)startTrip(s,c,c.home,hasCargo(c)?'toRest':'toHome',ctx);else c.phase=hasCargo(c)?'resting':'home';return;
  }
  if(c.phase==='toSaleSupply'){
@@ -1012,6 +1024,57 @@ function criticalFoodTrip(s,c,ctx){
  if(store){c.store=store;c.pantryTrip=true;c.pantryFood=0;}
  return true;
 }
+// A visit is local by walking distance, including the detour to a bridge.
+const NEIGHBOR_WALK=6;
+function neighborSurplus(s,ctx,b){
+ if(!isResidence(b)||!isOperational(b))return 0;
+ const dinner=houseDemand(s,ctx,buildingKey(b))*4/3;
+ return dinner>0?Math.max(0,(b.pantry||0)-pantryStockTarget(s,dinner)/2):0;
+}
+function nearbyDonor(s,c,ctx,dinner,store){
+ const urgent=c.missedMeals>=2&&c.hunger>=70;
+ const reach=urgent?8:NEIGHBOR_WALK;
+ const home=ctx.ports.get(c.home);
+ if(!home||homeMealFood(home.building)>1e-7||hasCargo(c)||c.guardPost||c.waterTrip||c.freightCart)return null;
+ const warehouse=store&&ctx.ports.get(store);
+ const warehousePath=warehouse&&routeBetween(s,home.key,warehouse.key,ctx);
+ const storeDistance=warehousePath?navigationDistance(warehousePath):Infinity;
+ if(!urgent&&storeDistance<=NEIGHBOR_WALK)return null;
+ // Most empty households have no neighbour with a spare half-pantry.
+ // Build the list once per workforce step, then inspect stock again at pickup.
+ const donors=ctx.citizenPass.pantryDonors??=s.buildings.filter(b=>neighborSurplus(s,ctx,b)>1e-7);
+ if(!donors.length||homeFoodInTransit(s,c.home,{deliverable:true})+1e-7>=dinner)return null;
+ let best=null,length=storeDistance;
+ for(const b of donors){
+  const key=buildingKey(b),port=ctx.ports.get(key);
+  if(key===c.home||!port||distance(home,port)>reach||neighborSurplus(s,ctx,b)<=1e-7)continue;
+  const route=routeBetween(s,home.key,port.key,ctx);
+  if(!route)continue;
+  const cost=navigationDistance(route);
+  if(cost<=reach&&cost<length){best=key;length=cost;}
+ }
+ return best;
+}
+function takeNeighborFood(s,c,ctx,house){
+ const donor=ctx.buildings.get(c.neighborPantry),door=ctx.ports.get(c.neighborPantry);
+ if(!house||!door||c.store!==c.neighborPantry||distance(c,door)>.01)return;
+ const dinner=houseDemand(s,ctx,c.home)*4/3;
+ const need=dinner-homeMealFood(house)-homeFoodInTransit(s,c.home,{deliverable:true});
+ const amount=Math.min(PANTRY_LOAD_LIMIT,need,neighborSurplus(s,ctx,donor));
+ if(!(amount>1e-7))return;
+ const before=donor.pantry;
+ moveGiftFood(donor,'giftHome',c,'giftPantry',amount,before,0);
+ appendGrain(c,'grainPantry',takeGrain(donor,'grainPantry',amount,before),0);
+ donor.pantry-=amount;
+ c.pantryFood=amount;
+ c.pantryOrigin=c.neighborPantry;
+ c.pantryRemainder=donor.pantry;
+}
+function finishNeighborTrip(s,c,ctx){
+ if(!c.neighborPantry)return;
+ delete c.neighborPantry;
+ c.store=closestStore(s,ctx,c.work||c.home);
+}
 function timelyFamilyPickup(s,c,ctx,order,deficit){
  const amount=Math.min(order.remaining,ctx.buildings.get(order.source)?.workshopStock?.output?.food||0);
  if(amount<=1e-7)return false;
@@ -1047,8 +1110,11 @@ function urgentHouseholdSupply(s,c,ctx){
    return true;
   }
  }
- const store=closestStock(s,ctx,c.home,'food');if(!store)return false;
- c.store=store;c.pantryTrip=true;c.pantryFood=0;startTrip(s,c,store,'toPantrySupply',ctx);return true;
+ const store=closestStock(s,ctx,c.home,'food');
+ const donor=s.calendarDaysPerMonth===1?nearbyDonor(s,c,ctx,houseDemand(s,ctx,c.home)*4/3,store):null;
+ if(!store&&!donor)return false;
+ if(donor)c.neighborPantry=donor;
+ c.store=donor||store;c.pantryTrip=true;c.pantryFood=0;startTrip(s,c,c.store,'toPantrySupply',ctx);return true;
 }
 function dependentHouseholds(s,ctx){
  if(ctx.dependentCitizens!==s.citizens){
@@ -1737,7 +1803,7 @@ export function recoverCitizenCargo(s,id){recoverRelicCitizen(s,id);
  delete c.grainCargo;delete c.grainPantry;
  delete c.fishingLanding;delete c.hangingFishElapsed;
  delete c.fishCargo;delete c.fishPantry;delete c.giftCargo;delete c.giftPantry;delete c.inspiredFishReturn;delete c.creatorCargo;delete c.windCargo;delete c.windRoute;
- delete c.clothingTarget;delete c.clothingLoad;delete c.craftSite;delete c.craftWool;delete c.craftCloth;delete c.craftMaterial;delete c.craftAmount;delete c.seedField;delete c.seedFood;delete c.pantryTrip;delete c.pantryFood;delete c.pantryOrigin;delete c.pantryRemainder;delete c.pantryTarget;delete c.walkPantryPickup;delete c.districtJob;
+ delete c.clothingTarget;delete c.clothingLoad;delete c.craftSite;delete c.craftWool;delete c.craftCloth;delete c.craftMaterial;delete c.craftAmount;delete c.seedField;delete c.seedFood;delete c.pantryTrip;delete c.pantryFood;delete c.pantryOrigin;delete c.pantryRemainder;delete c.pantryTarget;delete c.neighborPantry;delete c.walkPantryPickup;delete c.districtJob;
  if(district)c.store=recovery;c.tradeJob=null;c.tradeMarket=null;c.saleJob=null;c.saleMarket=null;
  const ctx=context(s);ctx.stores=stockStores(s);ctx.closestStores.clear();if(district||hadCraft||hadManual)startTrip(s,c,c.home,'toHome',ctx);invalidateAssignments(s);return true;
 }
